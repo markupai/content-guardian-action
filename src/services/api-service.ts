@@ -39,7 +39,7 @@ export async function analyzeFile(
 
     return {
       filePath,
-      result: result.scores,
+      result: result.original.scores,
       timestamp: new Date().toISOString()
     }
   } catch (error) {
@@ -124,7 +124,7 @@ export async function analyzeFilesBatch(
       (
         batchResult: {
           status: string
-          result?: { scores: StyleScores }
+          result?: { original: { scores: StyleScores } }
           error?: { message: string }
         },
         index: number
@@ -132,7 +132,7 @@ export async function analyzeFilesBatch(
         if (batchResult.status === 'completed' && batchResult.result) {
           results.push({
             filePath: fileContents[index].filePath,
-            result: batchResult.result.scores,
+            result: batchResult.result.original.scores,
             timestamp: new Date().toISOString()
           })
         } else if (batchResult.status === 'failed') {

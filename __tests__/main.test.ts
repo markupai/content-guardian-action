@@ -71,28 +71,45 @@ jest.unstable_mockModule('@actions/github', () => ({
 jest.unstable_mockModule('@markupai/toolkit', () => ({
   styleCheck: jest.fn(() =>
     Promise.resolve({
-      workflow_id: 'test-workflow-123',
-      status: 'completed',
-      scores: {
-        quality: {
-          score: 85.2,
-          grammar: { score: 90.1, issues: 2 },
-          style_guide: { score: 88.3, issues: 1 },
-          terminology: { score: 95.0, issues: 0 }
-        },
-        analysis: {
-          clarity: { score: 78.5 },
-          tone: { score: 82.3 }
+      workflow: {
+        id: 'test-workflow-123',
+        type: 'checks',
+        api_version: '1.0.0',
+        generated_at: '2025-01-15T14:22:33Z',
+        status: 'completed',
+        webhook_response: {
+          url: 'https://api.example.com/webhook',
+          status_code: 200
         }
       },
-      issues: [
-        {
-          original: 'test text',
-          char_index: 10,
-          subcategory: 'passive_voice',
-          category: 'style_guide'
+      config: {
+        dialect: 'american_english',
+        style_guide: { style_guide_type: 'ap', style_guide_id: 'sg-123' },
+        tone: 'formal'
+      },
+      original: {
+        issues: [
+          {
+            original: 'test text',
+            char_index: 10,
+            subcategory: 'passive_voice',
+            category: 'style_guide'
+          }
+        ],
+        scores: {
+          quality: {
+            score: 85.2,
+            grammar: { score: 90.1, issues: 2 },
+            alignment: { score: 88.3, issues: 1 },
+            style_guide: { score: 88.3, issues: 1 },
+            terminology: { score: 95.0, issues: 0 }
+          },
+          analysis: {
+            clarity: { score: 78.5 },
+            tone: { score: 82.3 }
+          }
         }
-      ]
+      }
     })
   ),
   styleBatchCheckRequests: jest.fn(() => ({
@@ -107,16 +124,36 @@ jest.unstable_mockModule('@markupai/toolkit', () => ({
           index: 0,
           status: 'completed',
           result: {
-            scores: {
-              quality: {
-                score: 85.2,
-                grammar: { score: 90.1, issues: 2 },
-                style_guide: { score: 88.3, issues: 1 },
-                terminology: { score: 95.0, issues: 0 }
-              },
-              analysis: {
-                clarity: { score: 78.5 },
-                tone: { score: 82.3 }
+            workflow: {
+              id: 'test-workflow-123',
+              type: 'checks',
+              api_version: '1.0.0',
+              generated_at: '2025-01-15T14:22:33Z',
+              status: 'completed',
+              webhook_response: {
+                url: 'https://api.example.com/webhook',
+                status_code: 200
+              }
+            },
+            config: {
+              dialect: 'american_english',
+              style_guide: { style_guide_type: 'ap', style_guide_id: 'sg-123' },
+              tone: 'formal'
+            },
+            original: {
+              issues: [],
+              scores: {
+                quality: {
+                  score: 85.2,
+                  grammar: { score: 90.1, issues: 2 },
+                  alignment: { score: 88.3, issues: 1 },
+                  style_guide: { score: 88.3, issues: 1 },
+                  terminology: { score: 95.0, issues: 0 }
+                },
+                analysis: {
+                  clarity: { score: 78.5 },
+                  tone: { score: 82.3 }
+                }
               }
             }
           }
@@ -135,16 +172,36 @@ jest.unstable_mockModule('@markupai/toolkit', () => ({
           index: 0,
           status: 'completed',
           result: {
-            scores: {
-              quality: {
-                score: 85.2,
-                grammar: { score: 90.1, issues: 2 },
-                style_guide: { score: 88.3, issues: 1 },
-                terminology: { score: 95.0, issues: 0 }
-              },
-              analysis: {
-                clarity: { score: 78.5 },
-                tone: { score: 82.3 }
+            workflow: {
+              id: 'test-workflow-123',
+              type: 'checks',
+              api_version: '1.0.0',
+              generated_at: '2025-01-15T14:22:33Z',
+              status: 'completed',
+              webhook_response: {
+                url: 'https://api.example.com/webhook',
+                status_code: 200
+              }
+            },
+            config: {
+              dialect: 'american_english',
+              style_guide: { style_guide_type: 'ap', style_guide_id: 'sg-123' },
+              tone: 'formal'
+            },
+            original: {
+              issues: [],
+              scores: {
+                quality: {
+                  score: 85.2,
+                  grammar: { score: 90.1, issues: 2 },
+                  alignment: { score: 88.3, issues: 1 },
+                  style_guide: { score: 88.3, issues: 1 },
+                  terminology: { score: 95.0, issues: 0 }
+                },
+                analysis: {
+                  clarity: { score: 78.5 },
+                  tone: { score: 82.3 }
+                }
               }
             }
           }
