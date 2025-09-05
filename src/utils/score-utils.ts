@@ -89,9 +89,7 @@ export function calculateScoreSummary(
   const clarityScores = results.map((r) => r.result.analysis.clarity.score)
   const toneScores = results.map((r) => r.result.analysis.tone.score)
   const grammarScores = results.map((r) => r.result.quality.grammar.score)
-  const styleGuideScores = results.map(
-    (r) => r.result.quality.style_guide.score
-  )
+  const styleGuideScores = results.map((r) => r.result.quality.alignment.score)
   const terminologyScores = results.map(
     (r) => r.result.quality.terminology.score
   )

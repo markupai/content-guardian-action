@@ -215,6 +215,7 @@ describe('Score Utils', () => {
             quality: {
               score: 85,
               grammar: { score: 90, issues: 2 },
+              alignment: { score: 88, issues: 1 },
               style_guide: { score: 88, issues: 1 },
               terminology: { score: 95, issues: 0 }
             },

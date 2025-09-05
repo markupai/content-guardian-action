@@ -85,6 +85,7 @@ describe('Markdown Utils', () => {
       quality: {
         score: scores.quality,
         grammar: { score: scores.grammar, issues: 0 },
+        alignment: { score: scores.style_guide, issues: 0 },
         style_guide: { score: scores.style_guide, issues: 0 },
         terminology: { score: scores.terminology, issues: 0 }
       },

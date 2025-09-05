@@ -92,18 +92,28 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file1.txt'
               },
               result: {
-                workflow_id: 'test-workflow-1',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-1',
-                scores: buildScores(85, 90, 88),
-                issues: [],
-                check_options: {
+                workflow: {
+                  id: 'test-workflow-1',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
+                  }
+                },
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-1'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: buildScores(85, 90, 88)
                 }
               }
             },
@@ -118,18 +128,28 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file2.txt'
               },
               result: {
-                workflow_id: 'test-workflow-2',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-2',
-                scores: buildScores(92, 87, 91),
-                issues: [],
-                check_options: {
+                workflow: {
+                  id: 'test-workflow-2',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
+                  }
+                },
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-2'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: buildScores(92, 87, 91)
                 }
               }
             }
@@ -154,18 +174,28 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file1.txt'
               },
               result: {
-                workflow_id: 'test-workflow-1',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-1',
-                scores: buildScores(85, 90, 88),
-                issues: [],
-                check_options: {
+                workflow: {
+                  id: 'test-workflow-1',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
+                  }
+                },
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-1'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: buildScores(85, 90, 88)
                 }
               }
             },
@@ -180,18 +210,28 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file2.txt'
               },
               result: {
-                workflow_id: 'test-workflow-2',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-2',
-                scores: buildScores(92, 87, 91),
-                issues: [],
-                check_options: {
+                workflow: {
+                  id: 'test-workflow-2',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
+                  }
+                },
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-2'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: buildScores(92, 87, 91)
                 }
               }
             }
@@ -286,43 +326,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file1.txt'
               },
               result: {
-                workflow_id: 'test-workflow-1',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-1',
-                scores: {
-                  quality: {
-                    score: 85,
-                    grammar: { score: 85, issues: 10 },
-                    style_guide: { score: 85, issues: 10 },
-                    terminology: { score: 85, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 90,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 88,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-1',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-1'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 85,
+                      grammar: { score: 85, issues: 10 },
+                      alignment: { score: 85, issues: 10 },
+                      terminology: { score: 85, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 90,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 88,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -359,43 +409,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file1.txt'
               },
               result: {
-                workflow_id: 'test-workflow-1',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-1',
-                scores: {
-                  quality: {
-                    score: 85,
-                    grammar: { score: 85, issues: 10 },
-                    style_guide: { score: 85, issues: 10 },
-                    terminology: { score: 85, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 90,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 88,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-1',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-1'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 85,
+                      grammar: { score: 85, issues: 10 },
+                      alignment: { score: 85, issues: 10 },
+                      terminology: { score: 85, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 90,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 88,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -451,43 +511,53 @@ describe('Markup AI Service Batch Functionality', () => {
     it('should use sequential processing for small batches (≤3 files)', async () => {
       const { styleCheck } = await import('@markupai/toolkit')
       jest.mocked(styleCheck).mockResolvedValue({
-        workflow_id: 'test-workflow-1',
-        status: Status.Completed,
-        style_guide_id: 'test-style-guide-1',
-        scores: {
-          quality: {
-            score: 85,
-            grammar: { score: 85, issues: 10 },
-            style_guide: { score: 85, issues: 10 },
-            terminology: { score: 85, issues: 10 }
-          },
-          analysis: {
-            clarity: {
-              score: 90,
-              word_count: 100,
-              sentence_count: 10,
-              average_sentence_length: 10,
-              flesch_reading_ease: 10,
-              vocabulary_complexity: 10,
-              sentence_complexity: 10
-            },
-            tone: {
-              score: 88,
-              informality: 10,
-              liveliness: 10,
-              informality_alignment: 10,
-              liveliness_alignment: 10
-            }
+        workflow: {
+          id: 'test-workflow-1',
+          type: 'checks',
+          api_version: '1.0.0',
+          generated_at: '2025-01-15T14:22:33Z',
+          status: Status.Completed,
+          webhook_response: {
+            url: 'https://api.example.com/webhook',
+            status_code: 200
           }
         },
-        issues: [],
-        check_options: {
+        config: {
+          dialect: 'en-US',
           style_guide: {
             style_guide_type: 'microsoft',
             style_guide_id: 'test-style-guide-1'
           },
-          dialect: 'en-US',
           tone: 'formal'
+        },
+        original: {
+          issues: [],
+          scores: {
+            quality: {
+              score: 85,
+              grammar: { score: 85, issues: 10 },
+              alignment: { score: 85, issues: 10 },
+              terminology: { score: 85, issues: 10 }
+            },
+            analysis: {
+              clarity: {
+                score: 90,
+                word_count: 100,
+                sentence_count: 10,
+                average_sentence_length: 10,
+                flesch_reading_ease: 10,
+                vocabulary_complexity: 10,
+                sentence_complexity: 10
+              },
+              tone: {
+                score: 88,
+                informality: 10,
+                liveliness: 10,
+                informality_alignment: 10,
+                liveliness_alignment: 10
+              }
+            }
+          }
         }
       })
 
@@ -523,43 +593,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file1.txt'
               },
               result: {
-                workflow_id: 'test-workflow-1',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-1',
-                scores: {
-                  quality: {
-                    score: 85,
-                    grammar: { score: 85, issues: 10 },
-                    style_guide: { score: 85, issues: 10 },
-                    terminology: { score: 85, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 90,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 88,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-1',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-1'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 85,
+                      grammar: { score: 85, issues: 10 },
+                      alignment: { score: 85, issues: 10 },
+                      terminology: { score: 85, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 90,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 88,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -574,43 +654,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file2.txt'
               },
               result: {
-                workflow_id: 'test-workflow-2',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-2',
-                scores: {
-                  quality: {
-                    score: 92,
-                    grammar: { score: 92, issues: 10 },
-                    style_guide: { score: 92, issues: 10 },
-                    terminology: { score: 92, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 87,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 91,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-2',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-2'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 92,
+                      grammar: { score: 92, issues: 10 },
+                      alignment: { score: 92, issues: 10 },
+                      terminology: { score: 92, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 87,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 91,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -625,43 +715,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file3.txt'
               },
               result: {
-                workflow_id: 'test-workflow-3',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-3',
-                scores: {
-                  quality: {
-                    score: 89,
-                    grammar: { score: 89, issues: 10 },
-                    style_guide: { score: 89, issues: 10 },
-                    terminology: { score: 89, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 93,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 86,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-3',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-3'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 89,
+                      grammar: { score: 89, issues: 10 },
+                      alignment: { score: 89, issues: 10 },
+                      terminology: { score: 89, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 93,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 86,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -676,43 +776,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file4.txt'
               },
               result: {
-                workflow_id: 'test-workflow-4',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-4',
-                scores: {
-                  quality: {
-                    score: 94,
-                    grammar: { score: 94, issues: 10 },
-                    style_guide: { score: 94, issues: 10 },
-                    terminology: { score: 94, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 88,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 92,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-4',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-4'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 94,
+                      grammar: { score: 94, issues: 10 },
+                      alignment: { score: 94, issues: 10 },
+                      terminology: { score: 94, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 88,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 92,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -737,43 +847,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file1.txt'
               },
               result: {
-                workflow_id: 'test-workflow-1',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-1',
-                scores: {
-                  quality: {
-                    score: 85,
-                    grammar: { score: 85, issues: 10 },
-                    style_guide: { score: 85, issues: 10 },
-                    terminology: { score: 85, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 90,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 88,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-1',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-1'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 85,
+                      grammar: { score: 85, issues: 10 },
+                      alignment: { score: 85, issues: 10 },
+                      terminology: { score: 85, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 90,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 88,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -788,43 +908,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file2.txt'
               },
               result: {
-                workflow_id: 'test-workflow-2',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-2',
-                scores: {
-                  quality: {
-                    score: 92,
-                    grammar: { score: 92, issues: 10 },
-                    style_guide: { score: 92, issues: 10 },
-                    terminology: { score: 92, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 87,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 91,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-2',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-2'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 92,
+                      grammar: { score: 92, issues: 10 },
+                      alignment: { score: 92, issues: 10 },
+                      terminology: { score: 92, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 87,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 91,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -839,43 +969,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file3.txt'
               },
               result: {
-                workflow_id: 'test-workflow-3',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-3',
-                scores: {
-                  quality: {
-                    score: 89,
-                    grammar: { score: 89, issues: 10 },
-                    style_guide: { score: 89, issues: 10 },
-                    terminology: { score: 89, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 93,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 86,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-3',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-3'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 89,
+                      grammar: { score: 89, issues: 10 },
+                      alignment: { score: 89, issues: 10 },
+                      terminology: { score: 89, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 93,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 86,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -890,43 +1030,53 @@ describe('Markup AI Service Batch Functionality', () => {
                 documentName: 'file4.txt'
               },
               result: {
-                workflow_id: 'test-workflow-4',
-                status: Status.Completed,
-                style_guide_id: 'test-style-guide-4',
-                scores: {
-                  quality: {
-                    score: 94,
-                    grammar: { score: 94, issues: 10 },
-                    style_guide: { score: 94, issues: 10 },
-                    terminology: { score: 94, issues: 10 }
-                  },
-                  analysis: {
-                    clarity: {
-                      score: 88,
-                      word_count: 100,
-                      sentence_count: 10,
-                      average_sentence_length: 10,
-                      flesch_reading_ease: 10,
-                      vocabulary_complexity: 10,
-                      sentence_complexity: 10
-                    },
-                    tone: {
-                      score: 92,
-                      informality: 10,
-                      liveliness: 10,
-                      informality_alignment: 10,
-                      liveliness_alignment: 10
-                    }
+                workflow: {
+                  id: 'test-workflow-4',
+                  type: 'checks',
+                  api_version: '1.0.0',
+                  generated_at: '2025-01-15T14:22:33Z',
+                  status: Status.Completed,
+                  webhook_response: {
+                    url: 'https://api.example.com/webhook',
+                    status_code: 200
                   }
                 },
-                issues: [],
-                check_options: {
+                config: {
+                  dialect: 'en-US',
                   style_guide: {
                     style_guide_type: 'microsoft',
                     style_guide_id: 'test-style-guide-4'
                   },
-                  dialect: 'en-US',
                   tone: 'formal'
+                },
+                original: {
+                  issues: [],
+                  scores: {
+                    quality: {
+                      score: 94,
+                      grammar: { score: 94, issues: 10 },
+                      alignment: { score: 94, issues: 10 },
+                      terminology: { score: 94, issues: 10 }
+                    },
+                    analysis: {
+                      clarity: {
+                        score: 88,
+                        word_count: 100,
+                        sentence_count: 10,
+                        average_sentence_length: 10,
+                        flesch_reading_ease: 10,
+                        vocabulary_complexity: 10,
+                        sentence_complexity: 10
+                      },
+                      tone: {
+                        score: 92,
+                        informality: 10,
+                        liveliness: 10,
+                        informality_alignment: 10,
+                        liveliness_alignment: 10
+                      }
+                    }
+                  }
                 }
               }
             }
