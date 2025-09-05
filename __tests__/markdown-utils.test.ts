@@ -28,9 +28,7 @@ jest.unstable_mockModule('../src/utils/score-utils.js', () => ({
     const clarityScores = results.map((r) => r.result.analysis.clarity.score)
     const toneScores = results.map((r) => r.result.analysis.tone.score)
     const grammarScores = results.map((r) => r.result.quality.grammar.score)
-    const styleGuideScores = results.map(
-      (r) => r.result.quality.style_guide.score
-    )
+    const alignmentScores = results.map((r) => r.result.quality.alignment.score)
     const terminologyScores = results.map(
       (r) => r.result.quality.terminology.score
     )
@@ -47,7 +45,7 @@ jest.unstable_mockModule('../src/utils/score-utils.js', () => ({
       averageClarityScore: calculateAverage(clarityScores),
       averageToneScore: calculateAverage(toneScores),
       averageGrammarScore: calculateAverage(grammarScores),
-      averageStyleGuideScore: calculateAverage(styleGuideScores),
+      averageStyleGuideScore: calculateAverage(alignmentScores),
       averageTerminologyScore: calculateAverage(terminologyScores)
     }
   })
@@ -86,7 +84,6 @@ describe('Markdown Utils', () => {
         score: scores.quality,
         grammar: { score: scores.grammar, issues: 0 },
         alignment: { score: scores.style_guide, issues: 0 },
-        style_guide: { score: scores.style_guide, issues: 0 },
         terminology: { score: scores.terminology, issues: 0 }
       },
       analysis: {

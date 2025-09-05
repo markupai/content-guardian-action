@@ -41517,7 +41517,7 @@ function calculateScoreSummary(results) {
     const clarityScores = results.map((r) => r.result.analysis.clarity.score);
     const toneScores = results.map((r) => r.result.analysis.tone.score);
     const grammarScores = results.map((r) => r.result.quality.grammar.score);
-    const styleGuideScores = results.map((r) => r.result.quality.alignment.score);
+    const alignmentScores = results.map((r) => r.result.quality.alignment.score);
     const terminologyScores = results.map((r) => r.result.quality.terminology.score);
     return {
         totalFiles: results.length,
@@ -41525,7 +41525,7 @@ function calculateScoreSummary(results) {
         averageClarityScore: calculateAverageScore(clarityScores),
         averageToneScore: calculateAverageScore(toneScores),
         averageGrammarScore: calculateAverageScore(grammarScores),
-        averageStyleGuideScore: calculateAverageScore(styleGuideScores),
+        averageStyleGuideScore: calculateAverageScore(alignmentScores),
         averageTerminologyScore: calculateAverageScore(terminologyScores)
     };
 }
@@ -42267,8 +42267,7 @@ function generateResultsTable(results) {
         .map((result) => {
         const { filePath, result: scores } = result;
         const qualityEmoji = getQualityEmoji(scores.quality.score);
-        const styleGuideScore = scores.quality.alignment.score;
-        return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(styleGuideScore)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${Math.round(scores.analysis.tone.score)} |`;
+        return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.alignment.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${Math.round(scores.analysis.tone.score)} |`;
     })
         .join('\n');
     return `${tableHeader}\n${tableRows}`;
