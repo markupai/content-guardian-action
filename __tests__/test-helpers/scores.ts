@@ -23,7 +23,7 @@ export function buildQuality(
   return {
     score,
     grammar: { score: grammarScore, issues: grammarIssues },
-    alignment: { score: styleGuideScore, issues: styleGuideIssues },
+    consistency: { score: styleGuideScore, issues: styleGuideIssues },
     terminology: { score: terminologyScore, issues: terminologyIssues }
   }
 }

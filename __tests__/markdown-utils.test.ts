@@ -28,7 +28,9 @@ jest.unstable_mockModule('../src/utils/score-utils.js', () => ({
     const clarityScores = results.map((r) => r.result.analysis.clarity.score)
     const toneScores = results.map((r) => r.result.analysis.tone.score)
     const grammarScores = results.map((r) => r.result.quality.grammar.score)
-    const alignmentScores = results.map((r) => r.result.quality.alignment.score)
+    const alignmentScores = results.map(
+      (r) => r.result.quality.consistency.score
+    )
     const terminologyScores = results.map(
       (r) => r.result.quality.terminology.score
     )
@@ -83,7 +85,7 @@ describe('Markdown Utils', () => {
       quality: {
         score: scores.quality,
         grammar: { score: scores.grammar, issues: 0 },
-        alignment: { score: scores.style_guide, issues: 0 },
+        consistency: { score: scores.style_guide, issues: 0 },
         terminology: { score: scores.terminology, issues: 0 }
       },
       analysis: {

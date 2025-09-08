@@ -351,7 +351,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 85,
                       grammar: { score: 85, issues: 10 },
-                      alignment: { score: 85, issues: 10 },
+                      consistency: { score: 85, issues: 10 },
                       terminology: { score: 85, issues: 10 }
                     },
                     analysis: {
@@ -434,7 +434,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 85,
                       grammar: { score: 85, issues: 10 },
-                      alignment: { score: 85, issues: 10 },
+                      consistency: { score: 85, issues: 10 },
                       terminology: { score: 85, issues: 10 }
                     },
                     analysis: {
@@ -536,7 +536,7 @@ describe('Markup AI Service Batch Functionality', () => {
             quality: {
               score: 85,
               grammar: { score: 85, issues: 10 },
-              alignment: { score: 85, issues: 10 },
+              consistency: { score: 85, issues: 10 },
               terminology: { score: 85, issues: 10 }
             },
             analysis: {
@@ -618,7 +618,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 85,
                       grammar: { score: 85, issues: 10 },
-                      alignment: { score: 85, issues: 10 },
+                      consistency: { score: 85, issues: 10 },
                       terminology: { score: 85, issues: 10 }
                     },
                     analysis: {
@@ -679,7 +679,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 92,
                       grammar: { score: 92, issues: 10 },
-                      alignment: { score: 92, issues: 10 },
+                      consistency: { score: 92, issues: 10 },
                       terminology: { score: 92, issues: 10 }
                     },
                     analysis: {
@@ -740,7 +740,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 89,
                       grammar: { score: 89, issues: 10 },
-                      alignment: { score: 89, issues: 10 },
+                      consistency: { score: 89, issues: 10 },
                       terminology: { score: 89, issues: 10 }
                     },
                     analysis: {
@@ -801,7 +801,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 94,
                       grammar: { score: 94, issues: 10 },
-                      alignment: { score: 94, issues: 10 },
+                      consistency: { score: 94, issues: 10 },
                       terminology: { score: 94, issues: 10 }
                     },
                     analysis: {
@@ -872,7 +872,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 85,
                       grammar: { score: 85, issues: 10 },
-                      alignment: { score: 85, issues: 10 },
+                      consistency: { score: 85, issues: 10 },
                       terminology: { score: 85, issues: 10 }
                     },
                     analysis: {
@@ -933,7 +933,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 92,
                       grammar: { score: 92, issues: 10 },
-                      alignment: { score: 92, issues: 10 },
+                      consistency: { score: 92, issues: 10 },
                       terminology: { score: 92, issues: 10 }
                     },
                     analysis: {
@@ -994,7 +994,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 89,
                       grammar: { score: 89, issues: 10 },
-                      alignment: { score: 89, issues: 10 },
+                      consistency: { score: 89, issues: 10 },
                       terminology: { score: 89, issues: 10 }
                     },
                     analysis: {
@@ -1055,7 +1055,7 @@ describe('Markup AI Service Batch Functionality', () => {
                     quality: {
                       score: 94,
                       grammar: { score: 94, issues: 10 },
-                      alignment: { score: 94, issues: 10 },
+                      consistency: { score: 94, issues: 10 },
                       terminology: { score: 94, issues: 10 }
                     },
                     analysis: {
