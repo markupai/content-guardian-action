@@ -89,7 +89,9 @@ export function calculateScoreSummary(
   const clarityScores = results.map((r) => r.result.analysis.clarity.score)
   const toneScores = results.map((r) => r.result.analysis.tone.score)
   const grammarScores = results.map((r) => r.result.quality.grammar.score)
-  const alignmentScores = results.map((r) => r.result.quality.consistency.score)
+  const consistencyScores = results.map(
+    (r) => r.result.quality.consistency.score
+  )
   const terminologyScores = results.map(
     (r) => r.result.quality.terminology.score
   )
@@ -100,7 +102,7 @@ export function calculateScoreSummary(
     averageClarityScore: calculateAverageScore(clarityScores),
     averageToneScore: calculateAverageScore(toneScores),
     averageGrammarScore: calculateAverageScore(grammarScores),
-    averageStyleGuideScore: calculateAverageScore(alignmentScores),
+    averageStyleGuideScore: calculateAverageScore(consistencyScores),
     averageTerminologyScore: calculateAverageScore(terminologyScores)
   }
 }

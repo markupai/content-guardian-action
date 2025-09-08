@@ -28,7 +28,7 @@ jest.unstable_mockModule('../src/utils/score-utils.js', () => ({
     const clarityScores = results.map((r) => r.result.analysis.clarity.score)
     const toneScores = results.map((r) => r.result.analysis.tone.score)
     const grammarScores = results.map((r) => r.result.quality.grammar.score)
-    const alignmentScores = results.map(
+    const consistencyScores = results.map(
       (r) => r.result.quality.consistency.score
     )
     const terminologyScores = results.map(
@@ -47,7 +47,7 @@ jest.unstable_mockModule('../src/utils/score-utils.js', () => ({
       averageClarityScore: calculateAverage(clarityScores),
       averageToneScore: calculateAverage(toneScores),
       averageGrammarScore: calculateAverage(grammarScores),
-      averageStyleGuideScore: calculateAverage(alignmentScores),
+      averageStyleGuideScore: calculateAverage(consistencyScores),
       averageTerminologyScore: calculateAverage(terminologyScores)
     }
   })
