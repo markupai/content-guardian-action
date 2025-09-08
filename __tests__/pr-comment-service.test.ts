@@ -399,7 +399,7 @@ describe('PR Comment Service', () => {
             quality: {
               score: 95,
               grammar: { score: 90, issues: 2 },
-              alignment: { score: 88, issues: 1 },
+              consistency: { score: 88, issues: 1 },
               style_guide: { score: 88, issues: 1 },
               terminology: { score: 95, issues: 0 }
             },
@@ -429,7 +429,7 @@ describe('PR Comment Service', () => {
             quality: {
               score: 65,
               grammar: { score: 90, issues: 2 },
-              alignment: { score: 88, issues: 1 },
+              consistency: { score: 88, issues: 1 },
               style_guide: { score: 88, issues: 1 },
               terminology: { score: 95, issues: 0 }
             },
@@ -459,7 +459,7 @@ describe('PR Comment Service', () => {
             quality: {
               score: 45,
               grammar: { score: 90, issues: 2 },
-              alignment: { score: 88, issues: 1 },
+              consistency: { score: 88, issues: 1 },
               style_guide: { score: 88, issues: 1 },
               terminology: { score: 95, issues: 0 }
             },

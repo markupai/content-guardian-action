@@ -40,7 +40,7 @@ export function displayResults(results: AnalysisResult[]): void {
     core.info(`📈 Quality Score: ${result.quality.score}`)
     core.info(`📝 Clarity Score: ${result.analysis.clarity.score}`)
     core.info(`🔤 Grammar Score: ${result.quality.grammar.score}`)
-    core.info(`📋 Style Guide Score: ${result.quality.alignment.score}`)
+    core.info(`📋 Consistency Score: ${result.quality.consistency.score}`)
     core.info(`🎭 Tone Score: ${result.analysis.tone.score}`)
     core.info(`📚 Terminology Score: ${result.quality.terminology.score}`)
 
