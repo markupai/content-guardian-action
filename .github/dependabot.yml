@@ -8,6 +8,7 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
+    versioning-strategy: increase
     groups:
       npm-development:
         dependency-type: development
