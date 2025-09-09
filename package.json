@@ -37,7 +37,7 @@
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
   },
   "dependencies": {
-    "@markupai/toolkit": "^0.2.0",
+    "@markupai/toolkit": "^0.2.1",
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.1",
     "octokit": "^5.0.3"
@@ -52,7 +52,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.1",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
-    "@typescript-eslint/parser": "^8.41.0",
+    "@typescript-eslint/parser": "^8.43.0",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
