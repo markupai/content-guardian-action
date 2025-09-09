@@ -1,7 +1,7 @@
 {
   "name": "markup-ai-github-action",
   "description": "Markup AI GitHub Action",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Markup AI",
   "type": "module",
   "license": "Apache-2.0",
