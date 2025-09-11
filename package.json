@@ -1,45 +1,42 @@
 {
   "name": "markup-ai-github-action",
-  "description": "Markup AI GitHub Action",
   "version": "0.0.9",
-  "author": "Markup AI",
-  "type": "module",
-  "license": "Apache-2.0",
   "private": true,
+  "description": "Markup AI GitHub Action",
+  "keywords": [
+    "actions"
+  ],
   "homepage": "https://github.com/markupai/content-guardian-action",
+  "bugs": {
+    "url": "https://github.com/markupai/content-guardian-action/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/markupai/content-guardian-action.git"
   },
-  "bugs": {
-    "url": "https://github.com/markupai/content-guardian-action/issues"
-  },
-  "keywords": [
-    "actions"
-  ],
+  "license": "Apache-2.0",
+  "author": "Markup AI",
+  "type": "module",
   "exports": {
     ".": "./dist/index.js"
   },
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
+    "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package",
     "bundle": "npm run format:write && npm run package",
     "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
     "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
-    "format:write": "npx prettier --write .",
     "format:check": "npx prettier --check .",
+    "format:write": "npx prettier --write .",
     "lint": "npx eslint .",
     "local-action": "npx @github/local-action . src/main.ts .env",
     "package": "npx rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
     "package:watch": "npm run package -- --watch",
-    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
-    "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest"
   },
   "dependencies": {
-    "@markupai/toolkit": "^0.2.1",
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.1",
+    "@markupai/toolkit": "^0.2.1",
     "octokit": "^5.0.3"
   },
   "devDependencies": {
@@ -69,5 +66,8 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
