@@ -33,7 +33,7 @@ const mockGetAnalysisSummary = jest.fn() as jest.MockedFunction<
     averageQualityScore: number
     averageClarityScore: number
     averageGrammarScore: number
-    averageStyleGuideScore: number
+    averageConsistencyScore: number
     averageToneScore: number
     averageTerminologyScore: number
     totalGrammarIssues: number
@@ -111,7 +111,7 @@ describe('Post Analysis Service', () => {
       averageQualityScore: 85,
       averageClarityScore: 78,
       averageGrammarScore: 90,
-      averageStyleGuideScore: 88,
+      averageConsistencyScore: 88,
       averageToneScore: 82,
       averageTerminologyScore: 95,
       totalGrammarIssues: 2,

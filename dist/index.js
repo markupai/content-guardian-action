@@ -41498,7 +41498,7 @@ function calculateScoreSummary(results) {
             averageClarityScore: 0,
             averageToneScore: 0,
             averageGrammarScore: 0,
-            averageStyleGuideScore: 0,
+            averageConsistencyScore: 0,
             averageTerminologyScore: 0
         };
     }
@@ -41514,7 +41514,7 @@ function calculateScoreSummary(results) {
         averageClarityScore: calculateAverageScore(clarityScores),
         averageToneScore: calculateAverageScore(toneScores),
         averageGrammarScore: calculateAverageScore(grammarScores),
-        averageStyleGuideScore: calculateAverageScore(consistencyScores),
+        averageConsistencyScore: calculateAverageScore(consistencyScores),
         averageTerminologyScore: calculateAverageScore(terminologyScores)
     };
 }
@@ -41713,7 +41713,7 @@ function getAnalysisSummary(results) {
         averageClarityScore: summary.averageClarityScore,
         averageToneScore: summary.averageToneScore,
         averageGrammarScore: summary.averageGrammarScore,
-        averageStyleGuideScore: summary.averageStyleGuideScore,
+        averageConsistencyScore: summary.averageConsistencyScore,
         averageTerminologyScore: summary.averageTerminologyScore
     };
 }
@@ -42250,7 +42250,7 @@ function generateResultsTable(results) {
     if (results.length === 0) {
         return 'No files were analyzed.';
     }
-    const tableHeader = `| File | Quality | Grammar | Style Guide | Terminology | Clarity | Tone |
+    const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
 |------|---------|---------|---------|---------|---------|------|`;
     const tableRows = results
         .map((result) => {
@@ -42281,7 +42281,7 @@ function generateSummary(results) {
 |--------|---------------|
 | Quality | ${Math.round(summary.averageQualityScore)} |
 | Grammar | ${Math.round(summary.averageGrammarScore)} |
-| Style Guide | ${Math.round(summary.averageStyleGuideScore)} |
+| Consistency | ${Math.round(summary.averageConsistencyScore)} |
 | Terminology | ${Math.round(summary.averageTerminologyScore)} |
 | Clarity | ${Math.round(summary.averageClarityScore)} |
 | Tone | ${Math.round(summary.averageToneScore)} |

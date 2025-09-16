@@ -199,7 +199,7 @@ export function getAnalysisSummary(results: AnalysisResult[]): ScoreSummary {
     averageClarityScore: summary.averageClarityScore,
     averageToneScore: summary.averageToneScore,
     averageGrammarScore: summary.averageGrammarScore,
-    averageStyleGuideScore: summary.averageStyleGuideScore,
+    averageConsistencyScore: summary.averageConsistencyScore,
     averageTerminologyScore: summary.averageTerminologyScore
   }
 }

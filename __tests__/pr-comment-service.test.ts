@@ -354,7 +354,7 @@ describe('PR Comment Service', () => {
 
       // Test table structure
       expect(commentBody).toContain(
-        '| File | Quality | Grammar | Style Guide | Terminology | Clarity | Tone |'
+        '| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |'
       )
 
       // Test emoji display
@@ -364,7 +364,7 @@ describe('PR Comment Service', () => {
       expect(commentBody).toContain('| Quality | 85 |')
       expect(commentBody).toContain('| Clarity | 78 |')
       expect(commentBody).toContain('| Grammar | 90 |')
-      expect(commentBody).toContain('| Style Guide | 88 |')
+      expect(commentBody).toContain('| Consistency | 88 |')
       expect(commentBody).toContain('| Tone | 82 |')
       expect(commentBody).toContain('| Terminology | 95 |')
 

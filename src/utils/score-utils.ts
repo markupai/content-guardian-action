@@ -36,7 +36,7 @@ export interface ScoreSummary {
   averageClarityScore: number
   averageToneScore: number
   averageGrammarScore: number
-  averageStyleGuideScore: number
+  averageConsistencyScore: number
   averageTerminologyScore: number
 }
 
@@ -80,7 +80,7 @@ export function calculateScoreSummary(
       averageClarityScore: 0,
       averageToneScore: 0,
       averageGrammarScore: 0,
-      averageStyleGuideScore: 0,
+      averageConsistencyScore: 0,
       averageTerminologyScore: 0
     }
   }
@@ -102,7 +102,7 @@ export function calculateScoreSummary(
     averageClarityScore: calculateAverageScore(clarityScores),
     averageToneScore: calculateAverageScore(toneScores),
     averageGrammarScore: calculateAverageScore(grammarScores),
-    averageStyleGuideScore: calculateAverageScore(consistencyScores),
+    averageConsistencyScore: calculateAverageScore(consistencyScores),
     averageTerminologyScore: calculateAverageScore(terminologyScores)
   }
 }
