@@ -13,7 +13,7 @@ export function generateResultsTable(results: AnalysisResult[]): string {
     return 'No files were analyzed.'
   }
 
-  const tableHeader = `| File | Quality | Grammar | Style Guide | Terminology | Clarity | Tone |
+  const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
 |------|---------|---------|---------|---------|---------|------|`
 
   const tableRows = results
@@ -50,7 +50,7 @@ export function generateSummary(results: AnalysisResult[]): string {
 |--------|---------------|
 | Quality | ${Math.round(summary.averageQualityScore)} |
 | Grammar | ${Math.round(summary.averageGrammarScore)} |
-| Style Guide | ${Math.round(summary.averageStyleGuideScore)} |
+| Consistency | ${Math.round(summary.averageConsistencyScore)} |
 | Terminology | ${Math.round(summary.averageTerminologyScore)} |
 | Clarity | ${Math.round(summary.averageClarityScore)} |
 | Tone | ${Math.round(summary.averageToneScore)} |

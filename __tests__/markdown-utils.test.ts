@@ -19,7 +19,7 @@ jest.unstable_mockModule('../src/utils/score-utils.js', () => ({
         averageClarityScore: 0,
         averageToneScore: 0,
         averageGrammarScore: 0,
-        averageStyleGuideScore: 0,
+        averageConsistencyScore: 0,
         averageTerminologyScore: 0
       }
     }
@@ -47,7 +47,7 @@ jest.unstable_mockModule('../src/utils/score-utils.js', () => ({
       averageClarityScore: calculateAverage(clarityScores),
       averageToneScore: calculateAverage(toneScores),
       averageGrammarScore: calculateAverage(grammarScores),
-      averageStyleGuideScore: calculateAverage(consistencyScores),
+      averageConsistencyScore: calculateAverage(consistencyScores),
       averageTerminologyScore: calculateAverage(terminologyScores)
     }
   })
@@ -155,7 +155,7 @@ describe('Markdown Utils', () => {
 
       // Check table structure
       expect(result).toContain(
-        '| File | Quality | Grammar | Style Guide | Terminology | Clarity | Tone |'
+        '| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |'
       )
       expect(result).toContain(
         '|------|---------|---------|---------|---------|---------|------|'
@@ -280,7 +280,7 @@ describe('Markdown Utils', () => {
       expect(result).toContain('| Quality | 79 |')
       expect(result).toContain('| Clarity | 81 |') // (92.3 + 68.9) / 2 = 80.6 rounded to 81
       expect(result).toContain('| Grammar | 77 |') // (78.9 + 75.6) / 2 = 77.25 rounded to 77
-      expect(result).toContain('| Style Guide | 80 |') // (88.1 + 71.3) / 2 = 79.7 rounded to 80
+      expect(result).toContain('| Consistency | 80 |') // (88.1 + 71.3) / 2 = 79.7 rounded to 80
       expect(result).toContain('| Tone | 81 |') // (91.5 + 69.8) / 2 = 80.65 rounded to 81
       expect(result).toContain('| Terminology | 80 |') // (87.2 + 73.1) / 2 = 80.15 rounded to 80
 
@@ -305,7 +305,7 @@ describe('Markdown Utils', () => {
       expect(result).toContain('| Quality | 86 |')
       expect(result).toContain('| Clarity | 92 |')
       expect(result).toContain('| Grammar | 79 |')
-      expect(result).toContain('| Style Guide | 88 |')
+      expect(result).toContain('| Consistency | 88 |')
       expect(result).toContain('| Tone | 92 |')
       expect(result).toContain('| Terminology | 87 |')
     })
@@ -337,7 +337,7 @@ describe('Markdown Utils', () => {
       expect(result).toContain('| Quality | 85 |')
       expect(result).toContain('| Clarity | 92 |')
       expect(result).toContain('| Grammar | 78 |')
-      expect(result).toContain('| Style Guide | 88 |')
+      expect(result).toContain('| Consistency | 88 |')
       expect(result).toContain('| Tone | 91 |')
       expect(result).toContain('| Terminology | 87 |')
     })
@@ -369,7 +369,7 @@ describe('Markdown Utils', () => {
       expect(result).toContain('| Quality | 86 |')
       expect(result).toContain('| Clarity | 93 |') // (92 + 93) / 2 = 92.5 rounded to 93
       expect(result).toContain('| Grammar | 79 |') // (78 + 79) / 2 = 78.5 rounded to 79
-      expect(result).toContain('| Style Guide | 89 |') // (88 + 89) / 2 = 88.5 rounded to 89
+      expect(result).toContain('| Consistency | 89 |') // (88 + 89) / 2 = 88.5 rounded to 89
       expect(result).toContain('| Tone | 92 |') // (91 + 92) / 2 = 91.5 rounded to 92
       expect(result).toContain('| Terminology | 88 |') // (87 + 88) / 2 = 87.5 rounded to 88
     })
@@ -420,7 +420,7 @@ describe('Markdown Utils', () => {
       // Should contain all sections
       expect(result).toContain(header)
       expect(result).toContain(
-        '| File | Quality | Grammar | Style Guide | Terminology | Clarity | Tone |'
+        '| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |'
       )
       expect(result).toContain('## 📊 Summary')
       expect(result).toContain('*Analysis performed on')

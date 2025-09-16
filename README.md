@@ -314,7 +314,7 @@ The action provides comprehensive quality metrics:
 - **Quality Score**: Overall content quality assessment (0-100)
 - **Clarity Score**: Readability and comprehension metrics
 - **Grammar Score**: Grammar and syntax quality
-- **Style Guide Score**: Style guide compliance
+- **Consistency Score**: Style guide compliance
 - **Tone Score**: Tone appropriateness for specified tone
 - **Terminology Score**: Terminology consistency
 
@@ -348,7 +348,7 @@ For pull request events, the action creates detailed comments with:
 ```
 
 🔍 Running analysis on modified files... 📄 File: README.md 📈 Quality Score:
-85.2 📝 Clarity Score: 78.5 🔤 Grammar Issues: 2 📋 Style Guide Issues: 1 🎭
+85.2 📝 Clarity Score: 78.5 🔤 Grammar Issues: 2 📋 Consistency Issues: 1 🎭
 Tone Score: 82.3 📚 Terminology Issues: 0
 
 ⚠️ Issues Found:

@@ -153,7 +153,7 @@ describe('Score Utils', () => {
         averageClarityScore: 81.5,
         averageToneScore: 84.5,
         averageGrammarScore: 89,
-        averageStyleGuideScore: 90,
+        averageConsistencyScore: 90,
         averageTerminologyScore: 92
       })
     })
@@ -167,7 +167,7 @@ describe('Score Utils', () => {
         averageClarityScore: 0,
         averageToneScore: 0,
         averageGrammarScore: 0,
-        averageStyleGuideScore: 0,
+        averageConsistencyScore: 0,
         averageTerminologyScore: 0
       })
     })
@@ -202,7 +202,7 @@ describe('Score Utils', () => {
         averageClarityScore: 78,
         averageToneScore: 82,
         averageGrammarScore: 90,
-        averageStyleGuideScore: 88,
+        averageConsistencyScore: 88,
         averageTerminologyScore: 95
       })
     })
@@ -250,7 +250,7 @@ describe('Score Utils', () => {
         averageClarityScore: 78,
         averageToneScore: 82,
         averageGrammarScore: 90,
-        averageStyleGuideScore: 88,
+        averageConsistencyScore: 88,
         averageTerminologyScore: 95
       })
     })
@@ -285,7 +285,7 @@ describe('Score Utils', () => {
         averageClarityScore: 78.25,
         averageToneScore: 82.25,
         averageGrammarScore: 90.75,
-        averageStyleGuideScore: 88.5,
+        averageConsistencyScore: 88.5,
         averageTerminologyScore: 95.75
       })
     })

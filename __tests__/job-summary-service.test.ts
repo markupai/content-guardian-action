@@ -100,7 +100,7 @@ describe('Job Summary Service', () => {
       )
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
         expect.stringContaining(
-          '| File | Quality | Grammar | Style Guide | Terminology | Clarity | Tone |'
+          '| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |'
         )
       )
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
