@@ -1,6 +1,6 @@
 # Markup AI GitHub Action
 
-[![Build and Test](https://github.com/markupai/content-guardian-action/actions/workflows/ci.yml/badge.svg)](https://github.com/markupai/content-guardian-action/actions/workflows/ci.yml)
+[![Build and Test](https://github.com/markupai/content-guardian-action/actions/workflows/build.yml/badge.svg)](https://github.com/markupai/content-guardian-action/actions/workflows/build.yml)
 [![Coverage](https://github.com/markupai/content-guardian-action/blob/main/badges/coverage.svg)](https://github.com/markupai/content-guardian-action)
 
 A GitHub Action that analyzes commit changes and runs style checks on modified
