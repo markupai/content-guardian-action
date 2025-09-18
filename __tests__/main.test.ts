@@ -233,7 +233,7 @@ describe('main.ts', () => {
         case 'dialect':
           return 'american_english'
         case 'tone':
-          return 'formal'
+          return ''
         case 'style-guide':
           return 'ap'
         case 'github-token':

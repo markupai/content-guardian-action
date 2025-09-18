@@ -33,7 +33,6 @@ describe('Markup AI Service Batch Functionality', () => {
 
     mockOptions = {
       dialect: 'en-US',
-      tone: 'formal',
       styleGuide: 'microsoft'
     }
 
@@ -255,14 +254,12 @@ describe('Markup AI Service Batch Functionality', () => {
           expect.objectContaining({
             content: 'Test content for file1.txt',
             dialect: 'en-US',
-            tone: 'formal',
             style_guide: 'microsoft',
             documentName: 'file1.txt'
           }),
           expect.objectContaining({
             content: 'Test content for file2.txt',
             dialect: 'en-US',
-            tone: 'formal',
             style_guide: 'microsoft',
             documentName: 'file2.txt'
           })

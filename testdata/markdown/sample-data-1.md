@@ -117,4 +117,4 @@ empowers us to create, imagine, and solve problems in ways we've only dreamed
 of. While the journey ahead is filled with both immense promise and significant
 challenges, one thing is clear: the age of creation has been democratized, and
 the future of human-computer collaboration is brighter—and more creative—than
-ever before.
+ever before

@@ -60,7 +60,7 @@ export interface FileDiscoveryStrategy {
 export interface ActionConfig {
   apiToken: string
   dialect: string
-  tone: string
+  tone?: string
   styleGuide: string
   githubToken: string
   addCommitStatus: boolean
@@ -71,7 +71,7 @@ export interface ActionConfig {
  */
 export interface AnalysisOptions {
   dialect: string
-  tone: string
+  tone?: string
   styleGuide: string
 }
 

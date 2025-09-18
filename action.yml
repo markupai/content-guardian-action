@@ -19,16 +19,13 @@ inputs:
   dialect:
     description:
       Language dialect for analysis (e.g., american_english, british_english)
-    required: false
-    default: 'american_english'
+    required: true
   tone:
     description: Tone for analysis (e.g., formal, informal, academic)
     required: false
-    default: 'formal'
   style-guide:
     description: Style guide for analysis (e.g., ap, chicago, apa)
-    required: false
-    default: 'ap'
+    required: true
   github_token:
     description: GitHub token for API access (uses GITHUB_TOKEN by default)
     required: true

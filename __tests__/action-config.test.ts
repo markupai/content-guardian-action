@@ -55,7 +55,7 @@ describe('Action Config', () => {
     it('should return analysis options as provided in config', () => {
       const config: ActionConfig = {
         dialect: '',
-        tone: '',
+        tone: undefined as unknown as string,
         styleGuide: '',
         apiToken: 'token',
         githubToken: 'github-token',
@@ -66,7 +66,7 @@ describe('Action Config', () => {
 
       expect(options).toEqual({
         dialect: '',
-        tone: '',
+        tone: undefined,
         styleGuide: ''
       })
     })
@@ -128,20 +128,7 @@ describe('Action Config', () => {
       )
     })
 
-    it('should throw error for empty tone', () => {
-      const config: ActionConfig = {
-        dialect: 'american_english',
-        tone: '',
-        styleGuide: 'ap',
-        apiToken: 'valid-token',
-        githubToken: 'valid-github-token',
-        addCommitStatus: true
-      }
-
-      expect(() => validateConfig(config)).toThrow(
-        "Analysis option 'tone' cannot be empty"
-      )
-    })
+    // tone is optional now
 
     it('should throw error for empty style guide', () => {
       const config: ActionConfig = {
@@ -183,7 +170,7 @@ describe('Action Config', () => {
     it('should log empty values when not provided', () => {
       const config: ActionConfig = {
         dialect: '',
-        tone: '',
+        tone: undefined as unknown as string,
         styleGuide: '',
         apiToken: 'token123',
         githubToken: 'github-token123',
@@ -223,12 +210,14 @@ describe('Action Config', () => {
       core.getInput.mockReturnValue('')
       process.env.MARKUP_AI_API_KEY = 'env-markup-ai-api-key'
       process.env.GITHUB_TOKEN = 'env-github-token'
+      process.env.DIALECT = 'american_english'
+      process.env.STYLE_GUIDE = 'ap'
 
       const config: ActionConfig = getActionConfig()
 
       expect(config).toEqual({
         dialect: 'american_english',
-        tone: 'formal',
+        tone: undefined,
         styleGuide: 'ap',
         apiToken: 'env-markup-ai-api-key',
         githubToken: 'env-github-token',
@@ -253,25 +242,7 @@ describe('Action Config', () => {
       expect(config.githubToken).toBe('input-github-token')
     })
 
-    it('should use default values for optional inputs', () => {
-      core.getInput
-        .mockReturnValueOnce('markup-ai-api-key') // markup_ai_api_key
-        .mockReturnValueOnce('github-token') // github_token
-        .mockReturnValueOnce('') // dialect
-        .mockReturnValueOnce('') // tone
-        .mockReturnValueOnce('') // style-guide
-
-      const config: ActionConfig = getActionConfig()
-
-      expect(config).toEqual({
-        dialect: 'american_english',
-        tone: 'formal',
-        styleGuide: 'ap',
-        apiToken: 'markup-ai-api-key',
-        githubToken: 'github-token',
-        addCommitStatus: true
-      })
-    })
+    // defaults removed for dialect/style-guide; tone optional with no default
 
     it('should throw error when required tokens are missing', () => {
       core.getInput.mockReturnValue('')
