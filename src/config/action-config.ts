@@ -4,12 +4,7 @@
 
 import * as core from '@actions/core'
 import { ActionConfig, AnalysisOptions } from '../types/index.js'
-import {
-  INPUT_NAMES,
-  ENV_VARS,
-  DEFAULT_ANALYSIS_OPTIONS,
-  ERROR_MESSAGES
-} from '../constants/index.js'
+import { INPUT_NAMES, ENV_VARS, ERROR_MESSAGES } from '../constants/index.js'
 
 /**
  * Get and validate action configuration from inputs
@@ -24,15 +19,9 @@ export function getActionConfig(): ActionConfig {
     ENV_VARS.GITHUB_TOKEN
   )
 
-  const dialect = getOptionalInput(
-    INPUT_NAMES.DIALECT,
-    DEFAULT_ANALYSIS_OPTIONS.dialect
-  )
-  const tone = getOptionalInput(INPUT_NAMES.TONE, DEFAULT_ANALYSIS_OPTIONS.tone)
-  const styleGuide = getOptionalInput(
-    INPUT_NAMES.STYLE_GUIDE,
-    DEFAULT_ANALYSIS_OPTIONS.styleGuide
-  )
+  const dialect = getRequiredInput(INPUT_NAMES.DIALECT, 'DIALECT')
+  const tone = getOptionalInput(INPUT_NAMES.TONE)
+  const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, 'STYLE_GUIDE')
 
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true)
 
@@ -75,12 +64,9 @@ function getRequiredInput(inputName: string, envVarName: string): string {
 /**
  * Get an optional input value with fallback to environment variable and default
  */
-function getOptionalInput(inputName: string, defaultValue: string): string {
-  return (
-    core.getInput(inputName) ||
-    process.env[inputName.toUpperCase()] ||
-    defaultValue
-  )
+function getOptionalInput(inputName: string): string | undefined {
+  const value = core.getInput(inputName) || process.env[inputName.toUpperCase()]
+  return value === undefined || value === '' ? undefined : value
 }
 
 /**
@@ -108,9 +94,8 @@ export function validateConfig(config: ActionConfig): void {
     core.warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING)
   }
 
-  // Validate analysis options
+  // Validate required analysis options
   validateAnalysisOption('dialect', config.dialect)
-  validateAnalysisOption('tone', config.tone)
   validateAnalysisOption('style_guide', config.styleGuide)
 }
 
@@ -129,7 +114,7 @@ function validateAnalysisOption(name: string, value: string): void {
 export function logConfiguration(config: ActionConfig): void {
   core.info('🔧 Action Configuration:')
   core.info(`  Dialect: ${config.dialect}`)
-  core.info(`  Tone: ${config.tone}`)
+  core.info(`  Tone: ${config.tone ?? ''}`)
   core.info(`  Style Guide: ${config.styleGuide}`)
   core.info(`  API Token: ${config.apiToken ? '[PROVIDED]' : '[MISSING]'}`)
   core.info(

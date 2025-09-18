@@ -30,9 +30,9 @@ export async function analyzeFile(
     const request: StyleAnalysisReq = {
       content,
       dialect: options.dialect,
-      tone: options.tone,
       style_guide: options.styleGuide,
-      documentName: getFileBasename(filePath)
+      documentName: getFileBasename(filePath),
+      ...(options.tone ? { tone: options.tone } : {})
     }
 
     const result = await styleCheck(request, config)
@@ -76,9 +76,9 @@ export async function analyzeFilesBatch(
     ({ filePath, content }) => ({
       content,
       dialect: options.dialect,
-      tone: options.tone,
       style_guide: options.styleGuide,
-      documentName: getFileBasename(filePath)
+      documentName: getFileBasename(filePath),
+      ...(options.tone ? { tone: options.tone } : {})
     })
   )
 

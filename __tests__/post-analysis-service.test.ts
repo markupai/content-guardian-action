@@ -153,7 +153,6 @@ describe('Post Analysis Service', () => {
 
   const mockAnalysisOptions = {
     dialect: 'american_english',
-    tone: 'formal',
     styleGuide: 'ap'
   }
 

@@ -68,7 +68,7 @@ export function generateFooter(
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
 *Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} | Tone: ${config.tone} | Style Guide: ${config.styleGuide}*
+*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ''} Style Guide: ${config.styleGuide}*
 *Event: ${eventType}*`
 }
 

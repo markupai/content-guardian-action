@@ -268,7 +268,7 @@ describe('Integration Tests', () => {
           case 'dialect':
             return 'american_english'
           case 'tone':
-            return 'formal'
+            return ''
           case 'style-guide':
             return 'ap'
           case 'github_token':
@@ -355,6 +355,8 @@ describe('Integration Tests', () => {
       core.getInput.mockReturnValue('')
       process.env.MARKUP_AI_API_KEY = 'env-markup_ai_api_key'
       process.env.GITHUB_TOKEN = 'env-github-token'
+      process.env.DIALECT = 'american_english'
+      process.env.STYLE_GUIDE = 'ap'
 
       await run()
 

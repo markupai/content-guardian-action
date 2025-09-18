@@ -13,7 +13,8 @@ quality analysis with commit status updates and PR comments.
   GitHub event type
 - 📝 **Event-Based Analysis**: Optimized behavior for push, pull request,
   manual, and scheduled events
-- 📊 **Quality Scoring**: Detailed quality, clarity, grammar, and tone metrics
+- 📊 **Quality Scoring**: Detailed quality, clarity, grammar, and optional tone
+  metrics
 - 🏷️ **Visual Feedback**: Commit status updates
 - 🔄 **Batch Processing**: Efficient analysis of multiple files
 - 📋 **Rich Outputs**: JSON results and detailed reporting
@@ -68,8 +69,9 @@ jobs:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           dialect: 'british_english'
-          tone: 'academic'
           style-guide: 'chicago'
+          # tone is optional
+          tone: 'academic'
           add_commit_status: 'true'
 ```
 
@@ -142,14 +144,14 @@ permissions:
 
 ## Inputs
 
-| Input               | Description                                                                                     | Required | Default            |
-| ------------------- | ----------------------------------------------------------------------------------------------- | -------- | ------------------ |
-| `markup_ai_api_key` | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable | Yes      | -                  |
-| `github_token`      | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable       | Yes      | -                  |
-| `dialect`           | Language dialect for analysis (for example, `american_english`, `british_english`)              | No       | `american_english` |
-| `tone`              | Tone for analysis (for example, `formal`, `informal`, `academic`)                               | No       | `formal`           |
-| `style-guide`       | Style guide for analysis (for example, `ap`, `chicago`, `apa`)                                  | No       | `ap`               |
-| `add_commit_status` | Whether to add commit status updates                                                            | No       | `true`             |
+| Input               | Description                                                                                     | Required | Default |
+| ------------------- | ----------------------------------------------------------------------------------------------- | -------- | ------- |
+| `markup_ai_api_key` | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable | Yes      | -       |
+| `github_token`      | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable       | Yes      | -       |
+| `dialect`           | Language dialect for analysis (for example, `american_english`, `british_english`)              | Yes      | -       |
+| `style-guide`       | Style guide for analysis (for example, `ap`, `chicago`, `apa`)                                  | Yes      | -       |
+| `tone`              | Tone for analysis (for example, `formal`, `informal`, `academic`)                               | No       | -       |
+| `add_commit_status` | Whether to add commit status updates                                                            | No       | `true`  |
 
 ## Outputs
 
@@ -233,8 +235,9 @@ jobs:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           dialect: 'american_english'
-          tone: 'formal'
           style-guide: 'ap'
+          # tone is optional
+          tone: 'formal'
 
       - name: Check Quality Score
         run: |
@@ -289,19 +292,19 @@ jobs:
 
 ## Analysis Configuration
 
-### Available Default Dialects
+### Dialects
 
 - `american_english` - American English
 - `british_oxford` - British English
 - `canadian_english` - Canadian English
 
-### Available Default Tones
+### Tone (optional)
 
 - `formal` - Formal writing style
 - `informal` - Informal writing style
 - `academic` - Academic writing style
 
-### Available Default Style Guides
+### Style Guides
 
 - `ap` - Associated Press Style Guide
 - `chicago` - Chicago Manual of Style
@@ -315,7 +318,7 @@ The action provides comprehensive quality metrics:
 - **Clarity Score**: Readability and comprehension metrics
 - **Grammar Score**: Grammar and syntax quality
 - **Consistency Score**: Style guide compliance
-- **Tone Score**: Tone appropriateness for specified tone
+- **Tone Score**: Tone appropriateness when tone is specified
 - **Terminology Score**: Terminology consistency
 
 ### Quality Thresholds
