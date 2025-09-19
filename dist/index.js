@@ -34001,7 +34001,9 @@ function calculateScoreSummary(results) {
     }
     const qualityScores = results.map((r) => r.result.quality.score);
     const clarityScores = results.map((r) => r.result.analysis.clarity.score);
-    const toneScores = results.map((r) => r.result.analysis.tone.score);
+    const toneScores = results
+        .map((r) => r.result.analysis.tone?.score)
+        .filter((score) => typeof score === 'number');
     const grammarScores = results.map((r) => r.result.quality.grammar.score);
     const consistencyScores = results.map((r) => r.result.quality.consistency.score);
     const terminologyScores = results.map((r) => r.result.quality.terminology.score);
@@ -34704,7 +34706,9 @@ function displayResults(results) {
         coreExports.info(`📝 Clarity Score: ${result.analysis.clarity.score}`);
         coreExports.info(`🔤 Grammar Score: ${result.quality.grammar.score}`);
         coreExports.info(`📋 Consistency Score: ${result.quality.consistency.score}`);
-        coreExports.info(`🎭 Tone Score: ${result.analysis.tone.score}`);
+        coreExports.info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === 'number'
+            ? result.analysis.tone.score
+            : '-'}`);
         coreExports.info(`📚 Terminology Score: ${result.quality.terminology.score}`);
         if (index < results.length - 1) {
             coreExports.info('─'.repeat(DISPLAY.SEPARATOR_LENGTH));
@@ -34751,7 +34755,10 @@ function generateResultsTable(results) {
         .map((result) => {
         const { filePath, result: scores } = result;
         const qualityEmoji = getQualityEmoji(scores.quality.score);
-        return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${Math.round(scores.analysis.tone.score)} |`;
+        const toneDisplay = typeof scores.analysis.tone?.score === 'number'
+            ? String(Math.round(scores.analysis.tone.score))
+            : '-';
+        return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`;
     })
         .join('\n');
     return `${tableHeader}\n${tableRows}`;

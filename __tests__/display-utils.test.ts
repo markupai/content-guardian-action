@@ -16,6 +16,7 @@ const {
   displaySubsectionHeader
 } = await import('../src/utils/display-utils.js')
 import { buildQuality, buildClarity, buildTone } from './test-helpers/scores.js'
+import { StyleScores } from '@markupai/toolkit'
 
 describe('Display Utils', () => {
   beforeEach(() => {
@@ -220,6 +221,29 @@ describe('Display Utils', () => {
 
       // Should not call separator for single file
       expect(core.info).not.toHaveBeenCalledWith('─'.repeat(50))
+    })
+
+    it('should display hyphen for tone when missing', () => {
+      const results = [
+        {
+          filePath: 'file1.md',
+          result: {
+            quality: buildQuality(85, 1, {
+              grammarScore: 90,
+              styleGuideScore: 88,
+              terminologyScore: 95
+            }),
+            analysis: {
+              clarity: buildClarity(78)
+            } as unknown as StyleScores['analysis']
+          } as unknown as StyleScores,
+          timestamp: '2024-01-15T10:30:00Z'
+        }
+      ]
+
+      displayResults(results)
+
+      expect(core.info).toHaveBeenCalledWith('🎭 Tone Score: -')
     })
   })
 
