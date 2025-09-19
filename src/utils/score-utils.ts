@@ -87,7 +87,9 @@ export function calculateScoreSummary(
 
   const qualityScores = results.map((r) => r.result.quality.score)
   const clarityScores = results.map((r) => r.result.analysis.clarity.score)
-  const toneScores = results.map((r) => r.result.analysis.tone.score)
+  const toneScores = results
+    .map((r) => r.result.analysis.tone?.score)
+    .filter((score): score is number => typeof score === 'number')
   const grammarScores = results.map((r) => r.result.quality.grammar.score)
   const consistencyScores = results.map(
     (r) => r.result.quality.consistency.score

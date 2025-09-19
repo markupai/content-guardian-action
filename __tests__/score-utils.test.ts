@@ -4,6 +4,7 @@
 
 import { jest } from '@jest/globals'
 import { buildQuality, buildClarity, buildTone } from './test-helpers/scores.js'
+import { StyleScores } from '@markupai/toolkit'
 import * as core from '../__fixtures__/core.js'
 
 // Mock @actions/core
@@ -205,6 +206,42 @@ describe('Score Utils', () => {
         averageConsistencyScore: 88,
         averageTerminologyScore: 95
       })
+    })
+
+    it('should ignore tone in averages if tone is missing', () => {
+      const mockResults = [
+        {
+          filePath: 'file1.md',
+          result: {
+            quality: buildQuality(80),
+            analysis: {
+              clarity: buildClarity(70)
+            } as unknown as StyleScores['analysis']
+          } as unknown as StyleScores,
+          timestamp: '2024-01-15T10:30:00Z'
+        },
+        {
+          filePath: 'file2.md',
+          result: {
+            quality: buildQuality(90),
+            analysis: {
+              clarity: buildClarity(85),
+              tone: buildTone(87)
+            }
+          },
+          timestamp: '2024-01-15T10:35:00Z'
+        }
+      ]
+
+      const summary = calculateScoreSummary(
+        mockResults as unknown as Array<{ result: StyleScores }>
+      )
+
+      // Tone average should be only over available tone scores => 87
+      expect(summary.averageToneScore).toBe(87)
+      // Other metrics still average across all files
+      expect(summary.averageQualityScore).toBe(85)
+      expect(summary.averageClarityScore).toBe(77.5)
     })
 
     it('should handle single result', () => {

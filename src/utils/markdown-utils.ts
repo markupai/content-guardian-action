@@ -20,8 +20,12 @@ export function generateResultsTable(results: AnalysisResult[]): string {
     .map((result) => {
       const { filePath, result: scores } = result
       const qualityEmoji = getQualityEmoji(scores.quality.score)
+      const toneDisplay =
+        typeof scores.analysis.tone?.score === 'number'
+          ? String(Math.round(scores.analysis.tone.score))
+          : '-'
 
-      return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${Math.round(scores.analysis.tone.score)} |`
+      return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`
     })
     .join('\n')
 
