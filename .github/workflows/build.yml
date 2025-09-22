@@ -21,33 +21,34 @@ jobs:
 
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
-        id: setup-node
         uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
           cache: npm
 
       - name: Install Dependencies
-        id: npm-ci
         run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
       - name: Check Format
-        id: npm-format-check
         run: npm run format:check
 
       - name: Lint
-        id: npm-lint
         run: npm run lint
 
       - name: Test
-        id: npm-ci-test
-        run: npm run ci-test
+        run: npm run test:coverage
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   test-action:
     name: GitHub Actions Test
@@ -59,8 +60,9 @@ jobs:
 
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Test Local Action
         id: test-action
@@ -74,5 +76,4 @@ jobs:
           MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY }}
 
       - name: Print Output
-        id: output
         run: echo "${{ steps.test-action.outputs.time }}"

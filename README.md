@@ -412,7 +412,7 @@ npm run local-action
 npm test
 
 # Run with coverage
-npm run ci-test
+npm run test:coverage
 
 # Check formatting
 npm run format:check
