@@ -21,9 +21,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package",
     "bundle": "npm run format:write && npm run package",
-    "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
     "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
     "format:check": "npx prettier --check .",
     "format:write": "npx prettier --write .",
@@ -31,7 +29,8 @@
     "local-action": "npx @github/local-action . src/main.ts .env",
     "package": "npx rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
     "package:watch": "npm run package -- --watch",
-    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest --coverage"
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
