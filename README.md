@@ -42,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Analysis
-        uses: markupai/content-guardian-action@v0.1.0
+        uses: markupai/content-guardian-action@v1
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -64,7 +64,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Analysis
-        uses: markupai/content-guardian-action@v0.1.0
+        uses: markupai/content-guardian-action@v1
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -105,7 +105,7 @@ permissions:
   statuses: write
 
 - name: Run Analysis
-  uses: markupai/content-guardian-action@v0.1.0
+  uses: markupai/content-guardian-action@v1
   with:
     markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
     github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -120,7 +120,7 @@ permissions:
   statuses: write
 
 - name: Run Analysis
-  uses: markupai/content-guardian-action@v0.1.0
+  uses: markupai/content-guardian-action@v1
   env:
     MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY }}
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -135,7 +135,7 @@ permissions:
   statuses: write
 
 - name: Run Analysis
-  uses: markupai/content-guardian-action@v0.1.0
+  uses: markupai/content-guardian-action@v1
   with:
     markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
   env:
@@ -207,7 +207,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Analyze Changes
-        uses: markupai/content-guardian-action@v0.1.0
+        uses: markupai/content-guardian-action@v1
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -230,7 +230,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Quality Analysis
         id: analysis
-        uses: markupai/content-guardian-action@v0.1.0
+        uses: markupai/content-guardian-action@v1
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -260,7 +260,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Full Repository Analysis
-        uses: markupai/content-guardian-action@v0.1.0
+        uses: markupai/content-guardian-action@v1
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -278,7 +278,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Analysis
         id: markup-ai-github-action
-        uses: markupai/content-guardian-action@v0.1.0
+        uses: markupai/content-guardian-action@v1
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
