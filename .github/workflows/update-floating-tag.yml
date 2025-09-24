@@ -1,0 +1,29 @@
+name: Update Major Version Floating Tag
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  update-floating-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract major version and move floating tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          MAJOR=${VERSION%%.*}
+
+          # Get the correct commit for the tag
+          COMMIT_SHA=$(git rev-list -n 1 $GITHUB_REF)
+          
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          echo "Moving floating tag ${MAJOR} to commit ${COMMIT_SHA}"
+          git tag -f "${MAJOR}" "${COMMIT_SHA}"
+          git push -f origin "${MAJOR}"
