@@ -1,0 +1,49 @@
+name: Auto-update dist/ directory on Dependabot PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  update-dist:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR Branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build dist/ directory
+        run: npm run bundle
+
+      - name: Commit and push updated dist/
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update dist after dependency upgrade [skip ci]"
+            git push
+          else
+            echo "No changes to dist/. Skipping commit and push."
+          fi
