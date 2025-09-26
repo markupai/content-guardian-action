@@ -4,29 +4,30 @@
 
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { AnalysisResult, EventInfo } from './types/index.js'
-import { OUTPUT_NAMES } from './constants/index.js'
-import {
-  createConfig,
-  analyzeFiles,
-  getAnalysisSummary
-} from './services/api-service.js'
-import { createFileDiscoveryStrategy } from './strategies/index.js'
 import {
   getActionConfig,
   getAnalysisOptions,
-  validateConfig,
-  logConfiguration
+  logConfiguration,
+  validateConfig
 } from './config/action-config.js'
-import { filterSupportedFiles, readFileContent } from './utils/index.js'
+import { OUTPUT_NAMES } from './constants/index.js'
+import {
+  analyzeFiles,
+  createConfig,
+  getAnalysisSummary
+} from './services/api-service.js'
+import { handlePostAnalysisActions } from './services/post-analysis-service.js'
+import { createFileDiscoveryStrategy } from './strategies/index.js'
+import { AnalysisResult, EventInfo } from './types/index.js'
+import { logError } from './utils/error-utils.js'
 import {
   displayEventInfo,
   displayFilesToAnalyze,
   displayResults,
-  displaySectionHeader
+  displaySectionHeader,
+  filterSupportedFiles,
+  readFileContent
 } from './utils/index.js'
-import { logError } from './utils/error-utils.js'
-import { handlePostAnalysisActions } from './services/post-analysis-service.js'
 
 /**
  * Set GitHub Action outputs

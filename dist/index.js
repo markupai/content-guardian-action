@@ -31296,6 +31296,99 @@ const ERROR_MESSAGES = {
     API_TOKEN_REQUIRED: 'API token is required',
     GITHUB_TOKEN_WARNING: 'GitHub token not provided. Cannot fetch commit information.'};
 
+/**
+ * Action configuration and input validation
+ */
+/**
+ * Get and validate action configuration from inputs
+ */
+function getActionConfig() {
+    const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
+    const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
+    const dialect = getRequiredInput(INPUT_NAMES.DIALECT, 'DIALECT');
+    const tone = getOptionalInput(INPUT_NAMES.TONE);
+    const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, 'STYLE_GUIDE');
+    const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
+    return {
+        apiToken,
+        githubToken,
+        dialect,
+        tone,
+        styleGuide,
+        addCommitStatus
+    };
+}
+/**
+ * Get analysis options from configuration
+ */
+function getAnalysisOptions(config) {
+    return {
+        dialect: config.dialect,
+        tone: config.tone,
+        styleGuide: config.styleGuide
+    };
+}
+/**
+ * Get a required input value with fallback to environment variable
+ */
+function getRequiredInput(inputName, envVarName) {
+    const value = coreExports.getInput(inputName) || process.env[envVarName];
+    if (!value) {
+        throw new Error(`Required input '${inputName}' or environment variable '${envVarName}' is not provided`);
+    }
+    return value;
+}
+/**
+ * Get an optional input value with fallback to environment variable and default
+ */
+function getOptionalInput(inputName) {
+    const value = coreExports.getInput(inputName) || process.env[inputName.toUpperCase()];
+    return value === undefined || value === '' ? undefined : value;
+}
+/**
+ * Get a boolean input value with fallback to environment variable and default
+ */
+function getBooleanInput(inputName, defaultValue) {
+    const value = coreExports.getInput(inputName) || process.env[inputName.toUpperCase()];
+    if (value === undefined || value === '') {
+        return defaultValue;
+    }
+    return value.toLowerCase() === 'true';
+}
+/**
+ * Validate configuration
+ */
+function validateConfig(config) {
+    if (!config.apiToken) {
+        throw new Error(ERROR_MESSAGES.API_TOKEN_REQUIRED);
+    }
+    if (!config.githubToken) {
+        coreExports.warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
+    }
+    // Validate required analysis options
+    validateAnalysisOption('dialect', config.dialect);
+    validateAnalysisOption('style_guide', config.styleGuide);
+}
+/**
+ * Validate individual analysis option
+ */
+function validateAnalysisOption(name, value) {
+    if (!value || value.trim().length === 0) {
+        throw new Error(`Analysis option '${name}' cannot be empty`);
+    }
+}
+/**
+ * Log configuration (without sensitive data)
+ */
+function logConfiguration(config) {
+    coreExports.info('🔧 Action Configuration:');
+    coreExports.info(`  Dialect: ${config.dialect}`);
+    coreExports.info(`  Tone: ${config.tone ?? ''}`);
+    coreExports.info(`  Style Guide: ${config.styleGuide}`);
+    coreExports.info(`  API Token: ${config.apiToken ? '[PROVIDED]' : '[MISSING]'}`);
+    coreExports.info(`  GitHub Token: ${config.githubToken ? '[PROVIDED]' : '[MISSING]'}`);
+}
+
 var I = /* @__PURE__ */ ((n) => (n.Check = "check", n.Suggestions = "suggestions", n.Rewrite = "rewrite", n))(I || {});
 const z = (n, e, t) => JSON.stringify(n, e, t);
 function J(n, e) {
@@ -34218,6 +34311,83 @@ function getAnalysisSummary(results) {
 }
 
 /**
+ * Markdown generation utility functions for analysis results
+ */
+/**
+ * Generate markdown table for analysis results
+ */
+function generateResultsTable(results) {
+    if (results.length === 0) {
+        return 'No files were analyzed.';
+    }
+    const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
+|------|---------|---------|---------|---------|---------|------|`;
+    const tableRows = results
+        .map((result) => {
+        const { filePath, result: scores } = result;
+        const qualityEmoji = getQualityEmoji(scores.quality.score);
+        const toneDisplay = typeof scores.analysis.tone?.score === 'number'
+            ? String(Math.round(scores.analysis.tone.score))
+            : '-';
+        return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`;
+    })
+        .join('\n');
+    return `${tableHeader}\n${tableRows}`;
+}
+/**
+ * Generate summary section
+ */
+function generateSummary(results) {
+    if (results.length === 0) {
+        return '';
+    }
+    const summary = calculateScoreSummary(results);
+    const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
+    return `
+## 📊 Summary
+
+**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore)}
+
+**Files Analyzed:** ${summary.totalFiles}
+
+| Metric | Average Score |
+|--------|---------------|
+| Quality | ${Math.round(summary.averageQualityScore)} |
+| Grammar | ${Math.round(summary.averageGrammarScore)} |
+| Consistency | ${Math.round(summary.averageConsistencyScore)} |
+| Terminology | ${Math.round(summary.averageTerminologyScore)} |
+| Clarity | ${Math.round(summary.averageClarityScore)} |
+| Tone | ${Math.round(summary.averageToneScore)} |
+`;
+}
+/**
+ * Generate footer section with metadata
+ */
+function generateFooter(config, eventType) {
+    return `
+---
+*Analysis performed on ${new Date().toLocaleString()}*
+*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
+*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ''} Style Guide: ${config.styleGuide}*
+*Event: ${eventType}*`;
+}
+/**
+ * Generate complete analysis content with customizable header
+ */
+function generateAnalysisContent(results, config, header, eventType) {
+    const table = generateResultsTable(results);
+    const summary = generateSummary(results);
+    const footer = generateFooter(config, eventType);
+    return `${header}
+
+${table}
+
+${summary}
+
+${footer}`;
+}
+
+/**
  * Centralized error handling and retry utilities
  */
 /**
@@ -34304,6 +34474,110 @@ function logError(error, context) {
     else {
         coreExports.error(`${context}: ${String(error)}`);
     }
+}
+
+/**
+ * PR Comment service for managing comments on pull requests
+ */
+/**
+ * Generate complete comment body
+ */
+function generateCommentBody(results, config, eventType) {
+    const header = `## 🔍 Markup AI Analysis Results
+
+This comment was automatically generated by the Markup AI GitHub Action for **${eventType}** event.`;
+    return generateAnalysisContent(results, config, header, eventType);
+}
+/**
+ * Find existing  comment on PR
+ */
+async function findExistingComment(octokit, owner, repo, prNumber) {
+    try {
+        const response = await octokit.rest.issues.listComments({
+            owner,
+            repo,
+            issue_number: prNumber
+        });
+        const comment = response.data.find((comment) => comment.body?.includes('## 🔍 Markup AI Analysis Results'));
+        return comment?.id || null;
+    }
+    catch (error) {
+        coreExports.warning(`Failed to find existing comment: ${error}`);
+        return null;
+    }
+}
+/**
+ * Create or update PR comment with analysis results
+ */
+async function createOrUpdatePRComment(octokit, commentData) {
+    const { owner, repo, prNumber, results, config } = commentData;
+    try {
+        // Check if we have permission to comment on PRs
+        try {
+            await octokit.rest.repos.get({
+                owner,
+                repo
+            });
+        }
+        catch (error) {
+            const githubError = error;
+            if (githubError.status === 403) {
+                coreExports.error('❌ Permission denied: Cannot access repository. Make sure the GitHub token has "pull-requests: write" permission.');
+                return;
+            }
+            throw error;
+        }
+        const commentBody = generateCommentBody(results, config, commentData.eventType);
+        const existingCommentId = await findExistingComment(octokit, owner, repo, prNumber);
+        if (existingCommentId) {
+            // Update existing comment
+            await octokit.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingCommentId,
+                body: commentBody
+            });
+            coreExports.info(`✅ Updated existing comment on PR #${prNumber}`);
+        }
+        else {
+            // Create new comment
+            await octokit.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body: commentBody
+            });
+            coreExports.info(`✅ Created new comment on PR #${prNumber}`);
+        }
+    }
+    catch (error) {
+        const githubError = handleGitHubError(error, 'Create/update PR comment');
+        if (githubError.status === 403) {
+            coreExports.error('❌ Permission denied: Cannot create or update comments on pull requests.');
+            coreExports.error('Please ensure the GitHub token has "pull-requests: write" permission.');
+        }
+        else if (githubError.status === 404) {
+            coreExports.error('❌ Pull request not found. Make sure the PR exists and is accessible.');
+        }
+        else {
+            logError(githubError, 'Failed to create/update PR comment');
+        }
+    }
+}
+/**
+ * Check if current event is a pull request
+ */
+function isPullRequestEvent() {
+    return githubExports.context.eventName === 'pull_request';
+}
+/**
+ * Get PR number from context
+ */
+function getPRNumber() {
+    if (githubExports.context.eventName === 'pull_request') {
+        return githubExports.context.issue.number;
+    }
+    return null;
 }
 
 /**
@@ -34490,6 +34764,175 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
 }
 
 /**
+ * Job Summary service for generating GitHub Actions Job Summaries
+ */
+/**
+ * Generate complete job summary
+ */
+function generateJobSummary(results, config, eventType) {
+    const header = `# 🔍 Analysis Results
+
+This summary was automatically generated by the Markup AI GitHub Action for **${eventType}** event.`;
+    return generateAnalysisContent(results, config, header, eventType);
+}
+/**
+ * Create and write job summary to GitHub Actions
+ */
+async function createJobSummary(results, config, eventType) {
+    try {
+        if (results.length === 0) {
+            await coreExports.summary
+                .addHeading('🔍 Analysis Results')
+                .addRaw('No files were analyzed.')
+                .write();
+            return;
+        }
+        const summaryContent = generateJobSummary(results, config, eventType);
+        await coreExports.summary.addRaw(summaryContent).write();
+        coreExports.info('✅ Job summary created successfully');
+    }
+    catch (error) {
+        coreExports.error(`Failed to create job summary: ${error}`);
+    }
+}
+
+/**
+ * Display and logging utility functions
+ */
+/**
+ * Display event information in a formatted way
+ */
+function displayEventInfo(eventInfo) {
+    coreExports.info(`📋 Event Type: ${eventInfo.eventType}`);
+    coreExports.info(`📄 Description: ${eventInfo.description}`);
+    coreExports.info(`📊 Files to analyze: ${eventInfo.filesCount}`);
+    if (eventInfo.additionalInfo) {
+        coreExports.info(`📌 Additional Info:`);
+        Object.entries(eventInfo.additionalInfo).forEach(([key, value]) => {
+            coreExports.info(`   ${key}: ${value}`);
+        });
+    }
+}
+/**
+ * Display analysis results in a formatted way
+ */
+function displayResults(results) {
+    if (results.length === 0) {
+        coreExports.info('📊 No analysis results to display.');
+        return;
+    }
+    coreExports.info('📊 Analysis Results:');
+    coreExports.info('='.repeat(DISPLAY.SEPARATOR_LENGTH));
+    results.forEach((analysis, index) => {
+        const { filePath, result } = analysis;
+        coreExports.info(`\n📄 File: ${filePath}`);
+        coreExports.info(`📈 Quality Score: ${result.quality.score}`);
+        coreExports.info(`📝 Clarity Score: ${result.analysis.clarity.score}`);
+        coreExports.info(`🔤 Grammar Score: ${result.quality.grammar.score}`);
+        coreExports.info(`📋 Consistency Score: ${result.quality.consistency.score}`);
+        coreExports.info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === 'number'
+            ? result.analysis.tone.score
+            : '-'}`);
+        coreExports.info(`📚 Terminology Score: ${result.quality.terminology.score}`);
+        if (index < results.length - 1) {
+            coreExports.info('─'.repeat(DISPLAY.SEPARATOR_LENGTH));
+        }
+    });
+}
+/**
+ * Display files being analyzed
+ */
+function displayFilesToAnalyze(files) {
+    if (files.length === 0) {
+        coreExports.info('No files found to analyze.');
+        return;
+    }
+    coreExports.info('\n📄 Files to analyze:');
+    files.slice(0, DISPLAY.MAX_FILES_TO_SHOW).forEach((file, index) => {
+        coreExports.info(`  ${index + 1}. ${file}`);
+    });
+    if (files.length > DISPLAY.MAX_FILES_TO_SHOW) {
+        coreExports.info(`  ... and ${files.length - DISPLAY.MAX_FILES_TO_SHOW} more files`);
+    }
+}
+/**
+ * Display section header
+ */
+function displaySectionHeader(title) {
+    coreExports.info(`\n${title}`);
+    coreExports.info('='.repeat(DISPLAY.SEPARATOR_LENGTH));
+}
+
+/**
+ * Post-analysis service for handling actions after analysis
+ */
+/**
+ * Handle post-analysis actions based on event type
+ */
+async function handlePostAnalysisActions(eventInfo, results, config, analysisOptions) {
+    if (results.length === 0) {
+        coreExports.info('No results to process for post-analysis actions.');
+        return;
+    }
+    const summary = getAnalysisSummary(results);
+    const octokit = createGitHubClient(config.githubToken);
+    const { owner, repo } = githubExports.context.repo;
+    // Handle different event types
+    switch (eventInfo.eventType) {
+        case EVENT_TYPES.PUSH:
+            // Update commit status for push events (if enabled)
+            if (config.addCommitStatus) {
+                displaySectionHeader('📊 Updating Commit Status');
+                try {
+                    await updateCommitStatus(octokit, owner, repo, githubExports.context.sha, summary.averageQualityScore, results.length);
+                }
+                catch (error) {
+                    coreExports.error(`Failed to update commit status: ${error}`);
+                }
+            }
+            else {
+                coreExports.info('📊 Commit status update disabled by configuration');
+            }
+            break;
+        case EVENT_TYPES.WORKFLOW_DISPATCH:
+        case EVENT_TYPES.SCHEDULE:
+            // Create job summary for manual/scheduled workflows
+            displaySectionHeader('📋 Creating Job Summary');
+            try {
+                await createJobSummary(results, analysisOptions, eventInfo.eventType);
+            }
+            catch (error) {
+                coreExports.error(`Failed to create job summary: ${error}`);
+            }
+            break;
+        case EVENT_TYPES.PULL_REQUEST:
+            // Handle PR comments for pull request events
+            if (isPullRequestEvent()) {
+                const prNumber = getPRNumber();
+                if (prNumber) {
+                    displaySectionHeader('💬 Creating PR Comment');
+                    try {
+                        await createOrUpdatePRComment(octokit, {
+                            owner,
+                            repo,
+                            prNumber,
+                            results,
+                            config: analysisOptions,
+                            eventType: eventInfo.eventType
+                        });
+                    }
+                    catch (error) {
+                        coreExports.error(`Failed to create PR comment: ${error}`);
+                    }
+                }
+            }
+            break;
+        default:
+            coreExports.info(`No specific post-analysis actions for event type: ${eventInfo.eventType}`);
+    }
+}
+
+/**
  * File discovery strategies for different GitHub event types
  */
 /**
@@ -34576,449 +35019,6 @@ function createFileDiscoveryStrategy(context, githubToken) {
             // For other events, default to push strategy
             coreExports.warning(`Unsupported event type: ${eventName}. Using push strategy.`);
             return createPushEventStrategy(context.repo.owner, context.repo.repo, context.sha, githubToken);
-    }
-}
-
-/**
- * Action configuration and input validation
- */
-/**
- * Get and validate action configuration from inputs
- */
-function getActionConfig() {
-    const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
-    const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
-    const dialect = getRequiredInput(INPUT_NAMES.DIALECT, 'DIALECT');
-    const tone = getOptionalInput(INPUT_NAMES.TONE);
-    const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, 'STYLE_GUIDE');
-    const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
-    return {
-        apiToken,
-        githubToken,
-        dialect,
-        tone,
-        styleGuide,
-        addCommitStatus
-    };
-}
-/**
- * Get analysis options from configuration
- */
-function getAnalysisOptions(config) {
-    return {
-        dialect: config.dialect,
-        tone: config.tone,
-        styleGuide: config.styleGuide
-    };
-}
-/**
- * Get a required input value with fallback to environment variable
- */
-function getRequiredInput(inputName, envVarName) {
-    const value = coreExports.getInput(inputName) || process.env[envVarName];
-    if (!value) {
-        throw new Error(`Required input '${inputName}' or environment variable '${envVarName}' is not provided`);
-    }
-    return value;
-}
-/**
- * Get an optional input value with fallback to environment variable and default
- */
-function getOptionalInput(inputName) {
-    const value = coreExports.getInput(inputName) || process.env[inputName.toUpperCase()];
-    return value === undefined || value === '' ? undefined : value;
-}
-/**
- * Get a boolean input value with fallback to environment variable and default
- */
-function getBooleanInput(inputName, defaultValue) {
-    const value = coreExports.getInput(inputName) || process.env[inputName.toUpperCase()];
-    if (value === undefined || value === '') {
-        return defaultValue;
-    }
-    return value.toLowerCase() === 'true';
-}
-/**
- * Validate configuration
- */
-function validateConfig(config) {
-    if (!config.apiToken) {
-        throw new Error(ERROR_MESSAGES.API_TOKEN_REQUIRED);
-    }
-    if (!config.githubToken) {
-        coreExports.warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
-    }
-    // Validate required analysis options
-    validateAnalysisOption('dialect', config.dialect);
-    validateAnalysisOption('style_guide', config.styleGuide);
-}
-/**
- * Validate individual analysis option
- */
-function validateAnalysisOption(name, value) {
-    if (!value || value.trim().length === 0) {
-        throw new Error(`Analysis option '${name}' cannot be empty`);
-    }
-}
-/**
- * Log configuration (without sensitive data)
- */
-function logConfiguration(config) {
-    coreExports.info('🔧 Action Configuration:');
-    coreExports.info(`  Dialect: ${config.dialect}`);
-    coreExports.info(`  Tone: ${config.tone ?? ''}`);
-    coreExports.info(`  Style Guide: ${config.styleGuide}`);
-    coreExports.info(`  API Token: ${config.apiToken ? '[PROVIDED]' : '[MISSING]'}`);
-    coreExports.info(`  GitHub Token: ${config.githubToken ? '[PROVIDED]' : '[MISSING]'}`);
-}
-
-/**
- * Display and logging utility functions
- */
-/**
- * Display event information in a formatted way
- */
-function displayEventInfo(eventInfo) {
-    coreExports.info(`📋 Event Type: ${eventInfo.eventType}`);
-    coreExports.info(`📄 Description: ${eventInfo.description}`);
-    coreExports.info(`📊 Files to analyze: ${eventInfo.filesCount}`);
-    if (eventInfo.additionalInfo) {
-        coreExports.info(`📌 Additional Info:`);
-        Object.entries(eventInfo.additionalInfo).forEach(([key, value]) => {
-            coreExports.info(`   ${key}: ${value}`);
-        });
-    }
-}
-/**
- * Display analysis results in a formatted way
- */
-function displayResults(results) {
-    if (results.length === 0) {
-        coreExports.info('📊 No analysis results to display.');
-        return;
-    }
-    coreExports.info('📊 Analysis Results:');
-    coreExports.info('='.repeat(DISPLAY.SEPARATOR_LENGTH));
-    results.forEach((analysis, index) => {
-        const { filePath, result } = analysis;
-        coreExports.info(`\n📄 File: ${filePath}`);
-        coreExports.info(`📈 Quality Score: ${result.quality.score}`);
-        coreExports.info(`📝 Clarity Score: ${result.analysis.clarity.score}`);
-        coreExports.info(`🔤 Grammar Score: ${result.quality.grammar.score}`);
-        coreExports.info(`📋 Consistency Score: ${result.quality.consistency.score}`);
-        coreExports.info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === 'number'
-            ? result.analysis.tone.score
-            : '-'}`);
-        coreExports.info(`📚 Terminology Score: ${result.quality.terminology.score}`);
-        if (index < results.length - 1) {
-            coreExports.info('─'.repeat(DISPLAY.SEPARATOR_LENGTH));
-        }
-    });
-}
-/**
- * Display files being analyzed
- */
-function displayFilesToAnalyze(files) {
-    if (files.length === 0) {
-        coreExports.info('No files found to analyze.');
-        return;
-    }
-    coreExports.info('\n📄 Files to analyze:');
-    files.slice(0, DISPLAY.MAX_FILES_TO_SHOW).forEach((file, index) => {
-        coreExports.info(`  ${index + 1}. ${file}`);
-    });
-    if (files.length > DISPLAY.MAX_FILES_TO_SHOW) {
-        coreExports.info(`  ... and ${files.length - DISPLAY.MAX_FILES_TO_SHOW} more files`);
-    }
-}
-/**
- * Display section header
- */
-function displaySectionHeader(title) {
-    coreExports.info(`\n${title}`);
-    coreExports.info('='.repeat(DISPLAY.SEPARATOR_LENGTH));
-}
-
-/**
- * Markdown generation utility functions for analysis results
- */
-/**
- * Generate markdown table for analysis results
- */
-function generateResultsTable(results) {
-    if (results.length === 0) {
-        return 'No files were analyzed.';
-    }
-    const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|`;
-    const tableRows = results
-        .map((result) => {
-        const { filePath, result: scores } = result;
-        const qualityEmoji = getQualityEmoji(scores.quality.score);
-        const toneDisplay = typeof scores.analysis.tone?.score === 'number'
-            ? String(Math.round(scores.analysis.tone.score))
-            : '-';
-        return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`;
-    })
-        .join('\n');
-    return `${tableHeader}\n${tableRows}`;
-}
-/**
- * Generate summary section
- */
-function generateSummary(results) {
-    if (results.length === 0) {
-        return '';
-    }
-    const summary = calculateScoreSummary(results);
-    const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
-    return `
-## 📊 Summary
-
-**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore)}
-
-**Files Analyzed:** ${summary.totalFiles}
-
-| Metric | Average Score |
-|--------|---------------|
-| Quality | ${Math.round(summary.averageQualityScore)} |
-| Grammar | ${Math.round(summary.averageGrammarScore)} |
-| Consistency | ${Math.round(summary.averageConsistencyScore)} |
-| Terminology | ${Math.round(summary.averageTerminologyScore)} |
-| Clarity | ${Math.round(summary.averageClarityScore)} |
-| Tone | ${Math.round(summary.averageToneScore)} |
-`;
-}
-/**
- * Generate footer section with metadata
- */
-function generateFooter(config, eventType) {
-    return `
----
-*Analysis performed on ${new Date().toLocaleString()}*
-*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ''} Style Guide: ${config.styleGuide}*
-*Event: ${eventType}*`;
-}
-/**
- * Generate complete analysis content with customizable header
- */
-function generateAnalysisContent(results, config, header, eventType) {
-    const table = generateResultsTable(results);
-    const summary = generateSummary(results);
-    const footer = generateFooter(config, eventType);
-    return `${header}
-
-${table}
-
-${summary}
-
-${footer}`;
-}
-
-/**
- * PR Comment service for managing comments on pull requests
- */
-/**
- * Generate complete comment body
- */
-function generateCommentBody(results, config, eventType) {
-    const header = `## 🔍 Markup AI Analysis Results
-
-This comment was automatically generated by the Markup AI GitHub Action for **${eventType}** event.`;
-    return generateAnalysisContent(results, config, header, eventType);
-}
-/**
- * Find existing  comment on PR
- */
-async function findExistingComment(octokit, owner, repo, prNumber) {
-    try {
-        const response = await octokit.rest.issues.listComments({
-            owner,
-            repo,
-            issue_number: prNumber
-        });
-        const comment = response.data.find((comment) => comment.body?.includes('## 🔍 Markup AI Analysis Results'));
-        return comment?.id || null;
-    }
-    catch (error) {
-        coreExports.warning(`Failed to find existing comment: ${error}`);
-        return null;
-    }
-}
-/**
- * Create or update PR comment with analysis results
- */
-async function createOrUpdatePRComment(octokit, commentData) {
-    const { owner, repo, prNumber, results, config } = commentData;
-    try {
-        // Check if we have permission to comment on PRs
-        try {
-            await octokit.rest.repos.get({
-                owner,
-                repo
-            });
-        }
-        catch (error) {
-            const githubError = error;
-            if (githubError.status === 403) {
-                coreExports.error('❌ Permission denied: Cannot access repository. Make sure the GitHub token has "pull-requests: write" permission.');
-                return;
-            }
-            throw error;
-        }
-        const commentBody = generateCommentBody(results, config, commentData.eventType);
-        const existingCommentId = await findExistingComment(octokit, owner, repo, prNumber);
-        if (existingCommentId) {
-            // Update existing comment
-            await octokit.rest.issues.updateComment({
-                owner,
-                repo,
-                comment_id: existingCommentId,
-                body: commentBody
-            });
-            coreExports.info(`✅ Updated existing comment on PR #${prNumber}`);
-        }
-        else {
-            // Create new comment
-            await octokit.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: prNumber,
-                body: commentBody
-            });
-            coreExports.info(`✅ Created new comment on PR #${prNumber}`);
-        }
-    }
-    catch (error) {
-        const githubError = handleGitHubError(error, 'Create/update PR comment');
-        if (githubError.status === 403) {
-            coreExports.error('❌ Permission denied: Cannot create or update comments on pull requests.');
-            coreExports.error('Please ensure the GitHub token has "pull-requests: write" permission.');
-        }
-        else if (githubError.status === 404) {
-            coreExports.error('❌ Pull request not found. Make sure the PR exists and is accessible.');
-        }
-        else {
-            logError(githubError, 'Failed to create/update PR comment');
-        }
-    }
-}
-/**
- * Check if current event is a pull request
- */
-function isPullRequestEvent() {
-    return githubExports.context.eventName === 'pull_request';
-}
-/**
- * Get PR number from context
- */
-function getPRNumber() {
-    if (githubExports.context.eventName === 'pull_request') {
-        return githubExports.context.issue.number;
-    }
-    return null;
-}
-
-/**
- * Job Summary service for generating GitHub Actions Job Summaries
- */
-/**
- * Generate complete job summary
- */
-function generateJobSummary(results, config, eventType) {
-    const header = `# 🔍 Analysis Results
-
-This summary was automatically generated by the Markup AI GitHub Action for **${eventType}** event.`;
-    return generateAnalysisContent(results, config, header, eventType);
-}
-/**
- * Create and write job summary to GitHub Actions
- */
-async function createJobSummary(results, config, eventType) {
-    try {
-        if (results.length === 0) {
-            await coreExports.summary
-                .addHeading('🔍 Analysis Results')
-                .addRaw('No files were analyzed.')
-                .write();
-            return;
-        }
-        const summaryContent = generateJobSummary(results, config, eventType);
-        await coreExports.summary.addRaw(summaryContent).write();
-        coreExports.info('✅ Job summary created successfully');
-    }
-    catch (error) {
-        coreExports.error(`Failed to create job summary: ${error}`);
-    }
-}
-
-/**
- * Post-analysis service for handling actions after analysis
- */
-/**
- * Handle post-analysis actions based on event type
- */
-async function handlePostAnalysisActions(eventInfo, results, config, analysisOptions) {
-    if (results.length === 0) {
-        coreExports.info('No results to process for post-analysis actions.');
-        return;
-    }
-    const summary = getAnalysisSummary(results);
-    const octokit = createGitHubClient(config.githubToken);
-    const { owner, repo } = githubExports.context.repo;
-    // Handle different event types
-    switch (eventInfo.eventType) {
-        case EVENT_TYPES.PUSH:
-            // Update commit status for push events (if enabled)
-            if (config.addCommitStatus) {
-                displaySectionHeader('📊 Updating Commit Status');
-                try {
-                    await updateCommitStatus(octokit, owner, repo, githubExports.context.sha, summary.averageQualityScore, results.length);
-                }
-                catch (error) {
-                    coreExports.error(`Failed to update commit status: ${error}`);
-                }
-            }
-            else {
-                coreExports.info('📊 Commit status update disabled by configuration');
-            }
-            break;
-        case EVENT_TYPES.WORKFLOW_DISPATCH:
-        case EVENT_TYPES.SCHEDULE:
-            // Create job summary for manual/scheduled workflows
-            displaySectionHeader('📋 Creating Job Summary');
-            try {
-                await createJobSummary(results, analysisOptions, eventInfo.eventType);
-            }
-            catch (error) {
-                coreExports.error(`Failed to create job summary: ${error}`);
-            }
-            break;
-        case EVENT_TYPES.PULL_REQUEST:
-            // Handle PR comments for pull request events
-            if (isPullRequestEvent()) {
-                const prNumber = getPRNumber();
-                if (prNumber) {
-                    displaySectionHeader('💬 Creating PR Comment');
-                    try {
-                        await createOrUpdatePRComment(octokit, {
-                            owner,
-                            repo,
-                            prNumber,
-                            results,
-                            config: analysisOptions,
-                            eventType: eventInfo.eventType
-                        });
-                    }
-                    catch (error) {
-                        coreExports.error(`Failed to create PR comment: ${error}`);
-                    }
-                }
-            }
-            break;
-        default:
-            coreExports.info(`No specific post-analysis actions for event type: ${eventInfo.eventType}`);
     }
 }
 
