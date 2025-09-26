@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   update-dist:
-    if: github.actor == 'dependabot[bot]'
+    if: startsWith(github.head_ref, 'dependabot/') && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add dist/
           if ! git diff --cached --quiet; then
-            git commit -m "chore: update dist after dependency upgrade [skip ci]"
+            git commit -m "chore: update dist after dependency upgrade"
             git push
           else
             echo "No changes to dist/. Skipping commit and push."
