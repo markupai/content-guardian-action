@@ -119,7 +119,7 @@ export async function processWithConcurrency<T, R>(
  */
 class Semaphore {
   private permits: number
-  private waiting: Array<() => void> = []
+  private readonly waiting: Array<() => void> = []
 
   constructor(permits: number) {
     this.permits = permits
