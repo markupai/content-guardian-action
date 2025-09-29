@@ -3,8 +3,7 @@ import {
   styleCheck,
   styleBatchCheckRequests,
   Config,
-  StyleAnalysisReq,
-  StyleScores
+  StyleAnalysisReq
 } from '@markupai/toolkit'
 import { AnalysisResult, AnalysisOptions } from '../types/index.js'
 import { getFileBasename } from '../utils/file-utils.js'
@@ -120,30 +119,21 @@ export async function analyzeFilesBatch(
 
     // Process results
     const results: AnalysisResult[] = []
-    finalProgress.results.forEach(
-      (
-        batchResult: {
-          status: string
-          result?: { original: { scores: StyleScores } }
-          error?: { message: string }
-        },
-        index: number
-      ) => {
-        if (batchResult.status === 'completed' && batchResult.result) {
-          results.push({
-            filePath: fileContents[index].filePath,
-            result: batchResult.result.original.scores,
-            timestamp: new Date().toISOString()
-          })
-        } else if (batchResult.status === 'failed') {
-          core.error(
-            `Failed to analyze ${fileContents[index].filePath}: ${
-              batchResult.error?.message || 'Unknown error'
-            }`
-          )
-        }
+    for (const [index, batchResult] of finalProgress.results.entries()) {
+      if (batchResult.status === 'completed' && batchResult.result) {
+        results.push({
+          filePath: fileContents[index].filePath,
+          result: batchResult.result.original.scores,
+          timestamp: new Date().toISOString()
+        })
+      } else if (batchResult.status === 'failed') {
+        core.error(
+          `Failed to analyze ${fileContents[index].filePath}: ${
+            batchResult.error?.message || 'Unknown error'
+          }`
+        )
       }
-    )
+    }
 
     core.info(
       `✅ Batch analysis completed: ${results.length}/${fileContents.length} files processed successfully`

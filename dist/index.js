@@ -1,8 +1,7 @@
 import require$$0 from 'os';
 import require$$0$1 from 'crypto';
 import require$$1 from 'fs';
-import * as path from 'path';
-import path__default from 'path';
+import require$$1$5 from 'path';
 import require$$2$1 from 'http';
 import require$$3$1 from 'https';
 import require$$0$4 from 'net';
@@ -28,7 +27,8 @@ import require$$6 from 'string_decoder';
 import require$$0$9 from 'diagnostics_channel';
 import require$$2$3 from 'child_process';
 import require$$6$1 from 'timers';
-import * as fs from 'fs/promises';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -25541,7 +25541,7 @@ function requirePathUtils () {
 	};
 	Object.defineProperty(pathUtils, "__esModule", { value: true });
 	pathUtils.toPlatformPath = pathUtils.toWin32Path = pathUtils.toPosixPath = void 0;
-	const path = __importStar(path__default);
+	const path = __importStar(require$$1$5);
 	/**
 	 * toPosixPath converts the given path to the posix form. On Windows, \\ will be
 	 * replaced with /.
@@ -25628,7 +25628,7 @@ function requireIoUtil () {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
 		const fs = __importStar(require$$1);
-		const path = __importStar(path__default);
+		const path = __importStar(require$$1$5);
 		_a = fs.promises
 		// export const {open} = 'fs'
 		, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
@@ -25818,7 +25818,7 @@ function requireIo () {
 	Object.defineProperty(io, "__esModule", { value: true });
 	io.findInPath = io.which = io.mkdirP = io.rmRF = io.mv = io.cp = void 0;
 	const assert_1 = require$$0$3;
-	const path = __importStar(path__default);
+	const path = __importStar(require$$1$5);
 	const ioUtil = __importStar(requireIoUtil());
 	/**
 	 * Copies a file or folder.
@@ -26126,7 +26126,7 @@ function requireToolrunner () {
 	const os = __importStar(require$$0);
 	const events = __importStar(require$$4$1);
 	const child = __importStar(require$$2$3);
-	const path = __importStar(path__default);
+	const path = __importStar(require$$1$5);
 	const io = __importStar(requireIo());
 	const ioUtil = __importStar(requireIoUtil());
 	const timers_1 = require$$6$1;
@@ -26970,7 +26970,7 @@ function requireCore () {
 		const file_command_1 = requireFileCommand();
 		const utils_1 = requireUtils$3();
 		const os = __importStar(require$$0);
-		const path = __importStar(path__default);
+		const path = __importStar(require$$1$5);
 		const oidc_utils_1 = requireOidcUtils();
 		/**
 		 * The code to exit an action
@@ -34250,7 +34250,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
         clearInterval(progressInterval);
         // Process results
         const results = [];
-        finalProgress.results.forEach((batchResult, index) => {
+        for (const [index, batchResult] of finalProgress.results.entries()) {
             if (batchResult.status === 'completed' && batchResult.result) {
                 results.push({
                     filePath: fileContents[index].filePath,
@@ -34261,7 +34261,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
             else if (batchResult.status === 'failed') {
                 coreExports.error(`Failed to analyze ${fileContents[index].filePath}: ${batchResult.error?.message || 'Unknown error'}`);
             }
-        });
+        }
         coreExports.info(`✅ Batch analysis completed: ${results.length}/${fileContents.length} files processed successfully`);
         return results;
     }
@@ -34593,7 +34593,7 @@ function isString(value) {
  * Type guard for checking if a value is a number
  */
 function isNumber(value) {
-    return typeof value === 'number' && !isNaN(value);
+    return typeof value === 'number' && !Number.isNaN(value);
 }
 /**
  * Type guard for checking if a value is a valid SHA
@@ -34808,9 +34808,9 @@ function displayEventInfo(eventInfo) {
     coreExports.info(`📊 Files to analyze: ${eventInfo.filesCount}`);
     if (eventInfo.additionalInfo) {
         coreExports.info(`📌 Additional Info:`);
-        Object.entries(eventInfo.additionalInfo).forEach(([key, value]) => {
+        for (const [key, value] of Object.entries(eventInfo.additionalInfo)) {
             coreExports.info(`   ${key}: ${value}`);
-        });
+        }
     }
 }
 /**
@@ -34823,7 +34823,7 @@ function displayResults(results) {
     }
     coreExports.info('📊 Analysis Results:');
     coreExports.info('='.repeat(DISPLAY.SEPARATOR_LENGTH));
-    results.forEach((analysis, index) => {
+    for (const [index, analysis] of results.entries()) {
         const { filePath, result } = analysis;
         coreExports.info(`\n📄 File: ${filePath}`);
         coreExports.info(`📈 Quality Score: ${result.quality.score}`);
@@ -34837,7 +34837,7 @@ function displayResults(results) {
         if (index < results.length - 1) {
             coreExports.info('─'.repeat(DISPLAY.SEPARATOR_LENGTH));
         }
-    });
+    }
 }
 /**
  * Display files being analyzed
@@ -34848,9 +34848,11 @@ function displayFilesToAnalyze(files) {
         return;
     }
     coreExports.info('\n📄 Files to analyze:');
-    files.slice(0, DISPLAY.MAX_FILES_TO_SHOW).forEach((file, index) => {
+    for (const [index, file] of files
+        .slice(0, DISPLAY.MAX_FILES_TO_SHOW)
+        .entries()) {
         coreExports.info(`  ${index + 1}. ${file}`);
-    });
+    }
     if (files.length > DISPLAY.MAX_FILES_TO_SHOW) {
         coreExports.info(`  ... and ${files.length - DISPLAY.MAX_FILES_TO_SHOW} more files`);
     }

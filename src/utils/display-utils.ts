@@ -16,9 +16,9 @@ export function displayEventInfo(eventInfo: EventInfo): void {
 
   if (eventInfo.additionalInfo) {
     core.info(`📌 Additional Info:`)
-    Object.entries(eventInfo.additionalInfo).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(eventInfo.additionalInfo)) {
       core.info(`   ${key}: ${value}`)
-    })
+    }
   }
 }
 
@@ -34,7 +34,7 @@ export function displayResults(results: AnalysisResult[]): void {
   core.info('📊 Analysis Results:')
   core.info('='.repeat(DISPLAY.SEPARATOR_LENGTH))
 
-  results.forEach((analysis, index) => {
+  for (const [index, analysis] of results.entries()) {
     const { filePath, result } = analysis
     core.info(`\n📄 File: ${filePath}`)
     core.info(`📈 Quality Score: ${result.quality.score}`)
@@ -53,7 +53,7 @@ export function displayResults(results: AnalysisResult[]): void {
     if (index < results.length - 1) {
       core.info('─'.repeat(DISPLAY.SEPARATOR_LENGTH))
     }
-  })
+  }
 }
 
 /**
@@ -66,9 +66,11 @@ export function displayFilesToAnalyze(files: string[]): void {
   }
 
   core.info('\n📄 Files to analyze:')
-  files.slice(0, DISPLAY.MAX_FILES_TO_SHOW).forEach((file, index) => {
+  for (const [index, file] of files
+    .slice(0, DISPLAY.MAX_FILES_TO_SHOW)
+    .entries()) {
     core.info(`  ${index + 1}. ${file}`)
-  })
+  }
 
   if (files.length > DISPLAY.MAX_FILES_TO_SHOW) {
     core.info(

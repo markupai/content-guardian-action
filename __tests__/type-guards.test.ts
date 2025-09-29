@@ -51,7 +51,7 @@ describe('Type Guards', () => {
       })
 
       it('should return false for invalid numbers', () => {
-        expect(isNumber(NaN)).toBe(false)
+        expect(isNumber(Number.NaN)).toBe(false)
         expect(isNumber(Infinity)).toBe(true) // Infinity is a valid number in JavaScript
         expect(isNumber(-Infinity)).toBe(true) // -Infinity is a valid number in JavaScript
       })
@@ -271,7 +271,7 @@ describe('Type Guards', () => {
       it('should return true for valid file paths', () => {
         expect(isValidFilePath('file.txt')).toBe(true)
         expect(isValidFilePath('/path/to/file.md')).toBe(true)
-        expect(isValidFilePath('C:\\path\\to\\file.txt')).toBe(true)
+        expect(isValidFilePath(String.raw`C:\path\to\file.txt`)).toBe(true)
         expect(isValidFilePath('file')).toBe(true) // No extension
       })
 
