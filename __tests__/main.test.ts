@@ -102,7 +102,7 @@ jest.unstable_mockModule('@markupai/toolkit', () => ({
             grammar: { score: 90.1, issues: 2 },
             consistency: { score: 88.3, issues: 1 },
             style_guide: { score: 88.3, issues: 1 },
-            terminology: { score: 95.0, issues: 0 }
+            terminology: { score: 95, issues: 0 }
           },
           analysis: {
             clarity: { score: 78.5 },
@@ -148,7 +148,7 @@ jest.unstable_mockModule('@markupai/toolkit', () => ({
                   grammar: { score: 90.1, issues: 2 },
                   consistency: { score: 88.3, issues: 1 },
                   style_guide: { score: 88.3, issues: 1 },
-                  terminology: { score: 95.0, issues: 0 }
+                  terminology: { score: 95, issues: 0 }
                 },
                 analysis: {
                   clarity: { score: 78.5 },
@@ -196,7 +196,7 @@ jest.unstable_mockModule('@markupai/toolkit', () => ({
                   grammar: { score: 90.1, issues: 2 },
                   consistency: { score: 88.3, issues: 1 },
                   style_guide: { score: 88.3, issues: 1 },
-                  terminology: { score: 95.0, issues: 0 }
+                  terminology: { score: 95, issues: 0 }
                 },
                 analysis: {
                   clarity: { score: 78.5 },
