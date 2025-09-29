@@ -172,7 +172,7 @@ describe('Markdown Utils', () => {
           quality: 85.4,
           clarity: 92.1,
           grammar: 78.2,
-          style_guide: 88.0,
+          style_guide: 88,
           tone: 91.3,
           terminology: 87.7
         })

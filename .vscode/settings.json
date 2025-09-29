@@ -1,0 +1,6 @@
+{
+  "sonarlint.connectedMode.project": {
+    "connectionId": "markupai",
+    "projectKey": "markupai_content-guardian-action"
+  }
+}

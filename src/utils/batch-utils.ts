@@ -50,7 +50,7 @@ export async function processBatch<T, R>(
     )
 
     // Process results
-    batchResults.forEach((result, index) => {
+    for (const [index, result] of batchResults.entries()) {
       if (result.status === 'fulfilled') {
         results.push(result.value)
       } else {
@@ -58,7 +58,7 @@ export async function processBatch<T, R>(
           `Failed to process item ${i * config.batchSize + index}: ${result.reason}`
         )
       }
-    })
+    }
 
     // Add delay between batches to avoid overwhelming APIs
     if (i < batches.length - 1 && config.delayBetweenBatches > 0) {
@@ -128,7 +128,7 @@ class Semaphore {
   async acquire(): Promise<void> {
     if (this.permits > 0) {
       this.permits--
-      return Promise.resolve()
+      return
     }
 
     return new Promise<void>((resolve) => {

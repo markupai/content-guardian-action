@@ -34137,14 +34137,14 @@ async function processBatch(items, processor, config = DEFAULT_BATCH_CONFIG) {
         coreExports.info(`📦 Processing batch ${i + 1}/${batches.length} (${batch.length} items)`);
         const batchResults = await Promise.allSettled(batch.map((item) => processor(item)));
         // Process results
-        batchResults.forEach((result, index) => {
+        for (const [index, result] of batchResults.entries()) {
             if (result.status === 'fulfilled') {
                 results.push(result.value);
             }
             else {
                 coreExports.error(`Failed to process item ${i * config.batchSize + index}: ${result.reason}`);
             }
-        });
+        }
         // Add delay between batches to avoid overwhelming APIs
         if (i < batches.length - 1 && config.delayBetweenBatches > 0) {
             await new Promise((resolve) => setTimeout(resolve, config.delayBetweenBatches));
