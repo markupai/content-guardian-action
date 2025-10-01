@@ -17,7 +17,7 @@ jest.unstable_mockModule('@actions/github', () => ({
   getOctokit: mockGetOctokit,
   context: {
     serverUrl: 'https://github.com',
-    runId: '123456789',
+    runId: '123_456_789',
     repo: {
       owner: 'test-owner',
       repo: 'test-repo'
@@ -394,7 +394,7 @@ describe('GitHub Service', () => {
         '📊 Status: success, Description: "Quality: 85 | Files: 5"'
       )
       expect(core.info).toHaveBeenCalledWith(
-        '🔗 Target URL: https://github.com/test-owner/test-repo/actions/runs/123456789'
+        '🔗 Target URL: https://github.com/test-owner/test-repo/actions/runs/123_456_789'
       )
       expect(core.info).toHaveBeenCalledWith('📝 Context: Markup AI')
       expect(core.info).toHaveBeenCalledWith(

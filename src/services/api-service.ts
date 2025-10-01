@@ -85,8 +85,8 @@ export async function analyzeFilesBatch(
   const batchOptions = {
     maxConcurrent: 100, // Limit concurrency to avoid overwhelming the API
     retryAttempts: 2,
-    retryDelay: 1000,
-    timeout: 300000 // 5 minutes
+    retryDelay: 1_000,
+    timeout: 300_000 // 5 minutes
   }
 
   try {
@@ -109,7 +109,7 @@ export async function analyzeFilesBatch(
           `📊 Batch progress: ${completed}/${total} completed, ${failed} failed`
         )
       }
-    }, 2000) // Update every 2 seconds
+    }, 2_000) // Update every 2 seconds
 
     // Wait for completion
     const finalProgress = await batchResponse.promise

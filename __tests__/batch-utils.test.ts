@@ -16,6 +16,54 @@ const {
 } = await import('../src/utils/batch-utils.js')
 
 describe('Batch Utils', () => {
+  // Helper functions to reduce nesting
+  const createMockProcessor = (returns: string[]) => {
+    const mockFn = jest.fn()
+    for (const value of returns) {
+      mockFn.mockImplementationOnce(() => Promise.resolve(value))
+    }
+    return mockFn as jest.MockedFunction<(item: string) => Promise<string>>
+  }
+
+  const createMockProcessorWithError = (
+    returns: (string | Error | undefined)[]
+  ) => {
+    const mockFn = jest.fn()
+    for (const value of returns) {
+      if (value instanceof Error) {
+        mockFn.mockImplementationOnce(() => Promise.reject(value))
+      } else {
+        mockFn.mockImplementationOnce(() => Promise.resolve(value))
+      }
+    }
+    return mockFn as jest.MockedFunction<
+      (item: string) => Promise<string | undefined>
+    >
+  }
+
+  const createMockFileReader = (returns: (string | null)[]) => {
+    const mockFn = jest.fn()
+    for (const value of returns) {
+      mockFn.mockImplementationOnce(() => Promise.resolve(value))
+    }
+    return mockFn as jest.MockedFunction<
+      (filePath: string) => Promise<string | null>
+    >
+  }
+
+  const createConcurrencyTestProcessor = (
+    concurrentCount: { value: number },
+    maxConcurrent: { value: number }
+  ) => {
+    return jest.fn().mockImplementation(async () => {
+      concurrentCount.value++
+      maxConcurrent.value = Math.max(maxConcurrent.value, concurrentCount.value)
+      await new Promise((resolve) => setTimeout(resolve, 1))
+      concurrentCount.value--
+      return 'processed'
+    }) as jest.MockedFunction<(item: string) => Promise<string>>
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -25,7 +73,7 @@ describe('Batch Utils', () => {
       expect(DEFAULT_BATCH_CONFIG).toEqual({
         maxConcurrent: 100,
         batchSize: 50,
-        delayBetweenBatches: 1000
+        delayBetweenBatches: 1_000
       })
     })
   })
@@ -45,11 +93,7 @@ describe('Batch Utils', () => {
 
     it('should process single item', async () => {
       const items = ['item1']
-      const processor = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.resolve('processed1')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor(['processed1'])
 
       const result = await processBatch(items, processor)
 
@@ -60,13 +104,11 @@ describe('Batch Utils', () => {
 
     it('should process multiple items in single batch', async () => {
       const items = ['item1', 'item2', 'item3']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() => Promise.resolve('processed2'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed3')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor([
+        'processed1',
+        'processed2',
+        'processed3'
+      ])
 
       const result = await processBatch(items, processor, {
         ...DEFAULT_BATCH_CONFIG,
@@ -79,15 +121,13 @@ describe('Batch Utils', () => {
 
     it('should process items in multiple batches', async () => {
       const items = ['item1', 'item2', 'item3', 'item4', 'item5']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() => Promise.resolve('processed2'))
-        .mockImplementationOnce(() => Promise.resolve('processed3'))
-        .mockImplementationOnce(() => Promise.resolve('processed4'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed5')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor([
+        'processed1',
+        'processed2',
+        'processed3',
+        'processed4',
+        'processed5'
+      ])
 
       const result = await processBatch(items, processor, {
         ...DEFAULT_BATCH_CONFIG,
@@ -102,19 +142,15 @@ describe('Batch Utils', () => {
         'processed5'
       ])
       expect(processor).toHaveBeenCalledTimes(5)
-    }, 10000)
+    }, 10_000)
 
     it('should handle failed items gracefully', async () => {
       const items = ['item1', 'item2', 'item3']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() =>
-          Promise.reject(new Error('Failed to process item2'))
-        )
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed3')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessorWithError([
+        'processed1',
+        new Error('Failed to process item2'),
+        'processed3'
+      ])
 
       const result = await processBatch(items, processor)
 
@@ -126,19 +162,17 @@ describe('Batch Utils', () => {
 
     it('should add delay between batches', async () => {
       const items = ['item1', 'item2', 'item3', 'item4']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() => Promise.resolve('processed2'))
-        .mockImplementationOnce(() => Promise.resolve('processed3'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed4')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor([
+        'processed1',
+        'processed2',
+        'processed3',
+        'processed4'
+      ])
 
       const result = await processBatch(items, processor, {
         ...DEFAULT_BATCH_CONFIG,
         batchSize: 2,
-        delayBetweenBatches: 1000
+        delayBetweenBatches: 1_000
       })
 
       expect(result).toEqual([
@@ -151,17 +185,12 @@ describe('Batch Utils', () => {
 
     it('should not add delay after last batch', async () => {
       const items = ['item1', 'item2']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed2')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor(['processed1', 'processed2'])
 
       const result = await processBatch(items, processor, {
         ...DEFAULT_BATCH_CONFIG,
         batchSize: 2,
-        delayBetweenBatches: 1000
+        delayBetweenBatches: 1_000
       })
 
       expect(result).toEqual(['processed1', 'processed2'])
@@ -169,13 +198,11 @@ describe('Batch Utils', () => {
 
     it('should log progress information', async () => {
       const items = ['item1', 'item2', 'item3']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() => Promise.resolve('processed2'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed3')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor([
+        'processed1',
+        'processed2',
+        'processed3'
+      ])
 
       await processBatch(items, processor)
 
@@ -206,11 +233,7 @@ describe('Batch Utils', () => {
 
     it('should process single item', async () => {
       const items = ['item1']
-      const processor = jest
-        .fn()
-        .mockImplementation(() =>
-          Promise.resolve('processed1')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor(['processed1'])
 
       const result = await processWithConcurrency(items, processor)
 
@@ -221,15 +244,13 @@ describe('Batch Utils', () => {
 
     it('should process multiple items with concurrency limit', async () => {
       const items = ['item1', 'item2', 'item3', 'item4', 'item5']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() => Promise.resolve('processed2'))
-        .mockImplementationOnce(() => Promise.resolve('processed3'))
-        .mockImplementationOnce(() => Promise.resolve('processed4'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed5')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor([
+        'processed1',
+        'processed2',
+        'processed3',
+        'processed4',
+        'processed5'
+      ])
 
       const result = await processWithConcurrency(items, processor, 2)
 
@@ -245,15 +266,11 @@ describe('Batch Utils', () => {
 
     it('should handle failed items gracefully', async () => {
       const items = ['item1', 'item2', 'item3']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() =>
-          Promise.reject(new Error('Failed to process item2'))
-        )
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed3')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessorWithError([
+        'processed1',
+        new Error('Failed to process item2'),
+        'processed3'
+      ])
 
       const result = await processWithConcurrency(items, processor)
 
@@ -262,13 +279,11 @@ describe('Batch Utils', () => {
 
     it('should log progress information', async () => {
       const items = ['item1', 'item2', 'item3']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() => Promise.resolve('processed2'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed3')
-        ) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createMockProcessor([
+        'processed1',
+        'processed2',
+        'processed3'
+      ])
 
       await processWithConcurrency(items, processor, 2)
 
@@ -282,13 +297,11 @@ describe('Batch Utils', () => {
 
     it('should handle undefined results from failed operations', async () => {
       const items = ['item1', 'item2', 'item3']
-      const processor = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('processed1'))
-        .mockImplementationOnce(() => Promise.resolve(undefined)) // Simulate failed operation
-        .mockImplementationOnce(() =>
-          Promise.resolve('processed3')
-        ) as jest.MockedFunction<(item: string) => Promise<string | undefined>>
+      const processor = createMockProcessorWithError([
+        'processed1',
+        undefined,
+        'processed3'
+      ])
 
       const result = await processWithConcurrency(items, processor)
 
@@ -311,12 +324,7 @@ describe('Batch Utils', () => {
 
     it('should process files with valid content', async () => {
       const filePaths = ['file1.txt', 'file2.txt']
-      const readFileContent = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('content1'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('content2')
-        ) as jest.MockedFunction<(filePath: string) => Promise<string | null>>
+      const readFileContent = createMockFileReader(['content1', 'content2'])
 
       const result = await processFileReading(filePaths, readFileContent)
 
@@ -329,13 +337,11 @@ describe('Batch Utils', () => {
 
     it('should filter out files with null content', async () => {
       const filePaths = ['file1.txt', 'file2.txt', 'file3.txt']
-      const readFileContent = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('content1'))
-        .mockImplementationOnce(() => Promise.resolve(null)) // File not found or error
-        .mockImplementationOnce(() =>
-          Promise.resolve('content3')
-        ) as jest.MockedFunction<(filePath: string) => Promise<string | null>>
+      const readFileContent = createMockFileReader([
+        'content1',
+        null,
+        'content3'
+      ])
 
       const result = await processFileReading(filePaths, readFileContent)
 
@@ -354,15 +360,13 @@ describe('Batch Utils', () => {
         'file4.txt',
         'file5.txt'
       ]
-      const readFileContent = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('content1'))
-        .mockImplementationOnce(() => Promise.resolve('content2'))
-        .mockImplementationOnce(() => Promise.resolve('content3'))
-        .mockImplementationOnce(() => Promise.resolve('content4'))
-        .mockImplementationOnce(() =>
-          Promise.resolve('content5')
-        ) as jest.MockedFunction<(filePath: string) => Promise<string | null>>
+      const readFileContent = createMockFileReader([
+        'content1',
+        'content2',
+        'content3',
+        'content4',
+        'content5'
+      ])
 
       const result = await processFileReading(filePaths, readFileContent, {
         ...DEFAULT_BATCH_CONFIG,
@@ -371,17 +375,15 @@ describe('Batch Utils', () => {
 
       expect(result).toHaveLength(5)
       expect(readFileContent).toHaveBeenCalledTimes(5)
-    }, 10000)
+    }, 10_000)
 
     it('should handle mixed valid and invalid files', async () => {
       const filePaths = ['file1.txt', 'file2.txt', 'file3.txt']
-      const readFileContent = jest
-        .fn()
-        .mockImplementationOnce(() => Promise.resolve('content1'))
-        .mockImplementationOnce(() => Promise.resolve(null))
-        .mockImplementationOnce(() =>
-          Promise.resolve('content3')
-        ) as jest.MockedFunction<(filePath: string) => Promise<string | null>>
+      const readFileContent = createMockFileReader([
+        'content1',
+        null,
+        'content3'
+      ])
 
       const result = await processFileReading(filePaths, readFileContent)
 
@@ -396,22 +398,18 @@ describe('Batch Utils', () => {
     it('should handle concurrent access correctly', async () => {
       // This tests the internal Semaphore class through processWithConcurrency
       const items = ['item1', 'item2', 'item3']
-      let concurrentCount = 0
-      let maxConcurrent = 0
+      const concurrentCount = { value: 0 }
+      const maxConcurrent = { value: 0 }
 
-      const processor = jest.fn().mockImplementation(async () => {
-        concurrentCount++
-        maxConcurrent = Math.max(maxConcurrent, concurrentCount)
-        // Use a shorter delay for testing
-        await new Promise((resolve) => setTimeout(resolve, 1))
-        concurrentCount--
-        return 'processed'
-      }) as jest.MockedFunction<(item: string) => Promise<string>>
+      const processor = createConcurrencyTestProcessor(
+        concurrentCount,
+        maxConcurrent
+      )
 
       await processWithConcurrency(items, processor, 2)
 
-      expect(maxConcurrent).toBeLessThanOrEqual(2)
+      expect(maxConcurrent.value).toBeLessThanOrEqual(2)
       expect(processor).toHaveBeenCalledTimes(3)
-    }, 10000) // Increase timeout for this test
+    }, 10_000)
   })
 })

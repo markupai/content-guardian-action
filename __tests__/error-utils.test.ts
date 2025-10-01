@@ -34,8 +34,8 @@ describe('Error Utils', () => {
     it('should export default retry configuration', () => {
       expect(DEFAULT_RETRY_CONFIG).toEqual({
         maxRetries: 3,
-        baseDelay: 1000,
-        maxDelay: 10000,
+        baseDelay: 1_000,
+        maxDelay: 10_000,
         backoffMultiplier: 2
       })
     })
@@ -91,28 +91,28 @@ describe('Error Utils', () => {
     it('should calculate exponential backoff delay', () => {
       const config: RetryConfig = {
         maxRetries: 3,
-        baseDelay: 1000,
-        maxDelay: 5000,
+        baseDelay: 1_000,
+        maxDelay: 5_000,
         backoffMultiplier: 2
       }
 
-      expect(calculateBackoffDelay(1, config)).toBe(1000)
-      expect(calculateBackoffDelay(2, config)).toBe(2000)
-      expect(calculateBackoffDelay(3, config)).toBe(4000)
+      expect(calculateBackoffDelay(1, config)).toBe(1_000)
+      expect(calculateBackoffDelay(2, config)).toBe(2_000)
+      expect(calculateBackoffDelay(3, config)).toBe(4_000)
     })
 
     it('should respect max delay limit', () => {
       const config: RetryConfig = {
         maxRetries: 5,
-        baseDelay: 1000,
-        maxDelay: 3000,
+        baseDelay: 1_000,
+        maxDelay: 3_000,
         backoffMultiplier: 2
       }
 
-      expect(calculateBackoffDelay(1, config)).toBe(1000)
-      expect(calculateBackoffDelay(2, config)).toBe(2000)
-      expect(calculateBackoffDelay(3, config)).toBe(3000) // Capped at maxDelay
-      expect(calculateBackoffDelay(4, config)).toBe(3000) // Capped at maxDelay
+      expect(calculateBackoffDelay(1, config)).toBe(1_000)
+      expect(calculateBackoffDelay(2, config)).toBe(2_000)
+      expect(calculateBackoffDelay(3, config)).toBe(3_000) // Capped at maxDelay
+      expect(calculateBackoffDelay(4, config)).toBe(3_000) // Capped at maxDelay
     })
   })
 
@@ -155,7 +155,7 @@ describe('Error Utils', () => {
 
       expect(result).toBe('success')
       expect(operation).toHaveBeenCalledTimes(3)
-    }, 10000)
+    }, 10_000)
 
     it('should throw error after max retries', async () => {
       const operation = jest
@@ -169,13 +169,13 @@ describe('Error Utils', () => {
       ).rejects.toThrow('Persistent failure')
 
       expect(operation).toHaveBeenCalledTimes(3)
-    }, 10000)
+    }, 10_000)
 
     it('should use custom retry configuration', async () => {
       const customConfig: RetryConfig = {
         maxRetries: 2,
         baseDelay: 500,
-        maxDelay: 2000,
+        maxDelay: 2_000,
         backoffMultiplier: 1.5
       }
 
@@ -192,7 +192,7 @@ describe('Error Utils', () => {
 
       expect(result).toBe('success')
       expect(operation).toHaveBeenCalledTimes(2)
-    }, 10000)
+    }, 10_000)
 
     it('should handle non-Error exceptions', async () => {
       const operation = jest
@@ -204,7 +204,7 @@ describe('Error Utils', () => {
       await expect(
         withRetry(operation, DEFAULT_RETRY_CONFIG, 'Test Operation')
       ).rejects.toThrow('String error')
-    }, 10000)
+    }, 10_000)
 
     it('should log warnings during retries', async () => {
       const operation = jest
@@ -221,7 +221,7 @@ describe('Error Utils', () => {
       expect(core.warning).toHaveBeenCalledWith(
         expect.stringContaining('Attempt 1 failed for Test Operation')
       )
-    }, 10000)
+    }, 10_000)
 
     it('should log error on final failure', async () => {
       const operation = jest
@@ -237,7 +237,7 @@ describe('Error Utils', () => {
       expect(core.error).toHaveBeenCalledWith(
         expect.stringContaining('Test Operation failed after 3 attempts')
       )
-    }, 10000)
+    }, 10_000)
   })
 
   describe('handleGitHubError', () => {
