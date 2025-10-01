@@ -384,7 +384,7 @@ The action gracefully handles various scenarios:
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 24+
 - API Key
 
 ### Setup
