@@ -268,8 +268,8 @@ describe('Markup AI Service Batch Functionality', () => {
         expect.objectContaining({
           maxConcurrent: 100,
           retryAttempts: 2,
-          retryDelay: 1000,
-          timeout: 300000
+          retryDelay: 1_000,
+          timeout: 300_000
         })
       )
 

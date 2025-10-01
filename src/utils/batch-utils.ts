@@ -19,7 +19,7 @@ export interface BatchConfig {
 export const DEFAULT_BATCH_CONFIG: BatchConfig = {
   maxConcurrent: 100,
   batchSize: 50,
-  delayBetweenBatches: 1000
+  delayBetweenBatches: 1_000
 }
 
 /**

@@ -34121,7 +34121,7 @@ function calculateScoreSummary(results) {
 const DEFAULT_BATCH_CONFIG = {
     maxConcurrent: 100,
     batchSize: 50,
-    delayBetweenBatches: 1000
+    delayBetweenBatches: 1_000
 };
 /**
  * Process items in batches with concurrency control
@@ -34229,8 +34229,8 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     const batchOptions = {
         maxConcurrent: 100, // Limit concurrency to avoid overwhelming the API
         retryAttempts: 2,
-        retryDelay: 1000,
-        timeout: 300000 // 5 minutes
+        retryDelay: 1_000,
+        timeout: 300_000 // 5 minutes
     };
     try {
         // Start batch processing
@@ -34244,7 +34244,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
             if (completed > 0 || failed > 0) {
                 coreExports.info(`📊 Batch progress: ${completed}/${total} completed, ${failed} failed`);
             }
-        }, 2000); // Update every 2 seconds
+        }, 2_000); // Update every 2 seconds
         // Wait for completion
         const finalProgress = await batchResponse.promise;
         // Clear progress monitoring
@@ -34396,8 +34396,8 @@ ${footer}`;
  */
 const DEFAULT_RETRY_CONFIG = {
     maxRetries: 3,
-    baseDelay: 1000,
-    maxDelay: 10000,
+    baseDelay: 1_000,
+    maxDelay: 10_000,
     backoffMultiplier: 2
 };
 /**

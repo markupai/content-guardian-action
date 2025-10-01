@@ -24,6 +24,21 @@ import {
 } from '../src/utils/type-guards.js'
 
 describe('Type Guards', () => {
+  // Helper functions to reduce nesting
+  const createInvalidArray = (value: unknown) => value as unknown as unknown[]
+  const createInvalidNumber = (value: unknown) => value as unknown as number
+
+  // Test functions for isFunction tests
+  const testArrowFunction = () => {
+    /* empty */
+  }
+  const testRegularFunction = function () {
+    /* empty */
+  }
+  const testAsyncFunction = async () => {
+    /* empty */
+  }
+
   describe('Basic Type Guards', () => {
     describe('isString', () => {
       it('should return true for strings', () => {
@@ -119,9 +134,9 @@ describe('Type Guards', () => {
 
     describe('isFunction', () => {
       it('should return true for functions', () => {
-        expect(isFunction(() => {})).toBe(true)
-        expect(isFunction(function () {})).toBe(true)
-        expect(isFunction(async () => {})).toBe(true)
+        expect(isFunction(testArrowFunction)).toBe(true)
+        expect(isFunction(testRegularFunction)).toBe(true)
+        expect(isFunction(testAsyncFunction)).toBe(true)
       })
 
       it('should return false for non-functions', () => {
@@ -369,23 +384,19 @@ describe('Type Guards', () => {
       })
 
       it('should return undefined for non-arrays', () => {
-        expect(
-          safeArrayGet('string' as unknown as unknown[], 0)
-        ).toBeUndefined()
-        expect(safeArrayGet(123 as unknown as unknown[], 0)).toBeUndefined()
-        expect(safeArrayGet(null as unknown as unknown[], 0)).toBeUndefined()
-        expect(
-          safeArrayGet(undefined as unknown as unknown[], 0)
-        ).toBeUndefined()
-        expect(safeArrayGet({} as unknown as unknown[], 0)).toBeUndefined()
+        expect(safeArrayGet(createInvalidArray('string'), 0)).toBeUndefined()
+        expect(safeArrayGet(createInvalidArray(123), 0)).toBeUndefined()
+        expect(safeArrayGet(createInvalidArray(null), 0)).toBeUndefined()
+        expect(safeArrayGet(createInvalidArray(undefined), 0)).toBeUndefined()
+        expect(safeArrayGet(createInvalidArray({}), 0)).toBeUndefined()
       })
 
       it('should return undefined for invalid indices', () => {
         const arr = ['a', 'b', 'c']
-        expect(safeArrayGet(arr, '0' as unknown as number)).toBe('a') // String '0' is converted to number 0
-        expect(safeArrayGet(arr, null as unknown as number)).toBeUndefined()
+        expect(safeArrayGet(arr, createInvalidNumber('0'))).toBe('a') // String '0' is converted to number 0
+        expect(safeArrayGet(arr, createInvalidNumber(null))).toBeUndefined()
         expect(
-          safeArrayGet(arr, undefined as unknown as number)
+          safeArrayGet(arr, createInvalidNumber(undefined))
         ).toBeUndefined()
       })
     })
