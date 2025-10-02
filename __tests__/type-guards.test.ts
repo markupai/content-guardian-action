@@ -32,7 +32,7 @@ describe('Type Guards', () => {
   const testArrowFunction = () => {
     /* empty */
   }
-  const testRegularFunction = function () {
+  const testRegularFunction = () => {
     /* empty */
   }
   const testAsyncFunction = async () => {
