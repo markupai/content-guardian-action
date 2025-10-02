@@ -1,7 +1,7 @@
 {
   "name": "markup-ai-github-action",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.2",
+  "private": false,
   "description": "Markup AI GitHub Action",
   "keywords": [
     "actions"
@@ -21,6 +21,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
+    "all": "npm run lint && npm run test && npm run coverage && npm run bundle",
     "bundle": "npm run format:write && npm run package",
     "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
     "format:check": "npx prettier --check .",
