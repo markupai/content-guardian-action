@@ -168,7 +168,7 @@ jest.unstable_mockModule('fs/promises', () => ({
 
 const { runAction } = await import('../src/action-runner.js')
 
-describe('Action Runner Strict Mode', () => {
+describe('Action Runner Tests', () => {
   let mockStrategy: MockStrategy
 
   beforeEach(() => {
@@ -294,6 +294,74 @@ describe('Action Runner Strict Mode', () => {
       expect(mockCore.setOutput).toHaveBeenCalledWith('files-analyzed', '0')
       expect(mockCore.info).toHaveBeenCalledWith(
         'No supported files found to analyze.'
+      )
+    })
+
+    it('should handle zero results from analysis', async () => {
+      mockCore.getInput.mockImplementation(createInputMock('true'))
+
+      mockStrategy.getFilesToAnalyze.mockResolvedValue([
+        'README.md',
+        'src/main.ts',
+        'docs/api.md'
+      ])
+
+      // Mock analyzeFiles to return empty array (failed analysis)
+      mockAnalyzeFiles.mockResolvedValue([])
+
+      await runAction()
+
+      expect(mockCore.setFailed).toHaveBeenCalledWith(
+        'Failed to analyze supported files.'
+      )
+    })
+
+    it('should handle error with Error instance', async () => {
+      mockCore.getInput.mockImplementation(createInputMock('true'))
+
+      // Create an error instance
+      const testError = new Error('Test error message')
+
+      // Mock strategy to throw the error
+      mockCreateFileDiscoveryStrategy.mockImplementation(() => {
+        throw testError
+      })
+
+      await runAction()
+
+      expect(mockCore.setFailed).toHaveBeenCalledWith('Test error message')
+    })
+
+    it('should handle error with non-Error instance', async () => {
+      mockCore.getInput.mockImplementation(createInputMock('true'))
+
+      // Create a non-Error object
+      const testError = { message: 'Non-error object' }
+
+      // Mock strategy to throw the non-Error
+      mockCreateFileDiscoveryStrategy.mockImplementation(() => {
+        throw testError
+      })
+
+      await runAction()
+
+      expect(mockCore.setFailed).toHaveBeenCalledWith(
+        'An unexpected error occurred: [object Object]'
+      )
+    })
+
+    it('should handle strategy creation error', async () => {
+      mockCore.getInput.mockImplementation(createInputMock('true'))
+
+      // Mock createFileDiscoveryStrategy to throw an error
+      mockCreateFileDiscoveryStrategy.mockImplementation(() => {
+        throw new Error('Strategy creation failed')
+      })
+
+      await runAction()
+
+      expect(mockCore.setFailed).toHaveBeenCalledWith(
+        'Strategy creation failed'
       )
     })
   })
