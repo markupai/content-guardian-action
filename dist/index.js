@@ -31396,10 +31396,10 @@ function J(n, e) {
 }
 class f extends Error {
   constructor({ message: e, statusCode: t, body: o, rawResponse: a }) {
-    super(Re({ message: e, statusCode: t, body: o })), Object.setPrototypeOf(this, f.prototype), this.statusCode = t, this.body = o, this.rawResponse = a;
+    super(me({ message: e, statusCode: t, body: o })), Object.setPrototypeOf(this, f.prototype), this.statusCode = t, this.body = o, this.rawResponse = a;
   }
 }
-function Re({ message: n, statusCode: e, body: t }) {
+function me({ message: n, statusCode: e, body: t }) {
   let o = [];
   return n != null && o.push(n), e != null && o.push(`Status code: ${e.toString()}`), t != null && o.push(`Body: ${z(t, void 0, 2)}`), o.join(`
 `);
@@ -31469,7 +31469,7 @@ class j extends f {
     }), Object.setPrototypeOf(this, j.prototype);
   }
 }
-const ge = {
+const Re = {
   arrayFormat: "indices",
   encode: true
 };
@@ -31509,14 +31509,14 @@ function Z(n, e = "", t) {
   }
   return o;
 }
-function ve(n, e) {
-  return n == null || typeof n != "object" ? "" : Z(n, "", Object.assign(Object.assign({}, ge), e)).join("&");
+function ge(n, e) {
+  return n == null || typeof n != "object" ? "" : Z(n, "", Object.assign(Object.assign({}, Re), e)).join("&");
 }
-function be(n, e) {
-  const t = ve(e, { arrayFormat: "repeat" });
+function ve(n, e) {
+  const t = ge(e, { arrayFormat: "repeat" });
   return t ? `${n}?${t}` : n;
 }
-function _e(n) {
+function be(n) {
   const e = {
     get bodyUsed() {
       return n.bodyUsed;
@@ -31527,8 +31527,69 @@ function _e(n) {
   };
   return "bytes" in n && typeof n.bytes == "function" && (e.bytes = n.bytes.bind(n)), e;
 }
-function Ee(n) {
+function _e(n) {
   return n.body != null;
+}
+var Ee = function(n, e, t, o) {
+  function a(r) {
+    return r instanceof t ? r : new t(function(d) {
+      d(r);
+    });
+  }
+  return new (t || (t = Promise))(function(r, d) {
+    function l(i) {
+      try {
+        c(o.next(i));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function s(i) {
+      try {
+        c(o.throw(i));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function c(i) {
+      i.done ? r(i.value) : a(i.value).then(l, s);
+    }
+    c((o = o.apply(n, [])).next());
+  });
+};
+function de(n, e) {
+  return Ee(this, void 0, void 0, function* () {
+    if (!_e(n))
+      return;
+    switch (e) {
+      case "binary-response":
+        return be(n);
+      case "blob":
+        return yield n.blob();
+      case "arrayBuffer":
+        return yield n.arrayBuffer();
+      case "sse":
+        return n.body;
+      case "streaming":
+        return n.body;
+      case "text":
+        return yield n.text();
+    }
+    const t = yield n.text();
+    if (t.length > 0)
+      try {
+        return J(t);
+      } catch {
+        return {
+          ok: false,
+          error: {
+            reason: "non-json",
+            statusCode: n.status,
+            rawBody: t
+          }
+        };
+      }
+  });
 }
 var Se = function(n, e, t, o) {
   function a(r) {
@@ -31557,69 +31618,8 @@ var Se = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function de(n, e) {
+function ke(n) {
   return Se(this, void 0, void 0, function* () {
-    if (!Ee(n))
-      return;
-    switch (e) {
-      case "binary-response":
-        return _e(n);
-      case "blob":
-        return yield n.blob();
-      case "arrayBuffer":
-        return yield n.arrayBuffer();
-      case "sse":
-        return n.body;
-      case "streaming":
-        return n.body;
-      case "text":
-        return yield n.text();
-    }
-    const t = yield n.text();
-    if (t.length > 0)
-      try {
-        return J(t);
-      } catch {
-        return {
-          ok: false,
-          error: {
-            reason: "non-json",
-            statusCode: n.status,
-            rawBody: t
-          }
-        };
-      }
-  });
-}
-var ke = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
-    });
-  }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
-      try {
-        c(o.next(i));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function s(i) {
-      try {
-        c(o.throw(i));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
-    }
-    c((o = o.apply(n, [])).next());
-  });
-};
-function Te(n) {
-  return ke(this, void 0, void 0, function* () {
     var e, t, o;
     let a = (e = n.headers.get("Content-Type")) === null || e === void 0 ? void 0 : e.toLowerCase();
     if (a == null || a.length === 0)
@@ -31642,7 +31642,7 @@ function Te(n) {
     }
   });
 }
-var Ce = function(n, e, t, o) {
+var Te = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31669,12 +31669,12 @@ var Ce = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function xe() {
-  return Ce(this, void 0, void 0, function* () {
+function Ce() {
+  return Te(this, void 0, void 0, function* () {
     return fetch;
   });
 }
-var Ae = function(n, e, t, o) {
+var xe = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31701,17 +31701,17 @@ var Ae = function(n, e, t, o) {
     c((o = o.apply(n, e || [])).next());
   });
 };
-function Pe(n) {
-  return Ae(this, arguments, void 0, function* ({ body: e, type: t }) {
+function Ae(n) {
+  return xe(this, arguments, void 0, function* ({ body: e, type: t }) {
     return t.includes("json") ? z(e) : e;
   });
 }
-const Ie = "timeout";
-function Le(n) {
-  const e = new AbortController(), t = setTimeout(() => e.abort(Ie), n);
+const Pe = "timeout";
+function Ie(n) {
+  const e = new AbortController(), t = setTimeout(() => e.abort(Pe), n);
   return { signal: e.signal, abortId: t };
 }
-function je(...n) {
+function Le(...n) {
   const e = n.length === 1 && Array.isArray(n[0]) ? n[0] : n, t = new AbortController();
   for (const o of e) {
     if (o.aborted) {
@@ -31724,7 +31724,7 @@ function je(...n) {
   }
   return t.signal;
 }
-var Be = function(n, e, t, o) {
+var je = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31751,15 +31751,15 @@ var Be = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-const Ue = (n, e, t, o, a, r, d, l, s) => Be(void 0, void 0, void 0, function* () {
+const Be = (n, e, t, o, a, r, d, l, s) => je(void 0, void 0, void 0, function* () {
   const c = [];
   let i;
   if (r != null) {
-    const { signal: p, abortId: k } = Le(r);
+    const { signal: p, abortId: k } = Ie(r);
     i = k, c.push(p);
   }
   d != null && c.push(d);
-  let u = je(c);
+  let u = Le(c);
   const y = yield n(e, {
     method: t,
     headers: o,
@@ -31857,7 +31857,7 @@ function se(n) {
     url: n.url
   };
 }
-var Fe = function(n, e, t, o) {
+var Ue = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31884,22 +31884,22 @@ var Fe = function(n, e, t, o) {
     c((o = o.apply(n, e || [])).next());
   });
 };
-const Ne = 1e3, $e = 6e4, Me = 2, Ge = 0.2;
-function We(n) {
-  const e = 1 + (Math.random() * 2 - 1) * Ge;
+const Fe = 1e3, Ne = 6e4, $e = 2, Me = 0.2;
+function Ge(n) {
+  const e = 1 + (Math.random() * 2 - 1) * Me;
   return n * e;
 }
-function ze(n) {
-  return Fe(this, arguments, void 0, function* (e, t = Me) {
+function We(n) {
+  return Ue(this, arguments, void 0, function* (e, t = $e) {
     let o = yield e();
     for (let a = 0; a < t && ([408, 429].includes(o.status) || o.status >= 500); ++a) {
-      const r = Math.min(Ne * Math.pow(2, a), $e), d = We(r);
+      const r = Math.min(Fe * Math.pow(2, a), Ne), d = Ge(r);
       yield new Promise((l) => setTimeout(l, d)), o = yield e();
     }
     return o;
   });
 }
-var He = function(n, e, t, o) {
+var ze = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31927,7 +31927,7 @@ var He = function(n, e, t, o) {
   });
 };
 const w = {
-  get: (n) => He(void 0, void 0, void 0, function* () {
+  get: (n) => ze(void 0, void 0, void 0, function* () {
     return typeof n == "function" ? n() : n;
   })
 };
@@ -31958,7 +31958,7 @@ var Q = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function Ve(n) {
+function He(n) {
   return Q(this, void 0, void 0, function* () {
     const e = {};
     if (n.body !== void 0 && n.contentType != null && (e["Content-Type"] = n.contentType), n.headers == null)
@@ -31974,15 +31974,15 @@ function Ve(n) {
     return e;
   });
 }
-function Ke(n) {
+function Ve(n) {
   return Q(this, void 0, void 0, function* () {
-    const e = be(n.url, n.queryParameters), t = yield Pe({
+    const e = ve(n.url, n.queryParameters), t = yield Ae({
       body: n.body,
       type: n.requestType === "json" ? "json" : "other"
-    }), o = yield xe();
+    }), o = yield Ce();
     try {
-      const a = yield ze(() => Q(this, void 0, void 0, function* () {
-        return Ue(o, e, n.method, yield Ve(n), t, n.timeoutMs, n.abortSignal, n.withCredentials, n.duplex);
+      const a = yield We(() => Q(this, void 0, void 0, function* () {
+        return Be(o, e, n.method, yield He(n), t, n.timeoutMs, n.abortSignal, n.withCredentials, n.duplex);
       }), n.maxRetries);
       return a.status >= 200 && a.status < 400 ? {
         ok: !0,
@@ -31994,7 +31994,7 @@ function Ke(n) {
         error: {
           reason: "status-code",
           statusCode: a.status,
-          body: yield Te(a)
+          body: yield ke(a)
         },
         rawResponse: se(a)
       };
@@ -32030,8 +32030,8 @@ function Ke(n) {
     }
   });
 }
-const C = Ke;
-var De = function(n, e, t, o) {
+const C = Ve;
+var Ke = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32133,13 +32133,13 @@ class R extends Promise {
    * @returns A promise resolving to a `WithRawResponse` object.
    */
   withRawResponse() {
-    return De(this, void 0, void 0, function* () {
+    return Ke(this, void 0, void 0, function* () {
       return yield this.innerPromise;
     });
   }
 }
-const O = Xe();
-function Xe() {
+const O = De();
+function De() {
   var n, e, t, o, a;
   return typeof window < "u" && typeof window.document < "u" ? {
     type: "browser",
@@ -32233,7 +32233,7 @@ var M = function(n, e, t, o) {
     }
     c((o = o.apply(n, [])).next());
   });
-}, Ye = function(n) {
+}, Xe = function(n) {
   if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
   var e = n[Symbol.asyncIterator], t;
   return e ? e.call(n) : (n = typeof __values == "function" ? __values(n) : n[Symbol.iterator](), t = {}, o("next"), o("throw"), o("return"), t[Symbol.asyncIterator] = function() {
@@ -32252,29 +32252,29 @@ var M = function(n, e, t, o) {
     }, d);
   }
 };
-function Je(n) {
+function Ye(n) {
   return typeof n == "object" && n != null && "name" in n;
 }
-function Ze(n) {
+function Je(n) {
   return typeof n == "object" && n != null && "path" in n;
 }
-function Qe(n) {
+function Ze(n) {
   return typeof n == "object" && n != null && ("read" in n || "pipe" in n);
 }
 function fe(n) {
   return typeof n == "object" && n != null && "getReader" in n;
 }
-function Oe(n) {
+function Qe(n) {
   return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(n);
 }
-function qe(n) {
+function Oe(n) {
   return ArrayBuffer.isView(n);
 }
-function et(n) {
+function qe(n) {
   const e = n.lastIndexOf("/"), t = n.lastIndexOf("\\"), o = Math.max(e, t);
   return o >= 0 ? n.substring(o + 1) : n;
 }
-function tt(n) {
+function et(n) {
   return M(this, void 0, void 0, function* () {
     var e, t, o, a, r, d, l;
     if (O.type === "node") {
@@ -32282,7 +32282,7 @@ function tt(n) {
       if (n instanceof s) {
         const c = [];
         try {
-          for (e = !0, t = Ye(n); o = yield t.next(), a = o.done, !a; e = !0) {
+          for (e = !0, t = Xe(n); o = yield t.next(), a = o.done, !a; e = !0) {
             l = o.value, e = !1;
             const i = l;
             c.push(Buffer.isBuffer(i) ? i : Buffer.from(i));
@@ -32322,10 +32322,10 @@ function tt(n) {
 }
 function H() {
   return M(this, void 0, void 0, function* () {
-    return new nt();
+    return new tt();
   });
 }
-class nt {
+class tt {
   constructor() {
     this.fd = new FormData();
   }
@@ -32339,18 +32339,18 @@ class nt {
   getFileName(e, t) {
     if (t != null)
       return t;
-    if (Je(e))
+    if (Ye(e))
       return e.name;
-    if (Ze(e) && e.path)
-      return et(e.path.toString());
+    if (Je(e) && e.path)
+      return qe(e.path.toString());
   }
   convertToBlob(e) {
     return M(this, void 0, void 0, function* () {
-      if (Qe(e) || fe(e)) {
-        const t = yield tt(e);
+      if (Ze(e) || fe(e)) {
+        const t = yield et(e);
         return new Blob([t]);
       }
-      return e instanceof Blob ? e : Oe(e) ? new Blob([e]) : e instanceof ArrayBuffer ? new Blob([e]) : qe(e) ? new Blob([e]) : typeof e == "string" ? new Blob([e]) : typeof e == "object" && e !== null ? new Blob([z(e)], { type: "application/json" }) : new Blob([String(e)]);
+      return e instanceof Blob ? e : Qe(e) ? new Blob([e]) : e instanceof ArrayBuffer ? new Blob([e]) : Oe(e) ? new Blob([e]) : typeof e == "string" ? new Blob([e]) : typeof e == "object" && e !== null ? new Blob([z(e)], { type: "application/json" }) : new Blob([String(e)]);
     });
   }
   appendFile(e, t, o) {
@@ -32410,7 +32410,7 @@ var F = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class ot {
+class nt {
   constructor(e) {
     this._options = e;
   }
@@ -32804,7 +32804,7 @@ var K = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class rt {
+class ot {
   constructor(e) {
     this._options = e;
   }
@@ -32990,7 +32990,7 @@ var D = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class it {
+class rt {
   constructor(e) {
     this._options = e;
   }
@@ -33176,7 +33176,7 @@ var X = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class st {
+class it {
   constructor(e) {
     this._options = e;
   }
@@ -33335,7 +33335,7 @@ class st {
     });
   }
 }
-class at {
+class st {
   constructor(e) {
     this._options = Object.assign(Object.assign({}, e), { headers: T({
       "X-Fern-Language": "JavaScript",
@@ -33348,19 +33348,19 @@ class at {
   }
   get styleGuides() {
     var e;
-    return (e = this._styleGuides) !== null && e !== void 0 ? e : this._styleGuides = new ot(this._options);
+    return (e = this._styleGuides) !== null && e !== void 0 ? e : this._styleGuides = new nt(this._options);
   }
   get styleChecks() {
     var e;
-    return (e = this._styleChecks) !== null && e !== void 0 ? e : this._styleChecks = new rt(this._options);
+    return (e = this._styleChecks) !== null && e !== void 0 ? e : this._styleChecks = new ot(this._options);
   }
   get styleSuggestions() {
     var e;
-    return (e = this._styleSuggestions) !== null && e !== void 0 ? e : this._styleSuggestions = new it(this._options);
+    return (e = this._styleSuggestions) !== null && e !== void 0 ? e : this._styleSuggestions = new rt(this._options);
   }
   get styleRewrites() {
     var e;
-    return (e = this._styleRewrites) !== null && e !== void 0 ? e : this._styleRewrites = new st(this._options);
+    return (e = this._styleRewrites) !== null && e !== void 0 ? e : this._styleRewrites = new it(this._options);
   }
 }
 var L = /* @__PURE__ */ ((n) => (n.Queued = "queued", n.Running = "running", n.Completed = "completed", n.Failed = "failed", n))(L || {}), G = /* @__PURE__ */ ((n) => (n.Stage = "stage", n.Dev = "dev", n.Prod = "prod", n))(G || {}), he = /* @__PURE__ */ ((n) => (n.Environment = "environment", n.Url = "url", n))(he || {}), U = /* @__PURE__ */ ((n) => (n.VALIDATION_ERROR = "VALIDATION_ERROR", n.UNKNOWN_ERROR = "UNKNOWN_ERROR", n.WORKFLOW_NOT_FOUND = "workflowNotFound", n.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", n.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", n.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", n.NETWORK_ERROR = "NETWORK_ERROR", n.TIMEOUT_ERROR = "TIMEOUT_ERROR", n.WORKFLOW_FAILED = "WORKFLOW_FAILED", n.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", n.POLLING_ERROR = "POLLING_ERROR", n.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", n))(U || {});
@@ -33597,15 +33597,15 @@ class h extends Error {
     return {};
   }
 }
-const Y = "https://api.markup.ai", dt = "https://api.stg.markup.ai", lt = "https://api.dev.markup.ai";
+const Y = "https://api.markup.ai", at = "https://api.stg.markup.ai", dt = "https://api.dev.markup.ai";
 function q(n) {
   if (n.platform)
     if (n.platform.type === he.Environment)
       switch (n.platform.value) {
         case G.Stage:
-          return dt;
+          return at;
         case G.Dev:
-          return lt;
+          return dt;
         case G.Prod:
           return Y;
         default:
@@ -33616,10 +33616,10 @@ function q(n) {
   return Y;
 }
 function S(n) {
-  const e = q(n), t = new at({ token: n.apiKey, baseUrl: e });
-  return ht(t, n);
+  const e = q(n), t = new st({ token: n.apiKey, baseUrl: e });
+  return ft(t, n);
 }
-async function ft(n, e, t) {
+async function ut(n, e, t) {
   const o = e.rateLimit?.maxRetries ?? 5, a = e.rateLimit?.initialDelayMs ?? 1e3, r = e.rateLimit?.maxDelayMs ?? 16e3, d = e.rateLimit?.jitter ?? true;
   let l = 0;
   for (; ; )
@@ -33661,7 +33661,7 @@ async function ft(n, e, t) {
       continue;
     }
 }
-function ht(n, e, t = "client") {
+function ft(n, e, t = "client") {
   const o = /* @__PURE__ */ new WeakMap(), a = (r, d) => {
     if (typeof r != "object" || r === null) return r;
     const l = o.get(r);
@@ -33671,7 +33671,7 @@ function ht(n, e, t = "client") {
         const y = Reflect.get(c, i, u);
         if (typeof y == "function") {
           const p = `${d}.${String(i)}`, k = y;
-          return (...m) => ft(() => k.apply(c, m), e, p);
+          return (...m) => ut(() => k.apply(c, m), e, p);
         }
         return typeof y == "object" && y !== null ? a(y, `${d}.${String(i)}`) : y;
       }
@@ -33683,7 +33683,7 @@ function ht(n, e, t = "client") {
 function we() {
   return !!(typeof process < "u" ? process : void 0)?.versions?.node;
 }
-async function wt() {
+async function ht() {
   if (typeof Blob < "u") return Blob;
   const { Blob: n } = await import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
   return n ?? Blob;
@@ -33709,8 +33709,8 @@ function ye(n) {
 function pe(n) {
   return typeof Buffer < "u" ? Buffer.isBuffer(n) : false;
 }
-async function pt(n) {
-  const e = await wt(), t = n.documentName || "unknown.txt";
+async function yt(n) {
+  const e = await ht(), t = n.documentName || "unknown.txt";
   if (typeof n.content == "string")
     return new e([n.content], { type: "text/plain" });
   if (typeof File < "u" && "file" in n.content && n.content.file instanceof File) {
@@ -33725,7 +33725,7 @@ async function pt(n) {
   } else
     throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
 }
-async function mt(n) {
+async function pt(n) {
   const e = n.documentName || "unknown.txt";
   if (typeof n.content == "string")
     return new File([n.content], e, { type: "text/plain" });
@@ -33741,17 +33741,16 @@ async function mt(n) {
     throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
 }
 async function V(n) {
-  return we() ? pt(n) : mt(n);
+  return we() ? yt(n) : pt(n);
 }
-const me = 3e5;
 async function ee(n, e, t) {
-  const o = Date.now(), a = S(t), r = await V(e);
-  let d;
+  const o = S(t), a = await V(e);
+  let r;
   try {
     switch (n) {
       case I.Check:
-        d = await a.styleChecks.createStyleCheck({
-          file_upload: r,
+        r = await o.styleChecks.createStyleCheck({
+          file_upload: a,
           dialect: e.dialect,
           style_guide: e.style_guide,
           webhook_url: e.webhook_url,
@@ -33759,8 +33758,8 @@ async function ee(n, e, t) {
         });
         break;
       case I.Suggestions:
-        d = await a.styleSuggestions.createStyleSuggestion({
-          file_upload: r,
+        r = await o.styleSuggestions.createStyleSuggestion({
+          file_upload: a,
           dialect: e.dialect,
           style_guide: e.style_guide,
           webhook_url: e.webhook_url,
@@ -33768,8 +33767,8 @@ async function ee(n, e, t) {
         });
         break;
       case I.Rewrite:
-        d = await a.styleRewrites.createStyleRewrite({
-          file_upload: r,
+        r = await o.styleRewrites.createStyleRewrite({
+          file_upload: a,
           dialect: e.dialect,
           style_guide: e.style_guide,
           webhook_url: e.webhook_url,
@@ -33779,17 +33778,17 @@ async function ee(n, e, t) {
       default:
         throw new Error(`Invalid operation type: ${n}`);
     }
-  } catch (s) {
-    throw s instanceof f ? h.fromResponse(s.statusCode || 0, s.body) : new Error(`Failed to submit style analysis: ${s}`);
+  } catch (l) {
+    throw l instanceof f ? h.fromResponse(l.statusCode || 0, l.body) : new Error(`Failed to submit style analysis: ${l}`);
   }
-  if (!d.workflow_id)
+  if (!r.workflow_id)
     throw new Error(`No workflow_id received from initial ${n} request`);
-  const l = await gt(d.workflow_id, t, n, o);
-  if (l.workflow.status === L.Completed)
-    return l;
-  throw new Error(`${n} failed with status: ${l.workflow.status}`);
+  const d = await Rt(r.workflow_id, t, n);
+  if (d.workflow.status === L.Completed)
+    return d;
+  throw new Error(`${n} failed with status: ${d.workflow.status}`);
 }
-class Rt {
+class mt {
   constructor(e, t, o, a, r) {
     this.requests = e, this.config = t, this.styleFunction = o, this.options = a, this.onProgressUpdate = r, this.startTime = Date.now(), this.initializeResults();
   }
@@ -33857,7 +33856,7 @@ class Rt {
     let t;
     for (let o = 0; o <= this.options.retryAttempts; o++)
       try {
-        return await this.styleFunction(e, { ...this.config, timeout: this.options.timeout });
+        return await this.styleFunction(e, this.config);
       } catch (a) {
         if (t = a instanceof Error ? a : new Error(String(a)), this.shouldNotRetry(t))
           throw t;
@@ -33910,7 +33909,8 @@ function te(n, e, t = {}, o) {
       maxConcurrent: 100,
       retryAttempts: 2,
       retryDelay: 1e3,
-      timeout: me
+      timeout: 3e5
+      // 5 minutes
     },
     ...t
   };
@@ -33918,7 +33918,7 @@ function te(n, e, t = {}, o) {
     throw new Error("maxConcurrent must be between 1 and 100");
   if (r.retryAttempts < 0 || r.retryAttempts > 5)
     throw new Error("retryAttempts must be between 0 and 5");
-  const d = new Rt(n, e, o, r), l = d.start();
+  const d = new mt(n, e, o, r), l = d.start();
   return {
     progress: {
       get total() {
@@ -33950,50 +33950,49 @@ function te(n, e, t = {}, o) {
     cancel: () => d.cancel()
   };
 }
-async function gt(n, e, t, o = Date.now()) {
-  let a = 0;
-  const r = 2e3, d = e.timeout ?? me, l = Math.floor(d / r), s = async () => {
-    const c = Date.now() - o;
-    if (c > d)
-      throw new h(`Workflow timed out after ${c}ms`, U.TIMEOUT_ERROR);
+async function Rt(n, e, t) {
+  let o = 0;
+  const a = 30, r = 2e3, d = async () => {
+    if (o >= a)
+      throw new h(`Workflow timed out after ${a} attempts`, U.TIMEOUT_ERROR);
     try {
-      const i = S(e);
-      let u;
+      const l = S(e);
+      let s;
       switch (t) {
         case I.Check:
-          u = await i.styleChecks.getStyleCheck(n);
+          s = await l.styleChecks.getStyleCheck(n);
           break;
         case I.Suggestions:
-          u = await i.styleSuggestions.getStyleSuggestion(
+          s = await l.styleSuggestions.getStyleSuggestion(
             n
           );
           break;
         case I.Rewrite:
-          u = await i.styleRewrites.getStyleRewrite(n);
+          s = await l.styleRewrites.getStyleRewrite(n);
           break;
       }
-      const y = u.workflow.status;
-      if (y === L.Failed)
+      const c = s.workflow.status;
+      if (c === L.Failed)
         throw new h(`Workflow failed with status: ${L.Failed}`, U.WORKFLOW_FAILED);
-      if (y === L.Completed)
-        return u;
-      if (y === L.Running || y === L.Queued)
-        return a++, await new Promise((p) => setTimeout(p, r)), s();
-      throw new h(`Unexpected workflow status: ${y}`, U.UNEXPECTED_STATUS);
-    } catch (i) {
-      throw i instanceof f ? h.fromResponse(i.statusCode || 0, i.body) : (console.error(`Unknown polling error (attempt ${a + 1}/${l}):`, i), h.fromError(
-        i instanceof Error ? i : new Error("Unknown error occurred"),
+      if (c === L.Completed)
+        return s;
+      if (c === L.Running || c === L.Queued)
+        return o++, await new Promise((i) => setTimeout(i, r)), d();
+      throw new h(`Unexpected workflow status: ${c}`, U.UNEXPECTED_STATUS);
+    } catch (l) {
+      throw l instanceof f ? h.fromResponse(l.statusCode || 0, l.body) : (console.error(`Unknown polling error (attempt ${o + 1}/${a}):`, l), h.fromError(
+        l instanceof Error ? l : new Error("Unknown error occurred"),
         U.POLLING_ERROR
       ));
     }
   };
-  return s();
+  return d();
 }
-async function vt(n, e) {
+async function gt(n, e) {
   return ee(I.Check, n, e);
 }
-function Et(n, e, t = {}) {
-  return te(n, e, t, vt);
+function _t(n, e, t = {}) {
+  return te(n, e, t, gt);
 }
 
 /**
@@ -34191,7 +34190,7 @@ async function analyzeFile(filePath, content, options, config) {
             documentName: getFileBasename(filePath),
             ...(options.tone ? { tone: options.tone } : {})
         };
-        const result = await vt(request, config);
+        const result = await gt(request, config);
         return {
             filePath,
             result: result.original.scores,
@@ -34234,7 +34233,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     };
     try {
         // Start batch processing
-        const batchResponse = Et(requests, config, batchOptions);
+        const batchResponse = _t(requests, config, batchOptions);
         // Monitor progress
         const progressInterval = setInterval(() => {
             const progress = batchResponse.progress;
