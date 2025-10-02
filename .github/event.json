@@ -1,8 +1,8 @@
 {
   "action": "opened",
-  "number": 3,
+  "number": 96,
   "pull_request": {
-    "number": 3,
+    "number": 96,
     "title": "Test PR",
     "head": {
       "ref": "batch-check",
