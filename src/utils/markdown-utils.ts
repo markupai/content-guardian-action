@@ -2,13 +2,58 @@
  * Markdown generation utility functions for analysis results
  */
 
+import { createHash } from 'crypto'
 import { AnalysisResult, AnalysisOptions } from '../types/index.js'
 import { getQualityEmoji, calculateScoreSummary } from './score-utils.js'
 
 /**
+ * Base repository context with common fields
+ */
+interface BaseRepositoryContext {
+  owner: string
+  repo: string
+  ref: string
+  baseUrl: URL
+}
+
+/**
+ * Repository context for pull request events
+ */
+export interface PRRepositoryContext extends BaseRepositoryContext {
+  prNumber: number
+}
+
+/**
+ * Repository context for non-PR events (push, workflow_dispatch, etc.)
+ */
+export type NonPRRepositoryContext = BaseRepositoryContext
+
+/**
+ * Union type for repository context
+ */
+export type RepositoryContext = PRRepositoryContext | NonPRRepositoryContext
+
+/**
+ * Generate file display link based on repository context
+ */
+function generateFileDisplayLink(
+  filePath: string,
+  context: RepositoryContext
+): string {
+  return 'prNumber' in context
+    ? // PR context - create diff link
+      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber}/files#diff-${createHash('sha256').update(filePath).digest('hex')})`
+    : // Non-PR context - create blob link
+      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`
+}
+
+/**
  * Generate markdown table for analysis results
  */
-export function generateResultsTable(results: AnalysisResult[]): string {
+export function generateResultsTable(
+  results: AnalysisResult[],
+  context: RepositoryContext
+): string {
   if (results.length === 0) {
     return 'No files were analyzed.'
   }
@@ -25,7 +70,10 @@ export function generateResultsTable(results: AnalysisResult[]): string {
           ? String(Math.round(scores.analysis.tone.score))
           : '-'
 
-      return `| ${filePath} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`
+      // Create clickable file link using repository context
+      const fileDisplay = generateFileDisplayLink(filePath, context)
+
+      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`
     })
     .join('\n')
 
@@ -83,9 +131,10 @@ export function generateAnalysisContent(
   results: AnalysisResult[],
   config: AnalysisOptions,
   header: string,
-  eventType: string
+  eventType: string,
+  context: RepositoryContext
 ): string {
-  const table = generateResultsTable(results)
+  const table = generateResultsTable(results, context)
   const summary = generateSummary(results)
   const footer = generateFooter(config, eventType)
 

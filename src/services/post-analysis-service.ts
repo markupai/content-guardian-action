@@ -14,6 +14,7 @@ import {
 } from './pr-comment-service.js'
 import { createGitHubClient, updateCommitStatus } from './github-service.js'
 import { createJobSummary } from './job-summary-service.js'
+import { RepositoryContext } from '../utils/markdown-utils.js'
 import { getAnalysisOptions } from '../config/action-config.js'
 import { displaySectionHeader } from '../utils/display-utils.js'
 
@@ -34,6 +35,7 @@ export async function handlePostAnalysisActions(
   const summary = getAnalysisSummary(results)
   const octokit = createGitHubClient(config.githubToken)
   const { owner, repo } = github.context.repo
+  const ref = github.context.ref
 
   // Handle different event types
   switch (eventInfo.eventType) {
@@ -63,7 +65,18 @@ export async function handlePostAnalysisActions(
       // Create job summary for manual/scheduled workflows
       displaySectionHeader('📋 Creating Job Summary')
       try {
-        await createJobSummary(results, analysisOptions, eventInfo.eventType)
+        const context: RepositoryContext = {
+          owner,
+          repo,
+          ref,
+          baseUrl: new URL(github.context.serverUrl)
+        }
+        await createJobSummary(
+          results,
+          analysisOptions,
+          eventInfo.eventType,
+          context
+        )
       } catch (error) {
         core.error(`Failed to create job summary: ${error}`)
       }

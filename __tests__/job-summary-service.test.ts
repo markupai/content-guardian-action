@@ -82,14 +82,23 @@ describe('Job Summary Service', () => {
     styleGuide: 'ap'
   }
 
+  const mockContext = {
+    owner: 'test',
+    repo: 'test',
+    ref: 'main',
+    baseUrl: new URL('https://github.com')
+  }
+
   describe('createJobSummary', () => {
     it('should create job summary with results', async () => {
       await jobSummaryService.createJobSummary(
         mockResults,
         mockConfig,
-        'workflow_dispatch'
+        'workflow_dispatch',
+        mockContext
       )
 
+      expect(mockSummary.addRaw).toHaveBeenCalledTimes(1)
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
         expect.stringContaining('# 🔍 Analysis Results')
       )
@@ -119,7 +128,12 @@ describe('Job Summary Service', () => {
     })
 
     it('should handle empty results', async () => {
-      await jobSummaryService.createJobSummary([], mockConfig, 'schedule')
+      await jobSummaryService.createJobSummary(
+        [],
+        mockConfig,
+        'schedule',
+        mockContext
+      )
 
       expect(mockSummary.addHeading).toHaveBeenCalledWith('🔍 Analysis Results')
       expect(mockSummary.addRaw).toHaveBeenCalledWith('No files were analyzed.')
@@ -136,7 +150,8 @@ describe('Job Summary Service', () => {
       await jobSummaryService.createJobSummary(
         mockResults,
         mockConfig,
-        'workflow_dispatch'
+        'workflow_dispatch',
+        mockContext
       )
 
       expect(errorSpy).toHaveBeenCalledWith(
@@ -148,7 +163,8 @@ describe('Job Summary Service', () => {
       await jobSummaryService.createJobSummary(
         mockResults,
         mockConfig,
-        'schedule'
+        'schedule',
+        mockContext
       )
 
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
@@ -162,7 +178,8 @@ describe('Job Summary Service', () => {
       await jobSummaryService.createJobSummary(
         mockResults,
         mockConfig,
-        'workflow_dispatch'
+        'workflow_dispatch',
+        mockContext
       )
 
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
