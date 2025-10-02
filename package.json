@@ -21,7 +21,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package",
+    "all": "npm run lint && npm run test && npm run coverage && npm run bundle",
     "bundle": "npm run format:write && npm run package",
     "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
     "format:check": "npx prettier --check .",
