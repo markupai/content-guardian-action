@@ -22,6 +22,7 @@ export function getActionConfig(): ActionConfig {
   const dialect = getRequiredInput(INPUT_NAMES.DIALECT, 'DIALECT')
   const tone = getOptionalInput(INPUT_NAMES.TONE)
   const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, 'STYLE_GUIDE')
+  const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false)
 
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true)
 
@@ -31,7 +32,8 @@ export function getActionConfig(): ActionConfig {
     dialect,
     tone,
     styleGuide,
-    addCommitStatus
+    addCommitStatus,
+    strictMode
   }
 }
 

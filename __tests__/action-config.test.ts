@@ -40,7 +40,8 @@ describe('Action Config', () => {
         styleGuide: 'chicago',
         apiToken: 'token',
         githubToken: 'github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       const options: AnalysisOptions = getAnalysisOptions(config)
@@ -59,7 +60,8 @@ describe('Action Config', () => {
         styleGuide: '',
         apiToken: 'token',
         githubToken: 'github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       const options: AnalysisOptions = getAnalysisOptions(config)
@@ -80,7 +82,8 @@ describe('Action Config', () => {
         styleGuide: 'ap',
         apiToken: 'valid-token',
         githubToken: 'valid-github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       expect(() => validateConfig(config)).not.toThrow()
@@ -93,7 +96,8 @@ describe('Action Config', () => {
         styleGuide: 'ap',
         apiToken: '',
         githubToken: 'valid-github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       expect(() => validateConfig(config)).toThrow('API token is required')
@@ -106,7 +110,8 @@ describe('Action Config', () => {
         styleGuide: 'ap',
         apiToken: 'valid-token',
         githubToken: '',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       expect(() => validateConfig(config)).not.toThrow()
@@ -120,7 +125,8 @@ describe('Action Config', () => {
         styleGuide: 'ap',
         apiToken: 'valid-token',
         githubToken: 'valid-github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       expect(() => validateConfig(config)).toThrow(
@@ -137,7 +143,8 @@ describe('Action Config', () => {
         styleGuide: '',
         apiToken: 'valid-token',
         githubToken: 'valid-github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       expect(() => validateConfig(config)).toThrow(
@@ -154,7 +161,8 @@ describe('Action Config', () => {
         styleGuide: 'chicago',
         apiToken: 'token123',
         githubToken: 'github-token123',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       logConfiguration(config)
@@ -174,7 +182,8 @@ describe('Action Config', () => {
         styleGuide: '',
         apiToken: 'token123',
         githubToken: 'github-token123',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       }
 
       logConfiguration(config)
@@ -202,7 +211,8 @@ describe('Action Config', () => {
         styleGuide: 'chicago',
         apiToken: 'markup_ai_api_key',
         githubToken: 'github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       })
     })
 
@@ -221,7 +231,8 @@ describe('Action Config', () => {
         styleGuide: 'ap',
         apiToken: 'env-markup-ai-api-key',
         githubToken: 'env-github-token',
-        addCommitStatus: true
+        addCommitStatus: true,
+        strictMode: false
       })
     })
 
