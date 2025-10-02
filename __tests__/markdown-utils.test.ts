@@ -118,6 +118,27 @@ describe('Markdown Utils', () => {
       expect(result).toBe('No files were analyzed.')
     })
 
+    it('should generate a simple table with basic scores', () => {
+      const results = [
+        createMockResult('example.md', {
+          quality: 85,
+          clarity: 90,
+          grammar: 80,
+          style_guide: 88,
+          tone: 87,
+          terminology: 92
+        })
+      ]
+
+      const result = generateResultsTable(results)
+
+      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
+|------|---------|---------|---------|---------|---------|------|
+| example.md | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`
+
+      expect(result).toBe(expectedMarkdown)
+    })
+
     it('should generate table with rounded scores', () => {
       const results = [
         createMockResult('test1.md', {
