@@ -33,6 +33,10 @@ inputs:
     description: Add commit status updates (default is true)
     required: false
     default: 'true'
+  strict_mode:
+    description: Fail the action if any file analysis fails (default is false)
+    required: false
+    default: 'false'
 
 # Define your outputs here.
 outputs:

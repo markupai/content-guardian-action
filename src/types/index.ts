@@ -64,6 +64,7 @@ export interface ActionConfig {
   styleGuide: string
   githubToken: string
   addCommitStatus: boolean
+  strictMode: boolean
 }
 
 /**
