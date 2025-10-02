@@ -114,8 +114,66 @@ describe('Markdown Utils', () => {
 
   describe('generateResultsTable', () => {
     it('should return message for empty results', () => {
-      const result = generateResultsTable([])
+      const result = generateResultsTable([], {
+        owner: 'test',
+        repo: 'test',
+        ref: 'main',
+        baseUrl: new URL('https://github.com')
+      })
       expect(result).toBe('No files were analyzed.')
+    })
+
+    it('should generate table with PR context (diff links)', () => {
+      const results = [
+        createMockResult('example.md', {
+          quality: 85,
+          clarity: 90,
+          grammar: 80,
+          style_guide: 88,
+          tone: 87,
+          terminology: 92
+        })
+      ]
+
+      const result = generateResultsTable(results, {
+        owner: 'owner',
+        repo: 'repo',
+        prNumber: 123,
+        ref: 'refs/heads/main',
+        baseUrl: new URL('https://github.com')
+      })
+
+      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
+|------|---------|---------|---------|---------|---------|------|
+| [example.md](https://github.com/owner/repo/pull/123/files#diff-812adf881bb029e57953653f71d54ffc5eac7de19829aa4cbcbbec8f7065a047) | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`
+
+      expect(result).toBe(expectedMarkdown)
+    })
+
+    it('should generate table with non-PR context (blob links)', () => {
+      const results = [
+        createMockResult('example.md', {
+          quality: 85,
+          clarity: 90,
+          grammar: 80,
+          style_guide: 88,
+          tone: 87,
+          terminology: 92
+        })
+      ]
+
+      const result = generateResultsTable(results, {
+        owner: 'owner',
+        repo: 'repo',
+        ref: 'refs/heads/main',
+        baseUrl: new URL('https://github.com')
+      })
+
+      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
+|------|---------|---------|---------|---------|---------|------|
+| [example.md](https://github.com/owner/repo/blob/refs/heads/main/example.md) | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`
+
+      expect(result).toBe(expectedMarkdown)
     })
 
     it('should generate table with rounded scores', () => {
@@ -138,7 +196,12 @@ describe('Markdown Utils', () => {
         })
       ]
 
-      const result = generateResultsTable(results)
+      const result = generateResultsTable(results, {
+        owner: 'test',
+        repo: 'test',
+        ref: 'main',
+        baseUrl: new URL('https://github.com')
+      })
 
       // Check that scores are rounded to integers
       expect(result).toContain('🟢 86') // 85.7 rounded to 86
@@ -162,8 +225,12 @@ describe('Markdown Utils', () => {
       expect(result).toContain(
         '|------|---------|---------|---------|---------|---------|------|'
       )
-      expect(result).toContain('| test1.md |')
-      expect(result).toContain('| test2.md |')
+      expect(result).toContain(
+        '| [test1.md](https://github.com/test/test/blob/main/test1.md) |'
+      )
+      expect(result).toContain(
+        '| [test2.md](https://github.com/test/test/blob/main/test2.md) |'
+      )
     })
 
     it('should handle decimal scores that round down', () => {
@@ -178,7 +245,12 @@ describe('Markdown Utils', () => {
         })
       ]
 
-      const result = generateResultsTable(results)
+      const result = generateResultsTable(results, {
+        owner: 'test',
+        repo: 'test',
+        ref: 'main',
+        baseUrl: new URL('https://github.com')
+      })
 
       expect(result).toContain('🟢 85') // 85.4 rounded to 85
       expect(result).toContain('92') // 92.1 rounded to 92
@@ -200,7 +272,12 @@ describe('Markdown Utils', () => {
         })
       ]
 
-      const result = generateResultsTable(results)
+      const result = generateResultsTable(results, {
+        owner: 'test',
+        repo: 'test',
+        ref: 'main',
+        baseUrl: new URL('https://github.com')
+      })
 
       expect(result).toContain('🟢 86') // 85.5 rounded to 86
       expect(result).toContain('93') // 92.6 rounded to 93
@@ -222,10 +299,17 @@ describe('Markdown Utils', () => {
         })
       ]
 
-      const result = generateResultsTable(results)
+      const result = generateResultsTable(results, {
+        owner: 'test',
+        repo: 'test',
+        ref: 'main',
+        baseUrl: new URL('https://github.com')
+      })
 
       expect(result).toContain('🔴 0')
-      expect(result).toContain('| test.md | 🔴 0 | 0 | 0 | 0 | 0 | 0 |')
+      expect(result).toContain(
+        '| [test.md](https://github.com/test/test/blob/main/test.md) | 🔴 0 | 0 | 0 | 0 | 0 | 0 |'
+      )
     })
 
     it('should handle perfect scores', () => {
@@ -240,11 +324,16 @@ describe('Markdown Utils', () => {
         })
       ]
 
-      const result = generateResultsTable(results)
+      const result = generateResultsTable(results, {
+        owner: 'test',
+        repo: 'test',
+        ref: 'main',
+        baseUrl: new URL('https://github.com')
+      })
 
       expect(result).toContain('🟢 100')
       expect(result).toContain(
-        '| test.md | 🟢 100 | 100 | 100 | 100 | 100 | 100 |'
+        '| [test.md](https://github.com/test/test/blob/main/test.md) | 🟢 100 | 100 | 100 | 100 | 100 | 100 |'
       )
     })
 
@@ -273,9 +362,16 @@ describe('Markdown Utils', () => {
         timestamp: '2024-01-01T00:00:00Z'
       }
 
-      const result = generateResultsTable([resultObj])
+      const result = generateResultsTable([resultObj], {
+        owner: 'test',
+        repo: 'test',
+        ref: 'main',
+        baseUrl: new URL('https://github.com')
+      })
 
-      expect(result).toContain('| notone.md | 🟡 70 | 65 | 68 | 72 | 80 | - |')
+      expect(result).toContain(
+        '| [notone.md](https://github.com/test/test/blob/main/notone.md) | 🟡 70 | 65 | 68 | 72 | 80 | - |'
+      )
     })
   })
 
@@ -446,7 +542,13 @@ describe('Markdown Utils', () => {
         results,
         mockAnalysisOptions,
         header,
-        'push'
+        'push',
+        {
+          owner: 'test',
+          repo: 'test',
+          ref: 'main',
+          baseUrl: new URL('https://github.com')
+        }
       )
 
       // Should contain all sections
@@ -470,7 +572,13 @@ describe('Markdown Utils', () => {
         [],
         mockAnalysisOptions,
         header,
-        'push'
+        'push',
+        {
+          owner: 'test',
+          repo: 'test',
+          ref: 'main',
+          baseUrl: new URL('https://github.com')
+        }
       )
 
       expect(result).toContain(header)

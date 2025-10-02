@@ -20,7 +20,8 @@ const mockGitHubContext = {
     repo: 'test-repo'
   },
   sha: 'abc123def456',
-  ref: 'refs/heads/main'
+  ref: 'refs/heads/main',
+  serverUrl: 'https://github.com'
 }
 
 jest.unstable_mockModule('@actions/github', () => ({
@@ -245,7 +246,13 @@ describe('Post Analysis Service', () => {
         expect(mockCreateJobSummary).toHaveBeenCalledWith(
           mockResults,
           mockAnalysisOptions,
-          EVENT_TYPES.WORKFLOW_DISPATCH
+          EVENT_TYPES.WORKFLOW_DISPATCH,
+          {
+            owner: 'test-owner',
+            repo: 'test-repo',
+            ref: 'refs/heads/main',
+            baseUrl: new URL('https://github.com')
+          }
         )
       })
     })
@@ -269,7 +276,13 @@ describe('Post Analysis Service', () => {
         expect(mockCreateJobSummary).toHaveBeenCalledWith(
           mockResults,
           mockAnalysisOptions,
-          EVENT_TYPES.SCHEDULE
+          EVENT_TYPES.SCHEDULE,
+          {
+            owner: 'test-owner',
+            repo: 'test-repo',
+            ref: 'refs/heads/main',
+            baseUrl: new URL('https://github.com')
+          }
         )
       })
     })
