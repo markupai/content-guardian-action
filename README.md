@@ -30,7 +30,7 @@ quality analysis with commit status updates and PR comments.
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
@@ -52,7 +52,7 @@ jobs:
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
@@ -100,7 +100,7 @@ as action inputs or environment variables:
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
@@ -115,7 +115,7 @@ permissions:
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
@@ -130,7 +130,7 @@ permissions:
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
@@ -195,7 +195,7 @@ The action automatically adapts its behavior based on the GitHub event type:
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
@@ -217,7 +217,7 @@ jobs:
 
 ```yaml
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
