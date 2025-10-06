@@ -49,7 +49,7 @@ outputs:
 
 # Define permissions required by the action
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
   statuses: write
 
