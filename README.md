@@ -152,6 +152,7 @@ permissions:
 | `style-guide`       | Style guide for analysis (for example, `ap`, `chicago`, `apa`)                                  | Yes      | -       |
 | `tone`              | Tone for analysis (for example, `formal`, `informal`, `academic`)                               | No       | -       |
 | `add_commit_status` | Whether to add commit status updates                                                            | No       | `true`  |
+| `strict_mode`       | Fail the action if any file analysis fails (default is false)                                   | No       | `false` |
 
 ## Outputs
 
@@ -238,6 +239,7 @@ jobs:
           style-guide: 'ap'
           # tone is optional
           tone: 'formal'
+          strict_mode: 'true' # Fail PR if any file analysis fails
 
       - name: Check Quality Score
         run: |
@@ -291,6 +293,34 @@ jobs:
 ```
 
 ## Analysis Configuration
+
+### Strict Mode
+
+The `strict_mode` parameter controls how the action behaves when file analysis
+fails:
+
+- **`false` (default)**: The action continues even if some files fail to
+  analyze. Only successfully analyzed files are reported.
+- **`true`**: The action fails if any file analysis fails, ensuring all files
+  must be successfully analyzed.
+
+**Use Cases:**
+
+- **Quality Gates**: Use `strict_mode: true` in pull request workflows to ensure
+  all files pass analysis before merging
+- **Monitoring**: Use `strict_mode: false` for monitoring workflows where
+  partial analysis is acceptable
+
+**Example:**
+
+```yaml
+- name: Strict Quality Check
+  uses: markupai/content-guardian-action@v1
+  with:
+    markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    strict_mode: 'true' # Fail if any file analysis fails
+```
 
 ### Dialects
 
@@ -373,6 +403,22 @@ The action gracefully handles various scenarios:
 - **Invalid commit data**: Skips problematic commits
 - **File read errors**: Logs warning and skips files
 - **Network issues**: Provides clear error messages
+- **Analysis failures**: Behavior depends on `strict_mode` setting:
+  - **`strict_mode: false`**: Continues with successfully analyzed files
+  - **`strict_mode: true`**: Fails the action if any file analysis fails
+
+### Strict Mode Error Behavior
+
+When `strict_mode: true` is enabled, the action will fail with the message "Some
+files were not analyzed" if:
+
+- Any file fails to be analyzed by the API
+- Network issues prevent file analysis
+- API errors occur during analysis
+- File content cannot be read or processed
+
+This ensures that quality gates are enforced and no files are missed during
+analysis.
 
 ## Security
 
