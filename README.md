@@ -315,11 +315,13 @@ fails:
 **Example:**
 
 ```yaml
-- name: Strict Quality Check
+- name: Analysis Quality Check
   uses: markupai/content-guardian-action@v1
   with:
     markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
     github_token: ${{ secrets.GITHUB_TOKEN }}
+    dialect: 'american_english'
+    style-guide: 'ap'
     strict_mode: 'true' # Fail if any file analysis fails
 ```
 
