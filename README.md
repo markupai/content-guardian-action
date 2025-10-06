@@ -73,6 +73,7 @@ jobs:
           # tone is optional
           tone: 'academic'
           add_commit_status: 'true'
+          strict_mode: 'false' # Continue even if some files fail to analyze
 ```
 
 ## Required Tokens
