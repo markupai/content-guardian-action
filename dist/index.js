@@ -31256,7 +31256,8 @@ const INPUT_NAMES = {
     TONE: 'tone',
     STYLE_GUIDE: 'style-guide',
     GITHUB_TOKEN: 'github_token',
-    ADD_COMMIT_STATUS: 'add_commit_status'
+    ADD_COMMIT_STATUS: 'add_commit_status',
+    STRICT_MODE: 'strict_mode'
 };
 /**
  * Environment variable names
@@ -31308,6 +31309,7 @@ function getActionConfig() {
     const dialect = getRequiredInput(INPUT_NAMES.DIALECT, 'DIALECT');
     const tone = getOptionalInput(INPUT_NAMES.TONE);
     const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, 'STYLE_GUIDE');
+    const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
     return {
         apiToken,
@@ -31315,7 +31317,8 @@ function getActionConfig() {
         dialect,
         tone,
         styleGuide,
-        addCommitStatus
+        addCommitStatus,
+        strictMode
     };
 }
 /**
@@ -35093,6 +35096,10 @@ async function runAction() {
         displaySectionHeader('🔍 Running Analysis');
         const analysisOptions = getAnalysisOptions(config);
         const results = await analyzeFiles(supportedFiles, analysisOptions, apiConfig, readFileContent);
+        if (results.length === 0) {
+            coreExports.setFailed('Failed to analyze supported files.');
+            return;
+        }
         // Display results
         displayResults(results);
         // Set outputs
@@ -35101,6 +35108,10 @@ async function runAction() {
         displaySummary(results);
         // Handle post-analysis actions based on event type
         await handlePostAnalysisActions(eventInfo, results, config, analysisOptions);
+        if (config.strictMode && results.length !== supportedFiles.length) {
+            coreExports.setFailed('Some files were not analyzed.');
+            return;
+        }
     }
     catch (error) {
         handleError(error);

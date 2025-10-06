@@ -116,6 +116,11 @@ export async function runAction(): Promise<void> {
       readFileContent
     )
 
+    if (results.length === 0) {
+      core.setFailed('Failed to analyze supported files.')
+      return
+    }
+
     // Display results
     displayResults(results)
 
@@ -127,6 +132,11 @@ export async function runAction(): Promise<void> {
 
     // Handle post-analysis actions based on event type
     await handlePostAnalysisActions(eventInfo, results, config, analysisOptions)
+
+    if (config.strictMode && results.length !== supportedFiles.length) {
+      core.setFailed('Some files were not analyzed.')
+      return
+    }
   } catch (error) {
     handleError(error)
   }
