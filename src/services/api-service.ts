@@ -134,7 +134,6 @@ export async function analyzeFilesBatch(
       finalProgress.results
     )
     if (found) {
-      batchResponse.cancel()
       throw error
     }
 
