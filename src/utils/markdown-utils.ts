@@ -2,7 +2,7 @@
  * Markdown generation utility functions for analysis results
  */
 
-import { createHash } from 'crypto'
+import { createHash } from 'node:crypto'
 import { AnalysisResult, AnalysisOptions } from '../types/index.js'
 import { getQualityEmoji, calculateScoreSummary } from './score-utils.js'
 

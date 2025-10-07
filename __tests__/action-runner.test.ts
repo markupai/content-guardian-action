@@ -42,7 +42,7 @@ const createInputMock = (strictMode: string = 'true') => {
 
 const createInputMockWithOverrides = (overrides: Record<string, string>) => {
   return (name: string) => {
-    if (Object.prototype.hasOwnProperty.call(overrides, name)) {
+    if (Object.hasOwn(overrides, name)) {
       return overrides[name]
     }
     return createInputMock()(name)
