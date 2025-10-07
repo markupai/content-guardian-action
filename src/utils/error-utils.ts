@@ -198,13 +198,14 @@ export function logError(error: unknown, context: string): void {
 
 export const isRequestEndingError = (error?: Error) => {
   if (!error) return false
+  const apiError = error as ToolkitApiError
   return (
-    error instanceof ToolkitApiError &&
-    error.statusCode &&
-    (error.statusCode === 401 ||
-      error.statusCode >= 500 ||
+    apiError.type &&
+    apiError.statusCode &&
+    (apiError.statusCode === 401 ||
+      apiError.statusCode >= 500 ||
       [ErrorType.UNAUTHORIZED_ERROR, ErrorType.INTERNAL_SERVER_ERROR].includes(
-        error.type
+        apiError.type
       ))
   )
 }

@@ -23,25 +23,10 @@ import {
   PlatformType,
   Config,
   Status,
-  ApiError as ToolkitApiError,
-  ErrorType
+  ErrorType,
+  ApiError
 } from '@markupai/toolkit'
 import { buildScores } from './test-helpers/scores.js'
-
-// Helper function to create mock API errors
-const createApiError = (
-  message: string,
-  statusCode: number,
-  type: ErrorType
-): ToolkitApiError => {
-  const error = new Error(message) as ToolkitApiError
-  Object.defineProperty(error, 'statusCode', {
-    value: statusCode,
-    writable: false
-  })
-  Object.defineProperty(error, 'type', { value: type, writable: false })
-  return error
-}
 
 describe('Markup AI Service Batch Functionality', () => {
   let mockConfig: Config
@@ -1126,11 +1111,12 @@ describe('Markup AI Service Batch Functionality', () => {
     describe('analyzeFile error handling', () => {
       it('should throw error for 401 unauthorized error from styleCheck', async () => {
         const { styleCheck } = await import('@markupai/toolkit')
-        const unauthorizedError = createApiError(
+        const unauthorizedError = new ApiError(
           'Unauthorized',
-          401,
-          ErrorType.UNAUTHORIZED_ERROR
+          ErrorType.UNAUTHORIZED_ERROR,
+          401
         )
+
         jest.mocked(styleCheck).mockRejectedValue(unauthorizedError)
 
         await expect(
@@ -1140,11 +1126,12 @@ describe('Markup AI Service Batch Functionality', () => {
 
       it('should catch and return null for 400 bad request error from styleCheck', async () => {
         const { styleCheck } = await import('@markupai/toolkit')
-        const badRequestError = createApiError(
+        const badRequestError = new ApiError(
           'Bad Request',
-          400,
-          ErrorType.VALIDATION_ERROR
+          ErrorType.VALIDATION_ERROR,
+          400
         )
+
         jest.mocked(styleCheck).mockRejectedValue(badRequestError)
 
         const result = await analyzeFile(
@@ -1161,10 +1148,10 @@ describe('Markup AI Service Batch Functionality', () => {
     describe('analyzeFilesBatch error handling', () => {
       it('should throw error for 401 unauthorized error from styleBatchCheckRequests', async () => {
         const { styleBatchCheckRequests } = await import('@markupai/toolkit')
-        const unauthorizedError = createApiError(
+        const unauthorizedError = new ApiError(
           'Unauthorized',
-          401,
-          ErrorType.UNAUTHORIZED_ERROR
+          ErrorType.UNAUTHORIZED_ERROR,
+          401
         )
 
         const mockBatchResponse = {
@@ -1229,10 +1216,10 @@ describe('Markup AI Service Batch Functionality', () => {
 
       it('should catch and return empty array for 400 bad request error from styleBatchCheckRequests', async () => {
         const { styleBatchCheckRequests } = await import('@markupai/toolkit')
-        const badRequestError = createApiError(
+        const badRequestError = new ApiError(
           'Bad Request',
-          400,
-          ErrorType.VALIDATION_ERROR
+          ErrorType.VALIDATION_ERROR,
+          400
         )
 
         const mockBatchResponse = {
