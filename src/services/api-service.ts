@@ -9,6 +9,10 @@ import { AnalysisResult, AnalysisOptions } from '../types/index.js'
 import { getFileBasename } from '../utils/file-utils.js'
 import { calculateScoreSummary, ScoreSummary } from '../utils/score-utils.js'
 import { processFileReading } from '../utils/batch-utils.js'
+import {
+  checkForRequestEndingError,
+  isRequestEndingError
+} from '../utils/error-utils.js'
 
 export function createConfig(apiToken: string): Config {
   return { apiKey: apiToken }
@@ -43,6 +47,9 @@ export async function analyzeFile(
     }
   } catch (error) {
     core.error(`Failed to run check on ${filePath}: ${error}`)
+    if (isRequestEndingError(error as Error)) {
+      throw error
+    }
     return null
   }
 }
@@ -104,6 +111,11 @@ export async function analyzeFilesBatch(
       const failed = progress.failed
       const total = progress.total
 
+      const { found } = checkForRequestEndingError(failed, progress.results)
+      if (found) {
+        batchResponse.cancel()
+      }
+
       if (completed > 0 || failed > 0) {
         core.info(
           `📊 Batch progress: ${completed}/${total} completed, ${failed} failed`
@@ -116,6 +128,15 @@ export async function analyzeFilesBatch(
 
     // Clear progress monitoring
     clearInterval(progressInterval)
+
+    const { found, error } = checkForRequestEndingError(
+      finalProgress.failed,
+      finalProgress.results
+    )
+    if (found) {
+      batchResponse.cancel()
+      throw error
+    }
 
     // Process results
     const results: AnalysisResult[] = []
@@ -141,6 +162,9 @@ export async function analyzeFilesBatch(
     return results
   } catch (error) {
     core.error(`Batch analysis failed: ${error}`)
+    if (isRequestEndingError(error as Error)) {
+      throw error
+    }
     return []
   }
 }
