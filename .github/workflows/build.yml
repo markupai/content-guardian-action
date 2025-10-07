@@ -62,7 +62,7 @@ jobs:
           style-guide: ap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY_PROD }}someWrongToken
+          MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY_PROD }}
 
       - name: Print Output
         run: echo "${{ steps.test-action.outputs.time }}"
