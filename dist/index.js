@@ -1,5 +1,5 @@
 import require$$0 from 'os';
-import require$$0$1, { createHash } from 'crypto';
+import require$$0$1 from 'crypto';
 import require$$1 from 'fs';
 import require$$1$5 from 'path';
 import require$$2$1 from 'http';
@@ -29,6 +29,7 @@ import require$$2$3 from 'child_process';
 import require$$6$1 from 'timers';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
