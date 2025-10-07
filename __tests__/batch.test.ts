@@ -4,11 +4,15 @@ import * as core from '../__fixtures__/core.js'
 // Mock @actions/core
 jest.unstable_mockModule('@actions/core', () => core)
 
-jest.unstable_mockModule('@markupai/toolkit', () => ({
-  styleCheck: jest.fn(),
-  styleBatchCheckRequests: jest.fn(),
-  Config: jest.fn()
-}))
+jest.unstable_mockModule('@markupai/toolkit', () => {
+  const originalModule = jest.requireActual('@markupai/toolkit')
+  return {
+    ...(originalModule as object),
+    styleCheck: jest.fn(),
+    styleBatchCheckRequests: jest.fn(),
+    Config: jest.fn()
+  }
+})
 
 // Import the module after mocking
 const { analyzeFiles, analyzeFilesBatch } = await import(
