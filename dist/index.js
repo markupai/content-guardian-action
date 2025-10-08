@@ -35035,6 +35035,66 @@ function displaySectionHeader(title) {
  * Post-analysis service for handling actions after analysis
  */
 /**
+ * Handle push event: update commit status if enabled
+ */
+async function handlePushEvent(octokit, owner, repo, summary, results, addCommitStatus) {
+    if (!addCommitStatus) {
+        coreExports.info('📊 Commit status update disabled by configuration');
+        return;
+    }
+    displaySectionHeader('📊 Updating Commit Status');
+    try {
+        await updateCommitStatus(octokit, owner, repo, githubExports.context.sha, summary.averageQualityScore, results.length);
+    }
+    catch (error) {
+        coreExports.error(`Failed to update commit status: ${error}`);
+    }
+}
+/**
+ * Handle workflow dispatch or schedule event: create job summary
+ */
+async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysisOptions, eventType) {
+    displaySectionHeader('📋 Creating Job Summary');
+    try {
+        const context = {
+            owner,
+            repo,
+            ref,
+            baseUrl: new URL(githubExports.context.serverUrl)
+        };
+        await createJobSummary(results, analysisOptions, eventType, context);
+    }
+    catch (error) {
+        coreExports.error(`Failed to create job summary: ${error}`);
+    }
+}
+/**
+ * Handle pull request event: create or update PR comment
+ */
+async function handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, eventType) {
+    if (!isPullRequestEvent()) {
+        return;
+    }
+    const prNumber = getPRNumber();
+    if (!prNumber) {
+        return;
+    }
+    displaySectionHeader('💬 Creating PR Comment');
+    try {
+        await createOrUpdatePRComment(octokit, {
+            owner,
+            repo,
+            prNumber,
+            results,
+            config: analysisOptions,
+            eventType
+        });
+    }
+    catch (error) {
+        coreExports.error(`Failed to create PR comment: ${error}`);
+    }
+}
+/**
  * Handle post-analysis actions based on event type
  */
 async function handlePostAnalysisActions(eventInfo, results, config, analysisOptions) {
@@ -35046,61 +35106,16 @@ async function handlePostAnalysisActions(eventInfo, results, config, analysisOpt
     const octokit = createGitHubClient(config.githubToken);
     const { owner, repo } = githubExports.context.repo;
     const ref = githubExports.context.ref;
-    // Handle different event types
     switch (eventInfo.eventType) {
         case EVENT_TYPES.PUSH:
-            // Update commit status for push events (if enabled)
-            if (config.addCommitStatus) {
-                displaySectionHeader('📊 Updating Commit Status');
-                try {
-                    await updateCommitStatus(octokit, owner, repo, githubExports.context.sha, summary.averageQualityScore, results.length);
-                }
-                catch (error) {
-                    coreExports.error(`Failed to update commit status: ${error}`);
-                }
-            }
-            else {
-                coreExports.info('📊 Commit status update disabled by configuration');
-            }
+            await handlePushEvent(octokit, owner, repo, summary, results, config.addCommitStatus);
             break;
         case EVENT_TYPES.WORKFLOW_DISPATCH:
         case EVENT_TYPES.SCHEDULE:
-            // Create job summary for manual/scheduled workflows
-            displaySectionHeader('📋 Creating Job Summary');
-            try {
-                const context = {
-                    owner,
-                    repo,
-                    ref,
-                    baseUrl: new URL(githubExports.context.serverUrl)
-                };
-                await createJobSummary(results, analysisOptions, eventInfo.eventType, context);
-            }
-            catch (error) {
-                coreExports.error(`Failed to create job summary: ${error}`);
-            }
+            await handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysisOptions, eventInfo.eventType);
             break;
         case EVENT_TYPES.PULL_REQUEST:
-            // Handle PR comments for pull request events
-            if (isPullRequestEvent()) {
-                const prNumber = getPRNumber();
-                if (prNumber) {
-                    displaySectionHeader('💬 Creating PR Comment');
-                    try {
-                        await createOrUpdatePRComment(octokit, {
-                            owner,
-                            repo,
-                            prNumber,
-                            results,
-                            config: analysisOptions,
-                            eventType: eventInfo.eventType
-                        });
-                    }
-                    catch (error) {
-                        coreExports.error(`Failed to create PR comment: ${error}`);
-                    }
-                }
-            }
+            await handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, eventInfo.eventType);
             break;
         default:
             coreExports.info(`No specific post-analysis actions for event type: ${eventInfo.eventType}`);

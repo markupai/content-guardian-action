@@ -463,8 +463,8 @@ npm test
 # Run with coverage
 npm run test:coverage
 
-# Check formatting
-npm run format:check
+# Format code
+npm run format
 
 # Lint code
 npm run lint
