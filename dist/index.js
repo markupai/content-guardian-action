@@ -34280,11 +34280,127 @@ async function processFileReading(filePaths, readFileContent, config = DEFAULT_B
     return fileContents.filter((item) => item !== null);
 }
 
+/**
+ * Centralized error handling and retry utilities
+ */
+/**
+ * Default retry configuration
+ */
+const DEFAULT_RETRY_CONFIG = {
+    maxRetries: 3,
+    baseDelay: 1_000,
+    maxDelay: 10_000,
+    backoffMultiplier: 2
+};
+/**
+ * Error types for better error handling
+ */
+class GitHubAPIError extends Error {
+    status;
+    code;
+    constructor(message, status, code) {
+        super(message);
+        this.status = status;
+        this.code = code;
+        this.name = 'GitHubAPIError';
+    }
+}
+/**
+ * Utility function for delay with exponential backoff
+ */
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+/**
+ * Calculate delay with exponential backoff
+ */
+function calculateBackoffDelay(attempt, config) {
+    const delay = config.baseDelay * Math.pow(config.backoffMultiplier, attempt - 1);
+    return Math.min(delay, config.maxDelay);
+}
+/**
+ * Generic retry function with exponential backoff
+ */
+async function withRetry(operation, config = DEFAULT_RETRY_CONFIG, operationName = 'Operation') {
+    let lastError = null;
+    for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
+        try {
+            return await operation();
+        }
+        catch (error) {
+            lastError = error instanceof Error ? error : new Error(String(error));
+            if (attempt === config.maxRetries) {
+                coreExports.error(`${operationName} failed after ${config.maxRetries} attempts: ${lastError.message}`);
+                throw lastError;
+            }
+            const backoffDelay = calculateBackoffDelay(attempt, config);
+            coreExports.warning(`Attempt ${attempt} failed for ${operationName}, retrying in ${backoffDelay}ms... Error: ${lastError.message}`);
+            await delay(backoffDelay);
+        }
+    }
+    // This should never be reached, but TypeScript requires it
+    throw lastError || new Error(`${operationName} failed`);
+}
+/**
+ * Handle GitHub API errors with proper typing
+ */
+function handleGitHubError(error, context) {
+    if (error instanceof GitHubAPIError) {
+        return error;
+    }
+    if (error && typeof error === 'object' && 'status' in error) {
+        const githubError = error;
+        return new GitHubAPIError(`${context}: ${githubError.message || 'Unknown GitHub API error'}`, githubError.status);
+    }
+    return new GitHubAPIError(`${context}: ${error instanceof Error ? error.message : String(error)}`);
+}
+/**
+ * Log error with context
+ */
+function logError(error, context) {
+    if (error instanceof Error) {
+        coreExports.error(`${context}: ${error.message}`);
+        if (error.stack) {
+            coreExports.debug(`Stack trace: ${error.stack}`);
+        }
+    }
+    else {
+        coreExports.error(`${context}: ${String(error)}`);
+    }
+}
+const isRequestEndingError = (error) => {
+    if (!error)
+        return false;
+    const apiError = error;
+    const typeIsEnding = !!(apiError.type &&
+        [B.UNAUTHORIZED_ERROR, B.INTERNAL_SERVER_ERROR].includes(apiError.type));
+    const statusCodeIsEnding = typeof apiError.statusCode === 'number' &&
+        (apiError.statusCode === 401 || apiError.statusCode >= 500);
+    return typeIsEnding || statusCodeIsEnding;
+};
+const checkForRequestEndingError = (failed, results) => {
+    if (failed > 0) {
+        for (const result of results) {
+            if (result.status === 'failed' && isRequestEndingError(result.error)) {
+                return {
+                    found: true,
+                    error: result.error
+                };
+            }
+        }
+    }
+    return {
+        found: false,
+        error: null
+    };
+};
+
 function createConfig(apiToken) {
     return { apiKey: apiToken };
 }
 /**
  * Run style check on a single file
+ * Throws an error if the error is an auth or server issue.
  */
 async function analyzeFile(filePath, content, options, config) {
     try {
@@ -34305,11 +34421,14 @@ async function analyzeFile(filePath, content, options, config) {
     }
     catch (error) {
         coreExports.error(`Failed to run check on ${filePath}: ${error}`);
+        if (isRequestEndingError(error)) {
+            throw error;
+        }
         return null;
     }
 }
 /**
- * Run analysis on multiple files using batch processing
+ * Run analysis on multiple files using batch processing. Throws an error if the error is an auth or server issue.
  */
 async function analyzeFilesBatch(files, options, config, readFileContent) {
     if (files.length === 0) {
@@ -34346,6 +34465,10 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
             const completed = progress.completed;
             const failed = progress.failed;
             const total = progress.total;
+            const { found } = checkForRequestEndingError(failed, progress.results);
+            if (found) {
+                batchResponse.cancel();
+            }
             if (completed > 0 || failed > 0) {
                 coreExports.info(`📊 Batch progress: ${completed}/${total} completed, ${failed} failed`);
             }
@@ -34354,6 +34477,10 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
         const finalProgress = await batchResponse.promise;
         // Clear progress monitoring
         clearInterval(progressInterval);
+        const { found, error } = checkForRequestEndingError(finalProgress.failed, finalProgress.results);
+        if (found) {
+            throw error;
+        }
         // Process results
         const results = [];
         for (const [index, batchResult] of finalProgress.results.entries()) {
@@ -34373,13 +34500,16 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     }
     catch (error) {
         coreExports.error(`Batch analysis failed: ${error}`);
+        if (isRequestEndingError(error)) {
+            throw error;
+        }
         return [];
     }
 }
 /**
  * Run analysis on multiple files
  *
- * Uses batch processing for multiple files and sequential processing for small batches
+ * Uses batch processing for multiple files and sequential processing for small batches. Throws an error if the error is an auth or server issue.
  */
 async function analyzeFiles(files, options, config, readFileContent) {
     // For small batches, use sequential processing
@@ -34503,95 +34633,6 @@ ${table}
 ${summary}
 
 ${footer}`;
-}
-
-/**
- * Centralized error handling and retry utilities
- */
-/**
- * Default retry configuration
- */
-const DEFAULT_RETRY_CONFIG = {
-    maxRetries: 3,
-    baseDelay: 1_000,
-    maxDelay: 10_000,
-    backoffMultiplier: 2
-};
-/**
- * Error types for better error handling
- */
-class GitHubAPIError extends Error {
-    status;
-    code;
-    constructor(message, status, code) {
-        super(message);
-        this.status = status;
-        this.code = code;
-        this.name = 'GitHubAPIError';
-    }
-}
-/**
- * Utility function for delay with exponential backoff
- */
-function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-/**
- * Calculate delay with exponential backoff
- */
-function calculateBackoffDelay(attempt, config) {
-    const delay = config.baseDelay * Math.pow(config.backoffMultiplier, attempt - 1);
-    return Math.min(delay, config.maxDelay);
-}
-/**
- * Generic retry function with exponential backoff
- */
-async function withRetry(operation, config = DEFAULT_RETRY_CONFIG, operationName = 'Operation') {
-    let lastError = null;
-    for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
-        try {
-            return await operation();
-        }
-        catch (error) {
-            lastError = error instanceof Error ? error : new Error(String(error));
-            if (attempt === config.maxRetries) {
-                coreExports.error(`${operationName} failed after ${config.maxRetries} attempts: ${lastError.message}`);
-                throw lastError;
-            }
-            const backoffDelay = calculateBackoffDelay(attempt, config);
-            coreExports.warning(`Attempt ${attempt} failed for ${operationName}, retrying in ${backoffDelay}ms... Error: ${lastError.message}`);
-            await delay(backoffDelay);
-        }
-    }
-    // This should never be reached, but TypeScript requires it
-    throw lastError || new Error(`${operationName} failed`);
-}
-/**
- * Handle GitHub API errors with proper typing
- */
-function handleGitHubError(error, context) {
-    if (error instanceof GitHubAPIError) {
-        return error;
-    }
-    if (error && typeof error === 'object' && 'status' in error) {
-        const githubError = error;
-        return new GitHubAPIError(`${context}: ${githubError.message || 'Unknown GitHub API error'}`, githubError.status);
-    }
-    return new GitHubAPIError(`${context}: ${error instanceof Error ? error.message : String(error)}`);
-}
-/**
- * Log error with context
- */
-function logError(error, context) {
-    if (error instanceof Error) {
-        coreExports.error(`${context}: ${error.message}`);
-        if (error.stack) {
-            coreExports.debug(`Stack trace: ${error.stack}`);
-        }
-    }
-    else {
-        coreExports.error(`${context}: ${String(error)}`);
-    }
 }
 
 /**
