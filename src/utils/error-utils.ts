@@ -199,13 +199,14 @@ export function logError(error: unknown, context: string): void {
 export const isRequestEndingError = (error?: Error) => {
   if (!error) return false
   const apiError = error as ToolkitApiError
-  const typeIsEnding =
+  const typeIsEnding = !!(
     apiError.type &&
     [ErrorType.UNAUTHORIZED_ERROR, ErrorType.INTERNAL_SERVER_ERROR].includes(
       apiError.type
     )
+  )
   const statusCodeIsEnding =
-    apiError.statusCode &&
+    typeof apiError.statusCode === 'number' &&
     (apiError.statusCode === 401 || apiError.statusCode >= 500)
   return typeIsEnding || statusCodeIsEnding
 }

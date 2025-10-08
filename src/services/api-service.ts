@@ -20,6 +20,7 @@ export function createConfig(apiToken: string): Config {
 
 /**
  * Run style check on a single file
+ * Throws an error if the error is an auth or server issue.
  */
 export async function analyzeFile(
   filePath: string,
@@ -55,7 +56,7 @@ export async function analyzeFile(
 }
 
 /**
- * Run analysis on multiple files using batch processing
+ * Run analysis on multiple files using batch processing. Throws an error if the error is an auth or server issue.
  */
 export async function analyzeFilesBatch(
   files: string[],
@@ -171,7 +172,7 @@ export async function analyzeFilesBatch(
 /**
  * Run analysis on multiple files
  *
- * Uses batch processing for multiple files and sequential processing for small batches
+ * Uses batch processing for multiple files and sequential processing for small batches. Throws an error if the error is an auth or server issue.
  */
 export async function analyzeFiles(
   files: string[],
