@@ -9,6 +9,10 @@ import { AnalysisResult, AnalysisOptions } from '../types/index.js'
 import { getFileBasename } from '../utils/file-utils.js'
 import { calculateScoreSummary, ScoreSummary } from '../utils/score-utils.js'
 import { processFileReading } from '../utils/batch-utils.js'
+import {
+  checkForRequestEndingError,
+  isRequestEndingError
+} from '../utils/error-utils.js'
 
 export function createConfig(apiToken: string): Config {
   return { apiKey: apiToken }
@@ -16,6 +20,7 @@ export function createConfig(apiToken: string): Config {
 
 /**
  * Run style check on a single file
+ * Throws an error if the error is an auth or server issue.
  */
 export async function analyzeFile(
   filePath: string,
@@ -43,12 +48,15 @@ export async function analyzeFile(
     }
   } catch (error) {
     core.error(`Failed to run check on ${filePath}: ${error}`)
+    if (isRequestEndingError(error as Error)) {
+      throw error
+    }
     return null
   }
 }
 
 /**
- * Run analysis on multiple files using batch processing
+ * Run analysis on multiple files using batch processing. Throws an error if the error is an auth or server issue.
  */
 export async function analyzeFilesBatch(
   files: string[],
@@ -104,6 +112,11 @@ export async function analyzeFilesBatch(
       const failed = progress.failed
       const total = progress.total
 
+      const { found } = checkForRequestEndingError(failed, progress.results)
+      if (found) {
+        batchResponse.cancel()
+      }
+
       if (completed > 0 || failed > 0) {
         core.info(
           `📊 Batch progress: ${completed}/${total} completed, ${failed} failed`
@@ -116,6 +129,14 @@ export async function analyzeFilesBatch(
 
     // Clear progress monitoring
     clearInterval(progressInterval)
+
+    const { found, error } = checkForRequestEndingError(
+      finalProgress.failed,
+      finalProgress.results
+    )
+    if (found) {
+      throw error
+    }
 
     // Process results
     const results: AnalysisResult[] = []
@@ -141,6 +162,9 @@ export async function analyzeFilesBatch(
     return results
   } catch (error) {
     core.error(`Batch analysis failed: ${error}`)
+    if (isRequestEndingError(error as Error)) {
+      throw error
+    }
     return []
   }
 }
@@ -148,7 +172,7 @@ export async function analyzeFilesBatch(
 /**
  * Run analysis on multiple files
  *
- * Uses batch processing for multiple files and sequential processing for small batches
+ * Uses batch processing for multiple files and sequential processing for small batches. Throws an error if the error is an auth or server issue.
  */
 export async function analyzeFiles(
   files: string[],

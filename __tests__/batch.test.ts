@@ -4,18 +4,28 @@ import * as core from '../__fixtures__/core.js'
 // Mock @actions/core
 jest.unstable_mockModule('@actions/core', () => core)
 
-jest.unstable_mockModule('@markupai/toolkit', () => ({
-  styleCheck: jest.fn(),
-  styleBatchCheckRequests: jest.fn(),
-  Config: jest.fn()
-}))
+jest.unstable_mockModule('@markupai/toolkit', () => {
+  const originalModule = jest.requireActual('@markupai/toolkit')
+  return {
+    ...(originalModule as object),
+    styleCheck: jest.fn(),
+    styleBatchCheckRequests: jest.fn(),
+    Config: jest.fn()
+  }
+})
 
 // Import the module after mocking
-const { analyzeFiles, analyzeFilesBatch } = await import(
+const { analyzeFile, analyzeFiles, analyzeFilesBatch } = await import(
   '../src/services/api-service.js'
 )
 import type { AnalysisOptions } from '../src/types/index.js'
-import { PlatformType, Config, Status } from '@markupai/toolkit'
+import {
+  PlatformType,
+  Config,
+  Status,
+  ErrorType,
+  ApiError
+} from '@markupai/toolkit'
 import { buildScores } from './test-helpers/scores.js'
 
 describe('Markup AI Service Batch Functionality', () => {
@@ -1094,6 +1104,183 @@ describe('Markup AI Service Batch Functionality', () => {
 
       expect(styleBatchCheckRequests).toHaveBeenCalledTimes(1)
       expect(result).toHaveLength(4)
+    })
+  })
+
+  describe('Error handling for API errors', () => {
+    describe('analyzeFile error handling', () => {
+      it('should throw error for 401 unauthorized error from styleCheck', async () => {
+        const { styleCheck } = await import('@markupai/toolkit')
+        const unauthorizedError = new ApiError(
+          'Unauthorized',
+          ErrorType.UNAUTHORIZED_ERROR,
+          401
+        )
+
+        jest.mocked(styleCheck).mockRejectedValue(unauthorizedError)
+
+        await expect(
+          analyzeFile('test.txt', 'test content', mockOptions, mockConfig)
+        ).rejects.toThrow('Unauthorized')
+      })
+
+      it('should catch and return null for 400 bad request error from styleCheck', async () => {
+        const { styleCheck } = await import('@markupai/toolkit')
+        const badRequestError = new ApiError(
+          'Bad Request',
+          ErrorType.VALIDATION_ERROR,
+          400
+        )
+
+        jest.mocked(styleCheck).mockRejectedValue(badRequestError)
+
+        const result = await analyzeFile(
+          'test.txt',
+          'test content',
+          mockOptions,
+          mockConfig
+        )
+
+        expect(result).toBeNull()
+      })
+    })
+
+    describe('analyzeFilesBatch error handling', () => {
+      it('should throw error for 401 unauthorized error from styleBatchCheckRequests', async () => {
+        const { styleBatchCheckRequests } = await import('@markupai/toolkit')
+        const unauthorizedError = new ApiError(
+          'Unauthorized',
+          ErrorType.UNAUTHORIZED_ERROR,
+          401
+        )
+
+        const mockBatchResponse = {
+          progress: {
+            total: 1,
+            completed: 0,
+            failed: 1,
+            inProgress: 0,
+            pending: 0,
+            results: [
+              {
+                index: 0,
+                status: 'failed' as const,
+                request: {
+                  content: 'Test content for file1.txt',
+                  dialect: 'en-US',
+                  tone: 'formal',
+                  style_guide: 'microsoft',
+                  documentName: 'file1.txt'
+                },
+                error: unauthorizedError
+              }
+            ],
+            startTime: Date.now()
+          },
+          promise: Promise.resolve({
+            total: 1,
+            completed: 0,
+            failed: 1,
+            inProgress: 0,
+            pending: 0,
+            results: [
+              {
+                index: 0,
+                status: 'failed' as const,
+                request: {
+                  content: 'Test content for file1.txt',
+                  dialect: 'en-US',
+                  tone: 'formal',
+                  style_guide: 'microsoft',
+                  documentName: 'file1.txt'
+                },
+                error: unauthorizedError
+              }
+            ],
+            startTime: Date.now()
+          }),
+          cancel: jest.fn()
+        }
+
+        jest.mocked(styleBatchCheckRequests).mockReturnValue(mockBatchResponse)
+
+        await expect(
+          analyzeFilesBatch(
+            ['file1.txt'],
+            mockOptions,
+            mockConfig,
+            mockReadFileContent
+          )
+        ).rejects.toThrow('Unauthorized')
+      })
+
+      it('should catch and return empty array for 400 bad request error from styleBatchCheckRequests', async () => {
+        const { styleBatchCheckRequests } = await import('@markupai/toolkit')
+        const badRequestError = new ApiError(
+          'Bad Request',
+          ErrorType.VALIDATION_ERROR,
+          400
+        )
+
+        const mockBatchResponse = {
+          progress: {
+            total: 1,
+            completed: 0,
+            failed: 1,
+            inProgress: 0,
+            pending: 0,
+            results: [
+              {
+                index: 0,
+                status: 'failed' as const,
+                request: {
+                  content: 'Test content for file1.txt',
+                  dialect: 'en-US',
+                  tone: 'formal',
+                  style_guide: 'microsoft',
+                  documentName: 'file1.txt'
+                },
+                error: badRequestError
+              }
+            ],
+            startTime: Date.now()
+          },
+          promise: Promise.resolve({
+            total: 1,
+            completed: 0,
+            failed: 1,
+            inProgress: 0,
+            pending: 0,
+            results: [
+              {
+                index: 0,
+                status: 'failed' as const,
+                request: {
+                  content: 'Test content for file1.txt',
+                  dialect: 'en-US',
+                  tone: 'formal',
+                  style_guide: 'microsoft',
+                  documentName: 'file1.txt'
+                },
+                error: badRequestError
+              }
+            ],
+            startTime: Date.now()
+          }),
+          cancel: jest.fn()
+        }
+
+        jest.mocked(styleBatchCheckRequests).mockReturnValue(mockBatchResponse)
+
+        const result = await analyzeFilesBatch(
+          ['file1.txt'],
+          mockOptions,
+          mockConfig,
+          mockReadFileContent
+        )
+
+        expect(result).toEqual([])
+      })
     })
   })
 })

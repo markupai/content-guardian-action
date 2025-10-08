@@ -3,6 +3,11 @@
  */
 
 import * as core from '@actions/core'
+import {
+  BatchResult,
+  ErrorType,
+  ApiError as ToolkitApiError
+} from '@markupai/toolkit'
 
 /**
  * Retry configuration options
@@ -188,5 +193,40 @@ export function logError(error: unknown, context: string): void {
     }
   } else {
     core.error(`${context}: ${String(error)}`)
+  }
+}
+
+export const isRequestEndingError = (error?: Error) => {
+  if (!error) return false
+  const apiError = error as ToolkitApiError
+  const typeIsEnding = !!(
+    apiError.type &&
+    [ErrorType.UNAUTHORIZED_ERROR, ErrorType.INTERNAL_SERVER_ERROR].includes(
+      apiError.type
+    )
+  )
+  const statusCodeIsEnding =
+    typeof apiError.statusCode === 'number' &&
+    (apiError.statusCode === 401 || apiError.statusCode >= 500)
+  return typeIsEnding || statusCodeIsEnding
+}
+
+export const checkForRequestEndingError = (
+  failed: number,
+  results: BatchResult[]
+) => {
+  if (failed > 0) {
+    for (const result of results) {
+      if (result.status === 'failed' && isRequestEndingError(result.error)) {
+        return {
+          found: true,
+          error: result.error
+        }
+      }
+    }
+  }
+  return {
+    found: false,
+    error: null
   }
 }
