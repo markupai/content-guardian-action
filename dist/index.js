@@ -31247,56 +31247,56 @@ var githubExports = requireGithub();
 /**
  * Application constants and configuration
  */
-const SUPPORTED_EXTENSIONS = ['.md', '.txt', '.markdown'];
+const SUPPORTED_EXTENSIONS = [".md", ".txt", ".markdown"];
 /**
  * Input names for GitHub Actions
  */
 const INPUT_NAMES = {
-    MARKUP_AI_API_KEY: 'markup_ai_api_key',
-    DIALECT: 'dialect',
-    TONE: 'tone',
-    STYLE_GUIDE: 'style-guide',
-    GITHUB_TOKEN: 'github_token',
-    ADD_COMMIT_STATUS: 'add_commit_status',
-    STRICT_MODE: 'strict_mode'
+    MARKUP_AI_API_KEY: "markup_ai_api_key",
+    DIALECT: "dialect",
+    TONE: "tone",
+    STYLE_GUIDE: "style-guide",
+    GITHUB_TOKEN: "github_token",
+    ADD_COMMIT_STATUS: "add_commit_status",
+    STRICT_MODE: "strict_mode",
 };
 /**
  * Environment variable names
  */
 const ENV_VARS = {
-    MARKUP_AI_API_KEY: 'MARKUP_AI_API_KEY',
-    GITHUB_TOKEN: 'GITHUB_TOKEN'
+    MARKUP_AI_API_KEY: "MARKUP_AI_API_KEY",
+    GITHUB_TOKEN: "GITHUB_TOKEN",
 };
 /**
  * Output names for GitHub Actions
  */
 const OUTPUT_NAMES = {
-    EVENT_TYPE: 'event-type',
-    FILES_ANALYZED: 'files-analyzed',
-    RESULTS: 'results'
+    EVENT_TYPE: "event-type",
+    FILES_ANALYZED: "files-analyzed",
+    RESULTS: "results",
 };
 /**
  * Event types supported by the action
  */
 const EVENT_TYPES = {
-    PUSH: 'push',
-    PULL_REQUEST: 'pull_request',
-    WORKFLOW_DISPATCH: 'workflow_dispatch',
-    SCHEDULE: 'schedule'
+    PUSH: "push",
+    PULL_REQUEST: "pull_request",
+    WORKFLOW_DISPATCH: "workflow_dispatch",
+    SCHEDULE: "schedule",
 };
 /**
  * Display constants
  */
 const DISPLAY = {
     MAX_FILES_TO_SHOW: 10,
-    SEPARATOR_LENGTH: 50
+    SEPARATOR_LENGTH: 50,
 };
 /**
  * Error messages
  */
 const ERROR_MESSAGES = {
-    API_TOKEN_REQUIRED: 'API token is required',
-    GITHUB_TOKEN_WARNING: 'GitHub token not provided. Cannot fetch commit information.'};
+    API_TOKEN_REQUIRED: "API token is required",
+    GITHUB_TOKEN_WARNING: "GitHub token not provided. Cannot fetch commit information."};
 
 /**
  * Action configuration and input validation
@@ -31307,9 +31307,9 @@ const ERROR_MESSAGES = {
 function getActionConfig() {
     const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
     const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
-    const dialect = getRequiredInput(INPUT_NAMES.DIALECT, 'DIALECT');
+    const dialect = getRequiredInput(INPUT_NAMES.DIALECT, "DIALECT");
     const tone = getOptionalInput(INPUT_NAMES.TONE);
-    const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, 'STYLE_GUIDE');
+    const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
     return {
@@ -31319,7 +31319,7 @@ function getActionConfig() {
         tone,
         styleGuide,
         addCommitStatus,
-        strictMode
+        strictMode,
     };
 }
 /**
@@ -31329,7 +31329,7 @@ function getAnalysisOptions(config) {
     return {
         dialect: config.dialect,
         tone: config.tone,
-        styleGuide: config.styleGuide
+        styleGuide: config.styleGuide,
     };
 }
 /**
@@ -31347,17 +31347,17 @@ function getRequiredInput(inputName, envVarName) {
  */
 function getOptionalInput(inputName) {
     const value = coreExports.getInput(inputName) || process.env[inputName.toUpperCase()];
-    return value === undefined || value === '' ? undefined : value;
+    return value === undefined || value === "" ? undefined : value;
 }
 /**
  * Get a boolean input value with fallback to environment variable and default
  */
 function getBooleanInput(inputName, defaultValue) {
     const value = coreExports.getInput(inputName) || process.env[inputName.toUpperCase()];
-    if (value === undefined || value === '') {
+    if (value === undefined || value === "") {
         return defaultValue;
     }
-    return value.toLowerCase() === 'true';
+    return value.toLowerCase() === "true";
 }
 /**
  * Validate configuration
@@ -31370,8 +31370,8 @@ function validateConfig(config) {
         coreExports.warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
     }
     // Validate required analysis options
-    validateAnalysisOption('dialect', config.dialect);
-    validateAnalysisOption('style_guide', config.styleGuide);
+    validateAnalysisOption("dialect", config.dialect);
+    validateAnalysisOption("style_guide", config.styleGuide);
 }
 /**
  * Validate individual analysis option
@@ -31385,12 +31385,12 @@ function validateAnalysisOption(name, value) {
  * Log configuration (without sensitive data)
  */
 function logConfiguration(config) {
-    coreExports.info('🔧 Action Configuration:');
+    coreExports.info("🔧 Action Configuration:");
     coreExports.info(`  Dialect: ${config.dialect}`);
-    coreExports.info(`  Tone: ${config.tone ?? ''}`);
+    coreExports.info(`  Tone: ${config.tone ?? ""}`);
     coreExports.info(`  Style Guide: ${config.styleGuide}`);
-    coreExports.info(`  API Token: ${config.apiToken ? '[PROVIDED]' : '[MISSING]'}`);
-    coreExports.info(`  GitHub Token: ${config.githubToken ? '[PROVIDED]' : '[MISSING]'}`);
+    coreExports.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
+    coreExports.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
 }
 
 var I = /* @__PURE__ */ ((n) => (n.Check = "check", n.Suggestions = "suggestions", n.Rewrite = "rewrite", n))(I || {});
@@ -34116,7 +34116,7 @@ function isSupportedFile(filename) {
  */
 async function readFileContent(filePath) {
     try {
-        const content = await fs.readFile(filePath, 'utf-8');
+        const content = await fs.readFile(filePath, "utf-8");
         return content;
     }
     catch (error) {
@@ -34150,19 +34150,19 @@ const QUALITY_THRESHOLDS = {
  * Quality emoji mapping
  */
 const QUALITY_EMOJIS = {
-    EXCELLENT: '🟢',
-    GOOD: '🟡',
-    POOR: '🔴'
+    EXCELLENT: "🟢",
+    GOOD: "🟡",
+    POOR: "🔴",
 };
 /**
  * Get quality status based on score
  */
 function getQualityStatus(score) {
     if (score >= QUALITY_THRESHOLDS.EXCELLENT)
-        return 'success';
+        return "success";
     if (score >= QUALITY_THRESHOLDS.GOOD)
-        return 'failure';
-    return 'error';
+        return "failure";
+    return "error";
 }
 /**
  * Get quality emoji based on score
@@ -34195,14 +34195,14 @@ function calculateScoreSummary(results) {
             averageToneScore: 0,
             averageGrammarScore: 0,
             averageConsistencyScore: 0,
-            averageTerminologyScore: 0
+            averageTerminologyScore: 0,
         };
     }
     const qualityScores = results.map((r) => r.result.quality.score);
     const clarityScores = results.map((r) => r.result.analysis.clarity.score);
     const toneScores = results
         .map((r) => r.result.analysis.tone?.score)
-        .filter((score) => typeof score === 'number');
+        .filter((score) => typeof score === "number");
     const grammarScores = results.map((r) => r.result.quality.grammar.score);
     const consistencyScores = results.map((r) => r.result.quality.consistency.score);
     const terminologyScores = results.map((r) => r.result.quality.terminology.score);
@@ -34213,7 +34213,7 @@ function calculateScoreSummary(results) {
         averageToneScore: calculateAverageScore(toneScores),
         averageGrammarScore: calculateAverageScore(grammarScores),
         averageConsistencyScore: calculateAverageScore(consistencyScores),
-        averageTerminologyScore: calculateAverageScore(terminologyScores)
+        averageTerminologyScore: calculateAverageScore(terminologyScores),
     };
 }
 
@@ -34226,7 +34226,7 @@ function calculateScoreSummary(results) {
 const DEFAULT_BATCH_CONFIG = {
     maxConcurrent: 100,
     batchSize: 50,
-    delayBetweenBatches: 1_000
+    delayBetweenBatches: 1_000,
 };
 /**
  * Process items in batches with concurrency control
@@ -34244,7 +34244,7 @@ async function processBatch(items, processor, config = DEFAULT_BATCH_CONFIG) {
         const batchResults = await Promise.allSettled(batch.map((item) => processor(item)));
         // Process results
         for (const [index, result] of batchResults.entries()) {
-            if (result.status === 'fulfilled') {
+            if (result.status === "fulfilled") {
                 results.push(result.value);
             }
             else {
@@ -34290,7 +34290,7 @@ const DEFAULT_RETRY_CONFIG = {
     maxRetries: 3,
     baseDelay: 1_000,
     maxDelay: 10_000,
-    backoffMultiplier: 2
+    backoffMultiplier: 2,
 };
 /**
  * Error types for better error handling
@@ -34302,7 +34302,7 @@ class GitHubAPIError extends Error {
         super(message);
         this.status = status;
         this.code = code;
-        this.name = 'GitHubAPIError';
+        this.name = "GitHubAPIError";
     }
 }
 /**
@@ -34321,7 +34321,7 @@ function calculateBackoffDelay(attempt, config) {
 /**
  * Generic retry function with exponential backoff
  */
-async function withRetry(operation, config = DEFAULT_RETRY_CONFIG, operationName = 'Operation') {
+async function withRetry(operation, config = DEFAULT_RETRY_CONFIG, operationName = "Operation") {
     let lastError = null;
     for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
         try {
@@ -34348,9 +34348,9 @@ function handleGitHubError(error, context) {
     if (error instanceof GitHubAPIError) {
         return error;
     }
-    if (error && typeof error === 'object' && 'status' in error) {
+    if (error && typeof error === "object" && "status" in error) {
         const githubError = error;
-        return new GitHubAPIError(`${context}: ${githubError.message || 'Unknown GitHub API error'}`, githubError.status);
+        return new GitHubAPIError(`${context}: ${githubError.message || "Unknown GitHub API error"}`, githubError.status);
     }
     return new GitHubAPIError(`${context}: ${error instanceof Error ? error.message : String(error)}`);
 }
@@ -34374,24 +34374,24 @@ const isRequestEndingError = (error) => {
     const apiError = error;
     const typeIsEnding = !!(apiError.type &&
         [B.UNAUTHORIZED_ERROR, B.INTERNAL_SERVER_ERROR].includes(apiError.type));
-    const statusCodeIsEnding = typeof apiError.statusCode === 'number' &&
+    const statusCodeIsEnding = typeof apiError.statusCode === "number" &&
         (apiError.statusCode === 401 || apiError.statusCode >= 500);
     return typeIsEnding || statusCodeIsEnding;
 };
 const checkForRequestEndingError = (failed, results) => {
     if (failed > 0) {
         for (const result of results) {
-            if (result.status === 'failed' && isRequestEndingError(result.error)) {
+            if (result.status === "failed" && isRequestEndingError(result.error)) {
                 return {
                     found: true,
-                    error: result.error
+                    error: result.error,
                 };
             }
         }
     }
     return {
         found: false,
-        error: null
+        error: null,
     };
 };
 
@@ -34410,13 +34410,13 @@ async function analyzeFile(filePath, content, options, config) {
             dialect: options.dialect,
             style_guide: options.styleGuide,
             documentName: getFileBasename(filePath),
-            ...(options.tone ? { tone: options.tone } : {})
+            ...(options.tone ? { tone: options.tone } : {}),
         };
         const result = await xt(request, config);
         return {
             filePath,
             result: result.original.scores,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         };
     }
     catch (error) {
@@ -34438,7 +34438,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     // Read all file contents first using optimized batch processing
     const fileContents = await processFileReading(files, readFileContent);
     if (fileContents.length === 0) {
-        coreExports.warning('No valid file contents found for analysis');
+        coreExports.warning("No valid file contents found for analysis");
         return [];
     }
     // Create batch requests
@@ -34447,14 +34447,14 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
         dialect: options.dialect,
         style_guide: options.styleGuide,
         documentName: getFileBasename(filePath),
-        ...(options.tone ? { tone: options.tone } : {})
+        ...(options.tone ? { tone: options.tone } : {}),
     }));
     // Configure batch options with sensible defaults
     const batchOptions = {
         maxConcurrent: 100, // Limit concurrency to avoid overwhelming the API
         retryAttempts: 2,
         retryDelay: 1_000,
-        timeout: 300_000 // 5 minutes
+        timeout: 300_000, // 5 minutes
     };
     try {
         // Start batch processing
@@ -34484,15 +34484,15 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
         // Process results
         const results = [];
         for (const [index, batchResult] of finalProgress.results.entries()) {
-            if (batchResult.status === 'completed' && batchResult.result) {
+            if (batchResult.status === "completed" && batchResult.result) {
                 results.push({
                     filePath: fileContents[index].filePath,
                     result: batchResult.result.original.scores,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
                 });
             }
-            else if (batchResult.status === 'failed') {
-                coreExports.error(`Failed to analyze ${fileContents[index].filePath}: ${batchResult.error?.message || 'Unknown error'}`);
+            else if (batchResult.status === "failed") {
+                coreExports.error(`Failed to analyze ${fileContents[index].filePath}: ${batchResult.error?.message || "Unknown error"}`);
             }
         }
         coreExports.info(`✅ Batch analysis completed: ${results.length}/${fileContents.length} files processed successfully`);
@@ -34542,7 +34542,7 @@ function getAnalysisSummary(results) {
         averageToneScore: summary.averageToneScore,
         averageGrammarScore: summary.averageGrammarScore,
         averageConsistencyScore: summary.averageConsistencyScore,
-        averageTerminologyScore: summary.averageTerminologyScore
+        averageTerminologyScore: summary.averageTerminologyScore,
     };
 }
 
@@ -34553,9 +34553,9 @@ function getAnalysisSummary(results) {
  * Generate file display link based on repository context
  */
 function generateFileDisplayLink(filePath, context) {
-    return 'prNumber' in context
+    return "prNumber" in context
         ? // PR context - create diff link
-            `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber}/files#diff-${createHash('sha256').update(filePath).digest('hex')})`
+            `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
         : // Non-PR context - create blob link
             `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
 }
@@ -34564,7 +34564,7 @@ function generateFileDisplayLink(filePath, context) {
  */
 function generateResultsTable(results, context) {
     if (results.length === 0) {
-        return 'No files were analyzed.';
+        return "No files were analyzed.";
     }
     const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
 |------|---------|---------|---------|---------|---------|------|`;
@@ -34572,14 +34572,14 @@ function generateResultsTable(results, context) {
         .map((result) => {
         const { filePath, result: scores } = result;
         const qualityEmoji = getQualityEmoji(scores.quality.score);
-        const toneDisplay = typeof scores.analysis.tone?.score === 'number'
+        const toneDisplay = typeof scores.analysis.tone?.score === "number"
             ? String(Math.round(scores.analysis.tone.score))
-            : '-';
+            : "-";
         // Create clickable file link using repository context
         const fileDisplay = generateFileDisplayLink(filePath, context);
         return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`;
     })
-        .join('\n');
+        .join("\n");
     return `${tableHeader}\n${tableRows}`;
 }
 /**
@@ -34587,7 +34587,7 @@ function generateResultsTable(results, context) {
  */
 function generateSummary(results) {
     if (results.length === 0) {
-        return '';
+        return "";
     }
     const summary = calculateScoreSummary(results);
     const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
@@ -34616,7 +34616,7 @@ function generateFooter(config, eventType) {
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
 *Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ''} Style Guide: ${config.styleGuide}*
+*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
 *Event: ${eventType}*`;
 }
 /**
@@ -34655,9 +34655,9 @@ async function findExistingComment(octokit, owner, repo, prNumber) {
         const response = await octokit.rest.issues.listComments({
             owner,
             repo,
-            issue_number: prNumber
+            issue_number: prNumber,
         });
-        const comment = response.data.find((comment) => comment.body?.includes('## 🔍 Markup AI Analysis Results'));
+        const comment = response.data.find((comment) => comment.body?.includes("## 🔍 Markup AI Analysis Results"));
         return comment?.id || null;
     }
     catch (error) {
@@ -34675,7 +34675,7 @@ async function createOrUpdatePRComment(octokit, commentData) {
         try {
             await octokit.rest.repos.get({
                 owner,
-                repo
+                repo,
             });
         }
         catch (error) {
@@ -34691,7 +34691,7 @@ async function createOrUpdatePRComment(octokit, commentData) {
             repo,
             prNumber,
             ref: githubExports.context.ref,
-            baseUrl: new URL(githubExports.context.serverUrl)
+            baseUrl: new URL(githubExports.context.serverUrl),
         };
         const commentBody = generateCommentBody(results, config, commentData.eventType, context);
         const existingCommentId = await findExistingComment(octokit, owner, repo, prNumber);
@@ -34701,7 +34701,7 @@ async function createOrUpdatePRComment(octokit, commentData) {
                 owner,
                 repo,
                 comment_id: existingCommentId,
-                body: commentBody
+                body: commentBody,
             });
             coreExports.info(`✅ Updated existing comment on PR #${prNumber}`);
         }
@@ -34711,22 +34711,22 @@ async function createOrUpdatePRComment(octokit, commentData) {
                 owner,
                 repo,
                 issue_number: prNumber,
-                body: commentBody
+                body: commentBody,
             });
             coreExports.info(`✅ Created new comment on PR #${prNumber}`);
         }
     }
     catch (error) {
-        const githubError = handleGitHubError(error, 'Create/update PR comment');
+        const githubError = handleGitHubError(error, "Create/update PR comment");
         if (githubError.status === 403) {
-            coreExports.error('❌ Permission denied: Cannot create or update comments on pull requests.');
+            coreExports.error("❌ Permission denied: Cannot create or update comments on pull requests.");
             coreExports.error('Please ensure the GitHub token has "pull-requests: write" permission.');
         }
         else if (githubError.status === 404) {
-            coreExports.error('❌ Pull request not found. Make sure the PR exists and is accessible.');
+            coreExports.error("❌ Pull request not found. Make sure the PR exists and is accessible.");
         }
         else {
-            logError(githubError, 'Failed to create/update PR comment');
+            logError(githubError, "Failed to create/update PR comment");
         }
     }
 }
@@ -34734,13 +34734,13 @@ async function createOrUpdatePRComment(octokit, commentData) {
  * Check if current event is a pull request
  */
 function isPullRequestEvent() {
-    return githubExports.context.eventName === 'pull_request';
+    return githubExports.context.eventName === "pull_request";
 }
 /**
  * Get PR number from context
  */
 function getPRNumber() {
-    if (githubExports.context.eventName === 'pull_request') {
+    if (githubExports.context.eventName === "pull_request") {
         return githubExports.context.issue.number;
     }
     return null;
@@ -34753,13 +34753,13 @@ function getPRNumber() {
  * Type guard for checking if a value is a string
  */
 function isString(value) {
-    return typeof value === 'string';
+    return typeof value === "string";
 }
 /**
  * Type guard for checking if a value is a number
  */
 function isNumber(value) {
-    return typeof value === 'number' && !Number.isNaN(value);
+    return typeof value === "number" && !Number.isNaN(value);
 }
 /**
  * Type guard for checking if a value is a valid SHA
@@ -34797,7 +34797,7 @@ async function getCommitChanges(octokit, owner, repo, sha) {
             const response = await octokit.rest.repos.getCommit({
                 owner,
                 repo,
-                ref: sha
+                ref: sha,
             });
             const commit = response.data;
             const changes = commit.files?.map((file) => ({
@@ -34806,14 +34806,14 @@ async function getCommitChanges(octokit, owner, repo, sha) {
                 additions: file.additions || 0,
                 deletions: file.deletions || 0,
                 changes: file.changes || 0,
-                patch: file.patch
+                patch: file.patch,
             })) || [];
             return {
                 sha: commit.sha,
                 message: commit.commit.message,
-                author: commit.commit.author?.name || 'Unknown',
+                author: commit.commit.author?.name || "Unknown",
                 date: commit.commit.author?.date || new Date().toISOString(),
-                changes
+                changes,
             };
         }, undefined, `Get commit changes for ${owner}/${repo}@${sha}`);
     }
@@ -34837,7 +34837,7 @@ async function getPullRequestFiles(octokit, owner, repo, prNumber) {
                 owner,
                 repo,
                 pull_number: prNumber,
-                per_page: 100
+                per_page: 100,
             });
             coreExports.info(`✅ Found ${files.length} files in PR`);
             return files.map((file) => file.filename);
@@ -34851,19 +34851,19 @@ async function getPullRequestFiles(octokit, owner, repo, prNumber) {
 /**
  * Get all files in repository tree
  */
-async function getRepositoryFiles(octokit, owner, repo, ref = 'main') {
+async function getRepositoryFiles(octokit, owner, repo, ref = "main") {
     try {
         return await withRetry(async () => {
             const response = await octokit.rest.git.getTree({
                 owner,
                 repo,
                 tree_sha: ref,
-                recursive: 'true'
+                recursive: "true",
             });
             const files = [];
             if (response.data.tree) {
                 for (const item of response.data.tree) {
-                    if (item.type === 'blob' && item.path) {
+                    if (item.type === "blob" && item.path) {
                         files.push(item.path);
                     }
                 }
@@ -34883,7 +34883,7 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
     try {
         // Validate inputs
         if (!owner || !repo || !sha) {
-            coreExports.error('Invalid parameters for commit status update');
+            coreExports.error("Invalid parameters for commit status update");
             return;
         }
         // Validate SHA format using type guard
@@ -34893,7 +34893,7 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
         }
         // Validate quality score using type guard
         if (!isValidQualityScore(qualityScore)) {
-            coreExports.error('Quality score must be between 0 and 100');
+            coreExports.error("Quality score must be between 0 and 100");
             return;
         }
         const status = getQualityStatus(qualityScore);
@@ -34901,7 +34901,7 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
         // Create a shorter description that fits within GitHub's 140 character limit
         const description = `Quality: ${qualityScore} | Files: ${filesAnalyzed}`;
         // Build target URL safely
-        const serverUrl = githubExports.context.serverUrl || 'https://github.com';
+        const serverUrl = githubExports.context.serverUrl || "https://github.com";
         const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${githubExports.context.runId}`;
         coreExports.info(`🔍 Creating commit status for ${owner}/${repo}@${sha}`);
         coreExports.info(`📊 Status: ${status}, Description: "${description}"`);
@@ -34914,7 +34914,7 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
             sha,
             state: status,
             description,
-            context: 'Markup AI'
+            context: "Markup AI",
         };
         coreExports.info(`📋 Status data: ${JSON.stringify(statusData, null, 2)}`);
         await octokit.rest.repos.createCommitStatus(statusData);
@@ -34923,7 +34923,7 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
     catch (error) {
         coreExports.error(`Failed to update commit status: ${error}`);
         // Log more details about the error
-        if (error && typeof error === 'object' && 'message' in error) {
+        if (error && typeof error === "object" && "message" in error) {
             coreExports.error(`Error message: ${error.message}`);
         }
     }
@@ -34948,14 +34948,14 @@ async function createJobSummary(results, config, eventType, context) {
     try {
         if (results.length === 0) {
             await coreExports.summary
-                .addHeading('🔍 Analysis Results')
-                .addRaw('No files were analyzed.')
+                .addHeading("🔍 Analysis Results")
+                .addRaw("No files were analyzed.")
                 .write();
             return;
         }
         const summaryContent = generateJobSummary(results, config, eventType, context);
         await coreExports.summary.addRaw(summaryContent).write();
-        coreExports.info('✅ Job summary created successfully');
+        coreExports.info("✅ Job summary created successfully");
     }
     catch (error) {
         coreExports.error(`Failed to create job summary: ${error}`);
@@ -34984,11 +34984,11 @@ function displayEventInfo(eventInfo) {
  */
 function displayResults(results) {
     if (results.length === 0) {
-        coreExports.info('📊 No analysis results to display.');
+        coreExports.info("📊 No analysis results to display.");
         return;
     }
-    coreExports.info('📊 Analysis Results:');
-    coreExports.info('='.repeat(DISPLAY.SEPARATOR_LENGTH));
+    coreExports.info("📊 Analysis Results:");
+    coreExports.info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
     for (const [index, analysis] of results.entries()) {
         const { filePath, result } = analysis;
         coreExports.info(`\n📄 File: ${filePath}`);
@@ -34996,12 +34996,10 @@ function displayResults(results) {
         coreExports.info(`📝 Clarity Score: ${result.analysis.clarity.score}`);
         coreExports.info(`🔤 Grammar Score: ${result.quality.grammar.score}`);
         coreExports.info(`📋 Consistency Score: ${result.quality.consistency.score}`);
-        coreExports.info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === 'number'
-            ? result.analysis.tone.score
-            : '-'}`);
+        coreExports.info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === "number" ? result.analysis.tone.score : "-"}`);
         coreExports.info(`📚 Terminology Score: ${result.quality.terminology.score}`);
         if (index < results.length - 1) {
-            coreExports.info('─'.repeat(DISPLAY.SEPARATOR_LENGTH));
+            coreExports.info("─".repeat(DISPLAY.SEPARATOR_LENGTH));
         }
     }
 }
@@ -35010,13 +35008,11 @@ function displayResults(results) {
  */
 function displayFilesToAnalyze(files) {
     if (files.length === 0) {
-        coreExports.info('No files found to analyze.');
+        coreExports.info("No files found to analyze.");
         return;
     }
-    coreExports.info('\n📄 Files to analyze:');
-    for (const [index, file] of files
-        .slice(0, DISPLAY.MAX_FILES_TO_SHOW)
-        .entries()) {
+    coreExports.info("\n📄 Files to analyze:");
+    for (const [index, file] of files.slice(0, DISPLAY.MAX_FILES_TO_SHOW).entries()) {
         coreExports.info(`  ${index + 1}. ${file}`);
     }
     if (files.length > DISPLAY.MAX_FILES_TO_SHOW) {
@@ -35028,7 +35024,7 @@ function displayFilesToAnalyze(files) {
  */
 function displaySectionHeader(title) {
     coreExports.info(`\n${title}`);
-    coreExports.info('='.repeat(DISPLAY.SEPARATOR_LENGTH));
+    coreExports.info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
 }
 
 /**
@@ -35039,10 +35035,10 @@ function displaySectionHeader(title) {
  */
 async function handlePushEvent(octokit, owner, repo, summary, results, addCommitStatus) {
     if (!addCommitStatus) {
-        coreExports.info('📊 Commit status update disabled by configuration');
+        coreExports.info("📊 Commit status update disabled by configuration");
         return;
     }
-    displaySectionHeader('📊 Updating Commit Status');
+    displaySectionHeader("📊 Updating Commit Status");
     try {
         await updateCommitStatus(octokit, owner, repo, githubExports.context.sha, summary.averageQualityScore, results.length);
     }
@@ -35054,13 +35050,13 @@ async function handlePushEvent(octokit, owner, repo, summary, results, addCommit
  * Handle workflow dispatch or schedule event: create job summary
  */
 async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysisOptions, eventType) {
-    displaySectionHeader('📋 Creating Job Summary');
+    displaySectionHeader("📋 Creating Job Summary");
     try {
         const context = {
             owner,
             repo,
             ref,
-            baseUrl: new URL(githubExports.context.serverUrl)
+            baseUrl: new URL(githubExports.context.serverUrl),
         };
         await createJobSummary(results, analysisOptions, eventType, context);
     }
@@ -35079,7 +35075,7 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
     if (!prNumber) {
         return;
     }
-    displaySectionHeader('💬 Creating PR Comment');
+    displaySectionHeader("💬 Creating PR Comment");
     try {
         await createOrUpdatePRComment(octokit, {
             owner,
@@ -35087,7 +35083,7 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
             prNumber,
             results,
             config: analysisOptions,
-            eventType
+            eventType,
         });
     }
     catch (error) {
@@ -35099,7 +35095,7 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
  */
 async function handlePostAnalysisActions(eventInfo, results, config, analysisOptions) {
     if (results.length === 0) {
-        coreExports.info('No results to process for post-analysis actions.');
+        coreExports.info("No results to process for post-analysis actions.");
         return;
     }
     const summary = getAnalysisSummary(results);
@@ -35141,13 +35137,13 @@ function createPushEventStrategy(owner, repo, sha, githubToken) {
         getEventInfo() {
             return {
                 eventType: EVENT_TYPES.PUSH,
-                description: 'Files modified in push event',
+                description: "Files modified in push event",
                 filesCount: 0, // Will be updated after file discovery
                 additionalInfo: {
-                    commitSha: sha
-                }
+                    commitSha: sha,
+                },
             };
-        }
+        },
     };
 }
 /**
@@ -35162,19 +35158,19 @@ function createPullRequestEventStrategy(owner, repo, prNumber, githubToken) {
         getEventInfo() {
             return {
                 eventType: EVENT_TYPES.PULL_REQUEST,
-                description: 'Files changed in pull request',
+                description: "Files changed in pull request",
                 filesCount: 0, // Will be updated after file discovery
                 additionalInfo: {
-                    prNumber: prNumber
-                }
+                    prNumber: prNumber,
+                },
             };
-        }
+        },
     };
 }
 /**
  * Manual Workflow Strategy - Analyze all files in repository
  */
-function createManualWorkflowStrategy(owner, repo, githubToken, ref = 'main') {
+function createManualWorkflowStrategy(owner, repo, githubToken, ref = "main") {
     const octokit = createGitHubClient(githubToken);
     return {
         async getFilesToAnalyze() {
@@ -35183,13 +35179,13 @@ function createManualWorkflowStrategy(owner, repo, githubToken, ref = 'main') {
         getEventInfo() {
             return {
                 eventType: EVENT_TYPES.WORKFLOW_DISPATCH,
-                description: 'All files in repository (manual trigger)',
+                description: "All files in repository (manual trigger)",
                 filesCount: 0, // Will be updated after file discovery
                 additionalInfo: {
-                    ref: ref
-                }
+                    ref: ref,
+                },
             };
-        }
+        },
     };
 }
 /**
@@ -35228,7 +35224,7 @@ function setOutputs(eventInfo, results) {
  */
 function displaySummary(results) {
     const summary = getAnalysisSummary(results);
-    displaySectionHeader('📊 Analysis Summary');
+    displaySectionHeader("📊 Analysis Summary");
     coreExports.info(`📄 Total Files Analyzed: ${summary.totalFiles}`);
     coreExports.info(`📈 Average Quality Score: ${summary.averageQualityScore}`);
     coreExports.info(`📝 Average Clarity Score: ${summary.averageClarityScore}`);
@@ -35238,7 +35234,7 @@ function displaySummary(results) {
  * Handle errors gracefully
  */
 function handleError(error) {
-    logError(error, 'Action execution failed');
+    logError(error, "Action execution failed");
     if (error instanceof Error) {
         coreExports.setFailed(error.message);
     }
@@ -35257,31 +35253,31 @@ async function runAction() {
         validateConfig(config);
         logConfiguration(config);
         // Initialize file discovery strategy
-        displaySectionHeader('🔍 Initializing File Discovery');
+        displaySectionHeader("🔍 Initializing File Discovery");
         const strategy = createFileDiscoveryStrategy(githubExports.context, config.githubToken);
         const eventInfo = strategy.getEventInfo();
         // Display event information
-        displaySectionHeader('📋 Event Analysis');
+        displaySectionHeader("📋 Event Analysis");
         displayEventInfo(eventInfo);
         // Discover files to analyze
-        displaySectionHeader('🔍 Discovering Files');
+        displaySectionHeader("🔍 Discovering Files");
         const allFiles = await strategy.getFilesToAnalyze();
         const supportedFiles = filterSupportedFiles(allFiles);
         // Update event info with actual file count
         eventInfo.filesCount = supportedFiles.length;
         coreExports.info(`📊 Found ${supportedFiles.length} supported files out of ${allFiles.length} total files`);
         if (supportedFiles.length === 0) {
-            coreExports.info('No supported files found to analyze.');
+            coreExports.info("No supported files found to analyze.");
             setOutputs(eventInfo, []);
             return;
         }
         // Display files being analyzed
         displayFilesToAnalyze(supportedFiles);
-        displaySectionHeader('🔍 Running Analysis');
+        displaySectionHeader("🔍 Running Analysis");
         const analysisOptions = getAnalysisOptions(config);
         const results = await analyzeFiles(supportedFiles, analysisOptions, apiConfig, readFileContent);
         if (results.length === 0) {
-            coreExports.setFailed('Failed to analyze supported files.');
+            coreExports.setFailed("Failed to analyze supported files.");
             return;
         }
         // Display results
@@ -35293,7 +35289,7 @@ async function runAction() {
         // Handle post-analysis actions based on event type
         await handlePostAnalysisActions(eventInfo, results, config, analysisOptions);
         if (config.strictMode && results.length !== supportedFiles.length) {
-            coreExports.setFailed('Some files were not analyzed.');
+            coreExports.setFailed("Some files were not analyzed.");
             return;
         }
     }

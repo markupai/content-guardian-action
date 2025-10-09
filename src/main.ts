@@ -3,7 +3,7 @@
  * This file serves as the entry point and orchestrates the workflow.
  */
 
-import { runAction } from './action-runner.js'
+import { runAction } from "./action-runner.js";
 
 /**
  * The main function for the action.
@@ -11,5 +11,5 @@ import { runAction } from './action-runner.js'
  * @returns Resolves when the action is complete.
  */
 export async function run(): Promise<void> {
-  await runAction()
+  await runAction();
 }

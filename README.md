@@ -68,12 +68,12 @@ jobs:
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dialect: 'british_english'
-          style-guide: 'chicago'
+          dialect: "british_english"
+          style-guide: "chicago"
           # tone is optional
-          tone: 'academic'
-          add_commit_status: 'true'
-          strict_mode: 'false' # Continue even if some files fail to analyze
+          tone: "academic"
+          add_commit_status: "true"
+          strict_mode: "false" # Continue even if some files fail to analyze
 ```
 
 ## Required Tokens
@@ -236,11 +236,11 @@ jobs:
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dialect: 'american_english'
-          style-guide: 'ap'
+          dialect: "american_english"
+          style-guide: "ap"
           # tone is optional
-          tone: 'formal'
-          strict_mode: 'true' # Fail PR if any file analysis fails
+          tone: "formal"
+          strict_mode: "true" # Fail PR if any file analysis fails
 
       - name: Check Quality Score
         run: |
@@ -254,7 +254,7 @@ jobs:
 name: Daily Quality Check
 on:
   schedule:
-    - cron: '0 2 * * *' # Daily at 2 AM
+    - cron: "0 2 * * *" # Daily at 2 AM
   workflow_dispatch: # Manual trigger
 
 jobs:
@@ -320,9 +320,9 @@ fails:
   with:
     markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
     github_token: ${{ secrets.GITHUB_TOKEN }}
-    dialect: 'american_english'
-    style-guide: 'ap'
-    strict_mode: 'true' # Fail if any file analysis fails
+    dialect: "american_english"
+    style-guide: "ap"
+    strict_mode: "true" # Fail if any file analysis fails
 ```
 
 ### Dialects

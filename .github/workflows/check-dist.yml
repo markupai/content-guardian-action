@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   check-dist:
-    name: Check dist/
     runs-on: ubuntu-latest
 
     steps:
