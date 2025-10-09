@@ -31393,19 +31393,19 @@ function logConfiguration(config) {
     coreExports.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
 }
 
-var I = /* @__PURE__ */ ((n) => (n.Check = "check", n.Suggestions = "suggestions", n.Rewrite = "rewrite", n))(I || {});
-const D = (n, e, t) => JSON.stringify(n, e, t);
-function O(n, e) {
+var j = /* @__PURE__ */ ((n) => (n.Check = "check", n.Suggestions = "suggestions", n.Rewrite = "rewrite", n))(j || {});
+const V = (n, e, t) => JSON.stringify(n, e, t);
+function Q(n, e) {
   return JSON.parse(n, e);
 }
 class f extends Error {
   constructor({ message: e, statusCode: t, body: o, rawResponse: a }) {
-    super(_e({ message: e, statusCode: t, body: o })), Object.setPrototypeOf(this, f.prototype), this.statusCode = t, this.body = o, this.rawResponse = a;
+    super(Se({ message: e, statusCode: t, body: o })), Object.setPrototypeOf(this, f.prototype), this.statusCode = t, this.body = o, this.rawResponse = a;
   }
 }
-function _e({ message: n, statusCode: e, body: t }) {
+function Se({ message: n, statusCode: e, body: t }) {
   let o = [];
-  return n != null && o.push(n), e != null && o.push(`Status code: ${e.toString()}`), t != null && o.push(`Body: ${D(t, void 0, 2)}`), o.join(`
+  return n != null && o.push(n), e != null && o.push(`Status code: ${e.toString()}`), t != null && o.push(`Body: ${V(t, void 0, 2)}`), o.join(`
 `);
 }
 class g extends Error {
@@ -31453,24 +31453,24 @@ class E extends f {
     }), Object.setPrototypeOf(this, E.prototype);
   }
 }
-class M extends f {
+class $ extends f {
   constructor(e, t) {
     super({
       message: "ContentTooLargeError",
       statusCode: 413,
       body: e,
       rawResponse: t
-    }), Object.setPrototypeOf(this, M.prototype);
+    }), Object.setPrototypeOf(this, $.prototype);
   }
 }
-class j extends f {
+class I extends f {
   constructor(e, t) {
     super({
       message: "NotFoundError",
       statusCode: 404,
       body: e,
       rawResponse: t
-    }), Object.setPrototypeOf(this, j.prototype);
+    }), Object.setPrototypeOf(this, I.prototype);
   }
 }
 class G extends f {
@@ -31483,7 +31483,7 @@ class G extends f {
     }), Object.setPrototypeOf(this, G.prototype);
   }
 }
-var Ee = function(n, e, t, o) {
+var ke = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31510,21 +31510,21 @@ var Ee = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-const Se = {
-  get: (n, e) => Ee(void 0, void 0, void 0, function* () {
+const Te = {
+  get: (n, e) => ke(void 0, void 0, void 0, function* () {
     return typeof n == "function" ? n(e) : n;
   })
-}, ke = {
+}, xe = {
   arrayFormat: "indices",
   encode: true
 };
-function ae(n, e) {
+function ie(n, e) {
   if (n === void 0 || n === null)
     return "";
   const t = String(n);
   return e ? encodeURIComponent(t) : t;
 }
-function q(n, e = "", t) {
+function O(n, e = "", t) {
   const o = [];
   for (const [a, r] of Object.entries(n)) {
     const d = e ? `${e}[${a}]` : a;
@@ -31537,31 +31537,31 @@ function q(n, e = "", t) {
           if (s !== void 0)
             if (typeof s == "object" && !Array.isArray(s) && s !== null) {
               const c = t.arrayFormat === "indices" ? `${d}[${l}]` : d;
-              o.push(...q(s, c, t));
+              o.push(...O(s, c, t));
             } else {
               const c = t.arrayFormat === "indices" ? `${d}[${l}]` : d, i = t.encode ? encodeURIComponent(c) : c;
-              o.push(`${i}=${ae(s, t.encode)}`);
+              o.push(`${i}=${ie(s, t.encode)}`);
             }
         }
       } else if (typeof r == "object" && r !== null) {
         if (Object.keys(r).length === 0)
           continue;
-        o.push(...q(r, d, t));
+        o.push(...O(r, d, t));
       } else {
         const l = t.encode ? encodeURIComponent(d) : d;
-        o.push(`${l}=${ae(r, t.encode)}`);
+        o.push(`${l}=${ie(r, t.encode)}`);
       }
   }
   return o;
 }
-function Te(n, e) {
-  return n == null || typeof n != "object" ? "" : q(n, "", Object.assign(Object.assign({}, ke), e)).join("&");
+function Ce(n, e) {
+  return n == null || typeof n != "object" ? "" : O(n, "", Object.assign(Object.assign({}, xe), e)).join("&");
 }
-function xe(n, e) {
-  const t = Te(e, { arrayFormat: "repeat" });
+function Ae(n, e) {
+  const t = Ce(e, { arrayFormat: "repeat" });
   return t ? `${n}?${t}` : n;
 }
-function Ce(n) {
+function Le(n) {
   const e = {
     get bodyUsed() {
       return n.bodyUsed;
@@ -31572,10 +31572,10 @@ function Ce(n) {
   };
   return "bytes" in n && typeof n.bytes == "function" && (e.bytes = n.bytes.bind(n)), e;
 }
-function Ae(n) {
+function je(n) {
   return n.body != null;
 }
-var Le = function(n, e, t, o) {
+var Pe = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31602,13 +31602,13 @@ var Le = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function fe(n, e) {
-  return Le(this, void 0, void 0, function* () {
-    if (!Ae(n))
+function ue(n, e) {
+  return Pe(this, void 0, void 0, function* () {
+    if (!je(n))
       return;
     switch (e) {
       case "binary-response":
-        return Ce(n);
+        return Le(n);
       case "blob":
         return yield n.blob();
       case "arrayBuffer":
@@ -31623,7 +31623,7 @@ function fe(n, e) {
     const t = yield n.text();
     if (t.length > 0)
       try {
-        return O(t);
+        return Q(t);
       } catch {
         return {
           ok: false,
@@ -31663,12 +31663,12 @@ var Ie = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function Pe(n) {
+function Ne(n) {
   return Ie(this, void 0, void 0, function* () {
     var e, t, o;
     let a = (e = n.headers.get("Content-Type")) === null || e === void 0 ? void 0 : e.toLowerCase();
     if (a == null || a.length === 0)
-      return fe(n);
+      return ue(n);
     switch (a.indexOf(";") !== -1 && (a = (o = (t = a.split(";")[0]) === null || t === void 0 ? void 0 : t.trim()) !== null && o !== void 0 ? o : ""), a) {
       case "application/hal+json":
       case "application/json":
@@ -31677,17 +31677,17 @@ function Pe(n) {
       case "application/vnd.api+json":
       case "text/json":
         const r = yield n.text();
-        return r.length > 0 ? O(r) : void 0;
+        return r.length > 0 ? Q(r) : void 0;
       default:
         if (a.startsWith("application/vnd.") && a.endsWith("+json")) {
           const d = yield n.text();
-          return d.length > 0 ? O(d) : void 0;
+          return d.length > 0 ? Q(d) : void 0;
         }
         return yield n.text();
     }
   });
 }
-var je = function(n, e, t, o) {
+var Ue = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31714,12 +31714,12 @@ var je = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function Ne() {
-  return je(this, void 0, void 0, function* () {
+function Be() {
+  return Ue(this, void 0, void 0, function* () {
     return fetch;
   });
 }
-var Be = function(n, e, t, o) {
+var Me = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31746,17 +31746,17 @@ var Be = function(n, e, t, o) {
     c((o = o.apply(n, e || [])).next());
   });
 };
-function Fe(n) {
-  return Be(this, arguments, void 0, function* ({ body: e, type: t }) {
-    return t.includes("json") ? D(e) : e;
+function $e(n) {
+  return Me(this, arguments, void 0, function* ({ body: e, type: t }) {
+    return t.includes("json") ? V(e) : e;
   });
 }
-const Ue = "timeout";
-function Me(n) {
-  const e = new AbortController(), t = setTimeout(() => e.abort(Ue), n);
+const Fe = "timeout";
+function Ge(n) {
+  const e = new AbortController(), t = setTimeout(() => e.abort(Fe), n);
   return { signal: e.signal, abortId: t };
 }
-function $e(...n) {
+function We(...n) {
   const e = n.length === 1 && Array.isArray(n[0]) ? n[0] : n, t = new AbortController();
   for (const o of e) {
     if (o.aborted) {
@@ -31769,7 +31769,7 @@ function $e(...n) {
   }
   return t.signal;
 }
-var Ge = function(n, e, t, o) {
+var ze = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31796,15 +31796,15 @@ var Ge = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-const We = (n, e, t, o, a, r, d, l, s) => Ge(void 0, void 0, void 0, function* () {
+const He = (n, e, t, o, a, r, d, l, s) => ze(void 0, void 0, void 0, function* () {
   const c = [];
   let i;
   if (r != null) {
-    const { signal: p, abortId: k } = Me(r);
+    const { signal: p, abortId: k } = Ge(r);
     i = k, c.push(p);
   }
   d != null && c.push(d);
-  let u = $e(c);
+  let u = We(c);
   const w = yield n(e, {
     method: t,
     headers: o,
@@ -31817,10 +31817,10 @@ const We = (n, e, t, o, a, r, d, l, s) => Ge(void 0, void 0, void 0, function* (
   return i != null && clearTimeout(i), w;
 });
 let H;
-typeof globalThis.Headers < "u" ? H = globalThis.Headers : H = class he {
+typeof globalThis.Headers < "u" ? H = globalThis.Headers : H = class fe {
   constructor(e) {
     if (this.headers = /* @__PURE__ */ new Map(), e)
-      if (e instanceof he)
+      if (e instanceof fe)
         e.forEach((t, o) => this.append(o, t));
       else if (Array.isArray(e))
         for (const [t, o] of e)
@@ -31877,14 +31877,14 @@ typeof globalThis.Headers < "u" ? H = globalThis.Headers : H = class he {
     return this.entries();
   }
 };
-const de = {
+const se = {
   headers: new H(),
   redirected: false,
   status: 499,
   statusText: "Client Closed Request",
   type: "error",
   url: ""
-}, le = {
+}, ae = {
   headers: new H(),
   redirected: false,
   status: 0,
@@ -31892,7 +31892,7 @@ const de = {
   type: "error",
   url: ""
 };
-function ce(n) {
+function de(n) {
   return {
     headers: n.headers,
     redirected: n.redirected,
@@ -31902,7 +31902,7 @@ function ce(n) {
     url: n.url
   };
 }
-var ze = function(n, e, t, o) {
+var Ve = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31929,16 +31929,16 @@ var ze = function(n, e, t, o) {
     c((o = o.apply(n, e || [])).next());
   });
 };
-const He = 1e3, W = 6e4, Ve = 2, we = 0.2;
-function De(n) {
-  const e = 1 + Math.random() * we;
+const Ke = 1e3, W = 6e4, De = 2, he = 0.2;
+function Xe(n) {
+  const e = 1 + Math.random() * he;
   return n * e;
 }
-function Ke(n) {
-  const e = 1 + (Math.random() - 0.5) * we;
+function Ye(n) {
+  const e = 1 + (Math.random() - 0.5) * he;
   return n * e;
 }
-function Xe(n, e) {
+function Je(n, e) {
   const t = n.headers.get("Retry-After");
   if (t) {
     const a = parseInt(t, 10);
@@ -31957,22 +31957,22 @@ function Xe(n, e) {
     if (!isNaN(a)) {
       const r = a * 1e3 - Date.now();
       if (r > 0)
-        return De(Math.min(r, W));
+        return Xe(Math.min(r, W));
     }
   }
-  return Ke(Math.min(He * Math.pow(2, e), W));
+  return Ye(Math.min(Ke * Math.pow(2, e), W));
 }
-function Ye(n) {
-  return ze(this, arguments, void 0, function* (e, t = Ve) {
+function Ze(n) {
+  return Ve(this, arguments, void 0, function* (e, t = De) {
     let o = yield e();
     for (let a = 0; a < t && ([408, 429].includes(o.status) || o.status >= 500); ++a) {
-      const r = Xe(o, a);
+      const r = Je(o, a);
       yield new Promise((d) => setTimeout(d, r)), o = yield e();
     }
     return o;
   });
 }
-var ee = function(n, e, t, o) {
+var q = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31999,14 +31999,14 @@ var ee = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function Je(n) {
-  return ee(this, void 0, void 0, function* () {
+function Qe(n) {
+  return q(this, void 0, void 0, function* () {
     var e;
     const t = {};
     if (n.body !== void 0 && n.contentType != null && (t["Content-Type"] = n.contentType), n.headers == null)
       return t;
     for (const [o, a] of Object.entries(n.headers)) {
-      const r = yield Se.get(a, { endpointMetadata: (e = n.endpointMetadata) !== null && e !== void 0 ? e : {} });
+      const r = yield Te.get(a, { endpointMetadata: (e = n.endpointMetadata) !== null && e !== void 0 ? e : {} });
       if (typeof r == "string") {
         t[o] = r;
         continue;
@@ -32016,29 +32016,29 @@ function Je(n) {
     return t;
   });
 }
-function Ze(n) {
-  return ee(this, void 0, void 0, function* () {
-    const e = xe(n.url, n.queryParameters), t = yield Fe({
+function Oe(n) {
+  return q(this, void 0, void 0, function* () {
+    const e = Ae(n.url, n.queryParameters), t = yield $e({
       body: n.body,
       type: n.requestType === "json" ? "json" : "other"
-    }), o = yield Ne();
+    }), o = yield Be();
     try {
-      const a = yield Ye(() => ee(this, void 0, void 0, function* () {
-        return We(o, e, n.method, yield Je(n), t, n.timeoutMs, n.abortSignal, n.withCredentials, n.duplex);
+      const a = yield Ze(() => q(this, void 0, void 0, function* () {
+        return He(o, e, n.method, yield Qe(n), t, n.timeoutMs, n.abortSignal, n.withCredentials, n.duplex);
       }), n.maxRetries);
       return a.status >= 200 && a.status < 400 ? {
         ok: !0,
-        body: yield fe(a, n.responseType),
+        body: yield ue(a, n.responseType),
         headers: a.headers,
-        rawResponse: ce(a)
+        rawResponse: de(a)
       } : {
         ok: !1,
         error: {
           reason: "status-code",
           statusCode: a.status,
-          body: yield Pe(a)
+          body: yield Ne(a)
         },
-        rawResponse: ce(a)
+        rawResponse: de(a)
       };
     } catch (a) {
       return n.abortSignal != null && n.abortSignal.aborted ? {
@@ -32047,33 +32047,33 @@ function Ze(n) {
           reason: "unknown",
           errorMessage: "The user aborted a request"
         },
-        rawResponse: de
+        rawResponse: se
       } : a instanceof Error && a.name === "AbortError" ? {
         ok: false,
         error: {
           reason: "timeout"
         },
-        rawResponse: de
+        rawResponse: se
       } : a instanceof Error ? {
         ok: false,
         error: {
           reason: "unknown",
           errorMessage: a.message
         },
-        rawResponse: le
+        rawResponse: ae
       } : {
         ok: false,
         error: {
           reason: "unknown",
-          errorMessage: D(a)
+          errorMessage: V(a)
         },
-        rawResponse: le
+        rawResponse: ae
       };
     }
   });
 }
-const x = Ze;
-var Qe = function(n, e, t, o) {
+const x = Oe;
+var qe = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32175,12 +32175,12 @@ class R extends Promise {
    * @returns A promise resolving to a `WithRawResponse` object.
    */
   withRawResponse() {
-    return Qe(this, void 0, void 0, function* () {
+    return qe(this, void 0, void 0, function* () {
       return yield this.innerPromise;
     });
   }
 }
-var Oe = function(n, e, t, o) {
+var et = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32208,11 +32208,11 @@ var Oe = function(n, e, t, o) {
   });
 };
 const y = {
-  get: (n) => Oe(void 0, void 0, void 0, function* () {
+  get: (n) => et(void 0, void 0, void 0, function* () {
     return typeof n == "function" ? n() : n;
   })
-}, te = qe();
-function qe() {
+}, ee = tt();
+function tt() {
   var n, e, t, o, a;
   return typeof window < "u" && typeof window.document < "u" ? {
     type: "browser",
@@ -32249,38 +32249,38 @@ function C(n, ...e) {
     try {
       t = new URL(n);
     } catch {
-      return ue(n, ...e);
+      return le(n, ...e);
     }
     const o = e[e.length - 1], a = o && o.endsWith("/");
     for (const r of e) {
-      const d = pe(r);
-      d && (t.pathname = ye(t.pathname, d));
+      const d = ye(r);
+      d && (t.pathname = we(t.pathname, d));
     }
     return a && !t.pathname.endsWith("/") && (t.pathname += "/"), t.toString();
   }
-  return ue(n, ...e);
+  return le(n, ...e);
 }
-function ue(n, ...e) {
+function le(n, ...e) {
   if (e.length === 0)
     return n;
   let t = n;
   const o = e[e.length - 1], a = o && o.endsWith("/");
   for (const r of e) {
-    const d = pe(r);
-    d && (t = ye(t, d));
+    const d = ye(r);
+    d && (t = we(t, d));
   }
   return a && !t.endsWith("/") && (t += "/"), t;
 }
-function ye(n, e) {
+function we(n, e) {
   return n.endsWith("/") ? n + e : n + "/" + e;
 }
-function pe(n) {
+function ye(n) {
   if (!n)
     return n;
   let e = 0, t = n.length;
   return n.startsWith("/") && (e = 1), n.endsWith("/") && (t = n.length - 1), e === 0 && t === n.length ? n : n.slice(e, t);
 }
-var $ = function(n, e, t, o) {
+var F = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32306,7 +32306,7 @@ var $ = function(n, e, t, o) {
     }
     c((o = o.apply(n, [])).next());
   });
-}, et = function(n) {
+}, nt = function(n) {
   if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
   var e = n[Symbol.asyncIterator], t;
   return e ? e.call(n) : (n = typeof __values == "function" ? __values(n) : n[Symbol.iterator](), t = {}, o("next"), o("throw"), o("return"), t[Symbol.asyncIterator] = function() {
@@ -32325,37 +32325,37 @@ var $ = function(n, e, t, o) {
     }, d);
   }
 };
-function tt(n) {
+function ot(n) {
   return typeof n == "object" && n != null && "name" in n;
 }
-function nt(n) {
+function rt(n) {
   return typeof n == "object" && n != null && "path" in n;
 }
-function ot(n) {
+function it(n) {
   return typeof n == "object" && n != null && ("read" in n || "pipe" in n);
 }
-function me(n) {
+function pe(n) {
   return typeof n == "object" && n != null && "getReader" in n;
 }
-function rt(n) {
+function st(n) {
   return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(n);
 }
-function it(n) {
+function at(n) {
   return ArrayBuffer.isView(n);
 }
-function st(n) {
+function dt(n) {
   const e = n.lastIndexOf("/"), t = n.lastIndexOf("\\"), o = Math.max(e, t);
   return o >= 0 ? n.substring(o + 1) : n;
 }
-function at(n) {
-  return $(this, void 0, void 0, function* () {
+function lt(n) {
+  return F(this, void 0, void 0, function* () {
     var e, t, o, a, r, d, l;
-    if (te.type === "node") {
+    if (ee.type === "node") {
       const { Readable: s } = yield import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
       if (n instanceof s) {
         const c = [];
         try {
-          for (e = !0, t = et(n); o = yield t.next(), a = o.done, !a; e = !0) {
+          for (e = !0, t = nt(n); o = yield t.next(), a = o.done, !a; e = !0) {
             l = o.value, e = !1;
             const i = l;
             c.push(Buffer.isBuffer(i) ? i : Buffer.from(i));
@@ -32372,7 +32372,7 @@ function at(n) {
         return Buffer.concat(c);
       }
     }
-    if (me(n)) {
+    if (pe(n)) {
       const s = n.getReader(), c = [];
       try {
         for (; ; ) {
@@ -32394,16 +32394,16 @@ function at(n) {
   });
 }
 function K() {
-  return $(this, void 0, void 0, function* () {
-    return new dt();
+  return F(this, void 0, void 0, function* () {
+    return new ct();
   });
 }
-class dt {
+class ct {
   constructor() {
     this.fd = new FormData();
   }
   setup() {
-    return $(this, void 0, void 0, function* () {
+    return F(this, void 0, void 0, function* () {
     });
   }
   append(e, t) {
@@ -32412,22 +32412,22 @@ class dt {
   getFileName(e, t) {
     if (t != null)
       return t;
-    if (tt(e))
+    if (ot(e))
       return e.name;
-    if (nt(e) && e.path)
-      return st(e.path.toString());
+    if (rt(e) && e.path)
+      return dt(e.path.toString());
   }
   convertToBlob(e) {
-    return $(this, void 0, void 0, function* () {
-      if (ot(e) || me(e)) {
-        const t = yield at(e);
+    return F(this, void 0, void 0, function* () {
+      if (it(e) || pe(e)) {
+        const t = yield lt(e);
         return new Blob([t]);
       }
-      return e instanceof Blob ? e : rt(e) ? new Blob([e]) : e instanceof ArrayBuffer ? new Blob([e]) : it(e) ? new Blob([e]) : typeof e == "string" ? new Blob([e]) : typeof e == "object" && e !== null ? new Blob([D(e)], { type: "application/json" }) : new Blob([String(e)]);
+      return e instanceof Blob ? e : st(e) ? new Blob([e]) : e instanceof ArrayBuffer ? new Blob([e]) : at(e) ? new Blob([e]) : typeof e == "string" ? new Blob([e]) : typeof e == "object" && e !== null ? new Blob([V(e)], { type: "application/json" }) : new Blob([String(e)]);
     });
   }
   appendFile(e, t, o) {
-    return $(this, void 0, void 0, function* () {
+    return F(this, void 0, void 0, function* () {
       o = this.getFileName(t, o);
       const a = yield this.convertToBlob(t);
       o ? this.fd.append(e, a, o) : this.fd.append(e, a);
@@ -32456,7 +32456,7 @@ function A(...n) {
 const L = {
   Default: "https://api.markup.ai"
 };
-var F = function(n, e, t, o) {
+var B = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32483,7 +32483,7 @@ var F = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class lt {
+class ut {
   constructor(e) {
     this._options = e;
   }
@@ -32504,7 +32504,7 @@ class lt {
     return R.fromPromise(this.__listStyleGuides(e));
   }
   __listStyleGuides(e) {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       var t, o, a, r;
       let d = T((t = this._options) === null || t === void 0 ? void 0 : t.headers, A({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
       const l = yield ((o = this._options.fetcher) !== null && o !== void 0 ? o : x)({
@@ -32575,7 +32575,7 @@ class lt {
     return R.fromPromise(this.__createStyleGuide(e, t));
   }
   __createStyleGuide(e, t) {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       var o, a, r, d;
       const l = yield K();
       yield l.appendFile("file_upload", e.file_upload), l.append("name", e.name);
@@ -32602,7 +32602,7 @@ class lt {
           case 403:
             throw new b(i.error.body, i.rawResponse);
           case 413:
-            throw new M(i.error.body, i.rawResponse);
+            throw new $(i.error.body, i.rawResponse);
           case 422:
             throw new _(i.error.body, i.rawResponse);
           case 500:
@@ -32650,7 +32650,7 @@ class lt {
     return R.fromPromise(this.__getStyleGuide(e, t));
   }
   __getStyleGuide(e, t) {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       var o, a, r, d;
       let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
       const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
@@ -32671,7 +32671,7 @@ class lt {
           case 403:
             throw new b(s.error.body, s.rawResponse);
           case 404:
-            throw new j(s.error.body, s.rawResponse);
+            throw new I(s.error.body, s.rawResponse);
           case 422:
             throw new _(s.error.body, s.rawResponse);
           case 500:
@@ -32719,7 +32719,7 @@ class lt {
     return R.fromPromise(this.__deleteStyleGuide(e, t));
   }
   __deleteStyleGuide(e, t) {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       var o, a, r, d;
       let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
       const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
@@ -32740,7 +32740,7 @@ class lt {
           case 403:
             throw new b(s.error.body, s.rawResponse);
           case 404:
-            throw new j(s.error.body, s.rawResponse);
+            throw new I(s.error.body, s.rawResponse);
           case 422:
             throw new _(s.error.body, s.rawResponse);
           case 500:
@@ -32791,7 +32791,7 @@ class lt {
     return R.fromPromise(this.__updateStyleGuide(e, t, o));
   }
   __updateStyleGuide(e, t, o) {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       var a, r, d, l;
       let s = T((a = this._options) === null || a === void 0 ? void 0 : a.headers, A({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
       const c = yield ((r = this._options.fetcher) !== null && r !== void 0 ? r : x)({
@@ -32815,7 +32815,7 @@ class lt {
           case 403:
             throw new b(c.error.body, c.rawResponse);
           case 404:
-            throw new j(c.error.body, c.rawResponse);
+            throw new I(c.error.body, c.rawResponse);
           case 422:
             throw new _(c.error.body, c.rawResponse);
           case 500:
@@ -32845,12 +32845,12 @@ class lt {
     });
   }
   _getAuthorizationHeader() {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       return `Bearer ${yield y.get(this._options.token)}`;
     });
   }
 }
-var Y = function(n, e, t, o) {
+var X = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32877,7 +32877,7 @@ var Y = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class ct {
+class ft {
   constructor(e) {
     this._options = e;
   }
@@ -32906,7 +32906,7 @@ class ct {
     return R.fromPromise(this.__createStyleCheck(e, t));
   }
   __createStyleCheck(e, t) {
-    return Y(this, void 0, void 0, function* () {
+    return X(this, void 0, void 0, function* () {
       var o, a, r, d;
       const l = yield K();
       yield l.appendFile("file_upload", e.file_upload), l.append("dialect", e.dialect), e.tone != null && l.append("tone", e.tone), l.append("style_guide", e.style_guide), e.webhook_url != null && l.append("webhook_url", e.webhook_url);
@@ -32933,7 +32933,7 @@ class ct {
           case 403:
             throw new b(i.error.body, i.rawResponse);
           case 413:
-            throw new M(i.error.body, i.rawResponse);
+            throw new $(i.error.body, i.rawResponse);
           case 422:
             throw new _(i.error.body, i.rawResponse);
           case 429:
@@ -32983,7 +32983,7 @@ class ct {
     return R.fromPromise(this.__getStyleCheck(e, t));
   }
   __getStyleCheck(e, t) {
-    return Y(this, void 0, void 0, function* () {
+    return X(this, void 0, void 0, function* () {
       var o, a, r, d;
       let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
       const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
@@ -33004,7 +33004,7 @@ class ct {
           case 403:
             throw new b(s.error.body, s.rawResponse);
           case 404:
-            throw new j(s.error.body, s.rawResponse);
+            throw new I(s.error.body, s.rawResponse);
           case 422:
             throw new _(s.error.body, s.rawResponse);
           case 500:
@@ -33034,12 +33034,12 @@ class ct {
     });
   }
   _getAuthorizationHeader() {
-    return Y(this, void 0, void 0, function* () {
+    return X(this, void 0, void 0, function* () {
       return `Bearer ${yield y.get(this._options.token)}`;
     });
   }
 }
-var J = function(n, e, t, o) {
+var Y = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -33066,7 +33066,7 @@ var J = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class ut {
+class ht {
   constructor(e) {
     this._options = e;
   }
@@ -33095,7 +33095,7 @@ class ut {
     return R.fromPromise(this.__createStyleSuggestion(e, t));
   }
   __createStyleSuggestion(e, t) {
-    return J(this, void 0, void 0, function* () {
+    return Y(this, void 0, void 0, function* () {
       var o, a, r, d;
       const l = yield K();
       yield l.appendFile("file_upload", e.file_upload), l.append("dialect", e.dialect), e.tone != null && l.append("tone", e.tone), l.append("style_guide", e.style_guide), e.webhook_url != null && l.append("webhook_url", e.webhook_url);
@@ -33122,7 +33122,7 @@ class ut {
           case 403:
             throw new b(i.error.body, i.rawResponse);
           case 413:
-            throw new M(i.error.body, i.rawResponse);
+            throw new $(i.error.body, i.rawResponse);
           case 422:
             throw new _(i.error.body, i.rawResponse);
           case 429:
@@ -33172,7 +33172,7 @@ class ut {
     return R.fromPromise(this.__getStyleSuggestion(e, t));
   }
   __getStyleSuggestion(e, t) {
-    return J(this, void 0, void 0, function* () {
+    return Y(this, void 0, void 0, function* () {
       var o, a, r, d;
       let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
       const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
@@ -33193,7 +33193,7 @@ class ut {
           case 403:
             throw new b(s.error.body, s.rawResponse);
           case 404:
-            throw new j(s.error.body, s.rawResponse);
+            throw new I(s.error.body, s.rawResponse);
           case 422:
             throw new _(s.error.body, s.rawResponse);
           case 500:
@@ -33223,12 +33223,12 @@ class ut {
     });
   }
   _getAuthorizationHeader() {
-    return J(this, void 0, void 0, function* () {
+    return Y(this, void 0, void 0, function* () {
       return `Bearer ${yield y.get(this._options.token)}`;
     });
   }
 }
-var Z = function(n, e, t, o) {
+var J = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -33255,7 +33255,7 @@ var Z = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-class ft {
+class wt {
   constructor(e) {
     this._options = e;
   }
@@ -33284,7 +33284,7 @@ class ft {
     return R.fromPromise(this.__createStyleRewrite(e, t));
   }
   __createStyleRewrite(e, t) {
-    return Z(this, void 0, void 0, function* () {
+    return J(this, void 0, void 0, function* () {
       var o, a, r, d;
       const l = yield K();
       yield l.appendFile("file_upload", e.file_upload), l.append("dialect", e.dialect), e.tone != null && l.append("tone", e.tone), l.append("style_guide", e.style_guide), e.webhook_url != null && l.append("webhook_url", e.webhook_url);
@@ -33311,7 +33311,7 @@ class ft {
           case 403:
             throw new b(i.error.body, i.rawResponse);
           case 413:
-            throw new M(i.error.body, i.rawResponse);
+            throw new $(i.error.body, i.rawResponse);
           case 422:
             throw new _(i.error.body, i.rawResponse);
           case 429:
@@ -33361,7 +33361,7 @@ class ft {
     return R.fromPromise(this.__getStyleRewrite(e, t));
   }
   __getStyleRewrite(e, t) {
-    return Z(this, void 0, void 0, function* () {
+    return J(this, void 0, void 0, function* () {
       var o, a, r, d;
       let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
       const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
@@ -33382,7 +33382,7 @@ class ft {
           case 403:
             throw new b(s.error.body, s.rawResponse);
           case 404:
-            throw new j(s.error.body, s.rawResponse);
+            throw new I(s.error.body, s.rawResponse);
           case 422:
             throw new _(s.error.body, s.rawResponse);
           case 500:
@@ -33412,40 +33412,40 @@ class ft {
     });
   }
   _getAuthorizationHeader() {
-    return Z(this, void 0, void 0, function* () {
+    return J(this, void 0, void 0, function* () {
       return `Bearer ${yield y.get(this._options.token)}`;
     });
   }
 }
-class ht {
+class yt {
   constructor(e) {
     this._options = Object.assign(Object.assign({}, e), { headers: T({
       "X-Fern-Language": "JavaScript",
       "X-Fern-SDK-Name": "@markupai/api",
       "X-Fern-SDK-Version": "1.0.0",
       "User-Agent": "@markupai/api/1.0.0",
-      "X-Fern-Runtime": te.type,
-      "X-Fern-Runtime-Version": te.version
+      "X-Fern-Runtime": ee.type,
+      "X-Fern-Runtime-Version": ee.version
     }, e?.headers) });
   }
   get styleGuides() {
     var e;
-    return (e = this._styleGuides) !== null && e !== void 0 ? e : this._styleGuides = new lt(this._options);
+    return (e = this._styleGuides) !== null && e !== void 0 ? e : this._styleGuides = new ut(this._options);
   }
   get styleChecks() {
     var e;
-    return (e = this._styleChecks) !== null && e !== void 0 ? e : this._styleChecks = new ct(this._options);
+    return (e = this._styleChecks) !== null && e !== void 0 ? e : this._styleChecks = new ft(this._options);
   }
   get styleSuggestions() {
     var e;
-    return (e = this._styleSuggestions) !== null && e !== void 0 ? e : this._styleSuggestions = new ut(this._options);
+    return (e = this._styleSuggestions) !== null && e !== void 0 ? e : this._styleSuggestions = new ht(this._options);
   }
   get styleRewrites() {
     var e;
-    return (e = this._styleRewrites) !== null && e !== void 0 ? e : this._styleRewrites = new ft(this._options);
+    return (e = this._styleRewrites) !== null && e !== void 0 ? e : this._styleRewrites = new wt(this._options);
   }
 }
-var P = /* @__PURE__ */ ((n) => (n.Queued = "queued", n.Running = "running", n.Completed = "completed", n.Failed = "failed", n))(P || {}), z = /* @__PURE__ */ ((n) => (n.Stage = "stage", n.Dev = "dev", n.Prod = "prod", n))(z || {}), Re = /* @__PURE__ */ ((n) => (n.Environment = "environment", n.Url = "url", n))(Re || {}), B = /* @__PURE__ */ ((n) => (n.VALIDATION_ERROR = "VALIDATION_ERROR", n.UNKNOWN_ERROR = "UNKNOWN_ERROR", n.WORKFLOW_NOT_FOUND = "workflowNotFound", n.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", n.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", n.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", n.NETWORK_ERROR = "NETWORK_ERROR", n.TIMEOUT_ERROR = "TIMEOUT_ERROR", n.WORKFLOW_FAILED = "WORKFLOW_FAILED", n.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", n.POLLING_ERROR = "POLLING_ERROR", n.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", n))(B || {});
+var P = /* @__PURE__ */ ((n) => (n.Queued = "queued", n.Running = "running", n.Completed = "completed", n.Failed = "failed", n))(P || {}), z = /* @__PURE__ */ ((n) => (n.Stage = "stage", n.Dev = "dev", n.Prod = "prod", n))(z || {}), me = /* @__PURE__ */ ((n) => (n.Environment = "environment", n.Url = "url", n))(me || {}), U = /* @__PURE__ */ ((n) => (n.VALIDATION_ERROR = "VALIDATION_ERROR", n.UNKNOWN_ERROR = "UNKNOWN_ERROR", n.WORKFLOW_NOT_FOUND = "workflowNotFound", n.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", n.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", n.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", n.NETWORK_ERROR = "NETWORK_ERROR", n.TIMEOUT_ERROR = "TIMEOUT_ERROR", n.WORKFLOW_FAILED = "WORKFLOW_FAILED", n.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", n.POLLING_ERROR = "POLLING_ERROR", n.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", n))(U || {});
 class h extends Error {
   statusCode;
   // Optional - only present for API errors
@@ -33679,29 +33679,29 @@ class h extends Error {
     return {};
   }
 }
-const Q = "https://api.markup.ai", wt = "https://api.stg.markup.ai", yt = "https://api.dev.markup.ai";
-function ne(n) {
+const Z = "https://api.markup.ai", pt = "https://api.stg.markup.ai", mt = "https://api.dev.markup.ai";
+function te(n) {
   if (n.platform)
-    if (n.platform.type === Re.Environment)
+    if (n.platform.type === me.Environment)
       switch (n.platform.value) {
         case z.Stage:
-          return wt;
+          return pt;
         case z.Dev:
-          return yt;
+          return mt;
         case z.Prod:
-          return Q;
+          return Z;
         default:
-          return Q;
+          return Z;
       }
     else
       return n.platform.value;
-  return Q;
+  return Z;
 }
 function S(n) {
-  const e = ne(n), t = new ht({ token: n.apiKey, baseUrl: e });
-  return gt(t, n);
+  const e = te(n), t = new yt({ token: n.apiKey, baseUrl: e });
+  return bt(t, n);
 }
-async function Rt(n, e, t) {
+async function vt(n, e, t) {
   const o = e.rateLimit?.maxRetries ?? 5, a = e.rateLimit?.initialDelayMs ?? 1e3, r = e.rateLimit?.maxDelayMs ?? 16e3, d = e.rateLimit?.jitter ?? true;
   let l = 0;
   for (; ; )
@@ -33718,7 +33718,7 @@ async function Rt(n, e, t) {
           }, N = h.fromResponse(429, m);
           throw new h(N.message, N.type, N.statusCode, N.rawErrorData, s);
         }
-        throw new h("Rate limit exceeded", B.RATE_LIMIT_ERROR, 429, {}, s);
+        throw new h("Rate limit exceeded", U.RATE_LIMIT_ERROR, 429, {}, s);
       }
       let w;
       const p = c?.headers, k = p?.["Retry-After"] ?? p?.["retry-after"] ?? p?.retry_after;
@@ -33729,8 +33729,8 @@ async function Rt(n, e, t) {
       if (!w && p && (p["X-RateLimit-Reset"] || p["x-ratelimit-reset"])) {
         const m = p["X-RateLimit-Reset"] ?? p["x-ratelimit-reset"], N = typeof m == "string" ? Number.parseInt(m, 10) : Number(m);
         if (!Number.isNaN(N)) {
-          const se = N * 1e3 - Date.now();
-          Number.isFinite(se) && (w = Math.max(0, se));
+          const re = N * 1e3 - Date.now();
+          Number.isFinite(re) && (w = Math.max(0, re));
         }
       }
       if (!w) {
@@ -33743,7 +33743,7 @@ async function Rt(n, e, t) {
       continue;
     }
 }
-function gt(n, e, t = "client") {
+function bt(n, e, t = "client") {
   const o = /* @__PURE__ */ new WeakMap(), a = (r, d) => {
     if (typeof r != "object" || r === null) return r;
     const l = o.get(r);
@@ -33753,7 +33753,7 @@ function gt(n, e, t = "client") {
         const w = Reflect.get(c, i, u);
         if (typeof w == "function") {
           const p = `${d}.${String(i)}`, k = w;
-          return (...m) => Rt(() => k.apply(c, m), e, p);
+          return (...m) => vt(() => k.apply(c, m), e, p);
         }
         return typeof w == "object" && w !== null ? a(w, `${d}.${String(i)}`) : w;
       }
@@ -33762,12 +33762,15 @@ function gt(n, e, t = "client") {
   };
   return a(n, t);
 }
-async function bt() {
+function Re() {
+  return !!(typeof process > "u" ? void 0 : process)?.versions?.node;
+}
+async function _t() {
   if (typeof Blob < "u") return Blob;
   const { Blob: n } = await import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
   return n ?? Blob;
 }
-function V(n) {
+function ce(n) {
   switch (n.split(".").pop()?.toLowerCase()) {
     case "pdf":
       return "application/pdf";
@@ -33775,83 +33778,82 @@ function V(n) {
       return "text/plain";
     case "md":
       return "text/markdown";
+    case "markdown":
+      return "text/markdown";
+    case "mdown":
+      return "text/markdown";
+    case "mkd":
+      return "text/markdown";
+    case "mdx":
+      return "text/markdown";
     case "htm":
       return "text/html";
     case "html":
       return "text/html";
-    case "xhtml":
-      return "application/xhtml+xml";
-    case "docx":
-      return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-    case "doc":
-      return "application/msword";
     default:
       return "application/octet-stream";
   }
 }
-function ge(n) {
+function St(n) {
   return typeof Buffer < "u" ? Buffer.isBuffer(n) : false;
 }
-async function Et(n) {
-  const e = await bt(), t = ve(n);
+async function ge(n, e) {
   if (typeof n.content == "string") {
-    const o = V(t), a = o !== "application/octet-stream" ? o : oe(n.content) ? "text/html" : "text/plain";
-    return new e([n.content], { type: a });
-  } else if (typeof File < "u" && "file" in n.content && n.content.file instanceof File) {
-    const o = n.content, a = await o.file.arrayBuffer();
-    return new e([a], { type: o.mimeType || "application/octet-stream" });
-  } else if ("buffer" in n.content && ge(n.content.buffer)) {
-    const o = n.content, a = o.mimeType || V(o.filename || t), r = o.buffer.buffer.slice(
-      o.buffer.byteOffset,
-      o.buffer.byteOffset + o.buffer.byteLength
-    );
-    return new e([r], { type: a });
-  } else
-    throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
-}
-async function St(n) {
-  const e = ve(n);
-  if (typeof n.content == "string") {
-    const t = V(e), o = t !== "application/octet-stream" ? t : oe(n.content) ? "text/html" : "text/plain";
-    return new File([n.content], e, { type: o });
-  } else {
-    if (typeof File < "u" && "file" in n.content && n.content.file instanceof File)
-      return n.content.file;
-    if ("buffer" in n.content && ge(n.content.buffer)) {
-      const t = n.content, o = t.mimeType || V(t.filename || e), a = t.buffer.buffer.slice(
-        t.buffer.byteOffset,
-        t.buffer.byteOffset + t.buffer.byteLength
-      );
-      return new File([a], e, { type: o });
-    } else
-      throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
+    const t = ce(e), o = xt(t, n.content);
+    return { parts: [n.content], type: o, filename: e };
   }
+  if (typeof File < "u" && typeof n.content != "string" && n.content !== null && "file" in n.content && n.content.file instanceof File) {
+    const t = n.content, o = await t.file.arrayBuffer(), a = t.mimeType || t.file.type || "application/octet-stream";
+    return { parts: [o], type: a, filename: t.file.name, file: t.file };
+  }
+  if (typeof n.content != "string" && n.content !== null && "buffer" in n.content && St(n.content.buffer)) {
+    const t = n.content, o = t.mimeType || ce(t.documentNameWithExtension || e);
+    return { parts: [t.buffer.buffer.slice(
+      t.buffer.byteOffset,
+      t.buffer.byteOffset + t.buffer.byteLength
+    )], type: o, filename: e };
+  }
+  throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
 }
-async function X(n) {
-  return typeof File < "u" ? St(n) : Et(n);
+async function kt(n) {
+  const e = _e(n), { parts: t, type: o } = await ge(n, e), a = await _t();
+  return new a(t, { type: o });
 }
-function oe(n) {
+async function Tt(n) {
+  const e = _e(n);
+  if (typeof File < "u" && typeof n.content != "string" && n.content !== null && "file" in n.content && n.content.file instanceof File)
+    return n.content.file;
+  const { parts: t, type: o } = await ge(n, e);
+  return new File(t, e, { type: o });
+}
+async function D(n) {
+  return Re() ? kt(n) : Tt(n);
+}
+function ve(n) {
   const e = n.trimStart().slice(0, 256).toLowerCase();
   return e.startsWith("<!doctype html") || e.startsWith("<html") ? true : /<(head|body|title|div|span|p|h1|h2|h3|h4|h5|h6)\b/.test(e);
 }
-function ve(n) {
-  const e = n.documentName || n.filename;
-  if (e) return e;
-  if (typeof n.content == "string") {
-    if (oe(n.content)) return "document.html";
-  } else if ("buffer" in n.content) {
-    const t = n.content;
-    if (t.filename) return t.filename;
-  }
-  return "unknown.txt";
+function be(n) {
+  const e = n.trimStart().slice(0, 512);
+  return !!(/^---\n[\s\S]*?\n---\n/.test(e) || /^#{1,6}\s+.+/m.test(e) || /^(?:\s*[-*+]\s+\S|\s*\d+\.\s+\S)/m.test(e) || /\[[^\]]+\]\([^)]+\)/.test(e) || /!\[[^\]]*\]\([^)]+\)/.test(e) || /```[\s\S]*?```/.test(e));
 }
-const be = 3e5;
-async function re(n, e, t) {
-  const o = Date.now(), a = S(t), r = await X(e);
+function xt(n, e) {
+  return n === "application/octet-stream" ? be(e) ? "text/markdown" : ve(e) ? "text/html" : "text/plain" : n;
+}
+function _e(n) {
+  if ("content" in n && typeof n.content == "string") {
+    const e = n;
+    return e.documentNameWithExtension ? e.documentNameWithExtension : ve(e.content) ? "unknown.html" : be(e.content) ? "unknown.md" : "unknown.txt";
+  }
+  return "content" in n && n.content !== null && typeof n.content == "object" && "buffer" in n.content ? n.content.documentNameWithExtension : "content" in n && n.content !== null && typeof n.content == "object" && "file" in n.content ? n.content.file.name : "unknown.txt";
+}
+const Ee = 3e5;
+async function ne(n, e, t) {
+  const o = Date.now(), a = S(t), r = await D(e);
   let d;
   try {
     switch (n) {
-      case I.Check:
+      case j.Check:
         d = await a.styleChecks.createStyleCheck({
           file_upload: r,
           dialect: e.dialect,
@@ -33860,7 +33862,7 @@ async function re(n, e, t) {
           ...e.tone ? { tone: e.tone } : {}
         });
         break;
-      case I.Suggestions:
+      case j.Suggestions:
         d = await a.styleSuggestions.createStyleSuggestion({
           file_upload: r,
           dialect: e.dialect,
@@ -33869,7 +33871,7 @@ async function re(n, e, t) {
           ...e.tone ? { tone: e.tone } : {}
         });
         break;
-      case I.Rewrite:
+      case j.Rewrite:
         d = await a.styleRewrites.createStyleRewrite({
           file_upload: r,
           dialect: e.dialect,
@@ -33886,12 +33888,12 @@ async function re(n, e, t) {
   }
   if (!d.workflow_id)
     throw new Error(`No workflow_id received from initial ${n} request`);
-  const l = await Tt(d.workflow_id, t, n, o);
+  const l = await At(d.workflow_id, t, n, o);
   if (l.workflow.status === P.Completed)
     return l;
   throw new Error(`${n} failed with status: ${l.workflow.status}`);
 }
-class kt {
+class Ct {
   constructor(e, t, o, a, r) {
     this.requests = e, this.config = t, this.styleFunction = o, this.options = a, this.onProgressUpdate = r, this.startTime = Date.now(), this.initializeResults();
   }
@@ -33979,7 +33981,7 @@ class kt {
       "unauthorized",
       "forbidden",
       "rate limit"
-    ].some((o) => e.message.toLowerCase().includes(o)) || e instanceof h && e.type === B.RATE_LIMIT_ERROR);
+    ].some((o) => e.message.toLowerCase().includes(o)) || e instanceof h && e.type === U.RATE_LIMIT_ERROR);
   }
   delay(e) {
     return new Promise((t) => setTimeout(t, e));
@@ -34005,7 +34007,7 @@ class kt {
     this.cancelled = true, this.rejectPromise?.(new Error("Batch operation cancelled"));
   }
 }
-function ie(n, e, t = {}, o) {
+function oe(n, e, t = {}, o) {
   if (!n || n.length === 0)
     throw new Error("Requests array cannot be empty");
   if (n.length > 1e3)
@@ -34015,7 +34017,7 @@ function ie(n, e, t = {}, o) {
       maxConcurrent: 100,
       retryAttempts: 2,
       retryDelay: 1e3,
-      timeoutMillis: be
+      timeoutMillis: Ee
     },
     ...t
   };
@@ -34023,7 +34025,7 @@ function ie(n, e, t = {}, o) {
     throw new Error("maxConcurrent must be between 1 and 100");
   if (r.retryAttempts < 0 || r.retryAttempts > 5)
     throw new Error("retryAttempts must be between 0 and 5");
-  const d = new kt(n, e, o, r), l = d.start();
+  const d = new Ct(n, e, o, r), l = d.start();
   return {
     progress: {
       get total() {
@@ -34055,50 +34057,50 @@ function ie(n, e, t = {}, o) {
     cancel: () => d.cancel()
   };
 }
-async function Tt(n, e, t, o = Date.now()) {
+async function At(n, e, t, o = Date.now()) {
   let a = 0;
-  const r = 2e3, d = e.timeoutMillis ?? be, l = Math.floor(d / r), s = async () => {
+  const r = 2e3, d = e.timeoutMillis ?? Ee, l = Math.floor(d / r), s = async () => {
     const c = Date.now() - o;
     if (c > d)
-      throw new h(`Workflow timed out after ${c}ms`, B.TIMEOUT_ERROR);
+      throw new h(`Workflow timed out after ${c}ms`, U.TIMEOUT_ERROR);
     try {
       const i = S(e);
       let u;
       switch (t) {
-        case I.Check:
+        case j.Check:
           u = await i.styleChecks.getStyleCheck(n);
           break;
-        case I.Suggestions:
+        case j.Suggestions:
           u = await i.styleSuggestions.getStyleSuggestion(
             n
           );
           break;
-        case I.Rewrite:
+        case j.Rewrite:
           u = await i.styleRewrites.getStyleRewrite(n);
           break;
       }
       const w = u.workflow.status;
       if (w === P.Failed)
-        throw new h(`Workflow failed with status: ${P.Failed}`, B.WORKFLOW_FAILED);
+        throw new h(`Workflow failed with status: ${P.Failed}`, U.WORKFLOW_FAILED);
       if (w === P.Completed)
         return u;
       if (w === P.Running || w === P.Queued)
         return a++, await new Promise((p) => setTimeout(p, r)), s();
-      throw new h(`Unexpected workflow status: ${w}`, B.UNEXPECTED_STATUS);
+      throw new h(`Unexpected workflow status: ${w}`, U.UNEXPECTED_STATUS);
     } catch (i) {
       throw i instanceof f ? h.fromResponse(i.statusCode || 0, i.body) : (console.error(`Unknown polling error (attempt ${a + 1}/${l}):`, i), h.fromError(
         i instanceof Error ? i : new Error("Unknown error occurred"),
-        B.POLLING_ERROR
+        U.POLLING_ERROR
       ));
     }
   };
   return s();
 }
-async function xt(n, e) {
-  return re(I.Check, n, e);
+async function Lt(n, e) {
+  return ne(j.Check, n, e);
 }
-function Lt(n, e, t = {}) {
-  return ie(n, e, t, xt);
+function It(n, e, t = {}) {
+  return oe(n, e, t, Lt);
 }
 
 /**
@@ -34373,7 +34375,7 @@ const isRequestEndingError = (error) => {
         return false;
     const apiError = error;
     const typeIsEnding = !!(apiError.type &&
-        [B.UNAUTHORIZED_ERROR, B.INTERNAL_SERVER_ERROR].includes(apiError.type));
+        [U.UNAUTHORIZED_ERROR, U.INTERNAL_SERVER_ERROR].includes(apiError.type));
     const statusCodeIsEnding = typeof apiError.statusCode === "number" &&
         (apiError.statusCode === 401 || apiError.statusCode >= 500);
     return typeIsEnding || statusCodeIsEnding;
@@ -34412,7 +34414,7 @@ async function analyzeFile(filePath, content, options, config) {
             documentName: getFileBasename(filePath),
             ...(options.tone ? { tone: options.tone } : {}),
         };
-        const result = await xt(request, config);
+        const result = await Lt(request, config);
         return {
             filePath,
             result: result.original.scores,
@@ -34458,7 +34460,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     };
     try {
         // Start batch processing
-        const batchResponse = Lt(requests, config, batchOptions);
+        const batchResponse = It(requests, config, batchOptions);
         // Monitor progress
         const progressInterval = setInterval(() => {
             const progress = batchResponse.progress;
