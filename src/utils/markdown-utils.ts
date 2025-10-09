@@ -2,49 +2,46 @@
  * Markdown generation utility functions for analysis results
  */
 
-import { createHash } from 'node:crypto'
-import { AnalysisResult, AnalysisOptions } from '../types/index.js'
-import { getQualityEmoji, calculateScoreSummary } from './score-utils.js'
+import { createHash } from "node:crypto";
+import { AnalysisResult, AnalysisOptions } from "../types/index.js";
+import { getQualityEmoji, calculateScoreSummary } from "./score-utils.js";
 
 /**
  * Base repository context with common fields
  */
 interface BaseRepositoryContext {
-  owner: string
-  repo: string
-  ref: string
-  baseUrl: URL
+  owner: string;
+  repo: string;
+  ref: string;
+  baseUrl: URL;
 }
 
 /**
  * Repository context for pull request events
  */
 export interface PRRepositoryContext extends BaseRepositoryContext {
-  prNumber: number
+  prNumber: number;
 }
 
 /**
  * Repository context for non-PR events (push, workflow_dispatch, etc.)
  */
-export type NonPRRepositoryContext = BaseRepositoryContext
+export type NonPRRepositoryContext = BaseRepositoryContext;
 
 /**
  * Union type for repository context
  */
-export type RepositoryContext = PRRepositoryContext | NonPRRepositoryContext
+export type RepositoryContext = PRRepositoryContext | NonPRRepositoryContext;
 
 /**
  * Generate file display link based on repository context
  */
-function generateFileDisplayLink(
-  filePath: string,
-  context: RepositoryContext
-): string {
-  return 'prNumber' in context
+function generateFileDisplayLink(filePath: string, context: RepositoryContext): string {
+  return "prNumber" in context
     ? // PR context - create diff link
-      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber}/files#diff-${createHash('sha256').update(filePath).digest('hex')})`
+      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
     : // Non-PR context - create blob link
-      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`
+      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
 }
 
 /**
@@ -52,32 +49,32 @@ function generateFileDisplayLink(
  */
 export function generateResultsTable(
   results: AnalysisResult[],
-  context: RepositoryContext
+  context: RepositoryContext,
 ): string {
   if (results.length === 0) {
-    return 'No files were analyzed.'
+    return "No files were analyzed.";
   }
 
   const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|`
+|------|---------|---------|---------|---------|---------|------|`;
 
   const tableRows = results
     .map((result) => {
-      const { filePath, result: scores } = result
-      const qualityEmoji = getQualityEmoji(scores.quality.score)
+      const { filePath, result: scores } = result;
+      const qualityEmoji = getQualityEmoji(scores.quality.score);
       const toneDisplay =
-        typeof scores.analysis.tone?.score === 'number'
+        typeof scores.analysis.tone?.score === "number"
           ? String(Math.round(scores.analysis.tone.score))
-          : '-'
+          : "-";
 
       // Create clickable file link using repository context
-      const fileDisplay = generateFileDisplayLink(filePath, context)
+      const fileDisplay = generateFileDisplayLink(filePath, context);
 
-      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`
+      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`;
     })
-    .join('\n')
+    .join("\n");
 
-  return `${tableHeader}\n${tableRows}`
+  return `${tableHeader}\n${tableRows}`;
 }
 
 /**
@@ -85,11 +82,11 @@ export function generateResultsTable(
  */
 export function generateSummary(results: AnalysisResult[]): string {
   if (results.length === 0) {
-    return ''
+    return "";
   }
 
-  const summary = calculateScoreSummary(results)
-  const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore)
+  const summary = calculateScoreSummary(results);
+  const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
 
   return `
 ## 📊 Summary
@@ -106,22 +103,19 @@ export function generateSummary(results: AnalysisResult[]): string {
 | Terminology | ${Math.round(summary.averageTerminologyScore)} |
 | Clarity | ${Math.round(summary.averageClarityScore)} |
 | Tone | ${Math.round(summary.averageToneScore)} |
-`
+`;
 }
 
 /**
  * Generate footer section with metadata
  */
-export function generateFooter(
-  config: AnalysisOptions,
-  eventType: string
-): string {
+export function generateFooter(config: AnalysisOptions, eventType: string): string {
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
 *Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ''} Style Guide: ${config.styleGuide}*
-*Event: ${eventType}*`
+*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
+*Event: ${eventType}*`;
 }
 
 /**
@@ -132,11 +126,11 @@ export function generateAnalysisContent(
   config: AnalysisOptions,
   header: string,
   eventType: string,
-  context: RepositoryContext
+  context: RepositoryContext,
 ): string {
-  const table = generateResultsTable(results, context)
-  const summary = generateSummary(results)
-  const footer = generateFooter(config, eventType)
+  const table = generateResultsTable(results, context);
+  const summary = generateSummary(results);
+  const footer = generateFooter(config, eventType);
 
   return `${header}
 
@@ -144,5 +138,5 @@ ${table}
 
 ${summary}
 
-${footer}`
+${footer}`;
 }

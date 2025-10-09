@@ -1,6 +1,5 @@
 name: Markup AI Content Guardian
-description:
-  GitHub Action that automates content quality checks to ensure consistent brand
+description: GitHub Action that automates content quality checks to ensure consistent brand
   alignment and proactive content governance.
 author: Markup AI
 
@@ -12,13 +11,11 @@ branding:
 # Define your inputs here.
 inputs:
   markup_ai_api_key:
-    description:
-      API key for style checking (can also be provided via MARKUP_AI_API_KEY
+    description: API key for style checking (can also be provided via MARKUP_AI_API_KEY
       environment variable)
     required: true
   dialect:
-    description:
-      Language dialect for analysis (e.g., american_english, british_english)
+    description: Language dialect for analysis (e.g., american_english, british_english)
     required: true
   tone:
     description: Tone for analysis (e.g., formal, informal, academic)
@@ -32,11 +29,11 @@ inputs:
   add_commit_status:
     description: Add commit status updates (default is true)
     required: false
-    default: 'true'
+    default: "true"
   strict_mode:
     description: Fail the action if any file analysis fails (default is false)
     required: false
-    default: 'false'
+    default: "false"
 
 # Define your outputs here.
 outputs:
