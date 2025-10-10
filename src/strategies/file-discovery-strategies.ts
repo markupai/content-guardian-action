@@ -30,7 +30,10 @@ export function createPushEventStrategy(
       if (!commit) {
         return [];
       }
-      return commit.changes.map((change) => change.filename);
+      // Filter out deleted files - only analyze files that are not removed/deleted
+      return commit.changes
+        .filter((change) => change.status !== "removed" && change.status !== "deleted")
+        .map((change) => change.filename);
     },
 
     getEventInfo(): EventInfo {
