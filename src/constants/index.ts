@@ -2,7 +2,16 @@
  * Application constants and configuration
  */
 
-export const SUPPORTED_EXTENSIONS = [".md", ".txt", ".markdown"] as const;
+export const SUPPORTED_EXTENSIONS = [
+  ".md",
+  ".markdown",
+  ".mdown",
+  ".mkd",
+  ".html",
+  ".htm",
+  ".txt",
+  ".text",
+] as const;
 
 /**
  * Default analysis options
