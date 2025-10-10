@@ -34411,7 +34411,7 @@ async function analyzeFile(filePath, content, options, config) {
             content,
             dialect: options.dialect,
             style_guide: options.styleGuide,
-            documentName: getFileBasename(filePath),
+            documentNameWithExtension: getFileBasename(filePath),
             ...(options.tone ? { tone: options.tone } : {}),
         };
         const result = await Lt(request, config);
@@ -34448,7 +34448,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
         content,
         dialect: options.dialect,
         style_guide: options.styleGuide,
-        documentName: getFileBasename(filePath),
+        documentNameWithExtension: getFileBasename(filePath),
         ...(options.tone ? { tone: options.tone } : {}),
     }));
     // Configure batch options with sensible defaults
