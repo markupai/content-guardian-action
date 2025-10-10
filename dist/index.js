@@ -31247,7 +31247,16 @@ var githubExports = requireGithub();
 /**
  * Application constants and configuration
  */
-const SUPPORTED_EXTENSIONS = [".md", ".txt", ".markdown"];
+const SUPPORTED_EXTENSIONS = [
+    ".md",
+    ".markdown",
+    ".mdown",
+    ".mkd",
+    ".html",
+    ".htm",
+    ".txt",
+    ".text",
+];
 /**
  * Input names for GitHub Actions
  */
