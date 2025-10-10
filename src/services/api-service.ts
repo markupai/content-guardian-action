@@ -27,7 +27,7 @@ export async function analyzeFile(
       content,
       dialect: options.dialect,
       style_guide: options.styleGuide,
-      documentName: getFileBasename(filePath),
+      documentNameWithExtension: getFileBasename(filePath),
       ...(options.tone ? { tone: options.tone } : {}),
     };
 
@@ -75,7 +75,7 @@ export async function analyzeFilesBatch(
     content,
     dialect: options.dialect,
     style_guide: options.styleGuide,
-    documentName: getFileBasename(filePath),
+    documentNameWithExtension: getFileBasename(filePath),
     ...(options.tone ? { tone: options.tone } : {}),
   }));
 
