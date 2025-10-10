@@ -31432,24 +31432,24 @@ class v extends f {
     }), Object.setPrototypeOf(this, v.prototype);
   }
 }
-class b extends f {
+class _ extends f {
   constructor(e, t) {
     super({
       message: "ForbiddenError",
       statusCode: 403,
       body: e,
       rawResponse: t
-    }), Object.setPrototypeOf(this, b.prototype);
+    }), Object.setPrototypeOf(this, _.prototype);
   }
 }
-class _ extends f {
+class b extends f {
   constructor(e, t) {
     super({
       message: "UnprocessableEntityError",
       statusCode: 422,
       body: e,
       rawResponse: t
-    }), Object.setPrototypeOf(this, _.prototype);
+    }), Object.setPrototypeOf(this, b.prototype);
   }
 }
 class E extends f {
@@ -31462,14 +31462,14 @@ class E extends f {
     }), Object.setPrototypeOf(this, E.prototype);
   }
 }
-class $ extends f {
+class F extends f {
   constructor(e, t) {
     super({
       message: "ContentTooLargeError",
       statusCode: 413,
       body: e,
       rawResponse: t
-    }), Object.setPrototypeOf(this, $.prototype);
+    }), Object.setPrototypeOf(this, F.prototype);
   }
 }
 class I extends f {
@@ -31696,7 +31696,7 @@ function Ne(n) {
     }
   });
 }
-var Ue = function(n, e, t, o) {
+var Me = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31723,12 +31723,12 @@ var Ue = function(n, e, t, o) {
     c((o = o.apply(n, [])).next());
   });
 };
-function Be() {
-  return Ue(this, void 0, void 0, function* () {
+function Ue() {
+  return Me(this, void 0, void 0, function* () {
     return fetch;
   });
 }
-var Me = function(n, e, t, o) {
+var $e = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -31755,14 +31755,14 @@ var Me = function(n, e, t, o) {
     c((o = o.apply(n, e || [])).next());
   });
 };
-function $e(n) {
-  return Me(this, arguments, void 0, function* ({ body: e, type: t }) {
+function Fe(n) {
+  return $e(this, arguments, void 0, function* ({ body: e, type: t }) {
     return t.includes("json") ? V(e) : e;
   });
 }
-const Fe = "timeout";
+const Be = "timeout";
 function Ge(n) {
-  const e = new AbortController(), t = setTimeout(() => e.abort(Fe), n);
+  const e = new AbortController(), t = setTimeout(() => e.abort(Be), n);
   return { signal: e.signal, abortId: t };
 }
 function We(...n) {
@@ -32027,10 +32027,10 @@ function Qe(n) {
 }
 function Oe(n) {
   return q(this, void 0, void 0, function* () {
-    const e = Ae(n.url, n.queryParameters), t = yield $e({
+    const e = Ae(n.url, n.queryParameters), t = yield Fe({
       body: n.body,
       type: n.requestType === "json" ? "json" : "other"
-    }), o = yield Be();
+    }), o = yield Ue();
     try {
       const a = yield Ze(() => q(this, void 0, void 0, function* () {
         return He(o, e, n.method, yield Qe(n), t, n.timeoutMs, n.abortSignal, n.withCredentials, n.duplex);
@@ -32289,7 +32289,7 @@ function ye(n) {
   let e = 0, t = n.length;
   return n.startsWith("/") && (e = 1), n.endsWith("/") && (t = n.length - 1), e === 0 && t === n.length ? n : n.slice(e, t);
 }
-var F = function(n, e, t, o) {
+var B = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32357,7 +32357,7 @@ function dt(n) {
   return o >= 0 ? n.substring(o + 1) : n;
 }
 function lt(n) {
-  return F(this, void 0, void 0, function* () {
+  return B(this, void 0, void 0, function* () {
     var e, t, o, a, r, d, l;
     if (ee.type === "node") {
       const { Readable: s } = yield import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
@@ -32403,7 +32403,7 @@ function lt(n) {
   });
 }
 function K() {
-  return F(this, void 0, void 0, function* () {
+  return B(this, void 0, void 0, function* () {
     return new ct();
   });
 }
@@ -32412,7 +32412,7 @@ class ct {
     this.fd = new FormData();
   }
   setup() {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
     });
   }
   append(e, t) {
@@ -32427,7 +32427,7 @@ class ct {
       return dt(e.path.toString());
   }
   convertToBlob(e) {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       if (it(e) || pe(e)) {
         const t = yield lt(e);
         return new Blob([t]);
@@ -32436,7 +32436,7 @@ class ct {
     });
   }
   appendFile(e, t, o) {
-    return F(this, void 0, void 0, function* () {
+    return B(this, void 0, void 0, function* () {
       o = this.getFileName(t, o);
       const a = yield this.convertToBlob(t);
       o ? this.fd.append(e, a, o) : this.fd.append(e, a);
@@ -32465,7 +32465,7 @@ function A(...n) {
 const L = {
   Default: "https://api.markup.ai"
 };
-var B = function(n, e, t, o) {
+var U = function(n, e, t, o) {
   function a(r) {
     return r instanceof t ? r : new t(function(d) {
       d(r);
@@ -32513,7 +32513,7 @@ class ut {
     return R.fromPromise(this.__listStyleGuides(e));
   }
   __listStyleGuides(e) {
-    return B(this, void 0, void 0, function* () {
+    return U(this, void 0, void 0, function* () {
       var t, o, a, r;
       let d = T((t = this._options) === null || t === void 0 ? void 0 : t.headers, A({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
       const l = yield ((o = this._options.fetcher) !== null && o !== void 0 ? o : x)({
@@ -32532,9 +32532,9 @@ class ut {
           case 401:
             throw new v(l.error.body, l.rawResponse);
           case 403:
-            throw new b(l.error.body, l.rawResponse);
-          case 422:
             throw new _(l.error.body, l.rawResponse);
+          case 422:
+            throw new b(l.error.body, l.rawResponse);
           case 500:
             throw new E(l.error.body, l.rawResponse);
           default:
@@ -32584,7 +32584,7 @@ class ut {
     return R.fromPromise(this.__createStyleGuide(e, t));
   }
   __createStyleGuide(e, t) {
-    return B(this, void 0, void 0, function* () {
+    return U(this, void 0, void 0, function* () {
       var o, a, r, d;
       const l = yield K();
       yield l.appendFile("file_upload", e.file_upload), l.append("name", e.name);
@@ -32609,11 +32609,11 @@ class ut {
           case 401:
             throw new v(i.error.body, i.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
-          case 413:
-            throw new $(i.error.body, i.rawResponse);
-          case 422:
             throw new _(i.error.body, i.rawResponse);
+          case 413:
+            throw new F(i.error.body, i.rawResponse);
+          case 422:
+            throw new b(i.error.body, i.rawResponse);
           case 500:
             throw new E(i.error.body, i.rawResponse);
           default:
@@ -32659,7 +32659,7 @@ class ut {
     return R.fromPromise(this.__getStyleGuide(e, t));
   }
   __getStyleGuide(e, t) {
-    return B(this, void 0, void 0, function* () {
+    return U(this, void 0, void 0, function* () {
       var o, a, r, d;
       let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
       const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
@@ -32678,11 +32678,11 @@ class ut {
           case 401:
             throw new v(s.error.body, s.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           case 404:
             throw new I(s.error.body, s.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new b(s.error.body, s.rawResponse);
           case 500:
             throw new E(s.error.body, s.rawResponse);
           default:
@@ -32728,7 +32728,7 @@ class ut {
     return R.fromPromise(this.__deleteStyleGuide(e, t));
   }
   __deleteStyleGuide(e, t) {
-    return B(this, void 0, void 0, function* () {
+    return U(this, void 0, void 0, function* () {
       var o, a, r, d;
       let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
       const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
@@ -32747,11 +32747,11 @@ class ut {
           case 401:
             throw new v(s.error.body, s.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           case 404:
             throw new I(s.error.body, s.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new b(s.error.body, s.rawResponse);
           case 500:
             throw new E(s.error.body, s.rawResponse);
           default:
@@ -32800,7 +32800,7 @@ class ut {
     return R.fromPromise(this.__updateStyleGuide(e, t, o));
   }
   __updateStyleGuide(e, t, o) {
-    return B(this, void 0, void 0, function* () {
+    return U(this, void 0, void 0, function* () {
       var a, r, d, l;
       let s = T((a = this._options) === null || a === void 0 ? void 0 : a.headers, A({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
       const c = yield ((r = this._options.fetcher) !== null && r !== void 0 ? r : x)({
@@ -32822,11 +32822,11 @@ class ut {
           case 401:
             throw new v(c.error.body, c.rawResponse);
           case 403:
-            throw new b(c.error.body, c.rawResponse);
+            throw new _(c.error.body, c.rawResponse);
           case 404:
             throw new I(c.error.body, c.rawResponse);
           case 422:
-            throw new _(c.error.body, c.rawResponse);
+            throw new b(c.error.body, c.rawResponse);
           case 500:
             throw new E(c.error.body, c.rawResponse);
           default:
@@ -32854,7 +32854,7 @@ class ut {
     });
   }
   _getAuthorizationHeader() {
-    return B(this, void 0, void 0, function* () {
+    return U(this, void 0, void 0, function* () {
       return `Bearer ${yield y.get(this._options.token)}`;
     });
   }
@@ -32940,11 +32940,11 @@ class ft {
           case 401:
             throw new v(i.error.body, i.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
-          case 413:
-            throw new $(i.error.body, i.rawResponse);
-          case 422:
             throw new _(i.error.body, i.rawResponse);
+          case 413:
+            throw new F(i.error.body, i.rawResponse);
+          case 422:
+            throw new b(i.error.body, i.rawResponse);
           case 429:
             throw new G(i.error.body, i.rawResponse);
           case 500:
@@ -33011,11 +33011,11 @@ class ft {
           case 401:
             throw new v(s.error.body, s.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           case 404:
             throw new I(s.error.body, s.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new b(s.error.body, s.rawResponse);
           case 500:
             throw new E(s.error.body, s.rawResponse);
           default:
@@ -33129,11 +33129,11 @@ class ht {
           case 401:
             throw new v(i.error.body, i.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
-          case 413:
-            throw new $(i.error.body, i.rawResponse);
-          case 422:
             throw new _(i.error.body, i.rawResponse);
+          case 413:
+            throw new F(i.error.body, i.rawResponse);
+          case 422:
+            throw new b(i.error.body, i.rawResponse);
           case 429:
             throw new G(i.error.body, i.rawResponse);
           case 500:
@@ -33200,11 +33200,11 @@ class ht {
           case 401:
             throw new v(s.error.body, s.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           case 404:
             throw new I(s.error.body, s.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new b(s.error.body, s.rawResponse);
           case 500:
             throw new E(s.error.body, s.rawResponse);
           default:
@@ -33318,11 +33318,11 @@ class wt {
           case 401:
             throw new v(i.error.body, i.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
-          case 413:
-            throw new $(i.error.body, i.rawResponse);
-          case 422:
             throw new _(i.error.body, i.rawResponse);
+          case 413:
+            throw new F(i.error.body, i.rawResponse);
+          case 422:
+            throw new b(i.error.body, i.rawResponse);
           case 429:
             throw new G(i.error.body, i.rawResponse);
           case 500:
@@ -33389,11 +33389,11 @@ class wt {
           case 401:
             throw new v(s.error.body, s.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           case 404:
             throw new I(s.error.body, s.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new b(s.error.body, s.rawResponse);
           case 500:
             throw new E(s.error.body, s.rawResponse);
           default:
@@ -33454,7 +33454,7 @@ class yt {
     return (e = this._styleRewrites) !== null && e !== void 0 ? e : this._styleRewrites = new wt(this._options);
   }
 }
-var P = /* @__PURE__ */ ((n) => (n.Queued = "queued", n.Running = "running", n.Completed = "completed", n.Failed = "failed", n))(P || {}), z = /* @__PURE__ */ ((n) => (n.Stage = "stage", n.Dev = "dev", n.Prod = "prod", n))(z || {}), me = /* @__PURE__ */ ((n) => (n.Environment = "environment", n.Url = "url", n))(me || {}), U = /* @__PURE__ */ ((n) => (n.VALIDATION_ERROR = "VALIDATION_ERROR", n.UNKNOWN_ERROR = "UNKNOWN_ERROR", n.WORKFLOW_NOT_FOUND = "workflowNotFound", n.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", n.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", n.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", n.NETWORK_ERROR = "NETWORK_ERROR", n.TIMEOUT_ERROR = "TIMEOUT_ERROR", n.WORKFLOW_FAILED = "WORKFLOW_FAILED", n.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", n.POLLING_ERROR = "POLLING_ERROR", n.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", n))(U || {});
+var P = /* @__PURE__ */ ((n) => (n.Queued = "queued", n.Running = "running", n.Completed = "completed", n.Failed = "failed", n))(P || {}), z = /* @__PURE__ */ ((n) => (n.Stage = "stage", n.Dev = "dev", n.Prod = "prod", n))(z || {}), me = /* @__PURE__ */ ((n) => (n.Environment = "environment", n.Url = "url", n))(me || {}), M = /* @__PURE__ */ ((n) => (n.VALIDATION_ERROR = "VALIDATION_ERROR", n.UNKNOWN_ERROR = "UNKNOWN_ERROR", n.WORKFLOW_NOT_FOUND = "workflowNotFound", n.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", n.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", n.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", n.NETWORK_ERROR = "NETWORK_ERROR", n.TIMEOUT_ERROR = "TIMEOUT_ERROR", n.WORKFLOW_FAILED = "WORKFLOW_FAILED", n.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", n.POLLING_ERROR = "POLLING_ERROR", n.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", n))(M || {});
 class h extends Error {
   statusCode;
   // Optional - only present for API errors
@@ -33565,7 +33565,12 @@ class h extends Error {
    */
   static handleUnknownError(e, t) {
     if (!e || typeof e != "object")
-      return new h(`HTTP error! status: ${t}`, "UNKNOWN_ERROR", t, e);
+      return new h(
+        `HTTP error! status: ${t}`,
+        "UNKNOWN_ERROR",
+        t,
+        e
+      );
     const o = typeof e.message == "string" && e.message || typeof e.detail == "string" && e.detail || `HTTP error! status: ${t}`;
     return new h(o, "UNKNOWN_ERROR", t, e);
   }
@@ -33708,7 +33713,7 @@ function te(n) {
 }
 function S(n) {
   const e = te(n), t = new yt({ token: n.apiKey, baseUrl: e });
-  return bt(t, n);
+  return _t(t, n);
 }
 async function vt(n, e, t) {
   const o = e.rateLimit?.maxRetries ?? 5, a = e.rateLimit?.initialDelayMs ?? 1e3, r = e.rateLimit?.maxDelayMs ?? 16e3, d = e.rateLimit?.jitter ?? true;
@@ -33725,9 +33730,21 @@ async function vt(n, e, t) {
           const m = c.body ?? {
             detail: "Rate limit exceeded"
           }, N = h.fromResponse(429, m);
-          throw new h(N.message, N.type, N.statusCode, N.rawErrorData, s);
+          throw new h(
+            N.message,
+            N.type,
+            N.statusCode,
+            N.rawErrorData,
+            s
+          );
         }
-        throw new h("Rate limit exceeded", U.RATE_LIMIT_ERROR, 429, {}, s);
+        throw new h(
+          "Rate limit exceeded",
+          M.RATE_LIMIT_ERROR,
+          429,
+          {},
+          s
+        );
       }
       let w;
       const p = c?.headers, k = p?.["Retry-After"] ?? p?.["retry-after"] ?? p?.retry_after;
@@ -33752,7 +33769,7 @@ async function vt(n, e, t) {
       continue;
     }
 }
-function bt(n, e, t = "client") {
+function _t(n, e, t = "client") {
   const o = /* @__PURE__ */ new WeakMap(), a = (r, d) => {
     if (typeof r != "object" || r === null) return r;
     const l = o.get(r);
@@ -33773,11 +33790,6 @@ function bt(n, e, t = "client") {
 }
 function Re() {
   return !!(typeof process > "u" ? void 0 : process)?.versions?.node;
-}
-async function _t() {
-  if (typeof Blob < "u") return Blob;
-  const { Blob: n } = await import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
-  return n ?? Blob;
 }
 function ce(n) {
   switch (n.split(".").pop()?.toLowerCase()) {
@@ -33803,7 +33815,7 @@ function ce(n) {
       return "application/octet-stream";
   }
 }
-function St(n) {
+function Et(n) {
   return typeof Buffer < "u" ? Buffer.isBuffer(n) : false;
 }
 async function ge(n, e) {
@@ -33813,9 +33825,14 @@ async function ge(n, e) {
   }
   if (typeof File < "u" && typeof n.content != "string" && n.content !== null && "file" in n.content && n.content.file instanceof File) {
     const t = n.content, o = await t.file.arrayBuffer(), a = t.mimeType || t.file.type || "application/octet-stream";
-    return { parts: [o], type: a, filename: t.file.name, file: t.file };
+    return {
+      parts: [o],
+      type: a,
+      filename: t.file.name,
+      file: t.file
+    };
   }
-  if (typeof n.content != "string" && n.content !== null && "buffer" in n.content && St(n.content.buffer)) {
+  if (typeof n.content != "string" && n.content !== null && "buffer" in n.content && Et(n.content.buffer)) {
     const t = n.content, o = t.mimeType || ce(t.documentNameWithExtension || e);
     return { parts: [t.buffer.buffer.slice(
       t.buffer.byteOffset,
@@ -33824,12 +33841,19 @@ async function ge(n, e) {
   }
   throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
 }
+class St extends Blob {
+  name;
+  lastModified;
+  constructor(e, t, o = {}) {
+    super(e, o), this.name = t, this.lastModified = o.lastModified || Date.now();
+  }
+}
 async function kt(n) {
-  const e = _e(n), { parts: t, type: o } = await ge(n, e), a = await _t();
-  return new a(t, { type: o });
+  const e = be(n), { parts: t, type: o } = await ge(n, e);
+  return new St(t, e, { type: o });
 }
 async function Tt(n) {
-  const e = _e(n);
+  const e = be(n);
   if (typeof File < "u" && typeof n.content != "string" && n.content !== null && "file" in n.content && n.content.file instanceof File)
     return n.content.file;
   const { parts: t, type: o } = await ge(n, e);
@@ -33842,17 +33866,17 @@ function ve(n) {
   const e = n.trimStart().slice(0, 256).toLowerCase();
   return e.startsWith("<!doctype html") || e.startsWith("<html") ? true : /<(head|body|title|div|span|p|h1|h2|h3|h4|h5|h6)\b/.test(e);
 }
-function be(n) {
+function _e(n) {
   const e = n.trimStart().slice(0, 512);
   return !!(/^---\n[\s\S]*?\n---\n/.test(e) || /^#{1,6}\s+.+/m.test(e) || /^(?:\s*[-*+]\s+\S|\s*\d+\.\s+\S)/m.test(e) || /\[[^\]]+\]\([^)]+\)/.test(e) || /!\[[^\]]*\]\([^)]+\)/.test(e) || /```[\s\S]*?```/.test(e));
 }
 function xt(n, e) {
-  return n === "application/octet-stream" ? be(e) ? "text/markdown" : ve(e) ? "text/html" : "text/plain" : n;
+  return n === "application/octet-stream" ? _e(e) ? "text/markdown" : ve(e) ? "text/html" : "text/plain" : n;
 }
-function _e(n) {
+function be(n) {
   if ("content" in n && typeof n.content == "string") {
     const e = n;
-    return e.documentNameWithExtension ? e.documentNameWithExtension : ve(e.content) ? "unknown.html" : be(e.content) ? "unknown.md" : "unknown.txt";
+    return e.documentNameWithExtension ? e.documentNameWithExtension : ve(e.content) ? "unknown.html" : _e(e.content) ? "unknown.md" : "unknown.txt";
   }
   return "content" in n && n.content !== null && typeof n.content == "object" && "buffer" in n.content ? n.content.documentNameWithExtension : "content" in n && n.content !== null && typeof n.content == "object" && "file" in n.content ? n.content.file.name : "unknown.txt";
 }
@@ -33897,7 +33921,12 @@ async function ne(n, e, t) {
   }
   if (!d.workflow_id)
     throw new Error(`No workflow_id received from initial ${n} request`);
-  const l = await At(d.workflow_id, t, n, o);
+  const l = await At(
+    d.workflow_id,
+    t,
+    n,
+    o
+  );
   if (l.workflow.status === P.Completed)
     return l;
   throw new Error(`${n} failed with status: ${l.workflow.status}`);
@@ -33990,7 +34019,7 @@ class Ct {
       "unauthorized",
       "forbidden",
       "rate limit"
-    ].some((o) => e.message.toLowerCase().includes(o)) || e instanceof h && e.type === U.RATE_LIMIT_ERROR);
+    ].some((o) => e.message.toLowerCase().includes(o)) || e instanceof h && e.type === M.RATE_LIMIT_ERROR);
   }
   delay(e) {
     return new Promise((t) => setTimeout(t, e));
@@ -34071,13 +34100,15 @@ async function At(n, e, t, o = Date.now()) {
   const r = 2e3, d = e.timeoutMillis ?? Ee, l = Math.floor(d / r), s = async () => {
     const c = Date.now() - o;
     if (c > d)
-      throw new h(`Workflow timed out after ${c}ms`, U.TIMEOUT_ERROR);
+      throw new h(`Workflow timed out after ${c}ms`, M.TIMEOUT_ERROR);
     try {
       const i = S(e);
       let u;
       switch (t) {
         case j.Check:
-          u = await i.styleChecks.getStyleCheck(n);
+          u = await i.styleChecks.getStyleCheck(
+            n
+          );
           break;
         case j.Suggestions:
           u = await i.styleSuggestions.getStyleSuggestion(
@@ -34085,28 +34116,40 @@ async function At(n, e, t, o = Date.now()) {
           );
           break;
         case j.Rewrite:
-          u = await i.styleRewrites.getStyleRewrite(n);
+          u = await i.styleRewrites.getStyleRewrite(
+            n
+          );
           break;
       }
       const w = u.workflow.status;
       if (w === P.Failed)
-        throw new h(`Workflow failed with status: ${P.Failed}`, U.WORKFLOW_FAILED);
+        throw new h(
+          `Workflow failed with status: ${P.Failed}`,
+          M.WORKFLOW_FAILED
+        );
       if (w === P.Completed)
         return u;
       if (w === P.Running || w === P.Queued)
         return a++, await new Promise((p) => setTimeout(p, r)), s();
-      throw new h(`Unexpected workflow status: ${w}`, U.UNEXPECTED_STATUS);
+      throw new h(
+        `Unexpected workflow status: ${w}`,
+        M.UNEXPECTED_STATUS
+      );
     } catch (i) {
       throw i instanceof f ? h.fromResponse(i.statusCode || 0, i.body) : (console.error(`Unknown polling error (attempt ${a + 1}/${l}):`, i), h.fromError(
         i instanceof Error ? i : new Error("Unknown error occurred"),
-        U.POLLING_ERROR
+        M.POLLING_ERROR
       ));
     }
   };
   return s();
 }
 async function Lt(n, e) {
-  return ne(j.Check, n, e);
+  return ne(
+    j.Check,
+    n,
+    e
+  );
 }
 function It(n, e, t = {}) {
   return oe(n, e, t, Lt);
@@ -34384,7 +34427,7 @@ const isRequestEndingError = (error) => {
         return false;
     const apiError = error;
     const typeIsEnding = !!(apiError.type &&
-        [U.UNAUTHORIZED_ERROR, U.INTERNAL_SERVER_ERROR].includes(apiError.type));
+        [M.UNAUTHORIZED_ERROR, M.INTERNAL_SERVER_ERROR].includes(apiError.type));
     const statusCodeIsEnding = typeof apiError.statusCode === "number" &&
         (apiError.statusCode === 401 || apiError.statusCode >= 500);
     return typeIsEnding || statusCodeIsEnding;
