@@ -40,7 +40,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Analysis
         uses: markupai/content-guardian-action@v1
         with:
@@ -62,7 +62,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Analysis
         uses: markupai/content-guardian-action@v1
         with:
@@ -207,7 +207,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Analyze Changes
         uses: markupai/content-guardian-action@v1
         with:
@@ -229,7 +229,7 @@ jobs:
   quality-gate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Quality Analysis
         id: analysis
         uses: markupai/content-guardian-action@v1
@@ -261,7 +261,7 @@ jobs:
   quality-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Full Repository Analysis
         uses: markupai/content-guardian-action@v1
         with:
@@ -278,7 +278,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Analysis
         id: markup-ai-github-action
         uses: markupai/content-guardian-action@v1
