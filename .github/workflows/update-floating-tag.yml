@@ -3,7 +3,7 @@ name: Update Major Version Floating Tag
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
   update-floating-tag:
@@ -20,7 +20,7 @@ jobs:
 
           # Get the correct commit for the tag
           readonly COMMIT_SHA=$(git rev-list -n 1 $GITHUB_REF)
-          
+
           git config --global user.name 'github-actions[bot]'
           git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
 

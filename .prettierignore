@@ -1,6 +1,2 @@
-.DS_Store
-.licenses/
-.github/workflows/
+package-lock.json
 dist/
-node_modules/
-coverage/
