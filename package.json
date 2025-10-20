@@ -37,7 +37,7 @@
     "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.1",
     "@markupai/toolkit": "^2.0.1",
-    "octokit": "^5.0.3"
+    "octokit": "^5.0.4"
   },
   "devDependencies": {
     "@eslint/compat": "^1.4.0",
