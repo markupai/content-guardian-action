@@ -34052,7 +34052,7 @@ class Ct {
     this.cancelled = true, this.rejectPromise?.(new Error("Batch operation cancelled"));
   }
 }
-function oe(n, e, t = {}, o) {
+function oe(n, e, t, o = {}) {
   if (!n || n.length === 0)
     throw new Error("Requests array cannot be empty");
   if (n.length > 1e3)
@@ -34064,13 +34064,13 @@ function oe(n, e, t = {}, o) {
       retryDelay: 1e3,
       timeoutMillis: Ee
     },
-    ...t
+    ...o
   };
   if (r.maxConcurrent < 1 || r.maxConcurrent > 100)
     throw new Error("maxConcurrent must be between 1 and 100");
   if (r.retryAttempts < 0 || r.retryAttempts > 5)
     throw new Error("retryAttempts must be between 0 and 5");
-  const d = new Ct(n, e, o, r), l = d.start();
+  const d = new Ct(n, e, t, r), l = d.start();
   return {
     progress: {
       get total() {
@@ -34159,7 +34159,7 @@ async function Lt(n, e) {
   );
 }
 function It(n, e, t = {}) {
-  return oe(n, e, t, Lt);
+  return oe(n, e, Lt, t);
 }
 
 /**
