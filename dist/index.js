@@ -31256,6 +31256,7 @@ const SUPPORTED_EXTENSIONS = [
     ".htm",
     ".txt",
     ".text",
+    ".dita",
 ];
 /**
  * Input names for GitHub Actions
