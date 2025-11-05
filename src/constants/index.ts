@@ -11,6 +11,7 @@ export const SUPPORTED_EXTENSIONS = [
   ".htm",
   ".txt",
   ".text",
+  ".dita",
 ] as const;
 
 /**
