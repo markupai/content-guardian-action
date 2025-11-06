@@ -31248,14 +31248,16 @@ var githubExports = requireGithub();
  * Application constants and configuration
  */
 const SUPPORTED_EXTENSIONS = [
-    ".md",
+    ".dita",
+    ".htm",
+    ".html",
     ".markdown",
+    ".md",
     ".mdown",
     ".mkd",
-    ".html",
-    ".htm",
-    ".txt",
     ".text",
+    ".txt",
+    ".xml",
 ];
 /**
  * Input names for GitHub Actions

@@ -3,14 +3,16 @@
  */
 
 export const SUPPORTED_EXTENSIONS = [
-  ".md",
+  ".dita",
+  ".htm",
+  ".html",
   ".markdown",
+  ".md",
   ".mdown",
   ".mkd",
-  ".html",
-  ".htm",
-  ".txt",
   ".text",
+  ".txt",
+  ".xml",
 ] as const;
 
 /**

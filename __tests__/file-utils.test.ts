@@ -26,6 +26,8 @@ describe("File Utils", () => {
       expect(isSupportedFile("test.md")).toBe(true);
       expect(isSupportedFile("test.txt")).toBe(true);
       expect(isSupportedFile("test.markdown")).toBe(true);
+      expect(isSupportedFile("test.dita")).toBe(true);
+      expect(isSupportedFile("test.xml")).toBe(true);
     });
 
     it("should return false for unsupported file extensions", () => {
@@ -36,8 +38,11 @@ describe("File Utils", () => {
     });
 
     it("should handle case insensitive extensions", () => {
-      expect(isSupportedFile("test.MD")).toBe(true); // Should be case insensitive
-      expect(isSupportedFile("test.TXT")).toBe(true); // Should be case insensitive
+      expect(isSupportedFile("test.MD")).toBe(true);
+      expect(isSupportedFile("test.MARKDOWN")).toBe(true);
+      expect(isSupportedFile("test.TXT")).toBe(true);
+      expect(isSupportedFile("test.DITA")).toBe(true);
+      expect(isSupportedFile("test.XML")).toBe(true);
     });
 
     it("should handle files without extensions", () => {
@@ -53,15 +58,25 @@ describe("File Utils", () => {
 
   describe("filterSupportedFiles", () => {
     it("should filter supported files from mixed list", () => {
-      const files = ["test.md", "script.js", "readme.txt", "config.json", "docs.markdown"];
+      const files = [
+        "test.md",
+        "script.js",
+        "readme.txt",
+        "config.json",
+        "docs.markdown",
+        "guide.dita",
+        "content.xml",
+      ];
 
       const result = filterSupportedFiles(files);
 
-      expect(result).toContain("test.md");
-      expect(result).toContain("readme.txt");
-      expect(result).toContain("docs.markdown");
-      expect(result).not.toContain("script.js");
-      expect(result).not.toContain("config.json");
+      expect(result).toEqual([
+        "test.md",
+        "readme.txt",
+        "docs.markdown",
+        "guide.dita",
+        "content.xml",
+      ]);
     });
 
     it("should return empty array for no supported files", () => {
@@ -73,11 +88,17 @@ describe("File Utils", () => {
     });
 
     it("should return all files if all are supported", () => {
-      const files = ["readme.md", "docs.txt", "guide.markdown"];
+      const files = ["readme.md", "docs.txt", "guide.markdown", "content.dita", "data.xml"];
 
       const result = filterSupportedFiles(files);
 
-      expect(result).toEqual(["readme.md", "docs.txt", "guide.markdown"]);
+      expect(result).toEqual([
+        "readme.md",
+        "docs.txt",
+        "guide.markdown",
+        "content.dita",
+        "data.xml",
+      ]);
     });
 
     it("should handle empty array", () => {
@@ -99,6 +120,8 @@ describe("File Utils", () => {
       expect(getFileExtension("test.MD")).toBe(".md");
       expect(getFileExtension("test.TXT")).toBe(".txt");
       expect(getFileExtension("test.MARKDOWN")).toBe(".markdown");
+      expect(getFileExtension("test.DITA")).toBe(".dita");
+      expect(getFileExtension("test.XML")).toBe(".xml");
     });
 
     it("should handle files without extensions", () => {
@@ -107,6 +130,8 @@ describe("File Utils", () => {
 
     it("should handle files with multiple dots", () => {
       expect(getFileExtension("test.backup.md")).toBe(".md");
+      expect(getFileExtension("document.backup.dita")).toBe(".dita");
+      expect(getFileExtension("data.backup.xml")).toBe(".xml");
     });
   });
 
@@ -122,6 +147,8 @@ describe("File Utils", () => {
 
     it("should handle files with complex paths", () => {
       expect(getFileBasename("/very/deep/nested/path/to/file.md")).toBe("file.md");
+      expect(getFileBasename("/docs/topic/content.dita")).toBe("content.dita");
+      expect(getFileBasename("/data/schema/document.xml")).toBe("document.xml");
     });
   });
 });
