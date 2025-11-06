@@ -1,17 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
-<topic id="care">
-    <title>Care and Preparation</title>
-    <shortdesc>When caring for your flower garden you want to feed your plants properly, control
-        pests and weeds.</shortdesc>
+<topic id="topic_c">
+    <title>Topic C</title>
     <body>
-        <p>When caring for your flower garden you want to feed your plants properly, control pests
-            and weeds. Good soil is a must to successful gardening, landscaping, and healthy
-            flowers. You have to
-            <indexterm>tasks<indexterm>preparation</indexterm></indexterm>balance the soil structure
-            with nutrients and regulate the pH to cover your plants'
-            needs.
-            And above all, remember that many flower gardens fail because they just don't get enough
-            of your attention.</p>
+        <p>This is topic C.</p>
     </body>
 </topic>

@@ -21,6 +21,7 @@ quality analysis with commit status updates and PR comments.
 
 ## Supported File Types
 
+- **DITA**: `.dita`, `.xml`
 - **Markdown**: `.md`, `.markdown`
 - **Text**: `.txt`
 
