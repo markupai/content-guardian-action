@@ -22,8 +22,9 @@ quality analysis with commit status updates and PR comments.
 ## Supported File Types
 
 - **DITA**: `.dita`, `.xml`
-- **Markdown**: `.md`, `.markdown`
-- **Text**: `.txt`
+- **HTML**: `.htm`, `.html`
+- **Markdown**: `.md`, `.markdown`, `.mdown`, `.mkd`
+- **Text**: `.text`, `.txt`
 
 ## Usage
 
@@ -88,6 +89,7 @@ as action inputs or environment variables:
 - **Input name**: `markup_ai_api_key`
 - **Environment variable**: `MARKUP_AI_API_KEY`
 - **Purpose**: Authenticates with API for style checking
+- **Get your API key**: Sign up at [console.markup.ai](https://console.markup.ai) to get your API key
 
 ### GitHub Token
 
@@ -146,15 +148,15 @@ permissions:
 
 ## Inputs
 
-| Input               | Description                                                                                     | Required | Default |
-| ------------------- | ----------------------------------------------------------------------------------------------- | -------- | ------- |
-| `markup_ai_api_key` | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable | Yes      | -       |
-| `github_token`      | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable       | Yes      | -       |
-| `dialect`           | Language dialect for analysis (for example, `american_english`, `british_english`)              | Yes      | -       |
-| `style-guide`       | Style guide for analysis (for example, `ap`, `chicago`, `apa`)                                  | Yes      | -       |
-| `tone`              | Tone for analysis (for example, `formal`, `informal`, `academic`)                               | No       | -       |
-| `add_commit_status` | Whether to add commit status updates                                                            | No       | `true`  |
-| `strict_mode`       | Fail the action if any file analysis fails (default is false)                                   | No       | `false` |
+| Input               | Description                                                                                                 | Required | Default |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| `markup_ai_api_key` | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable             | Yes      | -       |
+| `github_token`      | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable                   | Yes      | -       |
+| `dialect`           | Language dialect for analysis (for example, `american_english`, `british_english`)                          | Yes      | -       |
+| `style-guide`       | Style guide for analysis (for example, `ap`, `chicago`, `apa`, or a custom style guide ID like `sg-123456`) | Yes      | -       |
+| `tone`              | Tone for analysis (for example, `formal`, `informal`, `academic`)                                           | No       | -       |
+| `add_commit_status` | Whether to add commit status updates                                                                        | No       | `true`  |
+| `strict_mode`       | Fail the action if any file analysis fails (default is false)                                               | No       | `false` |
 
 ## Outputs
 
@@ -270,6 +272,31 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+### Using Custom Style Guide
+
+```yaml
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+name: Analysis with Custom Style Guide
+on: [push, pull_request]
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run Analysis
+        uses: markupai/content-guardian-action@v1
+        with:
+          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dialect: "american_english"
+          style-guide: "sg-123456" # Your custom style guide ID from console.markup.ai
+          tone: "formal"
+```
+
 ### Using Outputs
 
 ```yaml
@@ -340,9 +367,19 @@ fails:
 
 ### Style Guides
 
+You can use either built-in style guides or connect to a custom style guide:
+
+**Built-in Style Guides:**
+
 - `ap` - Associated Press Style Guide
 - `chicago` - Chicago Manual of Style
 - `microsoft` - Microsoft Writing Style Guide
+
+**Custom Style Guides:**
+
+- You can use a custom style guide by providing your style guide ID (e.g., `sg-123456`)
+- To create and manage custom style guides, visit [console.markup.ai](https://console.markup.ai)
+- Custom style guides allow you to enforce your organization's specific writing standards and brand guidelines
 
 ## Quality Scoring
 
@@ -408,8 +445,8 @@ The action gracefully handles various scenarios:
 - **File read errors**: Logs warning and skips files
 - **Network issues**: Provides clear error messages
 - **Analysis failures**: Behavior depends on `strict_mode` setting:
-  - **`strict_mode: false`**: Continues with successfully analyzed files
-  - **`strict_mode: true`**: Fails the action if any file analysis fails
+- **`strict_mode: false`**: Continues with successfully analyzed files
+- **`strict_mode: true`**: Fails the action if any file analysis fails
 
 ### Strict Mode Error Behavior
 
@@ -435,7 +472,7 @@ analysis.
 ### Prerequisites
 
 - Node.js 24+
-- API Key
+- API Key (get one at [console.markup.ai](https://console.markup.ai))
 
 ### Setup
 
