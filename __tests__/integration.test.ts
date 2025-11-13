@@ -262,7 +262,8 @@ describe("Integration Tests", () => {
       // Verify the results contain the expected data
       const resultsCall = core.setOutput.mock.calls.find((call) => call[0] === "results");
       expect(resultsCall).toBeDefined();
-      const results = JSON.parse(resultsCall![1]);
+      if (!resultsCall) throw new Error("resultsCall not found");
+      const results = JSON.parse(resultsCall[1]);
 
       expect(results).toHaveLength(2);
       expect(results.some((r) => r.filePath === "README.md")).toBe(true);
@@ -285,7 +286,8 @@ describe("Integration Tests", () => {
       // Verify the results contain the expected data
       const resultsCall = core.setOutput.mock.calls.find((call) => call[0] === "results");
       expect(resultsCall).toBeDefined();
-      const results = JSON.parse(resultsCall![1]);
+      if (!resultsCall) throw new Error("resultsCall not found");
+      const results = JSON.parse(resultsCall[1]);
 
       expect(results).toHaveLength(2);
       expect(results.some((r) => r.filePath === "README.md")).toBe(true);
