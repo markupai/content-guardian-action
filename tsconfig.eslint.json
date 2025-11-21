@@ -8,7 +8,7 @@
   "exclude": ["dist", "node_modules"],
   "include": [
     "__fixtures__",
-    "__tests__",
+    "test",
     "src",
     "eslint.config.mjs",
     "jest.config.js",
