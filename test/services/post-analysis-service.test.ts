@@ -3,9 +3,9 @@
  */
 
 import { jest } from "@jest/globals";
-import { buildQuality, buildClarity, buildTone } from "./test-helpers/scores.js";
-import * as core from "../__fixtures__/core.js";
-import type { AnalysisResult } from "../src/types/index.js";
+import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
+import * as core from "../mocks/core.js";
+import type { AnalysisResult } from "../../src/types/index.js";
 
 // Spy on core methods
 const infoSpy = jest.spyOn(core, "info");
@@ -53,35 +53,35 @@ const mockCreateOrUpdatePRComment = jest.fn() as jest.MockedFunction<() => Promi
 const mockDisplaySectionHeader = jest.fn() as jest.MockedFunction<() => void>;
 const mockCreateJobSummary = jest.fn() as jest.MockedFunction<() => Promise<void>>;
 
-jest.unstable_mockModule("../src/services/api-service.js", () => ({
+jest.unstable_mockModule("../../src/services/api-service.js", () => ({
   getAnalysisSummary: mockGetAnalysisSummary,
 }));
 
-jest.unstable_mockModule("../src/services/github-service.js", () => ({
+jest.unstable_mockModule("../../src/services/github-service.js", () => ({
   createGitHubClient: mockCreateGitHubClient,
   updateCommitStatus: mockUpdateCommitStatus,
 }));
 
-jest.unstable_mockModule("../src/services/pr-comment-service.js", () => ({
+jest.unstable_mockModule("../../src/services/pr-comment-service.js", () => ({
   createOrUpdatePRComment: mockCreateOrUpdatePRComment,
   isPullRequestEvent: mockIsPullRequestEvent,
   getPRNumber: mockGetPRNumber,
 }));
 
-jest.unstable_mockModule("../src/services/job-summary-service.js", () => ({
+jest.unstable_mockModule("../../src/services/job-summary-service.js", () => ({
   createJobSummary: mockCreateJobSummary,
 }));
 
-jest.unstable_mockModule("../src/utils/display-utils.js", () => ({
+jest.unstable_mockModule("../../src/utils/display-utils.js", () => ({
   displaySectionHeader: mockDisplaySectionHeader,
 }));
 
 // Import the module after mocking
 let postAnalysisService: typeof import("../src/services/post-analysis-service.js");
-import { EVENT_TYPES } from "../src/constants/index.js";
+import { EVENT_TYPES } from "../../src/constants/index.js";
 
 beforeAll(async () => {
-  postAnalysisService = await import("../src/services/post-analysis-service.js");
+  postAnalysisService = await import("../../src/services/post-analysis-service.js");
 });
 
 describe("Post Analysis Service", () => {

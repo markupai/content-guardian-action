@@ -3,16 +3,51 @@
  */
 
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Spy on core methods
 const infoSpy = jest.spyOn(core, "info");
 const errorSpy = jest.spyOn(core, "error");
 
+/**
+ * Extract mock functions so we can use them without type assertions in tests
+ */
+const mockGetCommit = jest.fn();
+const mockReposGet = jest.fn();
+const mockCreateCommitStatus = jest.fn();
+const mockGetContent = jest.fn();
+const mockCreateOrUpdateFileContents = jest.fn();
+const mockListFiles = jest.fn();
+const mockGetTree = jest.fn();
+const mockPaginate = jest.fn();
+
+/**
+ * Mock Octokit instance for testing.
+ * One type assertion here to avoid many type assertions in test code.
+ */
+const mockOctokit = {
+  rest: {
+    repos: {
+      getCommit: mockGetCommit,
+      get: mockReposGet,
+      createCommitStatus: mockCreateCommitStatus,
+      getContent: mockGetContent,
+      createOrUpdateFileContents: mockCreateOrUpdateFileContents,
+    },
+    pulls: {
+      listFiles: mockListFiles,
+    },
+    git: {
+      getTree: mockGetTree,
+    },
+  },
+  paginate: mockPaginate,
+} as unknown as ReturnType<typeof import("@actions/github").getOctokit>;
+
 // Mock @actions/core and @actions/github
 jest.unstable_mockModule("@actions/core", () => core);
 
-const mockGetOctokit = jest.fn();
+const mockGetOctokit = jest.fn(() => mockOctokit);
 jest.unstable_mockModule("@actions/github", () => ({
   getOctokit: mockGetOctokit,
   context: {
@@ -29,34 +64,8 @@ jest.unstable_mockModule("@actions/github", () => ({
 let githubService: typeof import("../src/services/github-service.js");
 
 beforeAll(async () => {
-  githubService = await import("../src/services/github-service.js");
+  githubService = await import("../../src/services/github-service.js");
 });
-
-// Mock Octokit with proper typing
-const mockOctokit = {
-  rest: {
-    repos: {
-      getCommit: jest.fn(),
-      get: jest.fn(),
-      createCommitStatus: jest.fn(),
-      getContent: jest.fn(),
-      createOrUpdateFileContents: jest.fn(),
-    },
-    pulls: {
-      listFiles: jest.fn(),
-    },
-    git: {
-      getTree: jest.fn(),
-    },
-  },
-  paginate: jest.fn(),
-  request: jest.fn(),
-  graphql: jest.fn(),
-  log: jest.fn(),
-  hook: jest.fn(),
-  auth: jest.fn(),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as any;
 
 describe("GitHub Service", () => {
   beforeEach(() => {
@@ -99,7 +108,7 @@ describe("GitHub Service", () => {
         ],
       };
 
-      mockOctokit.rest.repos.getCommit.mockImplementation(() =>
+      mockGetCommit.mockImplementation(() =>
         Promise.resolve({
           data: mockCommitData,
         }),
@@ -149,7 +158,7 @@ describe("GitHub Service", () => {
         files: undefined,
       };
 
-      mockOctokit.rest.repos.getCommit.mockImplementation(() =>
+      mockGetCommit.mockImplementation(() =>
         Promise.resolve({
           data: mockCommitData,
         }),
@@ -166,7 +175,7 @@ describe("GitHub Service", () => {
     });
 
     it("should handle commit with missing author info", async () => {
-      mockOctokit.rest.repos.getCommit.mockImplementation(() =>
+      mockGetCommit.mockImplementation(() =>
         Promise.resolve({
           data: {
             sha: "abc123",
@@ -193,9 +202,7 @@ describe("GitHub Service", () => {
     });
 
     it("should handle API errors", async () => {
-      mockOctokit.rest.repos.getCommit.mockImplementation(() =>
-        Promise.reject(new Error("API Error")),
-      );
+      mockGetCommit.mockImplementation(() => Promise.reject(new Error("API Error")));
 
       const result = await githubService.getCommitChanges(
         mockOctokit,
@@ -217,7 +224,7 @@ describe("GitHub Service", () => {
         { filename: "file3.js" },
       ];
 
-      mockOctokit.paginate.mockImplementation(() => Promise.resolve(mockFiles));
+      mockPaginate.mockImplementation(() => Promise.resolve(mockFiles));
 
       const result = await githubService.getPullRequestFiles(
         mockOctokit,
@@ -240,7 +247,7 @@ describe("GitHub Service", () => {
     });
 
     it("should handle API errors", async () => {
-      mockOctokit.paginate.mockImplementation(() => Promise.reject(new Error("API Error")));
+      mockPaginate.mockImplementation(() => Promise.reject(new Error("API Error")));
 
       const result = await githubService.getPullRequestFiles(
         mockOctokit,
@@ -265,7 +272,7 @@ describe("GitHub Service", () => {
         ],
       };
 
-      mockOctokit.rest.git.getTree.mockImplementation(() =>
+      mockGetTree.mockImplementation(() =>
         Promise.resolve({
           data: mockTree,
         }),
@@ -282,7 +289,7 @@ describe("GitHub Service", () => {
     });
 
     it("should handle empty tree", async () => {
-      mockOctokit.rest.git.getTree.mockImplementation(() =>
+      mockGetTree.mockImplementation(() =>
         Promise.resolve({
           data: { tree: [] },
         }),
@@ -294,7 +301,7 @@ describe("GitHub Service", () => {
     });
 
     it("should handle API errors", async () => {
-      mockOctokit.rest.git.getTree.mockImplementation(() => Promise.reject(new Error("API Error")));
+      mockGetTree.mockImplementation(() => Promise.reject(new Error("API Error")));
 
       const result = await githubService.getRepositoryFiles(mockOctokit, "test-owner", "test-repo");
 
@@ -312,7 +319,7 @@ describe("GitHub Service", () => {
         language: "TypeScript",
       };
 
-      mockOctokit.rest.repos.get.mockImplementation(() =>
+      mockReposGet.mockImplementation(() =>
         Promise.resolve({
           data: mockRepoData,
         }),
@@ -329,7 +336,7 @@ describe("GitHub Service", () => {
     });
 
     it("should handle API errors", async () => {
-      mockOctokit.rest.repos.get.mockImplementation(() => Promise.reject(new Error("API Error")));
+      mockReposGet.mockImplementation(() => Promise.reject(new Error("API Error")));
 
       const result = await githubService.getRepositoryInfo(mockOctokit, "test-owner", "test-repo");
 
@@ -340,7 +347,7 @@ describe("GitHub Service", () => {
 
   describe("updateCommitStatus", () => {
     it("should update commit status successfully", async () => {
-      mockOctokit.rest.repos.createCommitStatus.mockImplementation(() => Promise.resolve({}));
+      mockCreateCommitStatus.mockImplementation(() => Promise.resolve({}));
 
       await githubService.updateCommitStatus(
         mockOctokit,
@@ -412,7 +419,7 @@ describe("GitHub Service", () => {
 
     it("should handle API errors", async () => {
       const error = new Error("API Error");
-      mockOctokit.rest.repos.createCommitStatus.mockImplementation(() => Promise.reject(error));
+      mockCreateCommitStatus.mockImplementation(() => Promise.reject(error));
 
       await githubService.updateCommitStatus(
         mockOctokit,
@@ -428,7 +435,7 @@ describe("GitHub Service", () => {
     });
 
     it("should handle different quality scores", async () => {
-      mockOctokit.rest.repos.createCommitStatus.mockImplementation(() => Promise.resolve({}));
+      mockCreateCommitStatus.mockImplementation(() => Promise.resolve({}));
 
       // Test different score ranges
       await githubService.updateCommitStatus(
