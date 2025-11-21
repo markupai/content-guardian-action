@@ -3,9 +3,9 @@
  */
 
 import { jest } from "@jest/globals";
-import { buildQuality, buildClarity, buildTone } from "./test-helpers/scores.js";
+import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 import { StyleScores } from "@markupai/toolkit";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Mock @actions/core
 jest.unstable_mockModule("@actions/core", () => core);
@@ -16,7 +16,7 @@ const {
   getQualityEmoji,
   calculateAverageScore,
   calculateScoreSummary,
-} = await import("../src/utils/score-utils.js");
+} = await import("../../src/utils/score-utils.js");
 
 describe("Score Utils", () => {
   beforeEach(() => {

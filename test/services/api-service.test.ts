@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Mock @actions/core
 jest.unstable_mockModule("@actions/core", () => core);
@@ -16,11 +16,11 @@ jest.unstable_mockModule("@markupai/toolkit", () => {
 
 // Import the module after mocking
 const { analyzeFile, analyzeFiles, analyzeFilesBatch } = await import(
-  "../src/services/api-service.js"
+  "../../src/services/api-service.js"
 );
-import type { AnalysisOptions } from "../src/types/index.js";
+import type { AnalysisOptions } from "../../src/types/index.js";
 import { PlatformType, Config, Status, ErrorType, ApiError } from "@markupai/toolkit";
-import { buildScores } from "./test-helpers/scores.js";
+import { buildScores } from "../test-helpers/scores.js";
 
 describe("Markup AI Service Batch Functionality", () => {
   let mockConfig: Config;

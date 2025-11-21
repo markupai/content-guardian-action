@@ -3,7 +3,7 @@
  */
 
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Mock @actions/core
 jest.unstable_mockModule("@actions/core", () => core);
@@ -20,7 +20,7 @@ const {
   logError,
   GitHubAPIError,
   ApiError,
-} = await import("../src/utils/error-utils.js");
+} = await import("../../src/utils/error-utils.js");
 
 // Import the type separately
 type RetryConfig = import("../src/utils/error-utils.js").RetryConfig;

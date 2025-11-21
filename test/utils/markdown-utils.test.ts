@@ -5,7 +5,7 @@
 import { jest } from "@jest/globals";
 
 // Mock the score-utils module
-jest.unstable_mockModule("../src/utils/score-utils.js", () => ({
+jest.unstable_mockModule("../../src/utils/score-utils.js", () => ({
   getQualityEmoji: jest.fn((score: number) => {
     if (score >= 80) return "🟢";
     if (score >= 60) return "🟡";
@@ -52,8 +52,8 @@ jest.unstable_mockModule("../src/utils/score-utils.js", () => ({
 }));
 
 const { generateResultsTable, generateSummary, generateFooter, generateAnalysisContent } =
-  await import("../src/utils/markdown-utils.js");
-import { AnalysisResult, AnalysisOptions } from "../src/types/index.js";
+  await import("../../src/utils/markdown-utils.js");
+import { AnalysisResult, AnalysisOptions } from "../../src/types/index.js";
 import { StyleScores } from "@markupai/toolkit";
 
 describe("Markdown Utils", () => {

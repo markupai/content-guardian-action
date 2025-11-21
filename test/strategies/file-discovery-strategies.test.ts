@@ -3,7 +3,7 @@
  */
 
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Mock @actions/core
 jest.unstable_mockModule("@actions/core", () => core);
@@ -13,7 +13,7 @@ const {
   createPushEventStrategy,
   createPullRequestEventStrategy,
   createManualWorkflowStrategy,
-} = await import("../src/strategies/file-discovery-strategies.js");
+} = await import("../../src/strategies/file-discovery-strategies.js");
 
 // import type { FileDiscoveryStrategy, EventInfo } from '../src/types/index.js' // Not used in tests
 

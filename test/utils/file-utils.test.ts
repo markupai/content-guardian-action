@@ -3,7 +3,7 @@
  */
 
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Mock @actions/core
 jest.unstable_mockModule("@actions/core", () => core);
@@ -14,7 +14,7 @@ const {
   filterSupportedFiles,
   getFileExtension,
   getFileBasename,
-} = await import("../src/utils/file-utils.js");
+} = await import("../../src/utils/file-utils.js");
 
 describe("File Utils", () => {
   beforeEach(() => {
@@ -51,8 +51,18 @@ describe("File Utils", () => {
   });
 
   describe("readFileContent", () => {
-    it("should have readFileContent function", () => {
-      expect(typeof readFileContent).toBe("function");
+    it("should read file content successfully", async () => {
+      const result = await readFileContent("testdata/markdown/sample-data-1.md");
+      expect(typeof result).toBe("string");
+    });
+
+    it("should return null and log a warning when readFile() fails", async () => {
+      const result = await readFileContent("/nonexistent/file.txt");
+
+      expect(result).toBeNull();
+      expect(core.warning).toHaveBeenCalledWith(
+        expect.stringMatching(/Failed to read file.*nonexistent.*file\.txt.*ENOENT/),
+      );
     });
   });
 

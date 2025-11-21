@@ -3,13 +3,13 @@
  */
 
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Mock @actions/core
 jest.unstable_mockModule("@actions/core", () => core);
 
 const { DEFAULT_BATCH_CONFIG, processBatch, processWithConcurrency, processFileReading } =
-  await import("../src/utils/batch-utils.js");
+  await import("../../src/utils/batch-utils.js");
 
 describe("Batch Utils", () => {
   // Helper functions to reduce nesting

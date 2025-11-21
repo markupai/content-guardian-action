@@ -21,7 +21,7 @@ import {
   isApiError,
   safeGet,
   safeArrayGet,
-} from "../src/utils/type-guards.js";
+} from "../../src/utils/type-guards.js";
 
 describe("Type Guards", () => {
   // Helper functions to reduce nesting

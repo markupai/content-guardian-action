@@ -3,7 +3,7 @@
  */
 
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
+import * as core from "../mocks/core.js";
 
 // Mock @actions/core
 jest.unstable_mockModule("@actions/core", () => core);
@@ -14,8 +14,8 @@ const {
   displayFilesToAnalyze,
   displaySectionHeader,
   displaySubsectionHeader,
-} = await import("../src/utils/display-utils.js");
-import { buildQuality, buildClarity, buildTone } from "./test-helpers/scores.js";
+} = await import("../../src/utils/display-utils.js");
+import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 import { StyleScores } from "@markupai/toolkit";
 
 describe("Display Utils", () => {

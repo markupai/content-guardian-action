@@ -1,10 +1,10 @@
 // @ts-check
 
-import eslint from "@eslint/js";
+import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 export default [
-  eslint.configs.recommended,
+  js.configs.recommended,
   ...tseslint.configs.strict,
   {
     ignores: ["dist"],
