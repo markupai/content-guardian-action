@@ -3,7 +3,7 @@
  */
 
 import { jest } from "@jest/globals";
-import type { AnalysisResult } from "../src/types/index.js";
+import type { AnalysisResult } from "../../src/types/index.js";
 
 // Type definitions for better type safety
 interface MockGitHubContext {
@@ -67,8 +67,8 @@ import {
   isPullRequestEvent,
   getPRNumber,
   PRCommentData,
-} from "../src/services/pr-comment-service.js";
-import { buildQuality, buildClarity, buildTone } from "./test-helpers/scores.js";
+} from "../../src/services/pr-comment-service.js";
+import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 
 // Mock Octokit with proper typing
 const mockOctokit: MockOctokitInstance = {

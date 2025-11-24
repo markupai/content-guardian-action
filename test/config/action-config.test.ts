@@ -3,14 +3,14 @@
  */
 
 import { jest } from "@jest/globals";
-import * as core from "../__fixtures__/core.js";
-import type { ActionConfig, AnalysisOptions } from "../src/types/index.js";
+import * as core from "../mocks/core.js";
+import type { ActionConfig, AnalysisOptions } from "../../src/types/index.js";
 
 // Mock dependencies
 jest.unstable_mockModule("@actions/core", () => core);
 
 const { getActionConfig, getAnalysisOptions, validateConfig, logConfiguration } = await import(
-  "../src/config/action-config.js"
+  "../../src/config/action-config.js"
 );
 
 describe("Action Config", () => {
