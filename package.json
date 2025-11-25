@@ -56,7 +56,7 @@
     "ts-jest": "29.4.5",
     "ts-jest-resolver": "2.0.1",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.47.0"
+    "typescript-eslint": "8.48.0"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
