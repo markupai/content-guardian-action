@@ -15,9 +15,8 @@ jest.unstable_mockModule("@markupai/toolkit", () => {
 });
 
 // Import the module after mocking
-const { analyzeFile, analyzeFiles, analyzeFilesBatch } = await import(
-  "../../src/services/api-service.js"
-);
+const { analyzeFile, analyzeFiles, analyzeFilesBatch } =
+  await import("../../src/services/api-service.js");
 import type { AnalysisOptions } from "../../src/types/index.js";
 import { PlatformType, Config, Status, ErrorType, ApiError } from "@markupai/toolkit";
 import { buildScores } from "../test-helpers/scores.js";
