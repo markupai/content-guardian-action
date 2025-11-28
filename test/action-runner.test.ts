@@ -312,9 +312,10 @@ describe("Action Runner Tests", () => {
       // Create a non-Error object
       const testError = { message: "Non-error object" };
 
-      // Mock strategy to throw the non-Error
+      // Mock strategy to throw the non-Error (which gets converted to Error in handleError)
+      // Using 'as unknown' to test non-Error handling path
       mockCreateFileDiscoveryStrategy.mockImplementation(() => {
-        throw testError;
+        throw testError as unknown;
       });
 
       await runAction();

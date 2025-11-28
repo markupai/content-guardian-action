@@ -39,7 +39,7 @@ export type RepositoryContext = PRRepositoryContext | NonPRRepositoryContext;
 function generateFileDisplayLink(filePath: string, context: RepositoryContext): string {
   return "prNumber" in context
     ? // PR context - create diff link
-      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
+      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber.toString()}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
     : // Non-PR context - create blob link
       `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
 }
@@ -70,7 +70,7 @@ export function generateResultsTable(
       // Create clickable file link using repository context
       const fileDisplay = generateFileDisplayLink(filePath, context);
 
-      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`;
+      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} |`;
     })
     .join("\n");
 
@@ -91,18 +91,18 @@ export function generateSummary(results: AnalysisResult[]): string {
   return `
 ## 📊 Summary
 
-**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore)}
+**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore).toString()}
 
-**Files Analyzed:** ${summary.totalFiles}
+**Files Analyzed:** ${summary.totalFiles.toString()}
 
 | Metric | Average Score |
 |--------|---------------|
-| Quality | ${Math.round(summary.averageQualityScore)} |
-| Grammar | ${Math.round(summary.averageGrammarScore)} |
-| Consistency | ${Math.round(summary.averageConsistencyScore)} |
-| Terminology | ${Math.round(summary.averageTerminologyScore)} |
-| Clarity | ${Math.round(summary.averageClarityScore)} |
-| Tone | ${Math.round(summary.averageToneScore)} |
+| Quality | ${Math.round(summary.averageQualityScore).toString()} |
+| Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
+| Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
+| Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
+| Clarity | ${Math.round(summary.averageClarityScore).toString()} |
+| Tone | ${Math.round(summary.averageToneScore).toString()} |
 `;
 }
 

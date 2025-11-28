@@ -82,7 +82,9 @@ describe("Action Config", () => {
         strictMode: false,
       };
 
-      expect(() => validateConfig(config)).not.toThrow();
+      expect(() => {
+        validateConfig(config);
+      }).not.toThrow();
     });
 
     it("should throw error for missing token", () => {
@@ -96,7 +98,9 @@ describe("Action Config", () => {
         strictMode: false,
       };
 
-      expect(() => validateConfig(config)).toThrow("API token is required");
+      expect(() => {
+        validateConfig(config);
+      }).toThrow("API token is required");
     });
 
     it("should warn for missing GitHub token", () => {
@@ -110,7 +114,9 @@ describe("Action Config", () => {
         strictMode: false,
       };
 
-      expect(() => validateConfig(config)).not.toThrow();
+      expect(() => {
+        validateConfig(config);
+      }).not.toThrow();
       expect(core.warning).toHaveBeenCalled();
     });
 
@@ -125,7 +131,9 @@ describe("Action Config", () => {
         strictMode: false,
       };
 
-      expect(() => validateConfig(config)).toThrow("Analysis option 'dialect' cannot be empty");
+      expect(() => {
+        validateConfig(config);
+      }).toThrow("Analysis option 'dialect' cannot be empty");
     });
 
     // tone is optional now
@@ -141,7 +149,9 @@ describe("Action Config", () => {
         strictMode: false,
       };
 
-      expect(() => validateConfig(config)).toThrow("Analysis option 'style_guide' cannot be empty");
+      expect(() => {
+        validateConfig(config);
+      }).toThrow("Analysis option 'style_guide' cannot be empty");
     });
   });
 

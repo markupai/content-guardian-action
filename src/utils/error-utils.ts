@@ -83,14 +83,14 @@ export async function withRetry<T>(
 
       if (attempt === config.maxRetries) {
         core.error(
-          `${operationName} failed after ${config.maxRetries} attempts: ${lastError.message}`,
+          `${operationName} failed after ${config.maxRetries.toString()} attempts: ${lastError.message}`,
         );
         throw lastError;
       }
 
       const backoffDelay = calculateBackoffDelay(attempt, config);
       core.warning(
-        `Attempt ${attempt} failed for ${operationName}, retrying in ${backoffDelay}ms... Error: ${lastError.message}`,
+        `Attempt ${attempt.toString()} failed for ${operationName}, retrying in ${backoffDelay.toString()}ms... Error: ${lastError.message}`,
       );
 
       await delay(backoffDelay);
@@ -177,9 +177,8 @@ export function logError(error: unknown, context: string): void {
 export const isRequestEndingError = (error?: Error) => {
   if (!error) return false;
   const apiError = error as ToolkitApiError;
-  const typeIsEnding = !!(
-    apiError.type &&
-    [ErrorType.UNAUTHORIZED_ERROR, ErrorType.INTERNAL_SERVER_ERROR].includes(apiError.type)
+  const typeIsEnding = [ErrorType.UNAUTHORIZED_ERROR, ErrorType.INTERNAL_SERVER_ERROR].includes(
+    apiError.type,
   );
   const statusCodeIsEnding =
     typeof apiError.statusCode === "number" &&

@@ -34177,7 +34177,7 @@ async function readFileContent(filePath) {
         return content;
     }
     catch (error) {
-        coreExports.warning(`Failed to read file ${filePath}: ${error}`);
+        coreExports.warning(`Failed to read file ${filePath}: ${String(error)}`);
         return null;
     }
 }
@@ -34294,10 +34294,10 @@ async function processBatch(items, processor, config = DEFAULT_BATCH_CONFIG) {
     }
     const results = [];
     const batches = chunkArray(items, config.batchSize);
-    coreExports.info(`🚀 Processing ${items.length} items in ${batches.length} batches`);
+    coreExports.info(`🚀 Processing ${items.length.toString()} items in ${batches.length.toString()} batches`);
     for (let i = 0; i < batches.length; i++) {
         const batch = batches[i];
-        coreExports.info(`📦 Processing batch ${i + 1}/${batches.length} (${batch.length} items)`);
+        coreExports.info(`📦 Processing batch ${(i + 1).toString()}/${batches.length.toString()} (${batch.length.toString()} items)`);
         const batchResults = await Promise.allSettled(batch.map((item) => processor(item)));
         // Process results
         for (const [index, result] of batchResults.entries()) {
@@ -34305,7 +34305,7 @@ async function processBatch(items, processor, config = DEFAULT_BATCH_CONFIG) {
                 results.push(result.value);
             }
             else {
-                coreExports.error(`Failed to process item ${i * config.batchSize + index}: ${result.reason}`);
+                coreExports.error(`Failed to process item ${(i * config.batchSize + index).toString()}: ${String(result.reason)}`);
             }
         }
         // Add delay between batches to avoid overwhelming APIs
@@ -34313,7 +34313,7 @@ async function processBatch(items, processor, config = DEFAULT_BATCH_CONFIG) {
             await new Promise((resolve) => setTimeout(resolve, config.delayBetweenBatches));
         }
     }
-    coreExports.info(`✅ Batch processing completed: ${results.length}/${items.length} items processed successfully`);
+    coreExports.info(`✅ Batch processing completed: ${results.length.toString()}/${items.length.toString()} items processed successfully`);
     return results;
 }
 /**
@@ -34387,11 +34387,11 @@ async function withRetry(operation, config = DEFAULT_RETRY_CONFIG, operationName
         catch (error) {
             lastError = error instanceof Error ? error : new Error(String(error));
             if (attempt === config.maxRetries) {
-                coreExports.error(`${operationName} failed after ${config.maxRetries} attempts: ${lastError.message}`);
+                coreExports.error(`${operationName} failed after ${config.maxRetries.toString()} attempts: ${lastError.message}`);
                 throw lastError;
             }
             const backoffDelay = calculateBackoffDelay(attempt, config);
-            coreExports.warning(`Attempt ${attempt} failed for ${operationName}, retrying in ${backoffDelay}ms... Error: ${lastError.message}`);
+            coreExports.warning(`Attempt ${attempt.toString()} failed for ${operationName}, retrying in ${backoffDelay.toString()}ms... Error: ${lastError.message}`);
             await delay(backoffDelay);
         }
     }
@@ -34429,8 +34429,7 @@ const isRequestEndingError = (error) => {
     if (!error)
         return false;
     const apiError = error;
-    const typeIsEnding = !!(apiError.type &&
-        [M.UNAUTHORIZED_ERROR, M.INTERNAL_SERVER_ERROR].includes(apiError.type));
+    const typeIsEnding = [M.UNAUTHORIZED_ERROR, M.INTERNAL_SERVER_ERROR].includes(apiError.type);
     const statusCodeIsEnding = typeof apiError.statusCode === "number" &&
         (apiError.statusCode === 401 || apiError.statusCode >= 500);
     return typeIsEnding || statusCodeIsEnding;
@@ -34477,7 +34476,7 @@ async function analyzeFile(filePath, content, options, config) {
         };
     }
     catch (error) {
-        coreExports.error(`Failed to run check on ${filePath}: ${error}`);
+        coreExports.error(`Failed to run check on ${filePath}: ${String(error)}`);
         if (isRequestEndingError(error)) {
             throw error;
         }
@@ -34491,7 +34490,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     if (files.length === 0) {
         return [];
     }
-    coreExports.info(`🚀 Starting batch analysis of ${files.length} files`);
+    coreExports.info(`🚀 Starting batch analysis of ${files.length.toString()} files`);
     // Read all file contents first using optimized batch processing
     const fileContents = await processFileReading(files, readFileContent);
     if (fileContents.length === 0) {
@@ -34527,7 +34526,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
                 batchResponse.cancel();
             }
             if (completed > 0 || failed > 0) {
-                coreExports.info(`📊 Batch progress: ${completed}/${total} completed, ${failed} failed`);
+                coreExports.info(`📊 Batch progress: ${completed.toString()}/${total.toString()} completed, ${failed.toString()} failed`);
             }
         }, 2_000); // Update every 2 seconds
         // Wait for completion
@@ -34536,7 +34535,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
         clearInterval(progressInterval);
         const { found, error } = checkForRequestEndingError(finalProgress.failed, finalProgress.results);
         if (found) {
-            throw error;
+            throw error instanceof Error ? error : new Error(String(error));
         }
         // Process results
         const results = [];
@@ -34552,11 +34551,11 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
                 coreExports.error(`Failed to analyze ${fileContents[index].filePath}: ${batchResult.error?.message || "Unknown error"}`);
             }
         }
-        coreExports.info(`✅ Batch analysis completed: ${results.length}/${fileContents.length} files processed successfully`);
+        coreExports.info(`✅ Batch analysis completed: ${results.length.toString()}/${fileContents.length.toString()} files processed successfully`);
         return results;
     }
     catch (error) {
-        coreExports.error(`Batch analysis failed: ${error}`);
+        coreExports.error(`Batch analysis failed: ${String(error)}`);
         if (isRequestEndingError(error)) {
             throw error;
         }
@@ -34612,7 +34611,7 @@ function getAnalysisSummary(results) {
 function generateFileDisplayLink(filePath, context) {
     return "prNumber" in context
         ? // PR context - create diff link
-            `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
+            `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber.toString()}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
         : // Non-PR context - create blob link
             `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
 }
@@ -34634,7 +34633,7 @@ function generateResultsTable(results, context) {
             : "-";
         // Create clickable file link using repository context
         const fileDisplay = generateFileDisplayLink(filePath, context);
-        return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score)} | ${Math.round(scores.quality.grammar.score)} | ${Math.round(scores.quality.consistency.score)} | ${Math.round(scores.quality.terminology.score)} | ${Math.round(scores.analysis.clarity.score)} | ${toneDisplay} |`;
+        return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} |`;
     })
         .join("\n");
     return `${tableHeader}\n${tableRows}`;
@@ -34651,18 +34650,18 @@ function generateSummary(results) {
     return `
 ## 📊 Summary
 
-**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore)}
+**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore).toString()}
 
-**Files Analyzed:** ${summary.totalFiles}
+**Files Analyzed:** ${summary.totalFiles.toString()}
 
 | Metric | Average Score |
 |--------|---------------|
-| Quality | ${Math.round(summary.averageQualityScore)} |
-| Grammar | ${Math.round(summary.averageGrammarScore)} |
-| Consistency | ${Math.round(summary.averageConsistencyScore)} |
-| Terminology | ${Math.round(summary.averageTerminologyScore)} |
-| Clarity | ${Math.round(summary.averageClarityScore)} |
-| Tone | ${Math.round(summary.averageToneScore)} |
+| Quality | ${Math.round(summary.averageQualityScore).toString()} |
+| Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
+| Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
+| Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
+| Clarity | ${Math.round(summary.averageClarityScore).toString()} |
+| Tone | ${Math.round(summary.averageToneScore).toString()} |
 `;
 }
 /**
@@ -34718,7 +34717,7 @@ async function findExistingComment(octokit, owner, repo, prNumber) {
         return comment?.id || null;
     }
     catch (error) {
-        coreExports.warning(`Failed to find existing comment: ${error}`);
+        coreExports.warning(`Failed to find existing comment: ${String(error)}`);
         return null;
     }
 }
@@ -34760,7 +34759,7 @@ async function createOrUpdatePRComment(octokit, commentData) {
                 comment_id: existingCommentId,
                 body: commentBody,
             });
-            coreExports.info(`✅ Updated existing comment on PR #${prNumber}`);
+            coreExports.info(`✅ Updated existing comment on PR #${prNumber.toString()}`);
         }
         else {
             // Create new comment
@@ -34770,7 +34769,7 @@ async function createOrUpdatePRComment(octokit, commentData) {
                 issue_number: prNumber,
                 body: commentBody,
             });
-            coreExports.info(`✅ Created new comment on PR #${prNumber}`);
+            coreExports.info(`✅ Created new comment on PR #${prNumber.toString()}`);
         }
     }
     catch (error) {
@@ -34889,19 +34888,19 @@ async function getCommitChanges(octokit, owner, repo, sha) {
 async function getPullRequestFiles(octokit, owner, repo, prNumber) {
     try {
         return await withRetry(async () => {
-            coreExports.info(`🔍 Fetching files for PR #${prNumber} in ${owner}/${repo}`);
+            coreExports.info(`🔍 Fetching files for PR #${prNumber.toString()} in ${owner}/${repo}`);
             const files = await octokit.paginate(octokit.rest.pulls.listFiles, {
                 owner,
                 repo,
                 pull_number: prNumber,
                 per_page: 100,
             });
-            coreExports.info(`✅ Found ${files.length} files in PR`);
+            coreExports.info(`✅ Found ${files.length.toString()} files in PR`);
             return files.map((file) => file.filename);
-        }, undefined, `Get PR files for #${prNumber} in ${owner}/${repo}`);
+        }, undefined, `Get PR files for #${prNumber.toString()} in ${owner}/${repo}`);
     }
     catch (error) {
-        logError(error, `Failed to get PR files for #${prNumber} in ${owner}/${repo}`);
+        logError(error, `Failed to get PR files for #${prNumber.toString()} in ${owner}/${repo}`);
         return [];
     }
 }
@@ -34918,11 +34917,9 @@ async function getRepositoryFiles(octokit, owner, repo, ref = "main") {
                 recursive: "true",
             });
             const files = [];
-            if (response.data.tree) {
-                for (const item of response.data.tree) {
-                    if (item.type === "blob" && item.path) {
-                        files.push(item.path);
-                    }
+            for (const item of response.data.tree) {
+                if (item.type === "blob" && item.path) {
+                    files.push(item.path);
                 }
             }
             return files;
@@ -34945,7 +34942,7 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
         }
         // Validate SHA format using type guard
         if (!isValidSHA(sha)) {
-            coreExports.error(`Invalid SHA format: ${sha}`);
+            coreExports.error(`Invalid SHA format: ${String(sha)}`);
             return;
         }
         // Validate quality score using type guard
@@ -34956,10 +34953,10 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
         const status = getQualityStatus(qualityScore);
         // const emoji = getQualityEmoji(qualityScore)
         // Create a shorter description that fits within GitHub's 140 character limit
-        const description = `Quality: ${qualityScore} | Files: ${filesAnalyzed}`;
+        const description = `Quality: ${qualityScore.toString()} | Files: ${filesAnalyzed.toString()}`;
         // Build target URL safely
         const serverUrl = githubExports.context.serverUrl || "https://github.com";
-        const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${githubExports.context.runId}`;
+        const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${githubExports.context.runId.toString()}`;
         coreExports.info(`🔍 Creating commit status for ${owner}/${repo}@${sha}`);
         coreExports.info(`📊 Status: ${status}, Description: "${description}"`);
         coreExports.info(`🔗 Target URL: ${targetUrl}`);
@@ -34978,10 +34975,10 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
         coreExports.info(`✅ Updated commit status: ${status} - ${description}`);
     }
     catch (error) {
-        coreExports.error(`Failed to update commit status: ${error}`);
+        coreExports.error(`Failed to update commit status: ${String(error)}`);
         // Log more details about the error
         if (error && typeof error === "object" && "message" in error) {
-            coreExports.error(`Error message: ${error.message}`);
+            coreExports.error(`Error message: ${String(error.message)}`);
         }
     }
 }
@@ -35015,7 +35012,7 @@ async function createJobSummary(results, config, eventType, context) {
         coreExports.info("✅ Job summary created successfully");
     }
     catch (error) {
-        coreExports.error(`Failed to create job summary: ${error}`);
+        coreExports.error(`Failed to create job summary: ${String(error)}`);
     }
 }
 
@@ -35028,11 +35025,11 @@ async function createJobSummary(results, config, eventType, context) {
 function displayEventInfo(eventInfo) {
     coreExports.info(`📋 Event Type: ${eventInfo.eventType}`);
     coreExports.info(`📄 Description: ${eventInfo.description}`);
-    coreExports.info(`📊 Files to analyze: ${eventInfo.filesCount}`);
+    coreExports.info(`📊 Files to analyze: ${eventInfo.filesCount.toString()}`);
     if (eventInfo.additionalInfo) {
         coreExports.info(`📌 Additional Info:`);
         for (const [key, value] of Object.entries(eventInfo.additionalInfo)) {
-            coreExports.info(`   ${key}: ${value}`);
+            coreExports.info(`   ${key}: ${String(value)}`);
         }
     }
 }
@@ -35049,12 +35046,14 @@ function displayResults(results) {
     for (const [index, analysis] of results.entries()) {
         const { filePath, result } = analysis;
         coreExports.info(`\n📄 File: ${filePath}`);
-        coreExports.info(`📈 Quality Score: ${result.quality.score}`);
-        coreExports.info(`📝 Clarity Score: ${result.analysis.clarity.score}`);
-        coreExports.info(`🔤 Grammar Score: ${result.quality.grammar.score}`);
-        coreExports.info(`📋 Consistency Score: ${result.quality.consistency.score}`);
-        coreExports.info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === "number" ? result.analysis.tone.score : "-"}`);
-        coreExports.info(`📚 Terminology Score: ${result.quality.terminology.score}`);
+        coreExports.info(`📈 Quality Score: ${result.quality.score.toString()}`);
+        coreExports.info(`📝 Clarity Score: ${result.analysis.clarity.score.toString()}`);
+        coreExports.info(`🔤 Grammar Score: ${result.quality.grammar.score.toString()}`);
+        coreExports.info(`📋 Consistency Score: ${result.quality.consistency.score.toString()}`);
+        coreExports.info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === "number"
+            ? result.analysis.tone.score.toString()
+            : "-"}`);
+        coreExports.info(`📚 Terminology Score: ${result.quality.terminology.score.toString()}`);
         if (index < results.length - 1) {
             coreExports.info("─".repeat(DISPLAY.SEPARATOR_LENGTH));
         }
@@ -35070,10 +35069,10 @@ function displayFilesToAnalyze(files) {
     }
     coreExports.info("\n📄 Files to analyze:");
     for (const [index, file] of files.slice(0, DISPLAY.MAX_FILES_TO_SHOW).entries()) {
-        coreExports.info(`  ${index + 1}. ${file}`);
+        coreExports.info(`  ${(index + 1).toString()}. ${file}`);
     }
     if (files.length > DISPLAY.MAX_FILES_TO_SHOW) {
-        coreExports.info(`  ... and ${files.length - DISPLAY.MAX_FILES_TO_SHOW} more files`);
+        coreExports.info(`  ... and ${(files.length - DISPLAY.MAX_FILES_TO_SHOW).toString()} more files`);
     }
 }
 /**
@@ -35100,7 +35099,7 @@ async function handlePushEvent(octokit, owner, repo, summary, results, addCommit
         await updateCommitStatus(octokit, owner, repo, githubExports.context.sha, summary.averageQualityScore, results.length);
     }
     catch (error) {
-        coreExports.error(`Failed to update commit status: ${error}`);
+        coreExports.error(`Failed to update commit status: ${String(error)}`);
     }
 }
 /**
@@ -35118,7 +35117,7 @@ async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysis
         await createJobSummary(results, analysisOptions, eventType, context);
     }
     catch (error) {
-        coreExports.error(`Failed to create job summary: ${error}`);
+        coreExports.error(`Failed to create job summary: ${String(error)}`);
     }
 }
 /**
@@ -35144,7 +35143,7 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
         });
     }
     catch (error) {
-        coreExports.error(`Failed to create PR comment: ${error}`);
+        coreExports.error(`Failed to create PR comment: ${String(error)}`);
     }
 }
 /**
@@ -35285,10 +35284,10 @@ function setOutputs(eventInfo, results) {
 function displaySummary(results) {
     const summary = getAnalysisSummary(results);
     displaySectionHeader("📊 Analysis Summary");
-    coreExports.info(`📄 Total Files Analyzed: ${summary.totalFiles}`);
-    coreExports.info(`📈 Average Quality Score: ${summary.averageQualityScore}`);
-    coreExports.info(`📝 Average Clarity Score: ${summary.averageClarityScore}`);
-    coreExports.info(`🎭 Average Tone Score: ${summary.averageToneScore}`);
+    coreExports.info(`📄 Total Files Analyzed: ${summary.totalFiles.toString()}`);
+    coreExports.info(`📈 Average Quality Score: ${summary.averageQualityScore.toString()}`);
+    coreExports.info(`📝 Average Clarity Score: ${summary.averageClarityScore.toString()}`);
+    coreExports.info(`🎭 Average Tone Score: ${summary.averageToneScore.toString()}`);
 }
 /**
  * Handle errors gracefully
@@ -35325,7 +35324,7 @@ async function runAction() {
         const supportedFiles = filterSupportedFiles(allFiles);
         // Update event info with actual file count
         eventInfo.filesCount = supportedFiles.length;
-        coreExports.info(`📊 Found ${supportedFiles.length} supported files out of ${allFiles.length} total files`);
+        coreExports.info(`📊 Found ${supportedFiles.length.toString()} supported files out of ${allFiles.length.toString()} total files`);
         if (supportedFiles.length === 0) {
             coreExports.info("No supported files found to analyze.");
             setOutputs(eventInfo, []);
@@ -35376,5 +35375,5 @@ async function run() {
  * main logic.
  */
 /* istanbul ignore next */
-run();
+void run();
 //# sourceMappingURL=index.js.map

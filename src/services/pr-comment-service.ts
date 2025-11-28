@@ -58,7 +58,7 @@ async function findExistingComment(
 
     return comment?.id || null;
   } catch (error) {
-    core.warning(`Failed to find existing comment: ${error}`);
+    core.warning(`Failed to find existing comment: ${String(error)}`);
     return null;
   }
 }
@@ -108,7 +108,7 @@ export async function createOrUpdatePRComment(
         comment_id: existingCommentId,
         body: commentBody,
       });
-      core.info(`✅ Updated existing comment on PR #${prNumber}`);
+      core.info(`✅ Updated existing comment on PR #${prNumber.toString()}`);
     } else {
       // Create new comment
       await octokit.rest.issues.createComment({
@@ -117,7 +117,7 @@ export async function createOrUpdatePRComment(
         issue_number: prNumber,
         body: commentBody,
       });
-      core.info(`✅ Created new comment on PR #${prNumber}`);
+      core.info(`✅ Created new comment on PR #${prNumber.toString()}`);
     }
   } catch (error: unknown) {
     const githubError = handleGitHubError(error, "Create/update PR comment");

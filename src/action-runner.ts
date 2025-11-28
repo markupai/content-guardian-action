@@ -41,10 +41,10 @@ function displaySummary(results: AnalysisResult[]): void {
   const summary = getAnalysisSummary(results);
 
   displaySectionHeader("📊 Analysis Summary");
-  core.info(`📄 Total Files Analyzed: ${summary.totalFiles}`);
-  core.info(`📈 Average Quality Score: ${summary.averageQualityScore}`);
-  core.info(`📝 Average Clarity Score: ${summary.averageClarityScore}`);
-  core.info(`🎭 Average Tone Score: ${summary.averageToneScore}`);
+  core.info(`📄 Total Files Analyzed: ${summary.totalFiles.toString()}`);
+  core.info(`📈 Average Quality Score: ${summary.averageQualityScore.toString()}`);
+  core.info(`📝 Average Clarity Score: ${summary.averageClarityScore.toString()}`);
+  core.info(`🎭 Average Tone Score: ${summary.averageToneScore.toString()}`);
 }
 
 /**
@@ -88,7 +88,7 @@ export async function runAction(): Promise<void> {
     // Update event info with actual file count
     eventInfo.filesCount = supportedFiles.length;
     core.info(
-      `📊 Found ${supportedFiles.length} supported files out of ${allFiles.length} total files`,
+      `📊 Found ${supportedFiles.length.toString()} supported files out of ${allFiles.length.toString()} total files`,
     );
 
     if (supportedFiles.length === 0) {

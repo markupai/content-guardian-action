@@ -4,6 +4,7 @@
 
 import { jest } from "@jest/globals";
 import * as core from "../mocks/core.js";
+import type { CommitInfo } from "../../src/types/index.js";
 
 // Spy on core methods
 const infoSpy = jest.spyOn(core, "info");
@@ -61,11 +62,7 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-let githubService: typeof import("../src/services/github-service.js");
-
-beforeAll(async () => {
-  githubService = await import("../../src/services/github-service.js");
-});
+const githubService = await import("../../src/services/github-service.js");
 
 describe("GitHub Service", () => {
   beforeEach(() => {
@@ -78,7 +75,8 @@ describe("GitHub Service", () => {
   describe("createGitHubClient", () => {
     it("should create GitHub client with token", () => {
       const token = "test-token";
-      const client = githubService.createGitHubClient(token);
+      const client: ReturnType<typeof import("@actions/github").getOctokit> =
+        githubService.createGitHubClient(token);
 
       expect(mockGetOctokit).toHaveBeenCalledWith(token);
       expect(client).toBe(mockOctokit);
@@ -114,7 +112,7 @@ describe("GitHub Service", () => {
         }),
       );
 
-      const result = await githubService.getCommitChanges(
+      const result: CommitInfo | null = await githubService.getCommitChanges(
         mockOctokit,
         "test-owner",
         "test-repo",
@@ -164,7 +162,7 @@ describe("GitHub Service", () => {
         }),
       );
 
-      const result = await githubService.getCommitChanges(
+      const result: CommitInfo | null = await githubService.getCommitChanges(
         mockOctokit,
         "test-owner",
         "test-repo",
@@ -188,7 +186,7 @@ describe("GitHub Service", () => {
         }),
       );
 
-      const result = await githubService.getCommitChanges(
+      const result: CommitInfo | null = await githubService.getCommitChanges(
         mockOctokit,
         "test-owner",
         "test-repo",
@@ -204,7 +202,7 @@ describe("GitHub Service", () => {
     it("should handle API errors", async () => {
       mockGetCommit.mockImplementation(() => Promise.reject(new Error("API Error")));
 
-      const result = await githubService.getCommitChanges(
+      const result: CommitInfo | null = await githubService.getCommitChanges(
         mockOctokit,
         "test-owner",
         "test-repo",
@@ -226,7 +224,7 @@ describe("GitHub Service", () => {
 
       mockPaginate.mockImplementation(() => Promise.resolve(mockFiles));
 
-      const result = await githubService.getPullRequestFiles(
+      const result: string[] = await githubService.getPullRequestFiles(
         mockOctokit,
         "test-owner",
         "test-repo",
@@ -249,7 +247,7 @@ describe("GitHub Service", () => {
     it("should handle API errors", async () => {
       mockPaginate.mockImplementation(() => Promise.reject(new Error("API Error")));
 
-      const result = await githubService.getPullRequestFiles(
+      const result: string[] = await githubService.getPullRequestFiles(
         mockOctokit,
         "test-owner",
         "test-repo",
@@ -278,7 +276,7 @@ describe("GitHub Service", () => {
         }),
       );
 
-      const result = await githubService.getRepositoryFiles(
+      const result: string[] = await githubService.getRepositoryFiles(
         mockOctokit,
         "test-owner",
         "test-repo",
@@ -295,7 +293,11 @@ describe("GitHub Service", () => {
         }),
       );
 
-      const result = await githubService.getRepositoryFiles(mockOctokit, "test-owner", "test-repo");
+      const result: string[] = await githubService.getRepositoryFiles(
+        mockOctokit,
+        "test-owner",
+        "test-repo",
+      );
 
       expect(result).toEqual([]);
     });
@@ -303,7 +305,11 @@ describe("GitHub Service", () => {
     it("should handle API errors", async () => {
       mockGetTree.mockImplementation(() => Promise.reject(new Error("API Error")));
 
-      const result = await githubService.getRepositoryFiles(mockOctokit, "test-owner", "test-repo");
+      const result: string[] = await githubService.getRepositoryFiles(
+        mockOctokit,
+        "test-owner",
+        "test-repo",
+      );
 
       expect(result).toEqual([]);
       expect(core.error).toHaveBeenCalled();
@@ -325,7 +331,12 @@ describe("GitHub Service", () => {
         }),
       );
 
-      const result = await githubService.getRepositoryInfo(mockOctokit, "test-owner", "test-repo");
+      const result: {
+        name: string;
+        fullName: string;
+        description: string | null;
+        language: string | null;
+      } | null = await githubService.getRepositoryInfo(mockOctokit, "test-owner", "test-repo");
 
       expect(result).toEqual({
         name: "test-repo",
@@ -338,7 +349,12 @@ describe("GitHub Service", () => {
     it("should handle API errors", async () => {
       mockReposGet.mockImplementation(() => Promise.reject(new Error("API Error")));
 
-      const result = await githubService.getRepositoryInfo(mockOctokit, "test-owner", "test-repo");
+      const result: {
+        name: string;
+        fullName: string;
+        description: string | null;
+        language: string | null;
+      } | null = await githubService.getRepositoryInfo(mockOctokit, "test-owner", "test-repo");
 
       expect(result).toBeNull();
       expect(core.error).toHaveBeenCalled();
