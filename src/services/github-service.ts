@@ -87,7 +87,7 @@ export async function getPullRequestFiles(
   try {
     return await withRetry(
       async () => {
-        core.info(`🔍 Fetching files for PR #${prNumber} in ${owner}/${repo}`);
+        core.info(`🔍 Fetching files for PR #${prNumber.toString()} in ${owner}/${repo}`);
 
         const files = await octokit.paginate(octokit.rest.pulls.listFiles, {
           owner,
@@ -96,14 +96,14 @@ export async function getPullRequestFiles(
           per_page: 100,
         });
 
-        core.info(`✅ Found ${files.length} files in PR`);
+        core.info(`✅ Found ${files.length.toString()} files in PR`);
         return files.map((file) => file.filename);
       },
       undefined,
-      `Get PR files for #${prNumber} in ${owner}/${repo}`,
+      `Get PR files for #${prNumber.toString()} in ${owner}/${repo}`,
     );
   } catch (error) {
-    logError(error, `Failed to get PR files for #${prNumber} in ${owner}/${repo}`);
+    logError(error, `Failed to get PR files for #${prNumber.toString()} in ${owner}/${repo}`);
     return [];
   }
 }
@@ -128,11 +128,9 @@ export async function getRepositoryFiles(
         });
 
         const files: string[] = [];
-        if (response.data.tree) {
-          for (const item of response.data.tree) {
-            if (item.type === "blob" && item.path) {
-              files.push(item.path);
-            }
+        for (const item of response.data.tree) {
+          if (item.type === "blob" && item.path) {
+            files.push(item.path);
           }
         }
 
@@ -173,7 +171,7 @@ export async function getRepositoryInfo(
       language: response.data.language,
     };
   } catch (error) {
-    core.error(`Failed to get repository info: ${error}`);
+    core.error(`Failed to get repository info: ${String(error)}`);
     return null;
   }
 }
@@ -198,7 +196,7 @@ export async function updateCommitStatus(
 
     // Validate SHA format using type guard
     if (!isValidSHA(sha)) {
-      core.error(`Invalid SHA format: ${sha}`);
+      core.error(`Invalid SHA format: ${String(sha)}`);
       return;
     }
 
@@ -212,11 +210,11 @@ export async function updateCommitStatus(
     // const emoji = getQualityEmoji(qualityScore)
 
     // Create a shorter description that fits within GitHub's 140 character limit
-    const description = `Quality: ${qualityScore} | Files: ${filesAnalyzed}`;
+    const description = `Quality: ${qualityScore.toString()} | Files: ${filesAnalyzed.toString()}`;
 
     // Build target URL safely
     const serverUrl = github.context.serverUrl || "https://github.com";
-    const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${github.context.runId}`;
+    const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${github.context.runId.toString()}`;
 
     core.info(`🔍 Creating commit status for ${owner}/${repo}@${sha}`);
     core.info(`📊 Status: ${status}, Description: "${description}"`);
@@ -239,10 +237,10 @@ export async function updateCommitStatus(
 
     core.info(`✅ Updated commit status: ${status} - ${description}`);
   } catch (error) {
-    core.error(`Failed to update commit status: ${error}`);
+    core.error(`Failed to update commit status: ${String(error)}`);
     // Log more details about the error
     if (error && typeof error === "object" && "message" in error) {
-      core.error(`Error message: ${error.message}`);
+      core.error(`Error message: ${String(error.message)}`);
     }
   }
 }

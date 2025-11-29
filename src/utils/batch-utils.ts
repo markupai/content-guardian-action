@@ -37,11 +37,15 @@ export async function processBatch<T, R>(
   const results: R[] = [];
   const batches = chunkArray(items, config.batchSize);
 
-  core.info(`🚀 Processing ${items.length} items in ${batches.length} batches`);
+  core.info(
+    `🚀 Processing ${items.length.toString()} items in ${batches.length.toString()} batches`,
+  );
 
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i];
-    core.info(`📦 Processing batch ${i + 1}/${batches.length} (${batch.length} items)`);
+    core.info(
+      `📦 Processing batch ${(i + 1).toString()}/${batches.length.toString()} (${batch.length.toString()} items)`,
+    );
 
     const batchResults = await Promise.allSettled(batch.map((item) => processor(item)));
 
@@ -50,7 +54,9 @@ export async function processBatch<T, R>(
       if (result.status === "fulfilled") {
         results.push(result.value);
       } else {
-        core.error(`Failed to process item ${i * config.batchSize + index}: ${result.reason}`);
+        core.error(
+          `Failed to process item ${(i * config.batchSize + index).toString()}: ${String(result.reason)}`,
+        );
       }
     }
 
@@ -61,7 +67,7 @@ export async function processBatch<T, R>(
   }
 
   core.info(
-    `✅ Batch processing completed: ${results.length}/${items.length} items processed successfully`,
+    `✅ Batch processing completed: ${results.length.toString()}/${items.length.toString()} items processed successfully`,
   );
   return results;
 }
@@ -81,7 +87,9 @@ export async function processWithConcurrency<T, R>(
   const results: R[] = [];
   const semaphore = new Semaphore(maxConcurrent);
 
-  core.info(`🚀 Processing ${items.length} items with max concurrency of ${maxConcurrent}`);
+  core.info(
+    `🚀 Processing ${items.length.toString()} items with max concurrency of ${maxConcurrent.toString()}`,
+  );
 
   const promises = items.map(async (item, index) => {
     await semaphore.acquire();
@@ -98,7 +106,7 @@ export async function processWithConcurrency<T, R>(
 
   const successfulResults = results.filter((result) => result !== undefined);
   core.info(
-    `✅ Concurrency processing completed: ${successfulResults.length}/${items.length} items processed successfully`,
+    `✅ Concurrency processing completed: ${successfulResults.length.toString()}/${items.length.toString()} items processed successfully`,
   );
 
   return successfulResults;

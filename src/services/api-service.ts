@@ -39,7 +39,7 @@ export async function analyzeFile(
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    core.error(`Failed to run check on ${filePath}: ${error}`);
+    core.error(`Failed to run check on ${filePath}: ${String(error)}`);
     if (isRequestEndingError(error as Error)) {
       throw error;
     }
@@ -60,7 +60,7 @@ export async function analyzeFilesBatch(
     return [];
   }
 
-  core.info(`🚀 Starting batch analysis of ${files.length} files`);
+  core.info(`🚀 Starting batch analysis of ${files.length.toString()} files`);
 
   // Read all file contents first using optimized batch processing
   const fileContents = await processFileReading(files, readFileContent);
@@ -104,7 +104,9 @@ export async function analyzeFilesBatch(
       }
 
       if (completed > 0 || failed > 0) {
-        core.info(`📊 Batch progress: ${completed}/${total} completed, ${failed} failed`);
+        core.info(
+          `📊 Batch progress: ${completed.toString()}/${total.toString()} completed, ${failed.toString()} failed`,
+        );
       }
     }, 2_000); // Update every 2 seconds
 
@@ -119,7 +121,7 @@ export async function analyzeFilesBatch(
       finalProgress.results,
     );
     if (found) {
-      throw error;
+      throw error instanceof Error ? error : new Error(String(error));
     }
 
     // Process results
@@ -141,11 +143,11 @@ export async function analyzeFilesBatch(
     }
 
     core.info(
-      `✅ Batch analysis completed: ${results.length}/${fileContents.length} files processed successfully`,
+      `✅ Batch analysis completed: ${results.length.toString()}/${fileContents.length.toString()} files processed successfully`,
     );
     return results;
   } catch (error) {
-    core.error(`Batch analysis failed: ${error}`);
+    core.error(`Batch analysis failed: ${String(error)}`);
     if (isRequestEndingError(error as Error)) {
       throw error;
     }

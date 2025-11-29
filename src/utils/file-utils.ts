@@ -23,7 +23,7 @@ export async function readFileContent(filePath: string): Promise<string | null> 
     const content = await fs.readFile(filePath, "utf-8");
     return content;
   } catch (error) {
-    core.warning(`Failed to read file ${filePath}: ${error}`);
+    core.warning(`Failed to read file ${filePath}: ${String(error)}`);
     return null;
   }
 }

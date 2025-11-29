@@ -46,6 +46,6 @@ export async function createJobSummary(
 
     core.info("✅ Job summary created successfully");
   } catch (error) {
-    core.error(`Failed to create job summary: ${error}`);
+    core.error(`Failed to create job summary: ${String(error)}`);
   }
 }

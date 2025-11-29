@@ -18,7 +18,7 @@ import { displaySectionHeader } from "../utils/display-utils.js";
  * Handle push event: update commit status if enabled
  */
 async function handlePushEvent(
-  octokit: ReturnType<typeof createGitHubClient>,
+  octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
   repo: string,
   summary: ReturnType<typeof getAnalysisSummary>,
@@ -41,7 +41,7 @@ async function handlePushEvent(
       results.length,
     );
   } catch (error) {
-    core.error(`Failed to update commit status: ${error}`);
+    core.error(`Failed to update commit status: ${String(error)}`);
   }
 }
 
@@ -66,7 +66,7 @@ async function handleWorkflowOrScheduleEvent(
     };
     await createJobSummary(results, analysisOptions, eventType, context);
   } catch (error) {
-    core.error(`Failed to create job summary: ${error}`);
+    core.error(`Failed to create job summary: ${String(error)}`);
   }
 }
 
@@ -74,7 +74,7 @@ async function handleWorkflowOrScheduleEvent(
  * Handle pull request event: create or update PR comment
  */
 async function handlePullRequestEvent(
-  octokit: ReturnType<typeof createGitHubClient>,
+  octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
   repo: string,
   results: AnalysisResult[],
@@ -101,7 +101,7 @@ async function handlePullRequestEvent(
       eventType,
     });
   } catch (error) {
-    core.error(`Failed to create PR comment: ${error}`);
+    core.error(`Failed to create PR comment: ${String(error)}`);
   }
 }
 

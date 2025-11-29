@@ -23,7 +23,7 @@ const {
 } = await import("../../src/utils/error-utils.js");
 
 // Import the type separately
-type RetryConfig = import("../src/utils/error-utils.js").RetryConfig;
+type RetryConfig = import("../../src/utils/error-utils.js").RetryConfig;
 
 describe("Error Utils", () => {
   beforeEach(() => {
@@ -183,7 +183,7 @@ describe("Error Utils", () => {
     it("should handle non-Error exceptions", async () => {
       const operation = jest
         .fn()
-        .mockImplementation(() => Promise.reject("String error")) as jest.MockedFunction<
+        .mockImplementation(() => Promise.reject(new Error("String error"))) as jest.MockedFunction<
         () => Promise<string>
       >;
 

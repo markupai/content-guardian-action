@@ -12,12 +12,12 @@ import { DISPLAY } from "../constants/index.js";
 export function displayEventInfo(eventInfo: EventInfo): void {
   core.info(`📋 Event Type: ${eventInfo.eventType}`);
   core.info(`📄 Description: ${eventInfo.description}`);
-  core.info(`📊 Files to analyze: ${eventInfo.filesCount}`);
+  core.info(`📊 Files to analyze: ${eventInfo.filesCount.toString()}`);
 
   if (eventInfo.additionalInfo) {
     core.info(`📌 Additional Info:`);
     for (const [key, value] of Object.entries(eventInfo.additionalInfo)) {
-      core.info(`   ${key}: ${value}`);
+      core.info(`   ${key}: ${String(value)}`);
     }
   }
 }
@@ -37,16 +37,18 @@ export function displayResults(results: AnalysisResult[]): void {
   for (const [index, analysis] of results.entries()) {
     const { filePath, result } = analysis;
     core.info(`\n📄 File: ${filePath}`);
-    core.info(`📈 Quality Score: ${result.quality.score}`);
-    core.info(`📝 Clarity Score: ${result.analysis.clarity.score}`);
-    core.info(`🔤 Grammar Score: ${result.quality.grammar.score}`);
-    core.info(`📋 Consistency Score: ${result.quality.consistency.score}`);
+    core.info(`📈 Quality Score: ${result.quality.score.toString()}`);
+    core.info(`📝 Clarity Score: ${result.analysis.clarity.score.toString()}`);
+    core.info(`🔤 Grammar Score: ${result.quality.grammar.score.toString()}`);
+    core.info(`📋 Consistency Score: ${result.quality.consistency.score.toString()}`);
     core.info(
       `🎭 Tone Score: ${
-        typeof result.analysis.tone?.score === "number" ? result.analysis.tone.score : "-"
+        typeof result.analysis.tone?.score === "number"
+          ? result.analysis.tone.score.toString()
+          : "-"
       }`,
     );
-    core.info(`📚 Terminology Score: ${result.quality.terminology.score}`);
+    core.info(`📚 Terminology Score: ${result.quality.terminology.score.toString()}`);
 
     if (index < results.length - 1) {
       core.info("─".repeat(DISPLAY.SEPARATOR_LENGTH));
@@ -65,11 +67,11 @@ export function displayFilesToAnalyze(files: string[]): void {
 
   core.info("\n📄 Files to analyze:");
   for (const [index, file] of files.slice(0, DISPLAY.MAX_FILES_TO_SHOW).entries()) {
-    core.info(`  ${index + 1}. ${file}`);
+    core.info(`  ${(index + 1).toString()}. ${file}`);
   }
 
   if (files.length > DISPLAY.MAX_FILES_TO_SHOW) {
-    core.info(`  ... and ${files.length - DISPLAY.MAX_FILES_TO_SHOW} more files`);
+    core.info(`  ... and ${(files.length - DISPLAY.MAX_FILES_TO_SHOW).toString()} more files`);
   }
 }
 

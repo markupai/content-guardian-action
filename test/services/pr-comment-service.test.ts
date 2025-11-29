@@ -217,7 +217,7 @@ describe("PR Comment Service", () => {
           owner: "test-owner",
           repo: "test-repo",
           issue_number: 123,
-          body: expect.stringContaining("## 🔍 Markup AI Analysis Results"),
+          body: expect.stringContaining("## 🔍 Markup AI Analysis Results") as unknown,
         });
       });
 
@@ -235,7 +235,7 @@ describe("PR Comment Service", () => {
           owner: "test-owner",
           repo: "test-repo",
           comment_id: 789,
-          body: expect.stringContaining("## 🔍 Markup AI Analysis Results"),
+          body: expect.stringContaining("## 🔍 Markup AI Analysis Results") as unknown,
         });
       });
     });

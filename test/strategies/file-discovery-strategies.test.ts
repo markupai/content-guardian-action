@@ -113,10 +113,9 @@ describe("File Discovery Strategies", () => {
       const strategy = createPushEventStrategy("test-owner", "test-repo", "abc123", "test-token");
 
       expect(typeof strategy.getFilesToAnalyze).toBe("function");
-      expect(strategy.getFilesToAnalyze).toBeInstanceOf(Function);
     });
 
-    it("should filter out deleted files from analysis", async () => {
+    it("should filter out deleted files from analysis", () => {
       // This test verifies the filtering logic by testing the behavior
       // Since we can't easily mock the GitHub service in this test structure,
       // we'll test the logic indirectly by checking that the strategy is created correctly
@@ -124,7 +123,6 @@ describe("File Discovery Strategies", () => {
       const strategy = createPushEventStrategy("test-owner", "test-repo", "abc123", "test-token");
 
       // Verify the strategy is created and has the expected methods
-      expect(strategy).toBeDefined();
       expect(typeof strategy.getFilesToAnalyze).toBe("function");
       expect(typeof strategy.getEventInfo).toBe("function");
 
@@ -153,7 +151,6 @@ describe("File Discovery Strategies", () => {
       const strategy = createPullRequestEventStrategy("test-owner", "test-repo", 123, "test-token");
 
       expect(typeof strategy.getFilesToAnalyze).toBe("function");
-      expect(strategy.getFilesToAnalyze).toBeInstanceOf(Function);
     });
   });
 
@@ -195,7 +192,6 @@ describe("File Discovery Strategies", () => {
       );
 
       expect(typeof strategy.getFilesToAnalyze).toBe("function");
-      expect(strategy.getFilesToAnalyze).toBeInstanceOf(Function);
     });
   });
 

@@ -76,13 +76,9 @@ jest.unstable_mockModule("../../src/utils/display-utils.js", () => ({
   displaySectionHeader: mockDisplaySectionHeader,
 }));
 
-// Import the module after mocking
-let postAnalysisService: typeof import("../src/services/post-analysis-service.js");
 import { EVENT_TYPES } from "../../src/constants/index.js";
 
-beforeAll(async () => {
-  postAnalysisService = await import("../../src/services/post-analysis-service.js");
-});
+const postAnalysisService = await import("../../src/services/post-analysis-service.js");
 
 describe("Post Analysis Service", () => {
   // Set up environment variable for GitHub context

@@ -4,6 +4,7 @@
 
 import { jest } from "@jest/globals";
 import * as core from "./mocks/core.js";
+import type { AnalysisResult } from "../src/types/index.js";
 
 // Mock dependencies
 jest.unstable_mockModule("@actions/core", () => core);
@@ -263,7 +264,7 @@ describe("Integration Tests", () => {
       const resultsCall = core.setOutput.mock.calls.find((call) => call[0] === "results");
       expect(resultsCall).toBeDefined();
       if (!resultsCall) throw new Error("resultsCall not found");
-      const results = JSON.parse(resultsCall[1]);
+      const results = JSON.parse(resultsCall[1] as string) as AnalysisResult[];
 
       expect(results).toHaveLength(2);
       expect(results.some((r) => r.filePath === "README.md")).toBe(true);
@@ -287,7 +288,7 @@ describe("Integration Tests", () => {
       const resultsCall = core.setOutput.mock.calls.find((call) => call[0] === "results");
       expect(resultsCall).toBeDefined();
       if (!resultsCall) throw new Error("resultsCall not found");
-      const results = JSON.parse(resultsCall[1]);
+      const results = JSON.parse(resultsCall[1] as string) as AnalysisResult[];
 
       expect(results).toHaveLength(2);
       expect(results.some((r) => r.filePath === "README.md")).toBe(true);
