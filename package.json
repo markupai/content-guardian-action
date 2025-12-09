@@ -21,7 +21,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "all": "npm run lint:check && npm run test && npm run coverage && npm run bundle",
+    "all": "npm run lint:check && npm run test:coverage && npm run bundle",
     "bundle": "npm run format:fix && npm run package",
     "coverage": "make-coverage-badge --output-path ./badges/coverage.svg",
     "format:check": "prettier --check .",
@@ -37,7 +37,7 @@
   "dependencies": {
     "@actions/core": "1.11.1",
     "@actions/github": "6.0.1",
-    "@markupai/toolkit": "2.2.0",
+    "@markupai/toolkit": "2.2.1",
     "octokit": "5.0.5"
   },
   "devDependencies": {

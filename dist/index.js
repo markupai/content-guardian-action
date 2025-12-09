@@ -25587,7 +25587,7 @@ var exec = {};
 
 var toolrunner = {};
 
-var io = {};
+var io$1 = {};
 
 var ioUtil = {};
 
@@ -25786,28 +25786,28 @@ function requireIoUtil () {
 var hasRequiredIo;
 
 function requireIo () {
-	if (hasRequiredIo) return io;
+	if (hasRequiredIo) return io$1;
 	hasRequiredIo = 1;
-	var __createBinding = (io && io.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+	var __createBinding = (io$1 && io$1.__createBinding) || (Object.create ? (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
 	    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 	}) : (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
 	    o[k2] = m[k];
 	}));
-	var __setModuleDefault = (io && io.__setModuleDefault) || (Object.create ? (function(o, v) {
+	var __setModuleDefault = (io$1 && io$1.__setModuleDefault) || (Object.create ? (function(o, v) {
 	    Object.defineProperty(o, "default", { enumerable: true, value: v });
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (io && io.__importStar) || function (mod) {
+	var __importStar = (io$1 && io$1.__importStar) || function (mod) {
 	    if (mod && mod.__esModule) return mod;
 	    var result = {};
 	    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
 	    __setModuleDefault(result, mod);
 	    return result;
 	};
-	var __awaiter = (io && io.__awaiter) || function (thisArg, _arguments, P, generator) {
+	var __awaiter = (io$1 && io$1.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 	    return new (P || (P = Promise))(function (resolve, reject) {
 	        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -25816,8 +25816,8 @@ function requireIo () {
 	        step((generator = generator.apply(thisArg, _arguments || [])).next());
 	    });
 	};
-	Object.defineProperty(io, "__esModule", { value: true });
-	io.findInPath = io.which = io.mkdirP = io.rmRF = io.mv = io.cp = void 0;
+	Object.defineProperty(io$1, "__esModule", { value: true });
+	io$1.findInPath = io$1.which = io$1.mkdirP = io$1.rmRF = io$1.mv = io$1.cp = void 0;
 	const assert_1 = require$$0$3;
 	const path = __importStar(require$$1$5);
 	const ioUtil = __importStar(requireIoUtil());
@@ -25862,7 +25862,7 @@ function requireIo () {
 	        }
 	    });
 	}
-	io.cp = cp;
+	io$1.cp = cp;
 	/**
 	 * Moves a path.
 	 *
@@ -25892,7 +25892,7 @@ function requireIo () {
 	        yield ioUtil.rename(source, dest);
 	    });
 	}
-	io.mv = mv;
+	io$1.mv = mv;
 	/**
 	 * Remove a path recursively with force
 	 *
@@ -25921,7 +25921,7 @@ function requireIo () {
 	        }
 	    });
 	}
-	io.rmRF = rmRF;
+	io$1.rmRF = rmRF;
 	/**
 	 * Make a directory.  Creates the full path with folders in between
 	 * Will throw if it fails
@@ -25935,7 +25935,7 @@ function requireIo () {
 	        yield ioUtil.mkdir(fsPath, { recursive: true });
 	    });
 	}
-	io.mkdirP = mkdirP;
+	io$1.mkdirP = mkdirP;
 	/**
 	 * Returns path of a tool had the tool actually been invoked.  Resolves via paths.
 	 * If you check and the tool does not exist, it will throw.
@@ -25969,7 +25969,7 @@ function requireIo () {
 	        return '';
 	    });
 	}
-	io.which = which;
+	io$1.which = which;
 	/**
 	 * Returns a list of all occurrences of the given tool on the system path.
 	 *
@@ -26026,7 +26026,7 @@ function requireIo () {
 	        return matches;
 	    });
 	}
-	io.findInPath = findInPath;
+	io$1.findInPath = findInPath;
 	function readCopyOptions(options) {
 	    const force = options.force == null ? true : options.force;
 	    const recursive = Boolean(options.recursive);
@@ -26086,7 +26086,7 @@ function requireIo () {
 	    });
 	}
 	
-	return io;
+	return io$1;
 }
 
 var hasRequiredToolrunner;
@@ -31404,718 +31404,728 @@ function logConfiguration(config) {
     coreExports.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
 }
 
-var P = /* @__PURE__ */ ((n) => (n.Check = "check", n.Suggestions = "suggestions", n.Rewrite = "rewrite", n))(P || {});
-const V = (n, e, t) => JSON.stringify(n, e, t);
-function Q(n, e) {
-  return JSON.parse(n, e);
+var j = /* @__PURE__ */ ((r) => (r.Check = "check", r.Suggestions = "suggestions", r.Rewrite = "rewrite", r))(j || {});
+const X = (r, o, e) => JSON.stringify(r, o, e);
+function q(r, o) {
+  return JSON.parse(r, o);
 }
-class f extends Error {
-  constructor({ message: e, statusCode: t, body: o, rawResponse: a }) {
-    super(ke({ message: e, statusCode: t, body: o })), Object.setPrototypeOf(this, f.prototype), this.statusCode = t, this.body = o, this.rawResponse = a;
+class w extends Error {
+  constructor({ message: o, statusCode: e, body: t, rawResponse: i }) {
+    super(ke({ message: o, statusCode: e, body: t })), Object.setPrototypeOf(this, w.prototype), this.statusCode = e, this.body = t, this.rawResponse = i;
   }
 }
-function ke({ message: n, statusCode: e, body: t }) {
-  let o = [];
-  return n != null && o.push(n), e != null && o.push(`Status code: ${e.toString()}`), t != null && o.push(`Body: ${V(t, void 0, 2)}`), o.join(`
+function ke({ message: r, statusCode: o, body: e }) {
+  let t = [];
+  return r != null && t.push(r), o != null && t.push(`Status code: ${o.toString()}`), e != null && t.push(`Body: ${X(e, void 0, 2)}`), t.join(`
 `);
 }
-class g extends Error {
-  constructor(e) {
-    super(e), Object.setPrototypeOf(this, g.prototype);
+class v extends Error {
+  constructor(o) {
+    super(o), Object.setPrototypeOf(this, v.prototype);
   }
 }
-class v extends f {
-  constructor(e, t) {
+class g extends w {
+  constructor(o, e) {
     super({
       message: "UnauthorizedError",
       statusCode: 401,
-      body: e,
-      rawResponse: t
-    }), Object.setPrototypeOf(this, v.prototype);
+      body: o,
+      rawResponse: e
+    }), Object.setPrototypeOf(this, g.prototype);
   }
 }
-class b extends f {
-  constructor(e, t) {
+class R extends w {
+  constructor(o, e) {
     super({
       message: "ForbiddenError",
       statusCode: 403,
-      body: e,
-      rawResponse: t
-    }), Object.setPrototypeOf(this, b.prototype);
+      body: o,
+      rawResponse: e
+    }), Object.setPrototypeOf(this, R.prototype);
   }
 }
-class _ extends f {
-  constructor(e, t) {
+class S extends w {
+  constructor(o, e) {
     super({
       message: "UnprocessableEntityError",
       statusCode: 422,
-      body: e,
-      rawResponse: t
-    }), Object.setPrototypeOf(this, _.prototype);
+      body: o,
+      rawResponse: e
+    }), Object.setPrototypeOf(this, S.prototype);
   }
 }
-class E extends f {
-  constructor(e, t) {
+class _ extends w {
+  constructor(o, e) {
     super({
       message: "InternalServerError",
       statusCode: 500,
-      body: e,
-      rawResponse: t
-    }), Object.setPrototypeOf(this, E.prototype);
+      body: o,
+      rawResponse: e
+    }), Object.setPrototypeOf(this, _.prototype);
   }
 }
-class F extends f {
-  constructor(e, t) {
+class V extends w {
+  constructor(o, e) {
+    super({
+      message: "ConflictError",
+      statusCode: 409,
+      body: o,
+      rawResponse: e
+    }), Object.setPrototypeOf(this, V.prototype);
+  }
+}
+class F extends w {
+  constructor(o, e) {
     super({
       message: "ContentTooLargeError",
       statusCode: 413,
-      body: e,
-      rawResponse: t
+      body: o,
+      rawResponse: e
     }), Object.setPrototypeOf(this, F.prototype);
   }
 }
-class I extends f {
-  constructor(e, t) {
+class M extends w {
+  constructor(o, e) {
     super({
       message: "NotFoundError",
       statusCode: 404,
-      body: e,
-      rawResponse: t
-    }), Object.setPrototypeOf(this, I.prototype);
+      body: o,
+      rawResponse: e
+    }), Object.setPrototypeOf(this, M.prototype);
   }
 }
-class G extends f {
-  constructor(e, t) {
+class z extends w {
+  constructor(o, e) {
     super({
       message: "TooManyRequestsError",
       statusCode: 429,
-      body: e,
-      rawResponse: t
-    }), Object.setPrototypeOf(this, G.prototype);
+      body: o,
+      rawResponse: e
+    }), Object.setPrototypeOf(this, z.prototype);
   }
 }
-var Te = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var xe = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-const xe = {
-  get: (n, e) => Te(void 0, void 0, void 0, function* () {
-    return typeof n == "function" ? n(e) : n;
+const Pe = {
+  get: (r, o) => xe(void 0, void 0, void 0, function* () {
+    return typeof r == "function" ? r(o) : r;
   })
-}, Ce = {
+}, Ae = {
   arrayFormat: "indices",
   encode: true
 };
-function ie(n, e) {
-  if (n === void 0 || n === null)
+function ae(r, o) {
+  if (r === void 0 || r === null)
     return "";
-  const t = String(n);
-  return e ? encodeURIComponent(t) : t;
+  const e = String(r);
+  return o ? encodeURIComponent(e) : e;
 }
-function O(n, e = "", t) {
-  const o = [];
-  for (const [a, r] of Object.entries(n)) {
-    const d = e ? `${e}[${a}]` : a;
-    if (r !== void 0)
-      if (Array.isArray(r)) {
-        if (r.length === 0)
+function ee(r, o = "", e) {
+  const t = [];
+  for (const [i, a] of Object.entries(r)) {
+    const d = o ? `${o}[${i}]` : i;
+    if (a !== void 0)
+      if (Array.isArray(a)) {
+        if (a.length === 0)
           continue;
-        for (let l = 0; l < r.length; l++) {
-          const s = r[l];
-          if (s !== void 0)
-            if (typeof s == "object" && !Array.isArray(s) && s !== null) {
-              const c = t.arrayFormat === "indices" ? `${d}[${l}]` : d;
-              o.push(...O(s, c, t));
+        for (let l = 0; l < a.length; l++) {
+          const n = a[l];
+          if (n !== void 0)
+            if (typeof n == "object" && !Array.isArray(n) && n !== null) {
+              const c = e.arrayFormat === "indices" ? `${d}[${l}]` : d;
+              t.push(...ee(n, c, e));
             } else {
-              const c = t.arrayFormat === "indices" ? `${d}[${l}]` : d, i = t.encode ? encodeURIComponent(c) : c;
-              o.push(`${i}=${ie(s, t.encode)}`);
+              const c = e.arrayFormat === "indices" ? `${d}[${l}]` : d, s = e.encode ? encodeURIComponent(c) : c;
+              t.push(`${s}=${ae(n, e.encode)}`);
             }
         }
-      } else if (typeof r == "object" && r !== null) {
-        if (Object.keys(r).length === 0)
+      } else if (typeof a == "object" && a !== null) {
+        if (Object.keys(a).length === 0)
           continue;
-        o.push(...O(r, d, t));
+        t.push(...ee(a, d, e));
       } else {
-        const l = t.encode ? encodeURIComponent(d) : d;
-        o.push(`${l}=${ie(r, t.encode)}`);
+        const l = e.encode ? encodeURIComponent(d) : d;
+        t.push(`${l}=${ae(a, e.encode)}`);
       }
   }
-  return o;
+  return t;
 }
-function Ae(n, e) {
-  return n == null || typeof n != "object" ? "" : O(n, "", Object.assign(Object.assign({}, Ce), e)).join("&");
+function Ie(r, o) {
+  return r == null || typeof r != "object" ? "" : ee(r, "", Object.assign(Object.assign({}, Ae), o)).join("&");
 }
-function Le(n, e) {
-  const t = Ae(e, { arrayFormat: "repeat" });
-  return t ? `${n}?${t}` : n;
+function je(r, o) {
+  const e = Ie(o, { arrayFormat: "repeat" });
+  return e ? `${r}?${e}` : r;
 }
-function Pe(n) {
-  const e = {
+function Me(r) {
+  const o = {
     get bodyUsed() {
-      return n.bodyUsed;
+      return r.bodyUsed;
     },
-    stream: () => n.body,
-    arrayBuffer: n.arrayBuffer.bind(n),
-    blob: n.blob.bind(n)
+    stream: () => r.body,
+    arrayBuffer: r.arrayBuffer.bind(r),
+    blob: r.blob.bind(r)
   };
-  return "bytes" in n && typeof n.bytes == "function" && (e.bytes = n.bytes.bind(n)), e;
+  return "bytes" in r && typeof r.bytes == "function" && (o.bytes = r.bytes.bind(r)), o;
 }
-function je(n) {
-  return n.body != null;
+function Ue(r) {
+  return r.body != null;
 }
-var Ie = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Le = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-function ue(n, e) {
-  return Ie(this, void 0, void 0, function* () {
-    if (!je(n))
+function he(r, o) {
+  return Le(this, void 0, void 0, function* () {
+    if (!Ue(r))
       return;
-    switch (e) {
+    switch (o) {
       case "binary-response":
-        return Pe(n);
+        return Me(r);
       case "blob":
-        return yield n.blob();
+        return yield r.blob();
       case "arrayBuffer":
-        return yield n.arrayBuffer();
+        return yield r.arrayBuffer();
       case "sse":
-        return n.body;
+        return r.body;
       case "streaming":
-        return n.body;
+        return r.body;
       case "text":
-        return yield n.text();
+        return yield r.text();
     }
-    const t = yield n.text();
-    if (t.length > 0)
+    const e = yield r.text();
+    if (e.length > 0)
       try {
-        return Q(t);
+        return q(e);
       } catch {
         return {
           ok: false,
           error: {
             reason: "non-json",
-            statusCode: n.status,
-            rawBody: t
+            statusCode: r.status,
+            rawBody: e
           }
         };
       }
   });
 }
-var Ne = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Be = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-function Me(n) {
-  return Ne(this, void 0, void 0, function* () {
-    var e, t, o;
-    let a = (e = n.headers.get("Content-Type")) === null || e === void 0 ? void 0 : e.toLowerCase();
-    if (a == null || a.length === 0)
-      return ue(n);
-    switch (a.indexOf(";") !== -1 && (a = (o = (t = a.split(";")[0]) === null || t === void 0 ? void 0 : t.trim()) !== null && o !== void 0 ? o : ""), a) {
+function $e(r) {
+  return Be(this, void 0, void 0, function* () {
+    var o, e, t;
+    let i = (o = r.headers.get("Content-Type")) === null || o === void 0 ? void 0 : o.toLowerCase();
+    if (i == null || i.length === 0)
+      return he(r);
+    switch (i.indexOf(";") !== -1 && (i = (t = (e = i.split(";")[0]) === null || e === void 0 ? void 0 : e.trim()) !== null && t !== void 0 ? t : ""), i) {
       case "application/hal+json":
       case "application/json":
       case "application/ld+json":
       case "application/problem+json":
       case "application/vnd.api+json":
       case "text/json":
-        const r = yield n.text();
-        return r.length > 0 ? Q(r) : void 0;
+        const a = yield r.text();
+        return a.length > 0 ? q(a) : void 0;
       default:
-        if (a.startsWith("application/vnd.") && a.endsWith("+json")) {
-          const d = yield n.text();
-          return d.length > 0 ? Q(d) : void 0;
+        if (i.startsWith("application/vnd.") && i.endsWith("+json")) {
+          const d = yield r.text();
+          return d.length > 0 ? q(d) : void 0;
         }
-        return yield n.text();
+        return yield r.text();
     }
   });
 }
-var Ue = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Ne = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-function $e() {
-  return Ue(this, void 0, void 0, function* () {
+function Fe() {
+  return Ne(this, void 0, void 0, function* () {
     return fetch;
   });
 }
-var Fe = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Ge = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, e || [])).next());
+    c((t = t.apply(r, o || [])).next());
   });
 };
-function Be(n) {
-  return Fe(this, arguments, void 0, function* ({ body: e, type: t }) {
-    return t.includes("json") ? V(e) : e;
+function ze(r) {
+  return Ge(this, arguments, void 0, function* ({ body: o, type: e }) {
+    return e.includes("json") ? X(o) : o;
   });
 }
-const Ge = "timeout";
-function We(n) {
-  const e = new AbortController(), t = setTimeout(() => e.abort(Ge), n);
-  return { signal: e.signal, abortId: t };
+const De = "timeout";
+function He(r) {
+  const o = new AbortController(), e = setTimeout(() => o.abort(De), r);
+  return { signal: o.signal, abortId: e };
 }
-function ze(...n) {
-  const e = n.length === 1 && Array.isArray(n[0]) ? n[0] : n, t = new AbortController();
-  for (const o of e) {
-    if (o.aborted) {
-      t.abort(o?.reason);
+function We(...r) {
+  const o = r.length === 1 && Array.isArray(r[0]) ? r[0] : r, e = new AbortController();
+  for (const t of o) {
+    if (t.aborted) {
+      e.abort(t?.reason);
       break;
     }
-    o.addEventListener("abort", () => t.abort(o?.reason), {
-      signal: t.signal
+    t.addEventListener("abort", () => e.abort(t?.reason), {
+      signal: e.signal
     });
   }
-  return t.signal;
+  return e.signal;
 }
-var He = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Ve = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-const Ve = (n, e, t, o, a, r, d, l, s) => He(void 0, void 0, void 0, function* () {
+const Ke = (r, o, e, t, i, a, d, l, n) => Ve(void 0, void 0, void 0, function* () {
   const c = [];
-  let i;
-  if (r != null) {
-    const { signal: p, abortId: k } = We(r);
-    i = k, c.push(p);
+  let s;
+  if (a != null) {
+    const { signal: y, abortId: A } = He(a);
+    s = A, c.push(y);
   }
   d != null && c.push(d);
-  let u = ze(c);
-  const w = yield n(e, {
-    method: t,
-    headers: o,
-    body: a,
+  let u = We(c);
+  const f = yield r(o, {
+    method: e,
+    headers: t,
+    body: i,
     signal: u,
     credentials: l ? "include" : void 0,
     // @ts-ignore
-    duplex: s
+    duplex: n
   });
-  return i != null && clearTimeout(i), w;
+  return s != null && clearTimeout(s), f;
 });
-let H;
-typeof globalThis.Headers < "u" ? H = globalThis.Headers : H = class fe {
-  constructor(e) {
-    if (this.headers = /* @__PURE__ */ new Map(), e)
-      if (e instanceof fe)
-        e.forEach((t, o) => this.append(o, t));
-      else if (Array.isArray(e))
-        for (const [t, o] of e)
-          if (typeof t == "string" && typeof o == "string")
-            this.append(t, o);
+let K;
+typeof globalThis.Headers < "u" ? K = globalThis.Headers : K = class fe {
+  constructor(o) {
+    if (this.headers = /* @__PURE__ */ new Map(), o)
+      if (o instanceof fe)
+        o.forEach((e, t) => this.append(t, e));
+      else if (Array.isArray(o))
+        for (const [e, t] of o)
+          if (typeof e == "string" && typeof t == "string")
+            this.append(e, t);
           else
             throw new TypeError("Each header entry must be a [string, string] tuple");
       else
-        for (const [t, o] of Object.entries(e))
-          if (typeof o == "string")
-            this.append(t, o);
+        for (const [e, t] of Object.entries(o))
+          if (typeof t == "string")
+            this.append(e, t);
           else
             throw new TypeError("Header values must be strings");
   }
-  append(e, t) {
-    const o = e.toLowerCase(), a = this.headers.get(o) || [];
-    this.headers.set(o, [...a, t]);
+  append(o, e) {
+    const t = o.toLowerCase(), i = this.headers.get(t) || [];
+    this.headers.set(t, [...i, e]);
   }
-  delete(e) {
-    const t = e.toLowerCase();
-    this.headers.delete(t);
+  delete(o) {
+    const e = o.toLowerCase();
+    this.headers.delete(e);
   }
-  get(e) {
-    const t = e.toLowerCase(), o = this.headers.get(t);
-    return o ? o.join(", ") : null;
+  get(o) {
+    const e = o.toLowerCase(), t = this.headers.get(e);
+    return t ? t.join(", ") : null;
   }
-  has(e) {
-    const t = e.toLowerCase();
-    return this.headers.has(t);
+  has(o) {
+    const e = o.toLowerCase();
+    return this.headers.has(e);
   }
-  set(e, t) {
-    const o = e.toLowerCase();
-    this.headers.set(o, [t]);
+  set(o, e) {
+    const t = o.toLowerCase();
+    this.headers.set(t, [e]);
   }
-  forEach(e, t) {
-    const o = t ? e.bind(t) : e;
-    this.headers.forEach((a, r) => o(a.join(", "), r, this));
+  forEach(o, e) {
+    const t = e ? o.bind(e) : o;
+    this.headers.forEach((i, a) => t(i.join(", "), a, this));
   }
   getSetCookie() {
     return this.headers.get("set-cookie") || [];
   }
   *entries() {
-    for (const [e, t] of this.headers.entries())
-      yield [e, t.join(", ")];
+    for (const [o, e] of this.headers.entries())
+      yield [o, e.join(", ")];
   }
   *keys() {
     yield* this.headers.keys();
   }
   *values() {
-    for (const e of this.headers.values())
-      yield e.join(", ");
+    for (const o of this.headers.values())
+      yield o.join(", ");
   }
   [Symbol.iterator]() {
     return this.entries();
   }
 };
-const se = {
-  headers: new H(),
+const de = {
+  headers: new K(),
   redirected: false,
   status: 499,
   statusText: "Client Closed Request",
   type: "error",
   url: ""
-}, ae = {
-  headers: new H(),
+}, le = {
+  headers: new K(),
   redirected: false,
   status: 0,
   statusText: "Unknown Error",
   type: "error",
   url: ""
 };
-function de(n) {
+function ce(r) {
   return {
-    headers: n.headers,
-    redirected: n.redirected,
-    status: n.status,
-    statusText: n.statusText,
-    type: n.type,
-    url: n.url
+    headers: r.headers,
+    redirected: r.redirected,
+    status: r.status,
+    statusText: r.statusText,
+    type: r.type,
+    url: r.url
   };
 }
-var De = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Xe = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, e || [])).next());
+    c((t = t.apply(r, o || [])).next());
   });
 };
-const Ke = 1e3, W = 6e4, Xe = 2, he = 0.2;
-function Ye(n) {
-  const e = 1 + Math.random() * he;
-  return n * e;
+const Ye = 1e3, H = 6e4, Je = 2, ye = 0.2;
+function Ze(r) {
+  const o = 1 + Math.random() * ye;
+  return r * o;
 }
-function Je(n) {
-  const e = 1 + (Math.random() - 0.5) * he;
-  return n * e;
+function Qe(r) {
+  const o = 1 + (Math.random() - 0.5) * ye;
+  return r * o;
 }
-function Ze(n, e) {
-  const t = n.headers.get("Retry-After");
-  if (t) {
-    const a = parseInt(t, 10);
-    if (!isNaN(a) && a > 0)
-      return Math.min(a * 1e3, W);
-    const r = new Date(t);
-    if (!isNaN(r.getTime())) {
-      const d = r.getTime() - Date.now();
+function Oe(r, o) {
+  const e = r.headers.get("Retry-After");
+  if (e) {
+    const i = parseInt(e, 10);
+    if (!isNaN(i) && i > 0)
+      return Math.min(i * 1e3, H);
+    const a = new Date(e);
+    if (!isNaN(a.getTime())) {
+      const d = a.getTime() - Date.now();
       if (d > 0)
-        return Math.min(Math.max(d, 0), W);
+        return Math.min(Math.max(d, 0), H);
     }
   }
-  const o = n.headers.get("X-RateLimit-Reset");
-  if (o) {
-    const a = parseInt(o, 10);
-    if (!isNaN(a)) {
-      const r = a * 1e3 - Date.now();
-      if (r > 0)
-        return Ye(Math.min(r, W));
+  const t = r.headers.get("X-RateLimit-Reset");
+  if (t) {
+    const i = parseInt(t, 10);
+    if (!isNaN(i)) {
+      const a = i * 1e3 - Date.now();
+      if (a > 0)
+        return Ze(Math.min(a, H));
     }
   }
-  return Je(Math.min(Ke * Math.pow(2, e), W));
+  return Qe(Math.min(Ye * Math.pow(2, o), H));
 }
-function Qe(n) {
-  return De(this, arguments, void 0, function* (e, t = Xe) {
-    let o = yield e();
-    for (let a = 0; a < t && ([408, 429].includes(o.status) || o.status >= 500); ++a) {
-      const r = Ze(o, a);
-      yield new Promise((d) => setTimeout(d, r)), o = yield e();
-    }
-    return o;
-  });
-}
-var q = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
-    });
-  }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
-      try {
-        c(o.next(i));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function s(i) {
-      try {
-        c(o.throw(i));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
-    }
-    c((o = o.apply(n, [])).next());
-  });
-};
-function Oe(n) {
-  return q(this, void 0, void 0, function* () {
-    var e;
-    const t = {};
-    if (n.body !== void 0 && n.contentType != null && (t["Content-Type"] = n.contentType), n.headers == null)
-      return t;
-    for (const [o, a] of Object.entries(n.headers)) {
-      const r = yield xe.get(a, { endpointMetadata: (e = n.endpointMetadata) !== null && e !== void 0 ? e : {} });
-      if (typeof r == "string") {
-        t[o] = r;
-        continue;
-      }
-      r != null && (t[o] = `${r}`);
+function qe(r) {
+  return Xe(this, arguments, void 0, function* (o, e = Je) {
+    let t = yield o();
+    for (let i = 0; i < e && ([408, 429].includes(t.status) || t.status >= 500); ++i) {
+      const a = Oe(t, i);
+      yield new Promise((d) => setTimeout(d, a)), t = yield o();
     }
     return t;
   });
 }
-function qe(n) {
-  return q(this, void 0, void 0, function* () {
-    const e = Le(n.url, n.queryParameters), t = yield Be({
-      body: n.body,
-      type: n.requestType === "json" ? "json" : "other"
-    }), o = yield $e();
+var oe = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
+    });
+  }
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
+      try {
+        c(t.next(s));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function n(s) {
+      try {
+        c(t.throw(s));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
+    }
+    c((t = t.apply(r, [])).next());
+  });
+};
+function eo(r) {
+  return oe(this, void 0, void 0, function* () {
+    var o;
+    const e = {};
+    if (r.body !== void 0 && r.contentType != null && (e["Content-Type"] = r.contentType), r.headers == null)
+      return e;
+    for (const [t, i] of Object.entries(r.headers)) {
+      const a = yield Pe.get(i, { endpointMetadata: (o = r.endpointMetadata) !== null && o !== void 0 ? o : {} });
+      if (typeof a == "string") {
+        e[t] = a;
+        continue;
+      }
+      a != null && (e[t] = `${a}`);
+    }
+    return e;
+  });
+}
+function oo(r) {
+  return oe(this, void 0, void 0, function* () {
+    const o = je(r.url, r.queryParameters), e = yield ze({
+      body: r.body,
+      type: r.requestType === "json" ? "json" : "other"
+    }), t = yield Fe();
     try {
-      const a = yield Qe(() => q(this, void 0, void 0, function* () {
-        return Ve(o, e, n.method, yield Oe(n), t, n.timeoutMs, n.abortSignal, n.withCredentials, n.duplex);
-      }), n.maxRetries);
-      return a.status >= 200 && a.status < 400 ? {
+      const i = yield qe(() => oe(this, void 0, void 0, function* () {
+        return Ke(t, o, r.method, yield eo(r), e, r.timeoutMs, r.abortSignal, r.withCredentials, r.duplex);
+      }), r.maxRetries);
+      return i.status >= 200 && i.status < 400 ? {
         ok: !0,
-        body: yield ue(a, n.responseType),
-        headers: a.headers,
-        rawResponse: de(a)
+        body: yield he(i, r.responseType),
+        headers: i.headers,
+        rawResponse: ce(i)
       } : {
         ok: !1,
         error: {
           reason: "status-code",
-          statusCode: a.status,
-          body: yield Me(a)
+          statusCode: i.status,
+          body: yield $e(i)
         },
-        rawResponse: de(a)
+        rawResponse: ce(i)
       };
-    } catch (a) {
-      return n.abortSignal != null && n.abortSignal.aborted ? {
+    } catch (i) {
+      return r.abortSignal != null && r.abortSignal.aborted ? {
         ok: false,
         error: {
           reason: "unknown",
           errorMessage: "The user aborted a request"
         },
-        rawResponse: se
-      } : a instanceof Error && a.name === "AbortError" ? {
+        rawResponse: de
+      } : i instanceof Error && i.name === "AbortError" ? {
         ok: false,
         error: {
           reason: "timeout"
         },
-        rawResponse: se
-      } : a instanceof Error ? {
+        rawResponse: de
+      } : i instanceof Error ? {
         ok: false,
         error: {
           reason: "unknown",
-          errorMessage: a.message
+          errorMessage: i.message
         },
-        rawResponse: ae
+        rawResponse: le
       } : {
         ok: false,
         error: {
           reason: "unknown",
-          errorMessage: V(a)
+          errorMessage: X(i)
         },
-        rawResponse: ae
+        rawResponse: le
       };
     }
   });
 }
-const x = qe;
-var et = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+const E = oo;
+var to = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-class R extends Promise {
-  constructor(e) {
-    super((t) => {
-      t(void 0);
-    }), this.innerPromise = e;
+class m extends Promise {
+  constructor(o) {
+    super((e) => {
+      e(void 0);
+    }), this.innerPromise = o;
   }
   /**
    * Creates an `HttpResponsePromise` from a function that returns a promise.
@@ -32124,8 +32134,8 @@ class R extends Promise {
    * @param args - Arguments to pass to the function.
    * @returns An `HttpResponsePromise` instance.
    */
-  static fromFunction(e, ...t) {
-    return new R(e(...t));
+  static fromFunction(o, ...e) {
+    return new m(o(...e));
   }
   /**
    * Creates a function that returns an `HttpResponsePromise` from a function that returns a promise.
@@ -32133,8 +32143,8 @@ class R extends Promise {
    * @param fn - A function that returns a promise resolving to a `WithRawResponse` object.
    * @returns A function that returns an `HttpResponsePromise` instance.
    */
-  static interceptFunction(e) {
-    return (...t) => R.fromPromise(e(...t));
+  static interceptFunction(o) {
+    return (...e) => m.fromPromise(o(...e));
   }
   /**
    * Creates an `HttpResponsePromise` from an existing promise.
@@ -32142,8 +32152,8 @@ class R extends Promise {
    * @param promise - A promise resolving to a `WithRawResponse` object.
    * @returns An `HttpResponsePromise` instance.
    */
-  static fromPromise(e) {
-    return new R(e);
+  static fromPromise(o) {
+    return new m(o);
   }
   /**
    * Creates an `HttpResponsePromise` from an executor function.
@@ -32151,9 +32161,9 @@ class R extends Promise {
    * @param executor - A function that takes resolve and reject callbacks to create a promise.
    * @returns An `HttpResponsePromise` instance.
    */
-  static fromExecutor(e) {
-    const t = new Promise(e);
-    return new R(t);
+  static fromExecutor(o) {
+    const e = new Promise(o);
+    return new m(e);
   }
   /**
    * Creates an `HttpResponsePromise` from a resolved result.
@@ -32161,24 +32171,24 @@ class R extends Promise {
    * @param result - A `WithRawResponse` object to resolve immediately.
    * @returns An `HttpResponsePromise` instance.
    */
-  static fromResult(e) {
-    const t = Promise.resolve(e);
-    return new R(t);
+  static fromResult(o) {
+    const e = Promise.resolve(o);
+    return new m(e);
   }
   unwrap() {
-    return this.unwrappedPromise || (this.unwrappedPromise = this.innerPromise.then(({ data: e }) => e)), this.unwrappedPromise;
+    return this.unwrappedPromise || (this.unwrappedPromise = this.innerPromise.then(({ data: o }) => o)), this.unwrappedPromise;
   }
   /** @inheritdoc */
-  then(e, t) {
-    return this.unwrap().then(e, t);
+  then(o, e) {
+    return this.unwrap().then(o, e);
   }
   /** @inheritdoc */
-  catch(e) {
-    return this.unwrap().catch(e);
+  catch(o) {
+    return this.unwrap().catch(o);
   }
   /** @inheritdoc */
-  finally(e) {
-    return this.unwrap().finally(e);
+  finally(o) {
+    return this.unwrap().finally(o);
   }
   /**
    * Retrieves the data and raw response.
@@ -32186,53 +32196,53 @@ class R extends Promise {
    * @returns A promise resolving to a `WithRawResponse` object.
    */
   withRawResponse() {
-    return et(this, void 0, void 0, function* () {
+    return to(this, void 0, void 0, function* () {
       return yield this.innerPromise;
     });
   }
 }
-var tt = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var ro = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-const y = {
-  get: (n) => tt(void 0, void 0, void 0, function* () {
-    return typeof n == "function" ? n() : n;
+const h = {
+  get: (r) => ro(void 0, void 0, void 0, function* () {
+    return typeof r == "function" ? r() : r;
   })
-}, ee = nt();
-function nt() {
-  var n, e, t, o, a;
+}, te = no();
+function no() {
+  var r, o, e, t, i;
   return typeof window < "u" && typeof window.document < "u" ? {
     type: "browser",
     version: window.navigator.userAgent
-  } : typeof globalThis < "u" && ((n = globalThis?.navigator) === null || n === void 0 ? void 0 : n.userAgent) === "Cloudflare-Workers" ? {
+  } : typeof globalThis < "u" && ((r = globalThis?.navigator) === null || r === void 0 ? void 0 : r.userAgent) === "Cloudflare-Workers" ? {
     type: "workerd"
   } : typeof EdgeRuntime == "string" ? {
     type: "edge-runtime"
-  } : typeof self == "object" && typeof self?.importScripts == "function" && (((e = self.constructor) === null || e === void 0 ? void 0 : e.name) === "DedicatedWorkerGlobalScope" || ((t = self.constructor) === null || t === void 0 ? void 0 : t.name) === "ServiceWorkerGlobalScope" || ((o = self.constructor) === null || o === void 0 ? void 0 : o.name) === "SharedWorkerGlobalScope") ? {
+  } : typeof self == "object" && typeof self?.importScripts == "function" && (((o = self.constructor) === null || o === void 0 ? void 0 : o.name) === "DedicatedWorkerGlobalScope" || ((e = self.constructor) === null || e === void 0 ? void 0 : e.name) === "ServiceWorkerGlobalScope" || ((t = self.constructor) === null || t === void 0 ? void 0 : t.name) === "SharedWorkerGlobalScope") ? {
     type: "web-worker"
   } : typeof Deno < "u" && typeof Deno.version < "u" && typeof Deno.version.deno < "u" ? {
     type: "deno",
@@ -32240,7 +32250,7 @@ function nt() {
   } : typeof Bun < "u" && typeof Bun.version < "u" ? {
     type: "bun",
     version: Bun.version
-  } : typeof process < "u" && "version" in process && !!process.version && "versions" in process && !!(!((a = process.versions) === null || a === void 0) && a.node) ? {
+  } : typeof process < "u" && "version" in process && !!process.version && "versions" in process && !!(!((i = process.versions) === null || i === void 0) && i.node) ? {
     type: "node",
     version: process.versions.node,
     parsedVersion: Number(process.versions.node.split(".")[0])
@@ -32250,198 +32260,198 @@ function nt() {
     type: "unknown"
   };
 }
-function C(n, ...e) {
-  if (!n)
+function T(r, ...o) {
+  if (!r)
     return "";
-  if (e.length === 0)
-    return n;
-  if (n.includes("://")) {
-    let t;
+  if (o.length === 0)
+    return r;
+  if (r.includes("://")) {
+    let e;
     try {
-      t = new URL(n);
+      e = new URL(r);
     } catch {
-      return le(n, ...e);
+      return ue(r, ...o);
     }
-    const o = e[e.length - 1], a = o && o.endsWith("/");
-    for (const r of e) {
-      const d = ye(r);
-      d && (t.pathname = we(t.pathname, d));
+    const t = o[o.length - 1], i = t && t.endsWith("/");
+    for (const a of o) {
+      const d = pe(a);
+      d && (e.pathname = me(e.pathname, d));
     }
-    return a && !t.pathname.endsWith("/") && (t.pathname += "/"), t.toString();
+    return i && !e.pathname.endsWith("/") && (e.pathname += "/"), e.toString();
   }
-  return le(n, ...e);
+  return ue(r, ...o);
 }
-function le(n, ...e) {
-  if (e.length === 0)
-    return n;
-  let t = n;
-  const o = e[e.length - 1], a = o && o.endsWith("/");
-  for (const r of e) {
-    const d = ye(r);
-    d && (t = we(t, d));
+function ue(r, ...o) {
+  if (o.length === 0)
+    return r;
+  let e = r;
+  const t = o[o.length - 1], i = t && t.endsWith("/");
+  for (const a of o) {
+    const d = pe(a);
+    d && (e = me(e, d));
   }
-  return a && !t.endsWith("/") && (t += "/"), t;
+  return i && !e.endsWith("/") && (e += "/"), e;
 }
-function we(n, e) {
-  return n.endsWith("/") ? n + e : n + "/" + e;
+function me(r, o) {
+  return r.endsWith("/") ? r + o : r + "/" + o;
 }
-function ye(n) {
-  if (!n)
-    return n;
-  let e = 0, t = n.length;
-  return n.startsWith("/") && (e = 1), n.endsWith("/") && (t = n.length - 1), e === 0 && t === n.length ? n : n.slice(e, t);
+function pe(r) {
+  if (!r)
+    return r;
+  let o = 0, e = r.length;
+  return r.startsWith("/") && (o = 1), r.endsWith("/") && (e = r.length - 1), o === 0 && e === r.length ? r : r.slice(o, e);
 }
-var B = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var G = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
-}, ot = function(n) {
+}, so = function(r) {
   if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-  var e = n[Symbol.asyncIterator], t;
-  return e ? e.call(n) : (n = typeof __values == "function" ? __values(n) : n[Symbol.iterator](), t = {}, o("next"), o("throw"), o("return"), t[Symbol.asyncIterator] = function() {
+  var o = r[Symbol.asyncIterator], e;
+  return o ? o.call(r) : (r = typeof __values == "function" ? __values(r) : r[Symbol.iterator](), e = {}, t("next"), t("throw"), t("return"), e[Symbol.asyncIterator] = function() {
     return this;
-  }, t);
-  function o(r) {
-    t[r] = n[r] && function(d) {
-      return new Promise(function(l, s) {
-        d = n[r](d), a(l, s, d.done, d.value);
+  }, e);
+  function t(a) {
+    e[a] = r[a] && function(d) {
+      return new Promise(function(l, n) {
+        d = r[a](d), i(l, n, d.done, d.value);
       });
     };
   }
-  function a(r, d, l, s) {
-    Promise.resolve(s).then(function(c) {
-      r({ value: c, done: l });
+  function i(a, d, l, n) {
+    Promise.resolve(n).then(function(c) {
+      a({ value: c, done: l });
     }, d);
   }
 };
-function rt(n) {
-  return typeof n == "object" && n != null && "name" in n;
+function io(r) {
+  return typeof r == "object" && r != null && "name" in r;
 }
-function it(n) {
-  return typeof n == "object" && n != null && "path" in n;
+function ao(r) {
+  return typeof r == "object" && r != null && "path" in r;
 }
-function st(n) {
-  return typeof n == "object" && n != null && ("read" in n || "pipe" in n);
+function lo(r) {
+  return typeof r == "object" && r != null && ("read" in r || "pipe" in r);
 }
-function pe(n) {
-  return typeof n == "object" && n != null && "getReader" in n;
+function ve(r) {
+  return typeof r == "object" && r != null && "getReader" in r;
 }
-function at(n) {
-  return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(n);
+function co(r) {
+  return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(r);
 }
-function dt(n) {
-  return ArrayBuffer.isView(n);
+function uo(r) {
+  return ArrayBuffer.isView(r);
 }
-function lt(n) {
-  const e = n.lastIndexOf("/"), t = n.lastIndexOf("\\"), o = Math.max(e, t);
-  return o >= 0 ? n.substring(o + 1) : n;
+function wo(r) {
+  const o = r.lastIndexOf("/"), e = r.lastIndexOf("\\"), t = Math.max(o, e);
+  return t >= 0 ? r.substring(t + 1) : r;
 }
-function ct(n) {
-  return B(this, void 0, void 0, function* () {
-    var e, t, o, a, r, d, l;
-    if (ee.type === "node") {
-      const { Readable: s } = yield import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
-      if (n instanceof s) {
+function ho(r) {
+  return G(this, void 0, void 0, function* () {
+    var o, e, t, i, a, d, l;
+    if (te.type === "node") {
+      const { Readable: n } = yield import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
+      if (r instanceof n) {
         const c = [];
         try {
-          for (e = !0, t = ot(n); o = yield t.next(), a = o.done, !a; e = !0) {
-            l = o.value, e = !1;
-            const i = l;
-            c.push(Buffer.isBuffer(i) ? i : Buffer.from(i));
+          for (o = !0, e = so(r); t = yield e.next(), i = t.done, !i; o = !0) {
+            l = t.value, o = !1;
+            const s = l;
+            c.push(Buffer.isBuffer(s) ? s : Buffer.from(s));
           }
-        } catch (i) {
-          r = { error: i };
+        } catch (s) {
+          a = { error: s };
         } finally {
           try {
-            !e && !a && (d = t.return) && (yield d.call(t));
+            !o && !i && (d = e.return) && (yield d.call(e));
           } finally {
-            if (r) throw r.error;
+            if (a) throw a.error;
           }
         }
         return Buffer.concat(c);
       }
     }
-    if (pe(n)) {
-      const s = n.getReader(), c = [];
+    if (ve(r)) {
+      const n = r.getReader(), c = [];
       try {
         for (; ; ) {
-          const { done: p, value: k } = yield s.read();
-          if (p)
+          const { done: y, value: A } = yield n.read();
+          if (y)
             break;
-          c.push(k);
+          c.push(A);
         }
       } finally {
-        s.releaseLock();
+        n.releaseLock();
       }
-      const i = c.reduce((p, k) => p + k.length, 0), u = new Uint8Array(i);
-      let w = 0;
-      for (const p of c)
-        u.set(p, w), w += p.length;
+      const s = c.reduce((y, A) => y + A.length, 0), u = new Uint8Array(s);
+      let f = 0;
+      for (const y of c)
+        u.set(y, f), f += y.length;
       return Buffer.from(u);
     }
-    throw new Error("Unsupported stream type: " + typeof n + ". Expected Node.js Readable stream or Web ReadableStream.");
+    throw new Error("Unsupported stream type: " + typeof r + ". Expected Node.js Readable stream or Web ReadableStream.");
   });
 }
 function D() {
-  return B(this, void 0, void 0, function* () {
-    return new ut();
+  return G(this, void 0, void 0, function* () {
+    return new fo();
   });
 }
-class ut {
+class fo {
   constructor() {
     this.fd = new FormData();
   }
   setup() {
-    return B(this, void 0, void 0, function* () {
+    return G(this, void 0, void 0, function* () {
     });
   }
-  append(e, t) {
-    this.fd.append(e, String(t));
+  append(o, e) {
+    this.fd.append(o, String(e));
   }
-  getFileName(e, t) {
-    if (t != null)
-      return t;
-    if (rt(e))
-      return e.name;
-    if (it(e) && e.path)
-      return lt(e.path.toString());
+  getFileName(o, e) {
+    if (e != null)
+      return e;
+    if (io(o))
+      return o.name;
+    if (ao(o) && o.path)
+      return wo(o.path.toString());
   }
-  convertToBlob(e) {
-    return B(this, void 0, void 0, function* () {
-      if (st(e) || pe(e)) {
-        const t = yield ct(e);
-        return new Blob([t]);
+  convertToBlob(o) {
+    return G(this, void 0, void 0, function* () {
+      if (lo(o) || ve(o)) {
+        const e = yield ho(o);
+        return new Blob([e]);
       }
-      return e instanceof Blob ? e : at(e) ? new Blob([e]) : e instanceof ArrayBuffer ? new Blob([e]) : dt(e) ? new Blob([e]) : typeof e == "string" ? new Blob([e]) : typeof e == "object" && e !== null ? new Blob([V(e)], { type: "application/json" }) : new Blob([String(e)]);
+      return o instanceof Blob ? o : co(o) ? new Blob([o]) : o instanceof ArrayBuffer ? new Blob([o]) : uo(o) ? new Blob([o]) : typeof o == "string" ? new Blob([o]) : typeof o == "object" && o !== null ? new Blob([X(o)], { type: "application/json" }) : new Blob([String(o)]);
     });
   }
-  appendFile(e, t, o) {
-    return B(this, void 0, void 0, function* () {
-      o = this.getFileName(t, o);
-      const a = yield this.convertToBlob(t);
-      o ? this.fd.append(e, a, o) : this.fd.append(e, a);
+  appendFile(o, e, t) {
+    return G(this, void 0, void 0, function* () {
+      t = this.getFileName(e, t);
+      const i = yield this.convertToBlob(e);
+      t ? this.fd.append(o, i, t) : this.fd.append(o, i);
     });
   }
   getRequest() {
@@ -32452,51 +32462,51 @@ class ut {
     };
   }
 }
-function T(...n) {
-  const e = {};
-  for (const [t, o] of n.filter((a) => a != null).flatMap((a) => Object.entries(a)))
-    o != null ? e[t] = o : t in e && delete e[t];
-  return e;
+function b(...r) {
+  const o = {};
+  for (const [e, t] of r.filter((i) => i != null).flatMap((i) => Object.entries(i)))
+    t != null ? o[e] = t : e in o && delete o[e];
+  return o;
 }
-function A(...n) {
-  const e = {};
-  for (const [t, o] of n.filter((a) => a != null).flatMap((a) => Object.entries(a)))
-    o != null && (e[t] = o);
-  return e;
+function C(...r) {
+  const o = {};
+  for (const [e, t] of r.filter((i) => i != null).flatMap((i) => Object.entries(i)))
+    t != null && (o[e] = t);
+  return o;
 }
-const L = {
+const k = {
   Default: "https://api.markup.ai"
 };
-var U = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var L = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, o || [])).next());
   });
 };
-class ft {
-  constructor(e) {
-    this._options = e;
+class yo {
+  constructor(o) {
+    this._options = o;
   }
   /**
    * Retrieve all style guides associated with your organization.
@@ -32511,36 +32521,36 @@ class ft {
    * @example
    *     await client.styleGuides.listStyleGuides()
    */
-  listStyleGuides(e) {
-    return R.fromPromise(this.__listStyleGuides(e));
+  listStyleGuides(o) {
+    return m.fromPromise(this.__listStyleGuides(o));
   }
-  __listStyleGuides(e) {
-    return U(this, void 0, void 0, function* () {
-      var t, o, a, r;
-      let d = T((t = this._options) === null || t === void 0 ? void 0 : t.headers, A({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const l = yield ((o = this._options.fetcher) !== null && o !== void 0 ? o : x)({
-        url: C((r = (a = yield y.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield y.get(this._options.environment)) !== null && r !== void 0 ? r : L.Default, "v1/style-guides"),
+  __listStyleGuides(o) {
+    return L(this, void 0, void 0, function* () {
+      var e, t, i, a;
+      let d = b((e = this._options) === null || e === void 0 ? void 0 : e.headers, C({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
+      const l = yield ((t = this._options.fetcher) !== null && t !== void 0 ? t : E)({
+        url: T((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/style-guides"),
         method: "GET",
         headers: d,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
+        queryParameters: o?.queryParams,
+        timeoutMs: o?.timeoutInSeconds != null ? o.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: o?.maxRetries,
+        abortSignal: o?.abortSignal
       });
       if (l.ok)
         return { data: l.body, rawResponse: l.rawResponse };
       if (l.error.reason === "status-code")
         switch (l.error.statusCode) {
           case 401:
-            throw new v(l.error.body, l.rawResponse);
+            throw new g(l.error.body, l.rawResponse);
           case 403:
-            throw new b(l.error.body, l.rawResponse);
+            throw new R(l.error.body, l.rawResponse);
           case 422:
-            throw new _(l.error.body, l.rawResponse);
+            throw new S(l.error.body, l.rawResponse);
           case 500:
-            throw new E(l.error.body, l.rawResponse);
+            throw new _(l.error.body, l.rawResponse);
           default:
-            throw new f({
+            throw new w({
               statusCode: l.error.statusCode,
               body: l.error.body,
               rawResponse: l.rawResponse
@@ -32548,15 +32558,15 @@ class ft {
         }
       switch (l.error.reason) {
         case "non-json":
-          throw new f({
+          throw new w({
             statusCode: l.error.statusCode,
             body: l.error.rawBody,
             rawResponse: l.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling GET /v1/style-guides.");
+          throw new v("Timeout exceeded when calling GET /v1/style-guides.");
         case "unknown":
-          throw new f({
+          throw new w({
             message: l.error.errorMessage,
             rawResponse: l.rawResponse
           });
@@ -32571,6 +32581,7 @@ class ft {
    *
    * @throws {@link MarkupAI.UnauthorizedError}
    * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.ConflictError}
    * @throws {@link MarkupAI.ContentTooLargeError}
    * @throws {@link MarkupAI.UnprocessableEntityError}
    * @throws {@link MarkupAI.InternalServerError}
@@ -32582,62 +32593,66 @@ class ft {
    *         name: "name"
    *     })
    */
-  createStyleGuide(e, t) {
-    return R.fromPromise(this.__createStyleGuide(e, t));
+  createStyleGuide(o, e) {
+    return m.fromPromise(this.__createStyleGuide(o, e));
   }
-  __createStyleGuide(e, t) {
-    return U(this, void 0, void 0, function* () {
-      var o, a, r, d;
+  __createStyleGuide(o, e) {
+    return L(this, void 0, void 0, function* () {
+      var t, i, a, d;
       const l = yield D();
-      yield l.appendFile("file_upload", e.file_upload), l.append("name", e.name);
-      const s = yield l.getRequest();
-      let c = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, s.headers)), t?.headers);
-      const i = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, "v1/style-guides"),
+      if (yield l.appendFile("file_upload", o.file_upload), l.append("name", o.name), o.base_style_guide != null && l.append("base_style_guide", o.base_style_guide), o.terminology_domain_ids != null)
+        for (const u of o.terminology_domain_ids)
+          l.append("terminology_domain_ids", u);
+      const n = yield l.getRequest();
+      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style-guides"),
         method: "POST",
         headers: c,
-        queryParameters: t?.queryParams,
+        queryParameters: e?.queryParams,
         requestType: "file",
-        duplex: s.duplex,
-        body: s.body,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        duplex: n.duplex,
+        body: n.body,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
       });
-      if (i.ok)
-        return { data: i.body, rawResponse: i.rawResponse };
-      if (i.error.reason === "status-code")
-        switch (i.error.statusCode) {
+      if (s.ok)
+        return { data: s.body, rawResponse: s.rawResponse };
+      if (s.error.reason === "status-code")
+        switch (s.error.statusCode) {
           case 401:
-            throw new v(i.error.body, i.rawResponse);
+            throw new g(s.error.body, s.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
+            throw new R(s.error.body, s.rawResponse);
+          case 409:
+            throw new V(s.error.body, s.rawResponse);
           case 413:
-            throw new F(i.error.body, i.rawResponse);
+            throw new F(s.error.body, s.rawResponse);
           case 422:
-            throw new _(i.error.body, i.rawResponse);
+            throw new S(s.error.body, s.rawResponse);
           case 500:
-            throw new E(i.error.body, i.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           default:
-            throw new f({
-              statusCode: i.error.statusCode,
-              body: i.error.body,
-              rawResponse: i.rawResponse
+            throw new w({
+              statusCode: s.error.statusCode,
+              body: s.error.body,
+              rawResponse: s.rawResponse
             });
         }
-      switch (i.error.reason) {
+      switch (s.error.reason) {
         case "non-json":
-          throw new f({
-            statusCode: i.error.statusCode,
-            body: i.error.rawBody,
-            rawResponse: i.rawResponse
+          throw new w({
+            statusCode: s.error.statusCode,
+            body: s.error.rawBody,
+            rawResponse: s.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling POST /v1/style-guides.");
+          throw new v("Timeout exceeded when calling POST /v1/style-guides.");
         case "unknown":
-          throw new f({
-            message: i.error.errorMessage,
-            rawResponse: i.rawResponse
+          throw new w({
+            message: s.error.errorMessage,
+            rawResponse: s.rawResponse
           });
       }
     });
@@ -32657,56 +32672,56 @@ class ft {
    * @example
    *     await client.styleGuides.getStyleGuide("style_guide_id")
    */
-  getStyleGuide(e, t) {
-    return R.fromPromise(this.__getStyleGuide(e, t));
+  getStyleGuide(o, e) {
+    return m.fromPromise(this.__getStyleGuide(o, e));
   }
-  __getStyleGuide(e, t) {
-    return U(this, void 0, void 0, function* () {
-      var o, a, r, d;
-      let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, `v1/style-guides/${encodeURIComponent(e)}`),
+  __getStyleGuide(o, e) {
+    return L(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
-        queryParameters: t?.queryParams,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
       });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
           case 401:
-            throw new v(s.error.body, s.rawResponse);
+            throw new g(n.error.body, n.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new R(n.error.body, n.rawResponse);
           case 404:
-            throw new I(s.error.body, s.rawResponse);
+            throw new M(n.error.body, n.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new S(n.error.body, n.rawResponse);
           case 500:
-            throw new E(s.error.body, s.rawResponse);
+            throw new _(n.error.body, n.rawResponse);
           default:
-            throw new f({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
             });
         }
-      switch (s.error.reason) {
+      switch (n.error.reason) {
         case "non-json":
-          throw new f({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling GET /v1/style-guides/{style_guide_id}.");
+          throw new v("Timeout exceeded when calling GET /v1/style-guides/{style_guide_id}.");
         case "unknown":
-          throw new f({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
           });
       }
     });
@@ -32726,38 +32741,114 @@ class ft {
    * @example
    *     await client.styleGuides.deleteStyleGuide("style_guide_id")
    */
-  deleteStyleGuide(e, t) {
-    return R.fromPromise(this.__deleteStyleGuide(e, t));
+  deleteStyleGuide(o, e) {
+    return m.fromPromise(this.__deleteStyleGuide(o, e));
   }
-  __deleteStyleGuide(e, t) {
-    return U(this, void 0, void 0, function* () {
-      var o, a, r, d;
-      let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, `v1/style-guides/${encodeURIComponent(e)}`),
+  __deleteStyleGuide(o, e) {
+    return L(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
         method: "DELETE",
         headers: l,
-        queryParameters: t?.queryParams,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: void 0, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 404:
+            throw new M(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling DELETE /v1/style-guides/{style_guide_id}.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * Update the name and/or terminology domain IDs of an existing style guide.
+   *
+   * @param {string} styleGuideId - The ID of the style guide.
+   * @param {MarkupAI.BodyStyleGuidesUpdateStyleGuide} request
+   * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.NotFoundError}
+   * @throws {@link MarkupAI.ConflictError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.styleGuides.updateStyleGuide("style_guide_id")
+   */
+  updateStyleGuide(o, e = {}, t) {
+    return m.fromPromise(this.__updateStyleGuide(o, e, t));
+  }
+  __updateStyleGuide(o) {
+    return L(this, arguments, void 0, function* (e, t = {}, i) {
+      var a, d, l, n;
+      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
+        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/style-guides/${encodeURIComponent(e)}`),
+        method: "PATCH",
+        headers: c,
+        contentType: "application/json",
+        queryParameters: i?.queryParams,
+        requestType: "json",
+        body: t,
+        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: i?.maxRetries,
+        abortSignal: i?.abortSignal
       });
       if (s.ok)
-        return { data: void 0, rawResponse: s.rawResponse };
+        return { data: s.body, rawResponse: s.rawResponse };
       if (s.error.reason === "status-code")
         switch (s.error.statusCode) {
           case 401:
-            throw new v(s.error.body, s.rawResponse);
+            throw new g(s.error.body, s.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new R(s.error.body, s.rawResponse);
           case 404:
-            throw new I(s.error.body, s.rawResponse);
+            throw new M(s.error.body, s.rawResponse);
+          case 409:
+            throw new V(s.error.body, s.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new S(s.error.body, s.rawResponse);
           case 500:
-            throw new E(s.error.body, s.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           default:
-            throw new f({
+            throw new w({
               statusCode: s.error.statusCode,
               body: s.error.body,
               rawResponse: s.rawResponse
@@ -32765,137 +32856,62 @@ class ft {
         }
       switch (s.error.reason) {
         case "non-json":
-          throw new f({
+          throw new w({
             statusCode: s.error.statusCode,
             body: s.error.rawBody,
             rawResponse: s.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling DELETE /v1/style-guides/{style_guide_id}.");
+          throw new v("Timeout exceeded when calling PATCH /v1/style-guides/{style_guide_id}.");
         case "unknown":
-          throw new f({
+          throw new w({
             message: s.error.errorMessage,
             rawResponse: s.rawResponse
           });
       }
     });
   }
-  /**
-   * Update the name of an existing style guide.
-   *
-   * @param {string} styleGuideId - The ID of the style guide.
-   * @param {MarkupAI.BodyUpdateStyleGuideV1StyleGuidesStyleGuideIdPatch} request
-   * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.NotFoundError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleGuides.updateStyleGuide("style_guide_id", {
-   *         name: "name"
-   *     })
-   */
-  updateStyleGuide(e, t, o) {
-    return R.fromPromise(this.__updateStyleGuide(e, t, o));
-  }
-  __updateStyleGuide(e, t, o) {
-    return U(this, void 0, void 0, function* () {
-      var a, r, d, l;
-      let s = T((a = this._options) === null || a === void 0 ? void 0 : a.headers, A({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
-      const c = yield ((r = this._options.fetcher) !== null && r !== void 0 ? r : x)({
-        url: C((l = (d = yield y.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield y.get(this._options.environment)) !== null && l !== void 0 ? l : L.Default, `v1/style-guides/${encodeURIComponent(e)}`),
-        method: "PATCH",
-        headers: s,
-        contentType: "application/json",
-        queryParameters: o?.queryParams,
-        requestType: "json",
-        body: t,
-        timeoutMs: o?.timeoutInSeconds != null ? o.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: o?.maxRetries,
-        abortSignal: o?.abortSignal
-      });
-      if (c.ok)
-        return { data: c.body, rawResponse: c.rawResponse };
-      if (c.error.reason === "status-code")
-        switch (c.error.statusCode) {
-          case 401:
-            throw new v(c.error.body, c.rawResponse);
-          case 403:
-            throw new b(c.error.body, c.rawResponse);
-          case 404:
-            throw new I(c.error.body, c.rawResponse);
-          case 422:
-            throw new _(c.error.body, c.rawResponse);
-          case 500:
-            throw new E(c.error.body, c.rawResponse);
-          default:
-            throw new f({
-              statusCode: c.error.statusCode,
-              body: c.error.body,
-              rawResponse: c.rawResponse
-            });
-        }
-      switch (c.error.reason) {
-        case "non-json":
-          throw new f({
-            statusCode: c.error.statusCode,
-            body: c.error.rawBody,
-            rawResponse: c.rawResponse
-          });
-        case "timeout":
-          throw new g("Timeout exceeded when calling PATCH /v1/style-guides/{style_guide_id}.");
-        case "unknown":
-          throw new f({
-            message: c.error.errorMessage,
-            rawResponse: c.rawResponse
-          });
-      }
-    });
-  }
   _getAuthorizationHeader() {
-    return U(this, void 0, void 0, function* () {
-      return `Bearer ${yield y.get(this._options.token)}`;
+    return L(this, void 0, void 0, function* () {
+      return `Bearer ${yield h.get(this._options.token)}`;
     });
   }
 }
-var X = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var J = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-class ht {
-  constructor(e) {
-    this._options = e;
+class mo {
+  constructor(o) {
+    this._options = o;
   }
   /**
    * Analyze text for grammar, style, and clarity issues.
    *
-   * @param {MarkupAI.CreateStyleCheckV1StyleChecksPostRequest} request
+   * @param {MarkupAI.StyleCheckRequestBody} request
    * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
    *
    * @throws {@link MarkupAI.UnauthorizedError}
@@ -32913,64 +32929,64 @@ class ht {
    *         style_guide: "style_guide"
    *     })
    */
-  createStyleCheck(e, t) {
-    return R.fromPromise(this.__createStyleCheck(e, t));
+  createStyleCheck(o, e) {
+    return m.fromPromise(this.__createStyleCheck(o, e));
   }
-  __createStyleCheck(e, t) {
-    return X(this, void 0, void 0, function* () {
-      var o, a, r, d;
+  __createStyleCheck(o, e) {
+    return J(this, void 0, void 0, function* () {
+      var t, i, a, d;
       const l = yield D();
-      yield l.appendFile("file_upload", e.file_upload), l.append("dialect", e.dialect), e.tone != null && l.append("tone", e.tone), l.append("style_guide", e.style_guide), e.webhook_url != null && l.append("webhook_url", e.webhook_url);
-      const s = yield l.getRequest();
-      let c = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, s.headers)), t?.headers);
-      const i = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, "v1/style/checks"),
+      l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
+      const n = yield l.getRequest();
+      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/checks"),
         method: "POST",
         headers: c,
-        queryParameters: t?.queryParams,
+        queryParameters: e?.queryParams,
         requestType: "file",
-        duplex: s.duplex,
-        body: s.body,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        duplex: n.duplex,
+        body: n.body,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
       });
-      if (i.ok)
-        return { data: i.body, rawResponse: i.rawResponse };
-      if (i.error.reason === "status-code")
-        switch (i.error.statusCode) {
+      if (s.ok)
+        return { data: s.body, rawResponse: s.rawResponse };
+      if (s.error.reason === "status-code")
+        switch (s.error.statusCode) {
           case 401:
-            throw new v(i.error.body, i.rawResponse);
+            throw new g(s.error.body, s.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
+            throw new R(s.error.body, s.rawResponse);
           case 413:
-            throw new F(i.error.body, i.rawResponse);
+            throw new F(s.error.body, s.rawResponse);
           case 422:
-            throw new _(i.error.body, i.rawResponse);
+            throw new S(s.error.body, s.rawResponse);
           case 429:
-            throw new G(i.error.body, i.rawResponse);
+            throw new z(s.error.body, s.rawResponse);
           case 500:
-            throw new E(i.error.body, i.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           default:
-            throw new f({
-              statusCode: i.error.statusCode,
-              body: i.error.body,
-              rawResponse: i.rawResponse
+            throw new w({
+              statusCode: s.error.statusCode,
+              body: s.error.body,
+              rawResponse: s.rawResponse
             });
         }
-      switch (i.error.reason) {
+      switch (s.error.reason) {
         case "non-json":
-          throw new f({
-            statusCode: i.error.statusCode,
-            body: i.error.rawBody,
-            rawResponse: i.rawResponse
+          throw new w({
+            statusCode: s.error.statusCode,
+            body: s.error.rawBody,
+            rawResponse: s.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling POST /v1/style/checks.");
+          throw new v("Timeout exceeded when calling POST /v1/style/checks.");
         case "unknown":
-          throw new f({
-            message: i.error.errorMessage,
-            rawResponse: i.rawResponse
+          throw new w({
+            message: s.error.errorMessage,
+            rawResponse: s.rawResponse
           });
       }
     });
@@ -32990,101 +33006,101 @@ class ht {
    * @example
    *     await client.styleChecks.getStyleCheck("workflow_id")
    */
-  getStyleCheck(e, t) {
-    return R.fromPromise(this.__getStyleCheck(e, t));
+  getStyleCheck(o, e) {
+    return m.fromPromise(this.__getStyleCheck(o, e));
   }
-  __getStyleCheck(e, t) {
-    return X(this, void 0, void 0, function* () {
-      var o, a, r, d;
-      let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, `v1/style/checks/${encodeURIComponent(e)}`),
+  __getStyleCheck(o, e) {
+    return J(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/checks/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
-        queryParameters: t?.queryParams,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
       });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
           case 401:
-            throw new v(s.error.body, s.rawResponse);
+            throw new g(n.error.body, n.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new R(n.error.body, n.rawResponse);
           case 404:
-            throw new I(s.error.body, s.rawResponse);
+            throw new M(n.error.body, n.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new S(n.error.body, n.rawResponse);
           case 500:
-            throw new E(s.error.body, s.rawResponse);
+            throw new _(n.error.body, n.rawResponse);
           default:
-            throw new f({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
             });
         }
-      switch (s.error.reason) {
+      switch (n.error.reason) {
         case "non-json":
-          throw new f({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling GET /v1/style/checks/{workflow_id}.");
+          throw new v("Timeout exceeded when calling GET /v1/style/checks/{workflow_id}.");
         case "unknown":
-          throw new f({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
           });
       }
     });
   }
   _getAuthorizationHeader() {
-    return X(this, void 0, void 0, function* () {
-      return `Bearer ${yield y.get(this._options.token)}`;
+    return J(this, void 0, void 0, function* () {
+      return `Bearer ${yield h.get(this._options.token)}`;
     });
   }
 }
-var Y = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Z = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-class wt {
-  constructor(e) {
-    this._options = e;
+class po {
+  constructor(o) {
+    this._options = o;
   }
   /**
    * Get suggested corrections for text.
    *
-   * @param {MarkupAI.CreateStyleSuggestionV1StyleSuggestionsPostRequest} request
+   * @param {MarkupAI.StyleSuggestionRequestBody} request
    * @param {StyleSuggestions.RequestOptions} requestOptions - Request-specific configuration.
    *
    * @throws {@link MarkupAI.UnauthorizedError}
@@ -33102,64 +33118,64 @@ class wt {
    *         style_guide: "style_guide"
    *     })
    */
-  createStyleSuggestion(e, t) {
-    return R.fromPromise(this.__createStyleSuggestion(e, t));
+  createStyleSuggestion(o, e) {
+    return m.fromPromise(this.__createStyleSuggestion(o, e));
   }
-  __createStyleSuggestion(e, t) {
-    return Y(this, void 0, void 0, function* () {
-      var o, a, r, d;
+  __createStyleSuggestion(o, e) {
+    return Z(this, void 0, void 0, function* () {
+      var t, i, a, d;
       const l = yield D();
-      yield l.appendFile("file_upload", e.file_upload), l.append("dialect", e.dialect), e.tone != null && l.append("tone", e.tone), l.append("style_guide", e.style_guide), e.webhook_url != null && l.append("webhook_url", e.webhook_url);
-      const s = yield l.getRequest();
-      let c = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, s.headers)), t?.headers);
-      const i = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, "v1/style/suggestions"),
+      l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
+      const n = yield l.getRequest();
+      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/suggestions"),
         method: "POST",
         headers: c,
-        queryParameters: t?.queryParams,
+        queryParameters: e?.queryParams,
         requestType: "file",
-        duplex: s.duplex,
-        body: s.body,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        duplex: n.duplex,
+        body: n.body,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
       });
-      if (i.ok)
-        return { data: i.body, rawResponse: i.rawResponse };
-      if (i.error.reason === "status-code")
-        switch (i.error.statusCode) {
+      if (s.ok)
+        return { data: s.body, rawResponse: s.rawResponse };
+      if (s.error.reason === "status-code")
+        switch (s.error.statusCode) {
           case 401:
-            throw new v(i.error.body, i.rawResponse);
+            throw new g(s.error.body, s.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
+            throw new R(s.error.body, s.rawResponse);
           case 413:
-            throw new F(i.error.body, i.rawResponse);
+            throw new F(s.error.body, s.rawResponse);
           case 422:
-            throw new _(i.error.body, i.rawResponse);
+            throw new S(s.error.body, s.rawResponse);
           case 429:
-            throw new G(i.error.body, i.rawResponse);
+            throw new z(s.error.body, s.rawResponse);
           case 500:
-            throw new E(i.error.body, i.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           default:
-            throw new f({
-              statusCode: i.error.statusCode,
-              body: i.error.body,
-              rawResponse: i.rawResponse
+            throw new w({
+              statusCode: s.error.statusCode,
+              body: s.error.body,
+              rawResponse: s.rawResponse
             });
         }
-      switch (i.error.reason) {
+      switch (s.error.reason) {
         case "non-json":
-          throw new f({
-            statusCode: i.error.statusCode,
-            body: i.error.rawBody,
-            rawResponse: i.rawResponse
+          throw new w({
+            statusCode: s.error.statusCode,
+            body: s.error.rawBody,
+            rawResponse: s.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling POST /v1/style/suggestions.");
+          throw new v("Timeout exceeded when calling POST /v1/style/suggestions.");
         case "unknown":
-          throw new f({
-            message: i.error.errorMessage,
-            rawResponse: i.rawResponse
+          throw new w({
+            message: s.error.errorMessage,
+            rawResponse: s.rawResponse
           });
       }
     });
@@ -33179,101 +33195,101 @@ class wt {
    * @example
    *     await client.styleSuggestions.getStyleSuggestion("workflow_id")
    */
-  getStyleSuggestion(e, t) {
-    return R.fromPromise(this.__getStyleSuggestion(e, t));
+  getStyleSuggestion(o, e) {
+    return m.fromPromise(this.__getStyleSuggestion(o, e));
   }
-  __getStyleSuggestion(e, t) {
-    return Y(this, void 0, void 0, function* () {
-      var o, a, r, d;
-      let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, `v1/style/suggestions/${encodeURIComponent(e)}`),
+  __getStyleSuggestion(o, e) {
+    return Z(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/suggestions/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
-        queryParameters: t?.queryParams,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
       });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
           case 401:
-            throw new v(s.error.body, s.rawResponse);
+            throw new g(n.error.body, n.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
+            throw new R(n.error.body, n.rawResponse);
           case 404:
-            throw new I(s.error.body, s.rawResponse);
+            throw new M(n.error.body, n.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new S(n.error.body, n.rawResponse);
           case 500:
-            throw new E(s.error.body, s.rawResponse);
+            throw new _(n.error.body, n.rawResponse);
           default:
-            throw new f({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
             });
         }
-      switch (s.error.reason) {
+      switch (n.error.reason) {
         case "non-json":
-          throw new f({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling GET /v1/style/suggestions/{workflow_id}.");
+          throw new v("Timeout exceeded when calling GET /v1/style/suggestions/{workflow_id}.");
         case "unknown":
-          throw new f({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
           });
       }
     });
   }
   _getAuthorizationHeader() {
-    return Y(this, void 0, void 0, function* () {
-      return `Bearer ${yield y.get(this._options.token)}`;
+    return Z(this, void 0, void 0, function* () {
+      return `Bearer ${yield h.get(this._options.token)}`;
     });
   }
 }
-var J = function(n, e, t, o) {
-  function a(r) {
-    return r instanceof t ? r : new t(function(d) {
-      d(r);
+var Q = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
     });
   }
-  return new (t || (t = Promise))(function(r, d) {
-    function l(i) {
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
       try {
-        c(o.next(i));
+        c(t.next(s));
       } catch (u) {
         d(u);
       }
     }
-    function s(i) {
+    function n(s) {
       try {
-        c(o.throw(i));
+        c(t.throw(s));
       } catch (u) {
         d(u);
       }
     }
-    function c(i) {
-      i.done ? r(i.value) : a(i.value).then(l, s);
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((o = o.apply(n, [])).next());
+    c((t = t.apply(r, [])).next());
   });
 };
-class yt {
-  constructor(e) {
-    this._options = e;
+class vo {
+  constructor(o) {
+    this._options = o;
   }
   /**
    * Rewrite text with style corrections applied.
    *
-   * @param {MarkupAI.CreateStyleRewriteV1StyleRewritesPostRequest} request
+   * @param {MarkupAI.StyleRewriteRequestBody} request
    * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
    *
    * @throws {@link MarkupAI.UnauthorizedError}
@@ -33291,64 +33307,64 @@ class yt {
    *         style_guide: "style_guide"
    *     })
    */
-  createStyleRewrite(e, t) {
-    return R.fromPromise(this.__createStyleRewrite(e, t));
+  createStyleRewrite(o, e) {
+    return m.fromPromise(this.__createStyleRewrite(o, e));
   }
-  __createStyleRewrite(e, t) {
-    return J(this, void 0, void 0, function* () {
-      var o, a, r, d;
+  __createStyleRewrite(o, e) {
+    return Q(this, void 0, void 0, function* () {
+      var t, i, a, d;
       const l = yield D();
-      yield l.appendFile("file_upload", e.file_upload), l.append("dialect", e.dialect), e.tone != null && l.append("tone", e.tone), l.append("style_guide", e.style_guide), e.webhook_url != null && l.append("webhook_url", e.webhook_url);
-      const s = yield l.getRequest();
-      let c = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, s.headers)), t?.headers);
-      const i = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, "v1/style/rewrites"),
+      l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
+      const n = yield l.getRequest();
+      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/rewrites"),
         method: "POST",
         headers: c,
-        queryParameters: t?.queryParams,
+        queryParameters: e?.queryParams,
         requestType: "file",
-        duplex: s.duplex,
-        body: s.body,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        duplex: n.duplex,
+        body: n.body,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
       });
-      if (i.ok)
-        return { data: i.body, rawResponse: i.rawResponse };
-      if (i.error.reason === "status-code")
-        switch (i.error.statusCode) {
+      if (s.ok)
+        return { data: s.body, rawResponse: s.rawResponse };
+      if (s.error.reason === "status-code")
+        switch (s.error.statusCode) {
           case 401:
-            throw new v(i.error.body, i.rawResponse);
+            throw new g(s.error.body, s.rawResponse);
           case 403:
-            throw new b(i.error.body, i.rawResponse);
+            throw new R(s.error.body, s.rawResponse);
           case 413:
-            throw new F(i.error.body, i.rawResponse);
+            throw new F(s.error.body, s.rawResponse);
           case 422:
-            throw new _(i.error.body, i.rawResponse);
+            throw new S(s.error.body, s.rawResponse);
           case 429:
-            throw new G(i.error.body, i.rawResponse);
+            throw new z(s.error.body, s.rawResponse);
           case 500:
-            throw new E(i.error.body, i.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           default:
-            throw new f({
-              statusCode: i.error.statusCode,
-              body: i.error.body,
-              rawResponse: i.rawResponse
+            throw new w({
+              statusCode: s.error.statusCode,
+              body: s.error.body,
+              rawResponse: s.rawResponse
             });
         }
-      switch (i.error.reason) {
+      switch (s.error.reason) {
         case "non-json":
-          throw new f({
-            statusCode: i.error.statusCode,
-            body: i.error.rawBody,
-            rawResponse: i.rawResponse
+          throw new w({
+            statusCode: s.error.statusCode,
+            body: s.error.rawBody,
+            rawResponse: s.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling POST /v1/style/rewrites.");
+          throw new v("Timeout exceeded when calling POST /v1/style/rewrites.");
         case "unknown":
-          throw new f({
-            message: i.error.errorMessage,
-            rawResponse: i.rawResponse
+          throw new w({
+            message: s.error.errorMessage,
+            rawResponse: s.rawResponse
           });
       }
     });
@@ -33368,38 +33384,637 @@ class yt {
    * @example
    *     await client.styleRewrites.getStyleRewrite("workflow_id")
    */
-  getStyleRewrite(e, t) {
-    return R.fromPromise(this.__getStyleRewrite(e, t));
+  getStyleRewrite(o, e) {
+    return m.fromPromise(this.__getStyleRewrite(o, e));
   }
-  __getStyleRewrite(e, t) {
-    return J(this, void 0, void 0, function* () {
-      var o, a, r, d;
-      let l = T((o = this._options) === null || o === void 0 ? void 0 : o.headers, A({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const s = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : x)({
-        url: C((d = (r = yield y.get(this._options.baseUrl)) !== null && r !== void 0 ? r : yield y.get(this._options.environment)) !== null && d !== void 0 ? d : L.Default, `v1/style/rewrites/${encodeURIComponent(e)}`),
+  __getStyleRewrite(o, e) {
+    return Q(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/rewrites/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
-        queryParameters: t?.queryParams,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 404:
+            throw new M(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/style/rewrites/{workflow_id}.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  _getAuthorizationHeader() {
+    return Q(this, void 0, void 0, function* () {
+      return `Bearer ${yield h.get(this._options.token)}`;
+    });
+  }
+}
+var x = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
+    });
+  }
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
+      try {
+        c(t.next(s));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function n(s) {
+      try {
+        c(t.throw(s));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
+    }
+    c((t = t.apply(r, o || [])).next());
+  });
+};
+class go {
+  constructor(o) {
+    this._options = o;
+  }
+  /**
+   * Exports all term sets, terms and domains to CSV. The exported CSV follows the same format as the CSV import.
+   *
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.exportTerminology()
+   */
+  exportTerminology(o) {
+    return m.fromPromise(this.__exportTerminology(o));
+  }
+  __exportTerminology(o) {
+    return x(this, void 0, void 0, function* () {
+      var e, t, i, a;
+      let d = b((e = this._options) === null || e === void 0 ? void 0 : e.headers, C({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
+      const l = yield ((t = this._options.fetcher) !== null && t !== void 0 ? t : E)({
+        url: T((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/terminology"),
+        method: "GET",
+        headers: d,
+        queryParameters: o?.queryParams,
+        timeoutMs: o?.timeoutInSeconds != null ? o.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: o?.maxRetries,
+        abortSignal: o?.abortSignal
+      });
+      if (l.ok)
+        return { data: l.body, rawResponse: l.rawResponse };
+      if (l.error.reason === "status-code")
+        switch (l.error.statusCode) {
+          case 401:
+            throw new g(l.error.body, l.rawResponse);
+          case 403:
+            throw new R(l.error.body, l.rawResponse);
+          case 500:
+            throw new _(l.error.body, l.rawResponse);
+          default:
+            throw new w({
+              statusCode: l.error.statusCode,
+              body: l.error.body,
+              rawResponse: l.rawResponse
+            });
+        }
+      switch (l.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: l.error.statusCode,
+            body: l.error.rawBody,
+            rawResponse: l.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/terminology.");
+        case "unknown":
+          throw new w({
+            message: l.error.errorMessage,
+            rawResponse: l.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * Uploads a CSV or ACTIF XML file and imports terminology.
+   *
+   * **CSV Format Requirements:**
+   * - CSV must include columns: Prohibited, Preferred, Context-Dependent, Instructions, Domains
+   * - The first row must contain the column headers in the exact same order as shown above
+   * - Multiple values within a single cell should be separated by semicolons with a space (e.g., term1; term2; term3)
+   * - Empty cells are allowed
+   * - The CSV import format is the same as the CSV export format.
+   *
+   * @param {MarkupAI.BodyTerminologyImportTerminology} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     import { createReadStream } from "fs";
+   *     await client.terminology.importTerminology({
+   *         file: fs.createReadStream("/path/to/your/file"),
+   *         delete_existing: true
+   *     })
+   */
+  importTerminology(o, e) {
+    return m.fromPromise(this.__importTerminology(o, e));
+  }
+  __importTerminology(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      const l = {};
+      o.delete_existing != null && (l.delete_existing = o.delete_existing.toString());
+      const n = yield D();
+      yield n.appendFile("file", o.file);
+      const c = yield n.getRequest();
+      let s = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, c.headers)), e?.headers);
+      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology"),
+        method: "POST",
+        headers: s,
+        queryParameters: Object.assign(Object.assign({}, l), e?.queryParams),
+        requestType: "file",
+        duplex: c.duplex,
+        body: c.body,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (u.ok)
+        return { data: u.body, rawResponse: u.rawResponse };
+      if (u.error.reason === "status-code")
+        switch (u.error.statusCode) {
+          case 401:
+            throw new g(u.error.body, u.rawResponse);
+          case 403:
+            throw new R(u.error.body, u.rawResponse);
+          case 422:
+            throw new S(u.error.body, u.rawResponse);
+          case 500:
+            throw new _(u.error.body, u.rawResponse);
+          default:
+            throw new w({
+              statusCode: u.error.statusCode,
+              body: u.error.body,
+              rawResponse: u.rawResponse
+            });
+        }
+      switch (u.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: u.error.statusCode,
+            body: u.error.rawBody,
+            rawResponse: u.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling POST /v1/terminology.");
+        case "unknown":
+          throw new w({
+            message: u.error.errorMessage,
+            rawResponse: u.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * Searches the text for relevant terminology and returns matched term sets.
+   *
+   * Term sets are matched if any word sequence (up to 5 words) in the text is similar to one of the terms of the term set.
+   * The similarity measure used is a trigram similarity of 0.5 or higher between the word sequence and the term.
+   *
+   * @param {MarkupAI.TerminologySearchTerminologyRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.searchTerminology({
+   *         query: "query"
+   *     })
+   */
+  searchTerminology(o, e) {
+    return m.fromPromise(this.__searchTerminology(o, e));
+  }
+  __searchTerminology(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      const { query: l, domain_ids: n } = o, c = {};
+      c.query = l, n != null && (Array.isArray(n) ? c.domain_ids = n.map((f) => f) : c.domain_ids = n);
+      let s = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/search"),
+        method: "GET",
+        headers: s,
+        queryParameters: Object.assign(Object.assign({}, c), e?.queryParams),
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (u.ok)
+        return { data: u.body, rawResponse: u.rawResponse };
+      if (u.error.reason === "status-code")
+        switch (u.error.statusCode) {
+          case 401:
+            throw new g(u.error.body, u.rawResponse);
+          case 403:
+            throw new R(u.error.body, u.rawResponse);
+          case 422:
+            throw new S(u.error.body, u.rawResponse);
+          case 500:
+            throw new _(u.error.body, u.rawResponse);
+          default:
+            throw new w({
+              statusCode: u.error.statusCode,
+              body: u.error.body,
+              rawResponse: u.rawResponse
+            });
+        }
+      switch (u.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: u.error.statusCode,
+            body: u.error.rawBody,
+            rawResponse: u.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/terminology/search.");
+        case "unknown":
+          throw new w({
+            message: u.error.errorMessage,
+            rawResponse: u.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * Get a pageable list of term sets with all their associated terms and domains.
+   *
+   * The search filter searches the term set instructions and term text fields.
+   *
+   * @param {MarkupAI.TerminologyListTermSetsRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.listTermSets({
+   *         page: 1,
+   *         page_size: 1,
+   *         search_term: "search_term"
+   *     })
+   */
+  listTermSets(o = {}, e) {
+    return m.fromPromise(this.__listTermSets(o, e));
+  }
+  __listTermSets() {
+    return x(this, arguments, void 0, function* (o = {}, e) {
+      var t, i, a, d;
+      const { page: l, page_size: n, search_term: c, domain_ids: s } = o, u = {};
+      l != null && (u.page = l.toString()), n != null && (u.page_size = n.toString()), c != null && (u.search_term = c), s != null && (Array.isArray(s) ? u.domain_ids = s.map((A) => A) : u.domain_ids = s);
+      let f = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const y = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
+        method: "GET",
+        headers: f,
+        queryParameters: Object.assign(Object.assign({}, u), e?.queryParams),
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (y.ok)
+        return { data: y.body, rawResponse: y.rawResponse };
+      if (y.error.reason === "status-code")
+        switch (y.error.statusCode) {
+          case 401:
+            throw new g(y.error.body, y.rawResponse);
+          case 403:
+            throw new R(y.error.body, y.rawResponse);
+          case 422:
+            throw new S(y.error.body, y.rawResponse);
+          case 500:
+            throw new _(y.error.body, y.rawResponse);
+          default:
+            throw new w({
+              statusCode: y.error.statusCode,
+              body: y.error.body,
+              rawResponse: y.rawResponse
+            });
+        }
+      switch (y.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: y.error.statusCode,
+            body: y.error.rawBody,
+            rawResponse: y.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/terminology/term-sets.");
+        case "unknown":
+          throw new w({
+            message: y.error.errorMessage,
+            rawResponse: y.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * Create a new term set. Terms and domains are linked to term sets.
+   * The term set instructions text will be used to determine whether a term should be flagged in the text and what the term replacement should be.
+   *
+   * @param {MarkupAI.TermSetCreateRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.createTermSet({
+   *         instructions: "instructions"
+   *     })
+   */
+  createTermSet(o, e) {
+    return m.fromPromise(this.__createTermSet(o, e));
+  }
+  __createTermSet(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
+        method: "POST",
+        headers: l,
+        contentType: "application/json",
+        queryParameters: e?.queryParams,
+        requestType: "json",
+        body: o,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling POST /v1/terminology/term-sets.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} termSetId - UUID of the term set
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.getTermSet("term_set_id")
+   */
+  getTermSet(o, e) {
+    return m.fromPromise(this.__getTermSet(o, e));
+  }
+  __getTermSet(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
+        method: "GET",
+        headers: l,
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/terminology/term-sets/{term_set_id}.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} termSetId - UUID of the term set
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.deleteTermSet("term_set_id")
+   */
+  deleteTermSet(o, e) {
+    return m.fromPromise(this.__deleteTermSet(o, e));
+  }
+  __deleteTermSet(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
+        method: "DELETE",
+        headers: l,
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: void 0, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling DELETE /v1/terminology/term-sets/{term_set_id}.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} termSetId - UUID of the term set
+   * @param {MarkupAI.TermSetUpdateRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.updateTermSet("term_set_id")
+   */
+  updateTermSet(o, e = {}, t) {
+    return m.fromPromise(this.__updateTermSet(o, e, t));
+  }
+  __updateTermSet(o) {
+    return x(this, arguments, void 0, function* (e, t = {}, i) {
+      var a, d, l, n;
+      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
+        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(e)}`),
+        method: "PATCH",
+        headers: c,
+        contentType: "application/json",
+        queryParameters: i?.queryParams,
+        requestType: "json",
+        body: t,
+        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: i?.maxRetries,
+        abortSignal: i?.abortSignal
       });
       if (s.ok)
         return { data: s.body, rawResponse: s.rawResponse };
       if (s.error.reason === "status-code")
         switch (s.error.statusCode) {
           case 401:
-            throw new v(s.error.body, s.rawResponse);
+            throw new g(s.error.body, s.rawResponse);
           case 403:
-            throw new b(s.error.body, s.rawResponse);
-          case 404:
-            throw new I(s.error.body, s.rawResponse);
+            throw new R(s.error.body, s.rawResponse);
           case 422:
-            throw new _(s.error.body, s.rawResponse);
+            throw new S(s.error.body, s.rawResponse);
           case 500:
-            throw new E(s.error.body, s.rawResponse);
+            throw new _(s.error.body, s.rawResponse);
           default:
-            throw new f({
+            throw new w({
               statusCode: s.error.statusCode,
               body: s.error.body,
               rawResponse: s.rawResponse
@@ -33407,15 +34022,629 @@ class yt {
         }
       switch (s.error.reason) {
         case "non-json":
-          throw new f({
+          throw new w({
             statusCode: s.error.statusCode,
             body: s.error.rawBody,
             rawResponse: s.rawResponse
           });
         case "timeout":
-          throw new g("Timeout exceeded when calling GET /v1/style/rewrites/{workflow_id}.");
+          throw new v("Timeout exceeded when calling PATCH /v1/terminology/term-sets/{term_set_id}.");
         case "unknown":
-          throw new f({
+          throw new w({
+            message: s.error.errorMessage,
+            rawResponse: s.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * Create terms that should be matched in the text. The term types are:
+   *
+   * * **preferred**: this is the preferred term for the associated term set
+   * * **prohibited**: this term should not be used to talk about the term set
+   * * **context_dependent**: this term is correct in certain cases, but incorrect in others, the instructions field of the term set should explain when the term is correct and when it is incorrect
+   *
+   * @param {string} termSetId - UUID of the term set
+   * @param {MarkupAI.TermCreateRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.createTerm("term_set_id", {
+   *         term: "term",
+   *         type: "preferred"
+   *     })
+   */
+  createTerm(o, e, t) {
+    return m.fromPromise(this.__createTerm(o, e, t));
+  }
+  __createTerm(o, e, t) {
+    return x(this, void 0, void 0, function* () {
+      var i, a, d, l;
+      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
+      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : E)({
+        url: T((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms`),
+        method: "POST",
+        headers: n,
+        contentType: "application/json",
+        queryParameters: t?.queryParams,
+        requestType: "json",
+        body: e,
+        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: t?.maxRetries,
+        abortSignal: t?.abortSignal
+      });
+      if (c.ok)
+        return { data: c.body, rawResponse: c.rawResponse };
+      if (c.error.reason === "status-code")
+        switch (c.error.statusCode) {
+          case 401:
+            throw new g(c.error.body, c.rawResponse);
+          case 403:
+            throw new R(c.error.body, c.rawResponse);
+          case 422:
+            throw new S(c.error.body, c.rawResponse);
+          case 500:
+            throw new _(c.error.body, c.rawResponse);
+          default:
+            throw new w({
+              statusCode: c.error.statusCode,
+              body: c.error.body,
+              rawResponse: c.rawResponse
+            });
+        }
+      switch (c.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: c.error.statusCode,
+            body: c.error.rawBody,
+            rawResponse: c.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling POST /v1/terminology/term-sets/{term_set_id}/terms.");
+        case "unknown":
+          throw new w({
+            message: c.error.errorMessage,
+            rawResponse: c.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} termSetId - UUID of the term set
+   * @param {string} termId - UUID of the term
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.getTerm("term_set_id", "term_id")
+   */
+  getTerm(o, e, t) {
+    return m.fromPromise(this.__getTerm(o, e, t));
+  }
+  __getTerm(o, e, t) {
+    return x(this, void 0, void 0, function* () {
+      var i, a, d, l;
+      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
+      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : E)({
+        url: T((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
+        method: "GET",
+        headers: n,
+        queryParameters: t?.queryParams,
+        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: t?.maxRetries,
+        abortSignal: t?.abortSignal
+      });
+      if (c.ok)
+        return { data: c.body, rawResponse: c.rawResponse };
+      if (c.error.reason === "status-code")
+        switch (c.error.statusCode) {
+          case 401:
+            throw new g(c.error.body, c.rawResponse);
+          case 403:
+            throw new R(c.error.body, c.rawResponse);
+          case 422:
+            throw new S(c.error.body, c.rawResponse);
+          case 500:
+            throw new _(c.error.body, c.rawResponse);
+          default:
+            throw new w({
+              statusCode: c.error.statusCode,
+              body: c.error.body,
+              rawResponse: c.rawResponse
+            });
+        }
+      switch (c.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: c.error.statusCode,
+            body: c.error.rawBody,
+            rawResponse: c.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/terminology/term-sets/{term_set_id}/terms/{term_id}.");
+        case "unknown":
+          throw new w({
+            message: c.error.errorMessage,
+            rawResponse: c.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} termSetId - UUID of the term set
+   * @param {string} termId - UUID of the term
+   * @param {MarkupAI.TermUpdateRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.updateTerm("term_set_id", "term_id", {
+   *         term: "term",
+   *         type: "preferred"
+   *     })
+   */
+  updateTerm(o, e, t, i) {
+    return m.fromPromise(this.__updateTerm(o, e, t, i));
+  }
+  __updateTerm(o, e, t, i) {
+    return x(this, void 0, void 0, function* () {
+      var a, d, l, n;
+      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
+        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
+        method: "PUT",
+        headers: c,
+        contentType: "application/json",
+        queryParameters: i?.queryParams,
+        requestType: "json",
+        body: t,
+        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: i?.maxRetries,
+        abortSignal: i?.abortSignal
+      });
+      if (s.ok)
+        return { data: s.body, rawResponse: s.rawResponse };
+      if (s.error.reason === "status-code")
+        switch (s.error.statusCode) {
+          case 401:
+            throw new g(s.error.body, s.rawResponse);
+          case 403:
+            throw new R(s.error.body, s.rawResponse);
+          case 422:
+            throw new S(s.error.body, s.rawResponse);
+          case 500:
+            throw new _(s.error.body, s.rawResponse);
+          default:
+            throw new w({
+              statusCode: s.error.statusCode,
+              body: s.error.body,
+              rawResponse: s.rawResponse
+            });
+        }
+      switch (s.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: s.error.statusCode,
+            body: s.error.rawBody,
+            rawResponse: s.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling PUT /v1/terminology/term-sets/{term_set_id}/terms/{term_id}.");
+        case "unknown":
+          throw new w({
+            message: s.error.errorMessage,
+            rawResponse: s.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} termSetId - UUID of the term set
+   * @param {string} termId - UUID of the term
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.deleteTerm("term_set_id", "term_id")
+   */
+  deleteTerm(o, e, t) {
+    return m.fromPromise(this.__deleteTerm(o, e, t));
+  }
+  __deleteTerm(o, e, t) {
+    return x(this, void 0, void 0, function* () {
+      var i, a, d, l;
+      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
+      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : E)({
+        url: T((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
+        method: "DELETE",
+        headers: n,
+        queryParameters: t?.queryParams,
+        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: t?.maxRetries,
+        abortSignal: t?.abortSignal
+      });
+      if (c.ok)
+        return { data: void 0, rawResponse: c.rawResponse };
+      if (c.error.reason === "status-code")
+        switch (c.error.statusCode) {
+          case 401:
+            throw new g(c.error.body, c.rawResponse);
+          case 403:
+            throw new R(c.error.body, c.rawResponse);
+          case 422:
+            throw new S(c.error.body, c.rawResponse);
+          case 500:
+            throw new _(c.error.body, c.rawResponse);
+          default:
+            throw new w({
+              statusCode: c.error.statusCode,
+              body: c.error.body,
+              rawResponse: c.rawResponse
+            });
+        }
+      switch (c.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: c.error.statusCode,
+            body: c.error.rawBody,
+            rawResponse: c.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling DELETE /v1/terminology/term-sets/{term_set_id}/terms/{term_id}.");
+        case "unknown":
+          throw new w({
+            message: c.error.errorMessage,
+            rawResponse: c.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {MarkupAI.TerminologyListDomainsRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.listDomains({
+   *         page: 1,
+   *         page_size: 1,
+   *         search: "search"
+   *     })
+   */
+  listDomains(o = {}, e) {
+    return m.fromPromise(this.__listDomains(o, e));
+  }
+  __listDomains() {
+    return x(this, arguments, void 0, function* (o = {}, e) {
+      var t, i, a, d;
+      const { page: l, page_size: n, search: c } = o, s = {};
+      l != null && (s.page = l.toString()), n != null && (s.page_size = n.toString()), c != null && (s.search = c);
+      let u = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const f = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
+        method: "GET",
+        headers: u,
+        queryParameters: Object.assign(Object.assign({}, s), e?.queryParams),
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (f.ok)
+        return { data: f.body, rawResponse: f.rawResponse };
+      if (f.error.reason === "status-code")
+        switch (f.error.statusCode) {
+          case 401:
+            throw new g(f.error.body, f.rawResponse);
+          case 403:
+            throw new R(f.error.body, f.rawResponse);
+          case 422:
+            throw new S(f.error.body, f.rawResponse);
+          case 500:
+            throw new _(f.error.body, f.rawResponse);
+          default:
+            throw new w({
+              statusCode: f.error.statusCode,
+              body: f.error.body,
+              rawResponse: f.rawResponse
+            });
+        }
+      switch (f.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: f.error.statusCode,
+            body: f.error.rawBody,
+            rawResponse: f.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/terminology/domains.");
+        case "unknown":
+          throw new w({
+            message: f.error.errorMessage,
+            rawResponse: f.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {MarkupAI.DomainCreateRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.createDomain({
+   *         name: "name"
+   *     })
+   */
+  createDomain(o, e) {
+    return m.fromPromise(this.__createDomain(o, e));
+  }
+  __createDomain(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
+        method: "POST",
+        headers: l,
+        contentType: "application/json",
+        queryParameters: e?.queryParams,
+        requestType: "json",
+        body: o,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling POST /v1/terminology/domains.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} domainId - UUID of the domain
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.getDomain("domain_id")
+   */
+  getDomain(o, e) {
+    return m.fromPromise(this.__getDomain(o, e));
+  }
+  __getDomain(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
+        method: "GET",
+        headers: l,
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: n.body, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling GET /v1/terminology/domains/{domain_id}.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} domainId - UUID of the domain
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.deleteDomain("domain_id")
+   */
+  deleteDomain(o, e) {
+    return m.fromPromise(this.__deleteDomain(o, e));
+  }
+  __deleteDomain(o, e) {
+    return x(this, void 0, void 0, function* () {
+      var t, i, a, d;
+      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
+        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
+        method: "DELETE",
+        headers: l,
+        queryParameters: e?.queryParams,
+        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: e?.maxRetries,
+        abortSignal: e?.abortSignal
+      });
+      if (n.ok)
+        return { data: void 0, rawResponse: n.rawResponse };
+      if (n.error.reason === "status-code")
+        switch (n.error.statusCode) {
+          case 401:
+            throw new g(n.error.body, n.rawResponse);
+          case 403:
+            throw new R(n.error.body, n.rawResponse);
+          case 422:
+            throw new S(n.error.body, n.rawResponse);
+          case 500:
+            throw new _(n.error.body, n.rawResponse);
+          default:
+            throw new w({
+              statusCode: n.error.statusCode,
+              body: n.error.body,
+              rawResponse: n.rawResponse
+            });
+        }
+      switch (n.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: n.error.statusCode,
+            body: n.error.rawBody,
+            rawResponse: n.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling DELETE /v1/terminology/domains/{domain_id}.");
+        case "unknown":
+          throw new w({
+            message: n.error.errorMessage,
+            rawResponse: n.rawResponse
+          });
+      }
+    });
+  }
+  /**
+   * @param {string} domainId - UUID of the domain
+   * @param {MarkupAI.DomainUpdateRequest} request
+   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
+   *
+   * @throws {@link MarkupAI.UnauthorizedError}
+   * @throws {@link MarkupAI.ForbiddenError}
+   * @throws {@link MarkupAI.UnprocessableEntityError}
+   * @throws {@link MarkupAI.InternalServerError}
+   *
+   * @example
+   *     await client.terminology.updateDomain("domain_id")
+   */
+  updateDomain(o, e = {}, t) {
+    return m.fromPromise(this.__updateDomain(o, e, t));
+  }
+  __updateDomain(o) {
+    return x(this, arguments, void 0, function* (e, t = {}, i) {
+      var a, d, l, n;
+      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
+        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/domains/${encodeURIComponent(e)}`),
+        method: "PATCH",
+        headers: c,
+        contentType: "application/json",
+        queryParameters: i?.queryParams,
+        requestType: "json",
+        body: t,
+        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: i?.maxRetries,
+        abortSignal: i?.abortSignal
+      });
+      if (s.ok)
+        return { data: s.body, rawResponse: s.rawResponse };
+      if (s.error.reason === "status-code")
+        switch (s.error.statusCode) {
+          case 401:
+            throw new g(s.error.body, s.rawResponse);
+          case 403:
+            throw new R(s.error.body, s.rawResponse);
+          case 422:
+            throw new S(s.error.body, s.rawResponse);
+          case 500:
+            throw new _(s.error.body, s.rawResponse);
+          default:
+            throw new w({
+              statusCode: s.error.statusCode,
+              body: s.error.body,
+              rawResponse: s.rawResponse
+            });
+        }
+      switch (s.error.reason) {
+        case "non-json":
+          throw new w({
+            statusCode: s.error.statusCode,
+            body: s.error.rawBody,
+            rawResponse: s.rawResponse
+          });
+        case "timeout":
+          throw new v("Timeout exceeded when calling PATCH /v1/terminology/domains/{domain_id}.");
+        case "unknown":
+          throw new w({
             message: s.error.errorMessage,
             rawResponse: s.rawResponse
           });
@@ -33423,198 +34652,207 @@ class yt {
     });
   }
   _getAuthorizationHeader() {
-    return J(this, void 0, void 0, function* () {
-      return `Bearer ${yield y.get(this._options.token)}`;
+    return x(this, void 0, void 0, function* () {
+      return `Bearer ${yield h.get(this._options.token)}`;
     });
   }
 }
-class pt {
-  constructor(e) {
-    this._options = Object.assign(Object.assign({}, e), { headers: T({
+class Ro {
+  constructor(o) {
+    this._options = Object.assign(Object.assign({}, o), { headers: b({
       "X-Fern-Language": "JavaScript",
       "X-Fern-SDK-Name": "@markupai/api",
-      "X-Fern-SDK-Version": "1.0.0",
-      "User-Agent": "@markupai/api/1.0.0",
-      "X-Fern-Runtime": ee.type,
-      "X-Fern-Runtime-Version": ee.version
-    }, e?.headers) });
+      "X-Fern-SDK-Version": "1.3.0",
+      "User-Agent": "@markupai/api/1.3.0",
+      "X-Fern-Runtime": te.type,
+      "X-Fern-Runtime-Version": te.version
+    }, o?.headers) });
   }
   get styleGuides() {
-    var e;
-    return (e = this._styleGuides) !== null && e !== void 0 ? e : this._styleGuides = new ft(this._options);
+    var o;
+    return (o = this._styleGuides) !== null && o !== void 0 ? o : this._styleGuides = new yo(this._options);
   }
   get styleChecks() {
-    var e;
-    return (e = this._styleChecks) !== null && e !== void 0 ? e : this._styleChecks = new ht(this._options);
+    var o;
+    return (o = this._styleChecks) !== null && o !== void 0 ? o : this._styleChecks = new mo(this._options);
   }
   get styleSuggestions() {
-    var e;
-    return (e = this._styleSuggestions) !== null && e !== void 0 ? e : this._styleSuggestions = new wt(this._options);
+    var o;
+    return (o = this._styleSuggestions) !== null && o !== void 0 ? o : this._styleSuggestions = new po(this._options);
   }
   get styleRewrites() {
-    var e;
-    return (e = this._styleRewrites) !== null && e !== void 0 ? e : this._styleRewrites = new yt(this._options);
+    var o;
+    return (o = this._styleRewrites) !== null && o !== void 0 ? o : this._styleRewrites = new vo(this._options);
+  }
+  get terminology() {
+    var o;
+    return (o = this._terminology) !== null && o !== void 0 ? o : this._terminology = new go(this._options);
   }
 }
-var j = /* @__PURE__ */ ((n) => (n.Queued = "queued", n.Running = "running", n.Completed = "completed", n.Failed = "failed", n))(j || {}), z = /* @__PURE__ */ ((n) => (n.Stage = "stage", n.Dev = "dev", n.Prod = "prod", n))(z || {}), me = /* @__PURE__ */ ((n) => (n.Environment = "environment", n.Url = "url", n))(me || {}), M = /* @__PURE__ */ ((n) => (n.VALIDATION_ERROR = "VALIDATION_ERROR", n.UNKNOWN_ERROR = "UNKNOWN_ERROR", n.WORKFLOW_NOT_FOUND = "workflowNotFound", n.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", n.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", n.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", n.NETWORK_ERROR = "NETWORK_ERROR", n.TIMEOUT_ERROR = "TIMEOUT_ERROR", n.WORKFLOW_FAILED = "WORKFLOW_FAILED", n.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", n.POLLING_ERROR = "POLLING_ERROR", n.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", n))(M || {});
-class h extends Error {
+var $ = /* @__PURE__ */ ((r) => (r.Queued = "queued", r.Running = "running", r.Completed = "completed", r.Failed = "failed", r))($ || {}), W = /* @__PURE__ */ ((r) => (r.Stage = "stage", r.Dev = "dev", r.Prod = "prod", r))(W || {}), ge = /* @__PURE__ */ ((r) => (r.Environment = "environment", r.Url = "url", r))(ge || {});
+var N = /* @__PURE__ */ ((r) => (r.VALIDATION_ERROR = "VALIDATION_ERROR", r.UNKNOWN_ERROR = "UNKNOWN_ERROR", r.WORKFLOW_NOT_FOUND = "workflowNotFound", r.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", r.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", r.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", r.NETWORK_ERROR = "NETWORK_ERROR", r.TIMEOUT_ERROR = "TIMEOUT_ERROR", r.WORKFLOW_FAILED = "WORKFLOW_FAILED", r.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", r.POLLING_ERROR = "POLLING_ERROR", r.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", r))(N || {});
+class p extends Error {
   statusCode;
   // Optional - only present for API errors
   type;
   rawErrorData;
-  constructor(e, t, o, a = {}, r) {
-    super(e, r === void 0 ? void 0 : { cause: r }), this.name = "ApiError", this.statusCode = o, this.type = t, this.rawErrorData = r instanceof Error ? { ...a, originalError: r } : a, Object.setPrototypeOf(this, h.prototype);
+  constructor(o, e, t, i = {}, a) {
+    super(o, a === void 0 ? void 0 : { cause: a }), this.name = "ApiError", this.statusCode = t, this.type = e, this.rawErrorData = a instanceof Error ? { ...i, originalError: a } : i, Object.setPrototypeOf(this, p.prototype);
   }
   /**
    * Creates an ApiError from an API response
    * Uses status code-based error type detection for better maintainability
    */
-  static fromResponse(e, t) {
-    switch (e) {
+  static fromResponse(o, e) {
+    switch (o) {
       case 400:
-        return this.handle400Error(t, e);
+        return this.handle400Error(e, o);
       case 401:
-        return this.handle401Error(t, e);
+        return this.handle401Error(e, o);
       case 404:
-        return this.handle404Error(t, e);
+        return this.handle404Error(e, o);
       case 413:
-        return this.handle413Error(t, e);
+        return this.handle413Error(e, o);
       case 422:
-        return this.handle422Error(t, e);
+        return this.handle422Error(e, o);
       case 429:
-        return this.handle429Error(t, e);
+        return this.handle429Error(e, o);
       case 500:
-        return this.handle500Error(t, e);
+        return this.handle500Error(e, o);
       default:
-        return this.handleUnknownError(t, e);
+        return this.handleUnknownError(e, o);
     }
   }
   /**
    * Handle 400 Bad Request errors
    */
-  static handle400Error(e, t) {
-    const o = typeof e.message == "string" ? e.message : void 0, a = typeof e.detail == "string" ? e.detail : void 0, r = o || a || `Bad Request (${t})`;
-    return new h(r, "UNKNOWN_ERROR", t, e);
+  static handle400Error(o, e) {
+    const t = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = t || i || `Bad Request (${String(e)})`;
+    return new p(a, "UNKNOWN_ERROR", e, o);
   }
   /**
    * Handle 401 Unauthorized errors
    */
-  static handle401Error(e, t) {
-    if (this.isApiErrorResponse(e)) {
-      const { error: r } = e, d = r.description || r.message;
-      return new h(d, "UNAUTHORIZED_ERROR", t, e);
+  static handle401Error(o, e) {
+    if (this.isApiErrorResponse(o)) {
+      const { error: a } = o, d = a.description || a.message;
+      return new p(d, "UNAUTHORIZED_ERROR", e, o);
     }
-    if (this.isDirectApiErrorResponse(e)) {
-      const r = e.description || e.message;
-      return new h(r, "UNAUTHORIZED_ERROR", t, e);
+    if (this.isDirectApiErrorResponse(o)) {
+      const a = o.description || o.message;
+      return new p(a, "UNAUTHORIZED_ERROR", e, o);
     }
-    const a = (typeof e.detail == "string" ? e.detail : void 0) || `Unauthorized (${t})`;
-    return new h(a, "UNAUTHORIZED_ERROR", t, e);
+    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Unauthorized (${String(e)})`;
+    return new p(i, "UNAUTHORIZED_ERROR", e, o);
   }
   /**
    * Handle 404 Not Found errors
    */
-  static handle404Error(e, t) {
-    if (this.isApiErrorResponse(e)) {
-      const { error: r } = e, d = r.description || r.message, l = r.code;
-      return new h(d, l, t, e);
+  static handle404Error(o, e) {
+    if (this.isApiErrorResponse(o)) {
+      const { error: a } = o, d = a.description || a.message, l = a.code;
+      return new p(d, l, e, o);
     }
-    const a = (typeof e.detail == "string" ? e.detail : void 0) || `Not Found (${t})`;
-    return new h(a, "workflowNotFound", t, e);
+    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Not Found (${String(e)})`;
+    return new p(i, "workflowNotFound", e, o);
   }
   /**
    * Handle 413 Payload Too Large errors
    */
-  static handle413Error(e, t) {
-    if (this.isPayloadTooLargeErrorResponse(e)) {
-      const { summary: r, value: d } = e, l = r || d.detail || `Payload Too Large (${t})`;
-      return new h(l, "PAYLOAD_TOO_LARGE_ERROR", t, e);
+  static handle413Error(o, e) {
+    if (this.isPayloadTooLargeErrorResponse(o)) {
+      const { summary: a, value: d } = o, l = a || d.detail || `Payload Too Large (${String(e)})`;
+      return new p(l, "PAYLOAD_TOO_LARGE_ERROR", e, o);
     }
-    const a = (typeof e.detail == "string" ? e.detail : void 0) || `Payload Too Large (${t})`;
-    return new h(a, "PAYLOAD_TOO_LARGE_ERROR", t, e);
+    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Payload Too Large (${String(e)})`;
+    return new p(i, "PAYLOAD_TOO_LARGE_ERROR", e, o);
   }
   /**
    * Handle 429 Too Many Requests (rate limit) errors
    */
-  static handle429Error(e, t) {
-    const o = e, r = (typeof o.detail == "string" ? o.detail : void 0) || `Rate limit exceeded (${t})`;
-    return new h(r, "RATE_LIMIT_ERROR", t, e);
+  static handle429Error(o, e) {
+    const t = o, a = (typeof t.detail == "string" ? t.detail : void 0) || `Rate limit exceeded (${String(e)})`;
+    return new p(a, "RATE_LIMIT_ERROR", e, o);
   }
   /**
    * Handle 422 Validation errors
    */
-  static handle422Error(e, t) {
-    if (this.isValidationErrorResponse422(e)) {
-      const { errors: r } = e, l = `Validation failed: ${r.map((s) => s.msg).join("; ")}`;
-      return new h(l, "VALIDATION_ERROR", t, e);
+  static handle422Error(o, e) {
+    if (this.isValidationErrorResponse422(o)) {
+      const { errors: a } = o, l = `Validation failed: ${a.map((n) => n.msg).join("; ")}`;
+      return new p(l, "VALIDATION_ERROR", e, o);
     }
-    if (this.isValidationErrorResponse(e)) {
-      const { detail: r } = e, l = `Validation failed: ${r.map((s) => s.msg).join("; ")}`;
-      return new h(l, "VALIDATION_ERROR", t, e);
+    if (this.isValidationErrorResponse(o)) {
+      const { detail: a } = o, l = `Validation failed: ${a.map((n) => n.msg).join("; ")}`;
+      return new p(l, "VALIDATION_ERROR", e, o);
     }
-    const a = (typeof e.detail == "string" ? e.detail : void 0) || `Validation Error (${t})`;
-    return new h(a, "VALIDATION_ERROR", t, e);
+    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Validation Error (${String(e)})`;
+    return new p(i, "VALIDATION_ERROR", e, o);
   }
   /**
    * Handle 500 Internal Server errors
    */
-  static handle500Error(e, t) {
-    const o = typeof e.message == "string" ? e.message : void 0, a = typeof e.detail == "string" ? e.detail : void 0, r = o || a || `Internal Server Error (${t})`;
-    return new h(r, "INTERNAL_SERVER_ERROR", t, e);
+  static handle500Error(o, e) {
+    const t = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = t || i || `Internal Server Error (${String(e)})`;
+    return new p(a, "INTERNAL_SERVER_ERROR", e, o);
   }
   /**
    * Handle unknown status codes
    */
-  static handleUnknownError(e, t) {
-    if (!e || typeof e != "object")
-      return new h(
-        `HTTP error! status: ${t}`,
-        "UNKNOWN_ERROR",
-        t,
-        e
-      );
-    const o = typeof e.message == "string" && e.message || typeof e.detail == "string" && e.detail || `HTTP error! status: ${t}`;
-    return new h(o, "UNKNOWN_ERROR", t, e);
+  static handleUnknownError(o, e) {
+    const t = typeof o.message == "string" && o.message || typeof o.detail == "string" && o.detail || `HTTP error! status: ${String(e)}`;
+    return new p(t, "UNKNOWN_ERROR", e, o);
   }
   /**
    * Creates an ApiError for non-API errors (network, timeout, etc.)
    */
-  static fromError(e, t) {
-    return new h(e.message, t, void 0, { originalError: e }, e);
+  static fromError(o, e) {
+    return new p(o.message, e, void 0, { originalError: o }, o);
   }
   /**
    * Check if the error data matches the API error format (for 401 errors)
    */
-  static isApiErrorResponse(e) {
-    return typeof e == "object" && e !== null && "error" in e && typeof e.error == "object" && e.error !== null && "code" in e.error && "message" in e.error && typeof e.error.code == "string" && typeof e.error.message == "string";
+  static isApiErrorResponse(o) {
+    if ("error" in o && typeof o.error == "object" && o.error !== null) {
+      const e = o.error;
+      return "code" in e && "message" in e && typeof e.code == "string" && typeof e.message == "string";
+    }
+    return false;
   }
   /**
    * Check if the error data matches the direct API error format (code, message, description at root level)
    */
-  static isDirectApiErrorResponse(e) {
-    return typeof e == "object" && e !== null && "code" in e && "message" in e && typeof e.code == "string" && typeof e.message == "string";
+  static isDirectApiErrorResponse(o) {
+    return "code" in o && "message" in o && typeof o.code == "string" && typeof o.message == "string";
   }
   /**
    * Check if the error data matches the validation error format (legacy)
    */
-  static isValidationErrorResponse(e) {
-    return typeof e == "object" && e !== null && "detail" in e && Array.isArray(e.detail) && e.detail.length > 0 && e.detail.every(
-      (t) => typeof t == "object" && t !== null && "loc" in t && "msg" in t && "type" in t && Array.isArray(t.loc) && typeof t.msg == "string" && typeof t.type == "string"
-    );
+  static isValidationErrorResponse(o) {
+    return !("detail" in o) || !Array.isArray(o.detail) || o.detail.length === 0 ? false : o.detail.every((e) => {
+      if (typeof e != "object" || e === null) return false;
+      const t = e;
+      return "loc" in t && "msg" in t && "type" in t && Array.isArray(t.loc) && typeof t.msg == "string" && typeof t.type == "string";
+    });
   }
   /**
    * Check if the error data matches the new 422 validation error format
    */
-  static isValidationErrorResponse422(e) {
-    return typeof e == "object" && e !== null && "detail" in e && "status" in e && "request_id" in e && "errors" in e && Array.isArray(e.errors) && e.errors.length > 0 && e.errors.every(
-      (t) => typeof t == "object" && t !== null && "loc" in t && "msg" in t && "type" in t && Array.isArray(t.loc) && typeof t.msg == "string" && typeof t.type == "string"
-    );
+  static isValidationErrorResponse422(o) {
+    return !("detail" in o) || !("status" in o) || !("request_id" in o) || !("errors" in o) || !Array.isArray(o.errors) || o.errors.length === 0 ? false : o.errors.every((e) => {
+      if (typeof e != "object" || e === null) return false;
+      const t = e;
+      return "loc" in t && "msg" in t && "type" in t && Array.isArray(t.loc) && typeof t.msg == "string" && typeof t.type == "string";
+    });
   }
   /**
    * Check if the error data matches the 413 payload too large error format
    */
-  static isPayloadTooLargeErrorResponse(e) {
-    return typeof e == "object" && e !== null && "summary" in e && "value" in e && typeof e.value == "object" && e.value !== null && "detail" in e.value && "status" in e.value && "request_id" in e.value;
+  static isPayloadTooLargeErrorResponse(o) {
+    if (!("summary" in o) || !("value" in o) || typeof o.value != "object" || o.value === null)
+      return false;
+    const e = o.value;
+    return "detail" in e && "status" in e && "request_id" in e;
   }
   /**
    * Check if this is an API error (has status code)
@@ -33676,125 +34914,128 @@ class h extends Error {
   getValidationErrors() {
     if (!this.isValidationError)
       return {};
-    if (this.rawErrorData.errors && Array.isArray(this.rawErrorData.errors)) {
-      const e = {};
-      for (const t of this.rawErrorData.errors) {
-        const o = t.loc.join(".");
-        e[o] || (e[o] = []), e[o].push(t.msg);
+    if (Array.isArray(this.rawErrorData.errors)) {
+      const o = {};
+      for (const e of this.rawErrorData.errors) {
+        const t = e.loc.join("."), i = o[t];
+        i ? i.push(e.msg) : o[t] = [e.msg];
       }
-      return e;
+      return o;
     }
-    if (this.rawErrorData.detail && Array.isArray(this.rawErrorData.detail)) {
-      const e = {};
-      for (const t of this.rawErrorData.detail) {
-        const o = t.loc.join(".");
-        e[o] || (e[o] = []), e[o].push(t.msg);
+    if (Array.isArray(this.rawErrorData.detail)) {
+      const o = {};
+      for (const e of this.rawErrorData.detail) {
+        const t = e.loc.join("."), i = o[t];
+        i ? i.push(e.msg) : o[t] = [e.msg];
       }
-      return e;
+      return o;
     }
     return {};
   }
 }
-const Z = "https://api.markup.ai", mt = "https://api.stg.markup.ai", Rt = "https://api.dev.markup.ai";
-function te(n) {
-  if (n.platform)
-    if (n.platform.type === me.Environment)
-      switch (n.platform.value) {
-        case z.Stage:
-          return mt;
-        case z.Dev:
-          return Rt;
-        case z.Prod:
-          return Z;
+const O = "https://api.markup.ai", _o = "https://api.stg.markup.ai", bo = "https://api.dev.markup.ai";
+function re(r) {
+  if (r.platform)
+    if (r.platform.type === ge.Environment)
+      switch (r.platform.value) {
+        case W.Stage:
+          return _o;
+        case W.Dev:
+          return bo;
+        case W.Prod:
+          return O;
         default:
-          return Z;
+          return O;
       }
     else
-      return n.platform.value;
-  return Z;
+      return r.platform.value;
+  return O;
 }
-function S(n) {
-  const e = te(n), t = new pt({ token: n.apiKey, baseUrl: e });
-  return _t(t, n);
+function I(r) {
+  const o = re(r), e = new Ro({
+    token: r.apiKey,
+    baseUrl: o,
+    ...r.headers ? { headers: r.headers } : {}
+  });
+  return Co(e, r);
 }
-async function bt(n, e, t) {
-  const o = e.rateLimit?.maxRetries ?? 5, a = e.rateLimit?.initialDelayMs ?? 1e3, r = e.rateLimit?.maxDelayMs ?? 16e3, d = e.rateLimit?.jitter ?? true;
+async function To(r, o, e) {
+  const t = o.rateLimit?.maxRetries ?? 5, i = o.rateLimit?.initialDelayMs ?? 1e3, a = o.rateLimit?.maxDelayMs ?? 16e3, d = o.rateLimit?.jitter ?? true;
   let l = 0;
   for (; ; )
     try {
-      return await n();
-    } catch (s) {
-      const c = s;
-      if (!((c?.statusCode ?? c?.status ?? void 0) === 429))
-        throw s;
-      if (l >= o) {
+      return await r();
+    } catch (n) {
+      const c = n;
+      if (!((c.statusCode ?? c.status) === 429))
+        throw n;
+      if (l >= t) {
         if ("statusCode" in c) {
-          const m = c.body ?? {
+          const P = c.body ?? {
             detail: "Rate limit exceeded"
-          }, N = h.fromResponse(429, m);
-          throw new h(
-            N.message,
-            N.type,
-            N.statusCode,
-            N.rawErrorData,
-            s
+          }, U = p.fromResponse(429, P);
+          throw new p(
+            U.message,
+            U.type,
+            U.statusCode,
+            U.rawErrorData,
+            n
           );
         }
-        throw new h(
+        throw new p(
           "Rate limit exceeded",
-          M.RATE_LIMIT_ERROR,
+          N.RATE_LIMIT_ERROR,
           429,
           {},
-          s
+          n
         );
       }
-      let w;
-      const p = c?.headers, k = p?.["Retry-After"] ?? p?.["retry-after"] ?? p?.retry_after;
-      if (k !== void 0) {
-        const m = typeof k == "string" ? Number.parseFloat(k) : Number(k);
-        !Number.isNaN(m) && Number.isFinite(m) && (w = Math.max(0, Math.floor(m * 1e3)));
+      let f;
+      const y = c.headers, A = y?.["Retry-After"] ?? y?.["retry-after"] ?? y?.retry_after;
+      if (A !== void 0) {
+        const P = typeof A == "string" ? Number.parseFloat(A) : A;
+        !Number.isNaN(P) && Number.isFinite(P) && (f = Math.max(0, Math.floor(P * 1e3)));
       }
-      if (!w && p && (p["X-RateLimit-Reset"] || p["x-ratelimit-reset"])) {
-        const m = p["X-RateLimit-Reset"] ?? p["x-ratelimit-reset"], N = typeof m == "string" ? Number.parseInt(m, 10) : Number(m);
-        if (!Number.isNaN(N)) {
-          const re = N * 1e3 - Date.now();
-          Number.isFinite(re) && (w = Math.max(0, re));
+      if (!f && y && (y["X-RateLimit-Reset"] || y["x-ratelimit-reset"])) {
+        const P = y["X-RateLimit-Reset"] ?? y["x-ratelimit-reset"], U = typeof P == "string" ? Number.parseInt(P, 10) : P;
+        if (!Number.isNaN(U)) {
+          const ie = U * 1e3 - Date.now();
+          Number.isFinite(ie) && (f = Math.max(0, ie));
         }
       }
-      if (!w) {
-        const m = Math.min(r, a * Math.pow(2, l));
-        w = d ? Math.floor(m / 2 + Math.random() * (m / 2)) : m;
+      if (f === void 0) {
+        const P = Math.min(a, i * Math.pow(2, l));
+        f = d ? Math.floor(P / 2 + Math.random() * (P / 2)) : P;
       }
-      typeof process < "u" && process.env && process.env.NODE_ENV !== "test" && console.warn(
-        `[RateLimit] ${t ?? "operation"} attempt ${l + 1} hit 429. Retrying in ${w} ms...`
-      ), await new Promise((m) => setTimeout(m, w)), l += 1;
+      typeof process < "u" && process.env.NODE_ENV !== "test" && console.warn(
+        `[RateLimit] ${e ?? "operation"} attempt ${String(l + 1)} hit 429. Retrying in ${String(f)} ms...`
+      ), await new Promise((P) => setTimeout(P, f)), l += 1;
       continue;
     }
 }
-function _t(n, e, t = "client") {
-  const o = /* @__PURE__ */ new WeakMap(), a = (r, d) => {
-    if (typeof r != "object" || r === null) return r;
-    const l = o.get(r);
+function Co(r, o, e = "client") {
+  const t = /* @__PURE__ */ new WeakMap(), i = (a, d) => {
+    const l = t.get(a);
     if (l) return l;
-    const s = new Proxy(r, {
-      get: (c, i, u) => {
-        const w = Reflect.get(c, i, u);
-        if (typeof w == "function") {
-          const p = `${d}.${String(i)}`, k = w;
-          return (...m) => bt(() => k.apply(c, m), e, p);
+    const n = new Proxy(a, {
+      get: (c, s, u) => {
+        const f = Reflect.get(c, s, u);
+        if (typeof f == "function") {
+          const y = `${d}.${String(s)}`, A = f;
+          return (...P) => To(() => A.apply(c, P), o, y);
         }
-        return typeof w == "object" && w !== null ? a(w, `${d}.${String(i)}`) : w;
+        return typeof f == "object" && f !== null ? i(f, `${d}.${String(s)}`) : f;
       }
     });
-    return o.set(r, s), s;
+    return t.set(a, n), n;
   };
-  return a(n, t);
+  return i(r, e);
 }
 function Re() {
   return !!(typeof process > "u" ? void 0 : process)?.versions?.node;
 }
-function ce(n) {
-  switch (n.split(".").pop()?.toLowerCase()) {
+function we(r) {
+  switch (r.split(".").pop()?.toLowerCase()) {
     case "dita":
       return "application/dita+xml";
     case "htm":
@@ -33814,129 +35055,129 @@ function ce(n) {
       return "application/octet-stream";
   }
 }
-function St(n) {
-  return typeof Buffer < "u" ? Buffer.isBuffer(n) : false;
+function xo(r) {
+  return typeof Buffer < "u" ? Buffer.isBuffer(r) : false;
 }
-async function ge(n, e) {
-  if (typeof n.content == "string") {
-    const t = ce(e), o = Ct(t, n.content);
-    return { parts: [n.content], type: o, filename: e };
+async function _e(r, o) {
+  if (typeof r.content == "string") {
+    const e = we(o), t = jo(e, r.content);
+    return { parts: [r.content], type: t, filename: o };
   }
-  if (typeof File < "u" && typeof n.content != "string" && n.content !== null && "file" in n.content && n.content.file instanceof File) {
-    const t = n.content, o = await t.file.arrayBuffer(), a = t.mimeType || t.file.type || "application/octet-stream";
+  if (typeof File < "u" && typeof r.content != "string" && "file" in r.content && r.content.file instanceof File) {
+    const e = r.content, t = await e.file.arrayBuffer(), i = e.mimeType || e.file.type || "application/octet-stream";
     return {
-      parts: [o],
-      type: a,
-      filename: t.file.name,
-      file: t.file
+      parts: [t],
+      type: i,
+      filename: e.file.name,
+      file: e.file
     };
   }
-  if (typeof n.content != "string" && n.content !== null && "buffer" in n.content && St(n.content.buffer)) {
-    const t = n.content, o = t.mimeType || ce(t.documentNameWithExtension || e);
-    return { parts: [t.buffer.buffer.slice(
-      t.buffer.byteOffset,
-      t.buffer.byteOffset + t.buffer.byteLength
-    )], type: o, filename: e };
+  if (typeof r.content != "string" && "buffer" in r.content && xo(r.content.buffer)) {
+    const e = r.content, t = e.mimeType || we(e.documentNameWithExtension || o);
+    return { parts: [e.buffer.buffer.slice(
+      e.buffer.byteOffset,
+      e.buffer.byteOffset + e.buffer.byteLength
+    )], type: t, filename: o };
   }
   throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
 }
-class kt extends Blob {
+class Po extends Blob {
   name;
   lastModified;
-  constructor(e, t, o = {}) {
-    super(e, o), this.name = t, this.lastModified = o.lastModified || Date.now();
+  constructor(o, e, t = {}) {
+    super(o, t), this.name = e, this.lastModified = t.lastModified || Date.now();
   }
 }
-async function Tt(n) {
-  const e = Ee(n), { parts: t, type: o } = await ge(n, e);
-  return new kt(t, e, { type: o });
+async function Ao(r) {
+  const o = Te(r), { parts: e, type: t } = await _e(r, o);
+  return new Po(e, o, { type: t });
 }
-async function xt(n) {
-  const e = Ee(n);
-  if (typeof File < "u" && typeof n.content != "string" && n.content !== null && "file" in n.content && n.content.file instanceof File)
-    return n.content.file;
-  const { parts: t, type: o } = await ge(n, e);
-  return new File(t, e, { type: o });
+async function Io(r) {
+  const o = Te(r);
+  if (typeof File < "u" && typeof r.content != "string" && "file" in r.content && r.content.file instanceof File)
+    return r.content.file;
+  const { parts: e, type: t } = await _e(r, o);
+  return new File(e, o, { type: t });
 }
-async function K(n) {
-  return Re() ? Tt(n) : xt(n);
+async function Y(r) {
+  return Re() ? Ao(r) : Io(r);
 }
-function ve(n) {
-  const e = n.trimStart().slice(0, 256).toLowerCase();
-  return e.startsWith("<!doctype html") || e.startsWith("<html") ? true : /<(head|body|title|div|span|p|h1|h2|h3|h4|h5|h6)\b/.test(e);
+function be(r) {
+  const o = r.trimStart().slice(0, 256).toLowerCase();
+  return o.startsWith("<!doctype html") || o.startsWith("<html") ? true : /<(head|body|title|div|span|p|h1|h2|h3|h4|h5|h6)\b/.test(o);
 }
-function be(n) {
-  const e = n.trimStart().slice(0, 512).toLowerCase(), t = "topic|concept|task|reference|map|bookmap|glossentry|subjectScheme";
-  return new RegExp(String.raw`<!DOCTYPE\s+(?:${t})\b.*\/.*\/DITA`, "is").test(e) || new RegExp(String.raw`<!DOCTYPE\s+(?:${t})\b.*?["'][^"']*\.dtd["']`, "is").test(e) || new RegExp(String.raw`^(?:\s*<\?xml[^>]*\?>)?\s*<(?:${t})\b`, "is").test(e) ? true : /\bclass="[^"]*\btopic\/topic\b/i.test(e);
+function Se(r) {
+  const o = r.trimStart().slice(0, 512).toLowerCase(), e = "topic|concept|task|reference|map|bookmap|glossentry|subjectScheme";
+  return new RegExp(String.raw`<!DOCTYPE\s+(?:${e})\b.*\/.*\/DITA`, "is").test(o) || new RegExp(String.raw`<!DOCTYPE\s+(?:${e})\b.*?["'][^"']*\.dtd["']`, "is").test(o) || new RegExp(String.raw`^(?:\s*<\?xml[^>]*\?>)?\s*<(?:${e})\b`, "is").test(o) ? true : /\bclass="[^"]*\btopic\/topic\b/i.test(o);
 }
-function _e(n) {
-  const e = n.trimStart().slice(0, 512);
-  return !!(/^---\n[\s\S]*?\n---\n/.test(e) || /^#{1,6}\s+.+/m.test(e) || /^(?:\s*[-*+]\s+\S|\s*\d+\.\s+\S)/m.test(e) || /\[[^\]]+\]\([^)]+\)/.test(e) || /!\[[^\]]*\]\([^)]+\)/.test(e) || /```[\s\S]*?```/.test(e));
+function Ee(r) {
+  const o = r.trimStart().slice(0, 512);
+  return !!(/^---\n[\s\S]*?\n---\n/.test(o) || /^#{1,6}\s+.+/m.test(o) || /^(?:\s*[-*+]\s+\S|\s*\d+\.\s+\S)/m.test(o) || /\[[^\]]+\]\([^)]+\)/.test(o) || /!\[[^\]]*\]\([^)]+\)/.test(o) || /```[\s\S]*?```/.test(o));
 }
-function Ct(n, e) {
-  return n === "application/octet-stream" ? _e(e) ? "text/markdown" : be(e) ? "application/dita+xml" : ve(e) ? "text/html" : "text/plain" : n;
+function jo(r, o) {
+  return r === "application/octet-stream" ? Ee(o) ? "text/markdown" : Se(o) ? "application/dita+xml" : be(o) ? "text/html" : "text/plain" : r;
 }
-function Ee(n) {
-  if ("content" in n && typeof n.content == "string") {
-    const e = n;
-    return e.documentNameWithExtension ? e.documentNameWithExtension : be(e.content) ? "unknown.dita" : ve(e.content) ? "unknown.html" : _e(e.content) ? "unknown.md" : "unknown.txt";
+function Te(r) {
+  if ("content" in r && typeof r.content == "string") {
+    const o = r;
+    return o.documentNameWithExtension ? o.documentNameWithExtension : Se(o.content) ? "unknown.dita" : be(o.content) ? "unknown.html" : Ee(o.content) ? "unknown.md" : "unknown.txt";
   }
-  return "content" in n && n.content !== null && typeof n.content == "object" && "buffer" in n.content ? n.content.documentNameWithExtension : "content" in n && n.content !== null && typeof n.content == "object" && "file" in n.content ? n.content.file.name : "unknown.txt";
+  if (!r.content)
+    throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
+  return "content" in r && typeof r.content == "object" && "buffer" in r.content ? r.content.documentNameWithExtension : "content" in r && typeof r.content == "object" && "file" in r.content ? r.content.file.name : "unknown.txt";
 }
-const Se = 3e5;
-async function ne(n, e, t) {
-  const o = Date.now(), a = S(t), r = await K(e);
+const Ce = 3e5;
+async function ne(r, o, e) {
+  const t = Date.now(), i = I(e), a = await Y(o);
   let d;
   try {
-    switch (n) {
-      case P.Check:
-        d = await a.styleChecks.createStyleCheck({
-          file_upload: r,
-          dialect: e.dialect,
-          style_guide: e.style_guide,
-          webhook_url: e.webhook_url,
-          ...e.tone ? { tone: e.tone } : {}
+    switch (r) {
+      case j.Check:
+        d = await i.styleChecks.createStyleCheck({
+          file_upload: a,
+          dialect: o.dialect,
+          style_guide: o.style_guide,
+          webhook_url: o.webhook_url,
+          ...o.tone ? { tone: o.tone } : {}
         });
         break;
-      case P.Suggestions:
-        d = await a.styleSuggestions.createStyleSuggestion({
-          file_upload: r,
-          dialect: e.dialect,
-          style_guide: e.style_guide,
-          webhook_url: e.webhook_url,
-          ...e.tone ? { tone: e.tone } : {}
+      case j.Suggestions:
+        d = await i.styleSuggestions.createStyleSuggestion({
+          file_upload: a,
+          dialect: o.dialect,
+          style_guide: o.style_guide,
+          webhook_url: o.webhook_url,
+          ...o.tone ? { tone: o.tone } : {}
         });
         break;
-      case P.Rewrite:
-        d = await a.styleRewrites.createStyleRewrite({
-          file_upload: r,
-          dialect: e.dialect,
-          style_guide: e.style_guide,
-          webhook_url: e.webhook_url,
-          ...e.tone ? { tone: e.tone } : {}
+      case j.Rewrite:
+        d = await i.styleRewrites.createStyleRewrite({
+          file_upload: a,
+          dialect: o.dialect,
+          style_guide: o.style_guide,
+          webhook_url: o.webhook_url,
+          ...o.tone ? { tone: o.tone } : {}
         });
         break;
-      default:
-        throw new Error(`Invalid operation type: ${n}`);
     }
-  } catch (s) {
-    throw s instanceof f ? h.fromResponse(s.statusCode || 0, s.body) : new Error(`Failed to submit style analysis: ${s}`);
+  } catch (n) {
+    throw n instanceof w ? p.fromResponse(n.statusCode || 0, n.body) : new Error(`Failed to submit style analysis: ${String(n)}`);
   }
   if (!d.workflow_id)
-    throw new Error(`No workflow_id received from initial ${n} request`);
-  const l = await Lt(
+    throw new Error(`No workflow_id received from initial ${r} request`);
+  const l = await Uo(
     d.workflow_id,
-    t,
-    n,
-    o
+    e,
+    r,
+    t
   );
-  if (l.workflow.status === j.Completed)
+  if (l.workflow.status === $.Completed)
     return l;
-  throw new Error(`${n} failed with status: ${l.workflow.status}`);
+  throw new Error(`${r} failed with status: ${l.workflow.status}`);
 }
-class At {
-  constructor(e, t, o, a, r) {
-    this.requests = e, this.config = t, this.styleFunction = o, this.options = a, this.onProgressUpdate = r, this.startTime = Date.now(), this.initializeResults();
+class Mo {
+  constructor(o, e, t, i, a) {
+    this.requests = o, this.config = e, this.styleFunction = t, this.options = i, this.onProgressUpdate = a, this.startTime = Date.now(), this.initializeResults();
   }
   inProgress = /* @__PURE__ */ new Set();
   results = [];
@@ -33946,20 +35187,20 @@ class At {
   startTime;
   estimatedCompletionTime;
   initializeResults() {
-    this.results = this.requests.map((e, t) => ({
-      index: t,
-      request: e,
+    this.results = this.requests.map((o, e) => ({
+      index: e,
+      request: o,
       status: "pending"
     }));
   }
   getProgress() {
-    const e = this.results.filter((r) => r.status === "completed").length, t = this.results.filter((r) => r.status === "failed").length, o = this.results.filter((r) => r.status === "in-progress").length, a = this.results.filter((r) => r.status === "pending").length;
+    const o = this.results.filter((a) => a.status === "completed").length, e = this.results.filter((a) => a.status === "failed").length, t = this.results.filter((a) => a.status === "in-progress").length, i = this.results.filter((a) => a.status === "pending").length;
     return {
       total: this.requests.length,
-      completed: e,
-      failed: t,
-      inProgress: o,
-      pending: a,
+      completed: o,
+      failed: e,
+      inProgress: t,
+      pending: i,
       results: [...this.results],
       startTime: Date.now()
     };
@@ -33967,53 +35208,53 @@ class At {
   updateProgress() {
     this.onProgressUpdate && this.onProgressUpdate(this.getProgress());
   }
-  async processRequest(e, t) {
+  async processRequest(o, e) {
     if (!this.cancelled)
       try {
-        this.results[e] = {
-          ...this.results[e],
+        this.results[o] = {
+          ...this.results[o],
           status: "in-progress",
           startTime: Date.now()
         }, this.updateProgress();
-        const o = await this.executeWithRetry(t);
-        o === void 0 ? this.results[e] = {
-          ...this.results[e],
+        const t = await this.executeWithRetry(e);
+        t === void 0 ? this.results[o] = {
+          ...this.results[o],
           status: "failed",
           error: new Error("Batch operation returned undefined result"),
           endTime: Date.now()
-        } : this.results[e] = {
-          ...this.results[e],
+        } : this.results[o] = {
+          ...this.results[o],
           status: "completed",
-          result: o,
+          result: t,
           endTime: Date.now()
         };
-      } catch (o) {
-        this.results[e] = {
-          ...this.results[e],
+      } catch (t) {
+        this.results[o] = {
+          ...this.results[o],
           status: "failed",
-          error: o instanceof Error ? o : new Error(String(o)),
+          error: t instanceof Error ? t : new Error(String(t)),
           endTime: Date.now()
         };
       } finally {
-        this.inProgress.delete(e), this.updateProgress(), this.processNext();
+        this.inProgress.delete(o), this.updateProgress(), this.processNext();
       }
   }
-  async executeWithRetry(e) {
-    let t;
-    for (let o = 0; o <= this.options.retryAttempts; o++)
+  async executeWithRetry(o) {
+    let e;
+    for (let t = 0; t <= this.options.retryAttempts; t++)
       try {
-        return await this.styleFunction(e, {
+        return await this.styleFunction(o, {
           ...this.config,
           timeoutMillis: this.options.timeoutMillis
         });
-      } catch (a) {
-        if (t = a instanceof Error ? a : new Error(String(a)), this.shouldNotRetry(t))
-          throw t;
-        o < this.options.retryAttempts && await this.delay(this.options.retryDelay * Math.pow(2, o));
+      } catch (i) {
+        if (e = i instanceof Error ? i : new Error(String(i)), this.shouldNotRetry(e))
+          throw e;
+        t < this.options.retryAttempts && await this.delay(this.options.retryDelay * Math.pow(2, t));
       }
-    throw t;
+    throw e ?? new Error("Unknown error occurred during retry");
   }
-  shouldNotRetry(e) {
+  shouldNotRetry(o) {
     return !!([
       "authentication",
       "authorization",
@@ -34022,55 +35263,55 @@ class At {
       "unauthorized",
       "forbidden",
       "rate limit"
-    ].some((o) => e.message.toLowerCase().includes(o)) || e instanceof h && e.type === M.RATE_LIMIT_ERROR);
+    ].some((t) => o.message.toLowerCase().includes(t)) || o instanceof p && o.type === N.RATE_LIMIT_ERROR);
   }
-  delay(e) {
-    return new Promise((t) => setTimeout(t, e));
+  delay(o) {
+    return new Promise((e) => setTimeout(e, o));
   }
   processNext() {
     if (this.cancelled) return;
-    const e = this.results.find((t) => t.status === "pending");
-    if (!e) {
+    const o = this.results.find((e) => e.status === "pending");
+    if (!o) {
       this.inProgress.size === 0 && this.resolvePromise?.(this.getProgress());
       return;
     }
-    this.inProgress.size >= this.options.maxConcurrent || (this.inProgress.add(e.index), this.processRequest(e.index, e.request));
+    this.inProgress.size >= this.options.maxConcurrent || (this.inProgress.add(o.index), this.processRequest(o.index, o.request));
   }
   start() {
-    return new Promise((e, t) => {
-      this.resolvePromise = e, this.rejectPromise = t;
-      const o = Math.min(this.options.maxConcurrent, this.requests.length);
-      for (let a = 0; a < o; a++)
-        this.inProgress.add(a), this.processRequest(a, this.requests[a]);
+    return new Promise((o, e) => {
+      this.resolvePromise = o, this.rejectPromise = e;
+      const t = Math.min(this.options.maxConcurrent, this.requests.length);
+      for (let i = 0; i < t; i++)
+        this.inProgress.add(i), this.processRequest(i, this.requests[i]);
     });
   }
   cancel() {
     this.cancelled = true, this.rejectPromise?.(new Error("Batch operation cancelled"));
   }
 }
-function oe(n, e, t, o = {}) {
-  if (!n || n.length === 0)
+function se(r, o, e, t = {}) {
+  if (r.length === 0)
     throw new Error("Requests array cannot be empty");
-  if (n.length > 1e3)
+  if (r.length > 1e3)
     throw new Error("Maximum 1000 requests allowed per batch");
-  const r = {
+  const a = {
     ...{
       maxConcurrent: 100,
       retryAttempts: 2,
       retryDelay: 1e3,
-      timeoutMillis: Se
+      timeoutMillis: Ce
     },
-    ...o
+    ...t
   };
-  if (r.maxConcurrent < 1 || r.maxConcurrent > 100)
+  if (a.maxConcurrent < 1 || a.maxConcurrent > 100)
     throw new Error("maxConcurrent must be between 1 and 100");
-  if (r.retryAttempts < 0 || r.retryAttempts > 5)
+  if (a.retryAttempts < 0 || a.retryAttempts > 5)
     throw new Error("retryAttempts must be between 0 and 5");
-  const d = new At(n, e, t, r), l = d.start();
+  const d = new Mo(r, o, e, a), l = d.start();
   return {
     progress: {
       get total() {
-        return n.length;
+        return r.length;
       },
       get completed() {
         return d.results.filter((c) => c.status === "completed").length;
@@ -34095,67 +35336,68 @@ function oe(n, e, t, o = {}) {
       }
     },
     promise: l,
-    cancel: () => d.cancel()
+    cancel: () => {
+      d.cancel();
+    }
   };
 }
-async function Lt(n, e, t, o = Date.now()) {
-  let a = 0;
-  const r = 2e3, d = e.timeoutMillis ?? Se, l = Math.floor(d / r), s = async () => {
-    const c = Date.now() - o;
+async function Uo(r, o, e, t = Date.now()) {
+  let i = 0;
+  const a = 2e3, d = o.timeoutMillis ?? Ce, l = Math.floor(d / a), n = async () => {
+    const c = Date.now() - t;
     if (c > d)
-      throw new h(`Workflow timed out after ${c}ms`, M.TIMEOUT_ERROR);
+      throw new p(
+        `Workflow timed out after ${String(c)}ms`,
+        N.TIMEOUT_ERROR
+      );
     try {
-      const i = S(e);
+      const s = I(o);
       let u;
-      switch (t) {
-        case P.Check:
-          u = await i.styleChecks.getStyleCheck(
-            n
+      switch (e) {
+        case j.Check:
+          u = await s.styleChecks.getStyleCheck(
+            r
           );
           break;
-        case P.Suggestions:
-          u = await i.styleSuggestions.getStyleSuggestion(
-            n
+        case j.Suggestions:
+          u = await s.styleSuggestions.getStyleSuggestion(
+            r
           );
           break;
-        case P.Rewrite:
-          u = await i.styleRewrites.getStyleRewrite(
-            n
+        case j.Rewrite:
+          u = await s.styleRewrites.getStyleRewrite(
+            r
           );
           break;
       }
-      const w = u.workflow.status;
-      if (w === j.Failed)
-        throw new h(
-          `Workflow failed with status: ${j.Failed}`,
-          M.WORKFLOW_FAILED
+      const f = u.workflow.status;
+      if (f === $.Failed)
+        throw new p(
+          `Workflow failed with status: ${$.Failed}`,
+          N.WORKFLOW_FAILED
         );
-      if (w === j.Completed)
-        return u;
-      if (w === j.Running || w === j.Queued)
-        return a++, await new Promise((p) => setTimeout(p, r)), s();
-      throw new h(
-        `Unexpected workflow status: ${w}`,
-        M.UNEXPECTED_STATUS
-      );
-    } catch (i) {
-      throw i instanceof f ? h.fromResponse(i.statusCode || 0, i.body) : (console.error(`Unknown polling error (attempt ${a + 1}/${l}):`, i), h.fromError(
-        i instanceof Error ? i : new Error("Unknown error occurred"),
-        M.POLLING_ERROR
+      return f === $.Completed ? u : (i++, await new Promise((y) => setTimeout(y, a)), await n());
+    } catch (s) {
+      throw s instanceof w ? p.fromResponse(s.statusCode || 0, s.body) : (console.error(
+        `Unknown polling error (attempt ${String(i + 1)}/${String(l)}):`,
+        s
+      ), p.fromError(
+        s instanceof Error ? s : new Error("Unknown error occurred"),
+        N.POLLING_ERROR
       ));
     }
   };
-  return s();
+  return n();
 }
-async function Pt(n, e) {
+async function Lo(r, o) {
   return ne(
-    P.Check,
-    n,
-    e
+    j.Check,
+    r,
+    o
   );
 }
-function Nt(n, e, t = {}) {
-  return oe(n, e, Pt, t);
+function No(r, o, e = {}) {
+  return se(r, o, Lo, e);
 }
 
 /**
@@ -34429,7 +35671,7 @@ const isRequestEndingError = (error) => {
     if (!error)
         return false;
     const apiError = error;
-    const typeIsEnding = [M.UNAUTHORIZED_ERROR, M.INTERNAL_SERVER_ERROR].includes(apiError.type);
+    const typeIsEnding = [N.UNAUTHORIZED_ERROR, N.INTERNAL_SERVER_ERROR].includes(apiError.type);
     const statusCodeIsEnding = typeof apiError.statusCode === "number" &&
         (apiError.statusCode === 401 || apiError.statusCode >= 500);
     return typeIsEnding || statusCodeIsEnding;
@@ -34452,7 +35694,7 @@ const checkForRequestEndingError = (failed, results) => {
 };
 
 function createConfig(apiToken) {
-    return { apiKey: apiToken };
+    return { apiKey: apiToken, headers: { "x-integration-id": "markupai-content-guardian-action" } };
 }
 /**
  * Run style check on a single file
@@ -34468,7 +35710,7 @@ async function analyzeFile(filePath, content, options, config) {
             documentNameWithExtension: getFileBasename(filePath),
             ...(options.tone ? { tone: options.tone } : {}),
         };
-        const result = await Pt(request, config);
+        const result = await Lo(request, config);
         return {
             filePath,
             result: result.original.scores,
@@ -34514,7 +35756,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     };
     try {
         // Start batch processing
-        const batchResponse = Nt(requests, config, batchOptions);
+        const batchResponse = No(requests, config, batchOptions);
         // Monitor progress
         const progressInterval = setInterval(() => {
             const progress = batchResponse.progress;

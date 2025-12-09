@@ -7,7 +7,7 @@ import { processFileReading } from "../utils/batch-utils.js";
 import { checkForRequestEndingError, isRequestEndingError } from "../utils/error-utils.js";
 
 export function createConfig(apiToken: string): Config {
-  return { apiKey: apiToken };
+  return { apiKey: apiToken, headers: { "x-integration-id": "markupai-content-guardian-action" } };
 }
 
 /**
