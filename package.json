@@ -32,7 +32,8 @@
     "package": "rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
     "package:watch": "npm run package -- --watch",
     "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 jest",
-    "test:coverage": "npm run test -- --coverage"
+    "test:coverage": "npm run test -- --coverage",
+    "type-check": "tsc --project tsconfig.json --noEmit"
   },
   "dependencies": {
     "@actions/core": "2.0.0",

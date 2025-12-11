@@ -30,13 +30,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
-      - name: Check Format
+      - name: Check Formatting
         run: npm run format:check
+
+      - name: Run type check
+        run: npm run type-check
 
       - name: Run Lint check
         run: npm run lint:check
 
-      - name: Test
+      - name: Run tests with coverage
         run: npm run test:coverage
 
       - name: SonarQube Scan
