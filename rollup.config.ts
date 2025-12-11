@@ -14,7 +14,11 @@ const config = {
     entryFileNames: "index.js",
   },
   preserveEntrySignatures: false,
-  plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()],
+  plugins: [
+    typescript({ tsconfig: "./tsconfig.build.json" }),
+    nodeResolve({ preferBuiltins: true }),
+    commonjs(),
+  ],
   onwarn(warning, warn) {
     // Suppress circular dependency warnings from @actions/core
     if (warning.code === "CIRCULAR_DEPENDENCY" && warning.message.includes("@actions/core")) {
