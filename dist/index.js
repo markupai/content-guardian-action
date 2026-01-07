@@ -35668,8 +35668,8 @@ class Ro {
     this._options = Object.assign(Object.assign({}, o), { headers: b({
       "X-Fern-Language": "JavaScript",
       "X-Fern-SDK-Name": "@markupai/api",
-      "X-Fern-SDK-Version": "1.3.0",
-      "User-Agent": "@markupai/api/1.3.0",
+      "X-Fern-SDK-Version": "1.4.0",
+      "User-Agent": "@markupai/api/1.4.0",
       "X-Fern-Runtime": te.type,
       "X-Fern-Runtime-Version": te.version
     }, o?.headers) });
