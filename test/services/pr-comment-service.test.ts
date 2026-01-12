@@ -2,7 +2,7 @@
  * Unit tests for PR Comment Service
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import type { AnalysisResult } from "../../src/types/index.js";
 
 // Type definitions for better type safety
@@ -17,8 +17,8 @@ interface MockGitHubContext {
   };
 }
 
-// Proper Jest mock types to avoid "never" type issues
-type MockFunction = jest.Mock;
+// Proper Vitest mock types to avoid "never" type issues
+type MockFunction = ReturnType<typeof vi.fn>;
 
 interface MockOctokitInstance {
   rest: {
@@ -38,16 +38,16 @@ interface GitHubError extends Error {
 }
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => ({
-  info: jest.fn(),
-  error: jest.fn(),
-  warning: jest.fn(),
+vi.mock("@actions/core", () => ({
+  info: vi.fn(),
+  error: vi.fn(),
+  warning: vi.fn(),
+  debug: vi.fn(),
 }));
 
 // Mock @actions/github
-const mockGetOctokit = jest.fn();
-jest.unstable_mockModule("@actions/github", () => ({
-  getOctokit: mockGetOctokit,
+vi.mock("@actions/github", () => ({
+  getOctokit: vi.fn(),
   context: {
     eventName: "pull_request",
     issue: {
@@ -57,6 +57,8 @@ jest.unstable_mockModule("@actions/github", () => ({
       owner: "test-owner",
       repo: "test-repo",
     },
+    ref: "refs/heads/main",
+    serverUrl: "https://github.com",
   },
 }));
 
@@ -74,12 +76,12 @@ import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js
 const mockOctokit: MockOctokitInstance = {
   rest: {
     repos: {
-      get: jest.fn(),
+      get: vi.fn(),
     },
     issues: {
-      listComments: jest.fn(),
-      createComment: jest.fn(),
-      updateComment: jest.fn(),
+      listComments: vi.fn(),
+      createComment: vi.fn(),
+      updateComment: vi.fn(),
     },
   },
 };
@@ -128,22 +130,22 @@ const createGitHubError = (message: string, status?: number): GitHubError => {
 
 // Helper functions for common test setup - using explicit typing to avoid "never" issues
 const setupSuccessfulRepositoryAccess = (): void => {
-  const mockFn = mockOctokit.rest.repos.get as jest.MockedFunction<
-    () => Promise<{ data: Record<string, unknown> }>
+  const mockFn = mockOctokit.rest.repos.get as ReturnType<
+    typeof vi.fn<() => Promise<{ data: Record<string, unknown> }>>
   >;
   mockFn.mockResolvedValue({ data: {} });
 };
 
 const setupNoExistingComments = (): void => {
-  const mockFn = mockOctokit.rest.issues.listComments as jest.MockedFunction<
-    () => Promise<{ data: Array<Record<string, unknown>> }>
+  const mockFn = mockOctokit.rest.issues.listComments as ReturnType<
+    typeof vi.fn<() => Promise<{ data: Array<Record<string, unknown>> }>>
   >;
   mockFn.mockResolvedValue({ data: [] });
 };
 
 const setupExistingComment = (commentId: number): void => {
-  const mockFn = mockOctokit.rest.issues.listComments as jest.MockedFunction<
-    () => Promise<{ data: Array<{ id: number; body: string }> }>
+  const mockFn = mockOctokit.rest.issues.listComments as ReturnType<
+    typeof vi.fn<() => Promise<{ data: Array<{ id: number; body: string }> }>>
   >;
   mockFn.mockResolvedValue({
     data: [
@@ -156,8 +158,8 @@ const setupExistingComment = (commentId: number): void => {
 };
 
 const setupSuccessfulCommentCreation = (commentId: number): void => {
-  const mockFn = mockOctokit.rest.issues.createComment as jest.MockedFunction<
-    () => Promise<{ data: { id: number } }>
+  const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
+    typeof vi.fn<() => Promise<{ data: { id: number } }>>
   >;
   mockFn.mockResolvedValue({
     data: { id: commentId },
@@ -165,8 +167,8 @@ const setupSuccessfulCommentCreation = (commentId: number): void => {
 };
 
 const setupSuccessfulCommentUpdate = (commentId: number): void => {
-  const mockFn = mockOctokit.rest.issues.updateComment as jest.MockedFunction<
-    () => Promise<{ data: { id: number } }>
+  const mockFn = mockOctokit.rest.issues.updateComment as ReturnType<
+    typeof vi.fn<() => Promise<{ data: { id: number } }>>
   >;
   mockFn.mockResolvedValue({
     data: { id: commentId },
@@ -175,8 +177,14 @@ const setupSuccessfulCommentUpdate = (commentId: number): void => {
 
 describe("PR Comment Service", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockGetOctokit.mockReturnValue(mockOctokit);
+    // Clear mock call history without clearing implementations
+    mockOctokit.rest.repos.get.mockClear();
+    mockOctokit.rest.issues.listComments.mockClear();
+    mockOctokit.rest.issues.createComment.mockClear();
+    mockOctokit.rest.issues.updateComment.mockClear();
+    vi.mocked(github.getOctokit).mockReturnValue(
+      mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
+    );
   });
 
   describe("isPullRequestEvent", () => {
@@ -243,7 +251,9 @@ describe("PR Comment Service", () => {
     describe("error handling", () => {
       it("should handle permission denied error for repository access", async () => {
         const permissionError = createGitHubError("Permission denied", 403);
-        const mockFn = mockOctokit.rest.repos.get as jest.MockedFunction<() => Promise<unknown>>;
+        const mockFn = mockOctokit.rest.repos.get as ReturnType<
+          typeof vi.fn<() => Promise<unknown>>
+        >;
         mockFn.mockRejectedValue(permissionError);
 
         await createOrUpdatePRComment(
@@ -260,8 +270,8 @@ describe("PR Comment Service", () => {
         setupNoExistingComments();
 
         const permissionError = createGitHubError("Permission denied", 403);
-        const mockFn = mockOctokit.rest.issues.createComment as jest.MockedFunction<
-          () => Promise<unknown>
+        const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
+          typeof vi.fn<() => Promise<unknown>>
         >;
         mockFn.mockRejectedValue(permissionError);
 
@@ -278,8 +288,8 @@ describe("PR Comment Service", () => {
         setupNoExistingComments();
 
         const notFoundError = createGitHubError("Not found", 404);
-        const mockFn = mockOctokit.rest.issues.createComment as jest.MockedFunction<
-          () => Promise<unknown>
+        const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
+          typeof vi.fn<() => Promise<unknown>>
         >;
         mockFn.mockRejectedValue(notFoundError);
 
@@ -296,8 +306,8 @@ describe("PR Comment Service", () => {
         setupNoExistingComments();
 
         const genericError = createGitHubError("Something went wrong", 500);
-        const mockFn = mockOctokit.rest.issues.createComment as jest.MockedFunction<
-          () => Promise<unknown>
+        const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
+          typeof vi.fn<() => Promise<unknown>>
         >;
         mockFn.mockRejectedValue(genericError);
 
@@ -311,8 +321,8 @@ describe("PR Comment Service", () => {
 
       it("should handle error when finding existing comments", async () => {
         setupSuccessfulRepositoryAccess();
-        const mockFn = mockOctokit.rest.issues.listComments as jest.MockedFunction<
-          () => Promise<unknown>
+        const mockFn = mockOctokit.rest.issues.listComments as ReturnType<
+          typeof vi.fn<() => Promise<unknown>>
         >;
         mockFn.mockRejectedValue(new Error("Failed to list comments"));
         setupSuccessfulCommentCreation(456);

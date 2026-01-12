@@ -2,19 +2,19 @@
  * Unit tests for action configuration functions
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
 import type { ActionConfig, AnalysisOptions } from "../../src/types/index.js";
 
 // Mock dependencies
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const { getActionConfig, getAnalysisOptions, validateConfig, logConfiguration } =
   await import("../../src/config/action-config.js");
 
 describe("Action Config", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Reset environment variables
     delete process.env.MARKUP_AI_API_KEY;

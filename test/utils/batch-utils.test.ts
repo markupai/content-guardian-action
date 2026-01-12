@@ -2,11 +2,11 @@
  * Unit tests for batch utilities
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const { DEFAULT_BATCH_CONFIG, processBatch, processWithConcurrency, processFileReading } =
   await import("../../src/utils/batch-utils.js");
@@ -14,15 +14,15 @@ const { DEFAULT_BATCH_CONFIG, processBatch, processWithConcurrency, processFileR
 describe("Batch Utils", () => {
   // Helper functions to reduce nesting
   const createMockProcessor = (returns: string[]) => {
-    const mockFn = jest.fn();
+    const mockFn = vi.fn();
     for (const value of returns) {
       mockFn.mockImplementationOnce(() => Promise.resolve(value));
     }
-    return mockFn as jest.MockedFunction<(item: string) => Promise<string>>;
+    return mockFn as ReturnType<typeof vi.fn<(item: string) => Promise<string>>>;
   };
 
   const createMockProcessorWithError = (returns: (string | Error | undefined)[]) => {
-    const mockFn = jest.fn();
+    const mockFn = vi.fn();
     for (const value of returns) {
       if (value instanceof Error) {
         mockFn.mockImplementationOnce(() => Promise.reject(value));
@@ -30,32 +30,32 @@ describe("Batch Utils", () => {
         mockFn.mockImplementationOnce(() => Promise.resolve(value));
       }
     }
-    return mockFn as jest.MockedFunction<(item: string) => Promise<string | undefined>>;
+    return mockFn as ReturnType<typeof vi.fn<(item: string) => Promise<string | undefined>>>;
   };
 
   const createMockFileReader = (returns: (string | null)[]) => {
-    const mockFn = jest.fn();
+    const mockFn = vi.fn();
     for (const value of returns) {
       mockFn.mockImplementationOnce(() => Promise.resolve(value));
     }
-    return mockFn as jest.MockedFunction<(filePath: string) => Promise<string | null>>;
+    return mockFn as ReturnType<typeof vi.fn<(filePath: string) => Promise<string | null>>>;
   };
 
   const createConcurrencyTestProcessor = (
     concurrentCount: { value: number },
     maxConcurrent: { value: number },
   ) => {
-    return jest.fn().mockImplementation(async () => {
+    return vi.fn().mockImplementation(async () => {
       concurrentCount.value++;
       maxConcurrent.value = Math.max(maxConcurrent.value, concurrentCount.value);
       await new Promise((resolve) => setTimeout(resolve, 1));
       concurrentCount.value--;
       return "processed";
-    }) as jest.MockedFunction<(item: string) => Promise<string>>;
+    }) as ReturnType<typeof vi.fn<(item: string) => Promise<string>>>;
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Constants", () => {
@@ -70,10 +70,10 @@ describe("Batch Utils", () => {
 
   describe("processBatch", () => {
     it("should return empty array for empty items", async () => {
-      const processor = jest
+      const processor = vi
         .fn()
-        .mockImplementation(() => Promise.resolve("processed")) as jest.MockedFunction<
-        (item: unknown) => Promise<unknown>
+        .mockImplementation(() => Promise.resolve("processed")) as ReturnType<
+        typeof vi.fn<(item: unknown) => Promise<unknown>>
       >;
       const result = await processBatch([], processor);
 
@@ -193,10 +193,10 @@ describe("Batch Utils", () => {
 
   describe("processWithConcurrency", () => {
     it("should return empty array for empty items", async () => {
-      const processor = jest
+      const processor = vi
         .fn()
-        .mockImplementation(() => Promise.resolve("processed")) as jest.MockedFunction<
-        (item: unknown) => Promise<unknown>
+        .mockImplementation(() => Promise.resolve("processed")) as ReturnType<
+        typeof vi.fn<(item: unknown) => Promise<unknown>>
       >;
       const result = await processWithConcurrency([], processor);
 
@@ -274,10 +274,10 @@ describe("Batch Utils", () => {
 
   describe("processFileReading", () => {
     it("should return empty array for empty file paths", async () => {
-      const readFileContent = jest
+      const readFileContent = vi
         .fn()
-        .mockImplementation(() => Promise.resolve("content")) as jest.MockedFunction<
-        (filePath: string) => Promise<string | null>
+        .mockImplementation(() => Promise.resolve("content")) as ReturnType<
+        typeof vi.fn<(filePath: string) => Promise<string | null>>
       >;
       const result = await processFileReading([], readFileContent);
 

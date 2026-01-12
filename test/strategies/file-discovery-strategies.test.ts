@@ -2,11 +2,11 @@
  * Unit tests for file discovery strategies
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const {
   createFileDiscoveryStrategy,
@@ -19,7 +19,7 @@ const {
 
 describe("File Discovery Strategies", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("createFileDiscoveryStrategy", () => {

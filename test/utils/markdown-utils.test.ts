@@ -2,16 +2,16 @@
  * Tests for markdown generation utilities
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, vi } from "vitest";
 
 // Mock the score-utils module
-jest.unstable_mockModule("../../src/utils/score-utils.js", () => ({
-  getQualityEmoji: jest.fn((score: number) => {
+vi.mock("../../src/utils/score-utils.js", () => ({
+  getQualityEmoji: vi.fn((score: number) => {
     if (score >= 80) return "🟢";
     if (score >= 60) return "🟡";
     return "🔴";
   }),
-  calculateScoreSummary: jest.fn((results: Array<{ result: StyleScores }>) => {
+  calculateScoreSummary: vi.fn((results: Array<{ result: StyleScores }>) => {
     if (results.length === 0) {
       return {
         totalFiles: 0,

@@ -2,11 +2,11 @@
  * Unit tests for error utilities
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const {
   DEFAULT_RETRY_CONFIG,
@@ -27,7 +27,7 @@ type RetryConfig = import("../../src/utils/error-utils.js").RetryConfig;
 
 describe("Error Utils", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Constants", () => {
@@ -118,10 +118,8 @@ describe("Error Utils", () => {
 
   describe("withRetry", () => {
     it("should return result on successful operation", async () => {
-      const operation = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve("success")) as jest.MockedFunction<
-        () => Promise<string>
+      const operation = vi.fn().mockImplementation(() => Promise.resolve("success")) as ReturnType<
+        typeof vi.fn<() => Promise<string>>
       >;
 
       const result = await withRetry(operation, DEFAULT_RETRY_CONFIG, "Test Operation");
@@ -131,12 +129,12 @@ describe("Error Utils", () => {
     });
 
     it("should retry on failure and eventually succeed", async () => {
-      const operation = jest
+      const operation = vi
         .fn()
         .mockImplementationOnce(() => Promise.reject(new Error("First failure")))
         .mockImplementationOnce(() => Promise.reject(new Error("Second failure")))
-        .mockImplementationOnce(() => Promise.resolve("success")) as jest.MockedFunction<
-        () => Promise<string>
+        .mockImplementationOnce(() => Promise.resolve("success")) as ReturnType<
+        typeof vi.fn<() => Promise<string>>
       >;
 
       const result = await withRetry(operation, DEFAULT_RETRY_CONFIG, "Test Operation");
@@ -146,11 +144,11 @@ describe("Error Utils", () => {
     }, 10_000);
 
     it("should throw error after max retries", async () => {
-      const operation = jest
+      const operation = vi
         .fn()
-        .mockImplementation(() =>
-          Promise.reject(new Error("Persistent failure")),
-        ) as jest.MockedFunction<() => Promise<string>>;
+        .mockImplementation(() => Promise.reject(new Error("Persistent failure"))) as ReturnType<
+        typeof vi.fn<() => Promise<string>>
+      >;
 
       await expect(withRetry(operation, DEFAULT_RETRY_CONFIG, "Test Operation")).rejects.toThrow(
         "Persistent failure",
@@ -167,11 +165,11 @@ describe("Error Utils", () => {
         backoffMultiplier: 1.5,
       };
 
-      const operation = jest
+      const operation = vi
         .fn()
         .mockImplementationOnce(() => Promise.reject(new Error("First failure")))
-        .mockImplementationOnce(() => Promise.resolve("success")) as jest.MockedFunction<
-        () => Promise<string>
+        .mockImplementationOnce(() => Promise.resolve("success")) as ReturnType<
+        typeof vi.fn<() => Promise<string>>
       >;
 
       const result = await withRetry(operation, customConfig, "Test Operation");
@@ -181,10 +179,10 @@ describe("Error Utils", () => {
     }, 10_000);
 
     it("should handle non-Error exceptions", async () => {
-      const operation = jest
+      const operation = vi
         .fn()
-        .mockImplementation(() => Promise.reject(new Error("String error"))) as jest.MockedFunction<
-        () => Promise<string>
+        .mockImplementation(() => Promise.reject(new Error("String error"))) as ReturnType<
+        typeof vi.fn<() => Promise<string>>
       >;
 
       await expect(withRetry(operation, DEFAULT_RETRY_CONFIG, "Test Operation")).rejects.toThrow(
@@ -193,11 +191,11 @@ describe("Error Utils", () => {
     }, 10_000);
 
     it("should log warnings during retries", async () => {
-      const operation = jest
+      const operation = vi
         .fn()
         .mockImplementationOnce(() => Promise.reject(new Error("First failure")))
-        .mockImplementationOnce(() => Promise.resolve("success")) as jest.MockedFunction<
-        () => Promise<string>
+        .mockImplementationOnce(() => Promise.resolve("success")) as ReturnType<
+        typeof vi.fn<() => Promise<string>>
       >;
 
       await withRetry(operation, DEFAULT_RETRY_CONFIG, "Test Operation");
@@ -208,11 +206,11 @@ describe("Error Utils", () => {
     }, 10_000);
 
     it("should log error on final failure", async () => {
-      const operation = jest
+      const operation = vi
         .fn()
-        .mockImplementation(() =>
-          Promise.reject(new Error("Persistent failure")),
-        ) as jest.MockedFunction<() => Promise<string>>;
+        .mockImplementation(() => Promise.reject(new Error("Persistent failure"))) as ReturnType<
+        typeof vi.fn<() => Promise<string>>
+      >;
 
       await expect(withRetry(operation, DEFAULT_RETRY_CONFIG, "Test Operation")).rejects.toThrow(
         "Persistent failure",

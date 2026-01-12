@@ -2,19 +2,17 @@
  * Tests for strict mode functionality in action runner
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Create comprehensive mock for @actions/core
 const mockCore = {
-  getInput: jest.fn() as jest.MockedFunction<(name: string) => string>,
-  setOutput: jest.fn() as jest.MockedFunction<
-    (name: string, value: string | number | boolean) => void
-  >,
-  setFailed: jest.fn() as jest.MockedFunction<(message: string | Error) => void>,
-  info: jest.fn() as jest.MockedFunction<(message: string) => void>,
-  warning: jest.fn() as jest.MockedFunction<(message: string) => void>,
-  error: jest.fn() as jest.MockedFunction<(message: string | Error) => void>,
-  debug: jest.fn() as jest.MockedFunction<(message: string) => void>,
+  getInput: vi.fn<(name: string) => string>(),
+  setOutput: vi.fn<(name: string, value: string | number | boolean) => void>(),
+  setFailed: vi.fn<(message: string | Error) => void>(),
+  info: vi.fn<(message: string) => void>(),
+  warning: vi.fn<(message: string) => void>(),
+  error: vi.fn<(message: string | Error) => void>(),
+  debug: vi.fn<(message: string) => void>(),
 };
 
 const createInputMock = (strictMode: string = "true") => {
@@ -59,7 +57,7 @@ const createFileAnalysisResults = (filePaths: string[], includeAll: boolean = tr
 
 const setupFileAnalysisScenario = (
   strategy: MockStrategy,
-  analyzeFiles: jest.MockedFunction<(files: string[]) => Promise<unknown[]>>,
+  analyzeFiles: ReturnType<typeof vi.fn<(files: string[]) => Promise<unknown[]>>>,
   filePaths: string[],
   includeAll: boolean = true,
 ) => {
@@ -82,17 +80,17 @@ const expectFilesAnalyzedOutput = (count: number) => {
 };
 
 interface MockStrategy {
-  getEventInfo: jest.Mock;
-  getFilesToAnalyze: jest.MockedFunction<() => Promise<string[]>>;
+  getEventInfo: ReturnType<typeof vi.fn>;
+  getFilesToAnalyze: ReturnType<typeof vi.fn<() => Promise<string[]>>>;
 }
 
-jest.unstable_mockModule("@actions/core", () => mockCore);
+vi.mock("@actions/core", () => mockCore);
 
-jest.unstable_mockModule("@actions/github", () => ({
-  getOctokit: jest.fn(() => ({
+vi.mock("@actions/github", () => ({
+  getOctokit: vi.fn(() => ({
     rest: {
       repos: {
-        getCommit: jest.fn(() =>
+        getCommit: vi.fn(() =>
           Promise.resolve({
             data: {
               sha: "abc123456789",
@@ -114,12 +112,12 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-const mockAnalyzeFiles = jest.fn() as jest.MockedFunction<(files: string[]) => Promise<unknown[]>>;
+const mockAnalyzeFiles = vi.fn<(files: string[]) => Promise<unknown[]>>();
 
-jest.unstable_mockModule("../src/services/api-service.js", () => ({
+vi.mock("../src/services/api-service.js", () => ({
   analyzeFiles: mockAnalyzeFiles,
-  createConfig: jest.fn(() => ({})),
-  getAnalysisSummary: jest.fn(() => ({
+  createConfig: vi.fn(() => ({})),
+  getAnalysisSummary: vi.fn(() => ({
     totalFiles: 0,
     averageQualityScore: 0,
     averageClarityScore: 0,
@@ -127,27 +125,27 @@ jest.unstable_mockModule("../src/services/api-service.js", () => ({
   })),
 }));
 
-jest.unstable_mockModule("../src/services/post-analysis-service.js", () => ({
-  handlePostAnalysisActions: jest.fn(() => Promise.resolve()),
+vi.mock("../src/services/post-analysis-service.js", () => ({
+  handlePostAnalysisActions: vi.fn(() => Promise.resolve()),
 }));
 
-jest.unstable_mockModule("../src/utils/index.js", () => ({
-  displayEventInfo: jest.fn(),
-  displayFilesToAnalyze: jest.fn(),
-  displayResults: jest.fn(),
-  displaySectionHeader: jest.fn(),
-  filterSupportedFiles: jest.fn((files: string[]) => files), // Return provided files as-is
-  readFileContent: jest.fn(() => Promise.resolve("Test content")),
+vi.mock("../src/utils/index.js", () => ({
+  displayEventInfo: vi.fn(),
+  displayFilesToAnalyze: vi.fn(),
+  displayResults: vi.fn(),
+  displaySectionHeader: vi.fn(),
+  filterSupportedFiles: vi.fn((files: string[]) => files), // Return provided files as-is
+  readFileContent: vi.fn(() => Promise.resolve("Test content")),
 }));
 
-const mockCreateFileDiscoveryStrategy = jest.fn() as jest.MockedFunction<() => MockStrategy>;
+const mockCreateFileDiscoveryStrategy = vi.fn<() => MockStrategy>();
 
-jest.unstable_mockModule("../src/strategies/index.js", () => ({
+vi.mock("../src/strategies/index.js", () => ({
   createFileDiscoveryStrategy: mockCreateFileDiscoveryStrategy,
 }));
 
-jest.unstable_mockModule("fs/promises", () => ({
-  readFile: jest.fn(() => Promise.resolve("Test content")),
+vi.mock("fs/promises", () => ({
+  readFile: vi.fn(() => Promise.resolve("Test content")),
 }));
 
 const { runAction } = await import("../src/action-runner.js");
@@ -156,15 +154,15 @@ describe("Action Runner Tests", () => {
   let mockStrategy: MockStrategy;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     mockStrategy = {
-      getEventInfo: jest.fn(() => ({
+      getEventInfo: vi.fn(() => ({
         eventType: "push",
         filesCount: 0,
         repository: "test-owner/test-repo",
       })),
-      getFilesToAnalyze: jest.fn(() => Promise.resolve([])),
+      getFilesToAnalyze: vi.fn(() => Promise.resolve([])),
     };
 
     mockCreateFileDiscoveryStrategy.mockReturnValue(mockStrategy);

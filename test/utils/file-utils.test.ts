@@ -2,11 +2,11 @@
  * Unit tests for file utilities
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const {
   isSupportedFile,
@@ -18,7 +18,7 @@ const {
 
 describe("File Utils", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("isSupportedFile", () => {

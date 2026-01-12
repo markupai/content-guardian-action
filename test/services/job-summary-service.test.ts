@@ -2,23 +2,23 @@
  * Tests for Job Summary Service
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 import * as core from "../mocks/core.js";
 
 // Spy on core methods
-const infoSpy = jest.spyOn(core, "info");
-const errorSpy = jest.spyOn(core, "error");
+const infoSpy = vi.spyOn(core, "info");
+const errorSpy = vi.spyOn(core, "error");
 
 // Create mock summary object with proper typing
 const mockSummary = {
-  addHeading: jest.fn().mockReturnThis(),
-  addRaw: jest.fn().mockReturnThis(),
-  write: jest.fn(),
+  addHeading: vi.fn().mockReturnThis(),
+  addRaw: vi.fn().mockReturnThis(),
+  write: vi.fn(),
 };
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => ({
+vi.mock("@actions/core", () => ({
   ...core,
   summary: mockSummary,
 }));
@@ -27,7 +27,7 @@ const jobSummaryService = await import("../../src/services/job-summary-service.j
 
 describe("Job Summary Service", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     infoSpy.mockClear();
     errorSpy.mockClear();
   });
@@ -124,7 +124,7 @@ describe("Job Summary Service", () => {
 
     it("should handle errors gracefully", async () => {
       const error = new Error("Summary creation failed");
-      const mockWrite = mockSummary.write as jest.MockedFunction<() => Promise<void>>;
+      const mockWrite = mockSummary.write as ReturnType<typeof vi.fn<() => Promise<void>>>;
       mockWrite.mockRejectedValue(error);
 
       await jobSummaryService.createJobSummary(
