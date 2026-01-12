@@ -2,7 +2,7 @@
  * Unit tests for type guard utilities
  */
 
-// import { jest } from '@jest/globals' // Not used in tests
+import { describe, it, expect } from "vitest";
 import {
   isString,
   isNumber,

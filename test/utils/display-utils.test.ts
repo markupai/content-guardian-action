@@ -2,11 +2,11 @@
  * Unit tests for display utilities
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const {
   displayEventInfo,
@@ -20,7 +20,7 @@ import { StyleScores } from "@markupai/toolkit";
 
 describe("Display Utils", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("displayEventInfo", () => {

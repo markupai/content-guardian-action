@@ -2,13 +2,13 @@
  * Unit tests for score utilities
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 import { StyleScores } from "@markupai/toolkit";
 import * as core from "../mocks/core.js";
 
 // Mock @actions/core
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const {
   QUALITY_THRESHOLDS,
@@ -20,7 +20,7 @@ const {
 
 describe("Score Utils", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Constants", () => {

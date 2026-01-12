@@ -2,17 +2,17 @@
  * Integration tests for the action
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as core from "./mocks/core.js";
 import type { AnalysisResult } from "../src/types/index.js";
 
 // Mock dependencies
-jest.unstable_mockModule("@actions/core", () => core);
-jest.unstable_mockModule("@actions/github", () => ({
-  getOctokit: jest.fn(() => ({
+vi.mock("@actions/core", () => core);
+vi.mock("@actions/github", () => ({
+  getOctokit: vi.fn(() => ({
     rest: {
       repos: {
-        getCommit: jest.fn(() =>
+        getCommit: vi.fn(() =>
           Promise.resolve({
             data: {
               sha: "abc123456789",
@@ -57,11 +57,11 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@markupai/toolkit", () => {
-  const originalModule = jest.requireActual("@markupai/toolkit");
+vi.mock("@markupai/toolkit", async () => {
+  const originalModule = await vi.importActual("@markupai/toolkit");
   return {
     ...(originalModule as object),
-    styleCheck: jest.fn(() =>
+    styleCheck: vi.fn(() =>
       Promise.resolve({
         workflow: {
           id: "test-workflow-123",
@@ -104,7 +104,7 @@ jest.unstable_mockModule("@markupai/toolkit", () => {
         },
       }),
     ),
-    styleBatchCheckRequests: jest.fn(() => ({
+    styleBatchCheckRequests: vi.fn(() => ({
       progress: {
         total: 1,
         completed: 1,
@@ -207,14 +207,14 @@ jest.unstable_mockModule("@markupai/toolkit", () => {
         ],
         startTime: Date.now(),
       }),
-      cancel: jest.fn(),
+      cancel: vi.fn(),
     })),
   };
 });
 
 // Mock fs/promises
-jest.unstable_mockModule("fs/promises", () => ({
-  readFile: jest.fn(() => Promise.resolve("Test content for analysis")),
+vi.mock("fs/promises", () => ({
+  readFile: vi.fn(() => Promise.resolve("Test content for analysis")),
 }));
 
 const { run } = await import("../src/main.js");
@@ -246,7 +246,7 @@ describe("Integration Tests", () => {
 
   afterEach(() => {
     // Only reset core mocks, not the module mocks
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     delete process.env.GITHUB_TOKEN;
     delete process.env.GITHUB_REPOSITORY;
   });

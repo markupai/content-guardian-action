@@ -2,17 +2,17 @@
  * Unit tests for post-analysis service
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from "vitest";
 import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 import * as core from "../mocks/core.js";
 import type { AnalysisResult } from "../../src/types/index.js";
 
 // Spy on core methods
-const infoSpy = jest.spyOn(core, "info");
-const errorSpy = jest.spyOn(core, "error");
+const infoSpy = vi.spyOn(core, "info");
+const errorSpy = vi.spyOn(core, "error");
 
 // Mock @actions/core and @actions/github
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
 const mockGitHubContext = {
   repo: {
@@ -24,12 +24,12 @@ const mockGitHubContext = {
   serverUrl: "https://github.com",
 };
 
-jest.unstable_mockModule("@actions/github", () => ({
+vi.mock("@actions/github", () => ({
   context: mockGitHubContext,
 }));
 
 // Mock dependencies
-const mockGetAnalysisSummary = jest.fn() as jest.MockedFunction<
+const mockGetAnalysisSummary = vi.fn<
   () => {
     averageQualityScore: number;
     averageClarityScore: number;
@@ -43,36 +43,36 @@ const mockGetAnalysisSummary = jest.fn() as jest.MockedFunction<
     totalFiles: number;
     totalIssues: number;
   }
->;
-const mockCreateGitHubClient = jest.fn() as jest.MockedFunction<() => Record<string, unknown>>;
-const mockUpdateCommitStatus = jest.fn() as jest.MockedFunction<() => Promise<void>>;
+>();
+const mockCreateGitHubClient = vi.fn<() => Record<string, unknown>>();
+const mockUpdateCommitStatus = vi.fn<() => Promise<void>>();
 
-const mockIsPullRequestEvent = jest.fn() as jest.MockedFunction<() => boolean>;
-const mockGetPRNumber = jest.fn() as jest.MockedFunction<() => number | null>;
-const mockCreateOrUpdatePRComment = jest.fn() as jest.MockedFunction<() => Promise<void>>;
-const mockDisplaySectionHeader = jest.fn() as jest.MockedFunction<() => void>;
-const mockCreateJobSummary = jest.fn() as jest.MockedFunction<() => Promise<void>>;
+const mockIsPullRequestEvent = vi.fn<() => boolean>();
+const mockGetPRNumber = vi.fn<() => number | null>();
+const mockCreateOrUpdatePRComment = vi.fn<() => Promise<void>>();
+const mockDisplaySectionHeader = vi.fn<() => void>();
+const mockCreateJobSummary = vi.fn<() => Promise<void>>();
 
-jest.unstable_mockModule("../../src/services/api-service.js", () => ({
+vi.mock("../../src/services/api-service.js", () => ({
   getAnalysisSummary: mockGetAnalysisSummary,
 }));
 
-jest.unstable_mockModule("../../src/services/github-service.js", () => ({
+vi.mock("../../src/services/github-service.js", () => ({
   createGitHubClient: mockCreateGitHubClient,
   updateCommitStatus: mockUpdateCommitStatus,
 }));
 
-jest.unstable_mockModule("../../src/services/pr-comment-service.js", () => ({
+vi.mock("../../src/services/pr-comment-service.js", () => ({
   createOrUpdatePRComment: mockCreateOrUpdatePRComment,
   isPullRequestEvent: mockIsPullRequestEvent,
   getPRNumber: mockGetPRNumber,
 }));
 
-jest.unstable_mockModule("../../src/services/job-summary-service.js", () => ({
+vi.mock("../../src/services/job-summary-service.js", () => ({
   createJobSummary: mockCreateJobSummary,
 }));
 
-jest.unstable_mockModule("../../src/utils/display-utils.js", () => ({
+vi.mock("../../src/utils/display-utils.js", () => ({
   displaySectionHeader: mockDisplaySectionHeader,
 }));
 
@@ -92,7 +92,7 @@ describe("Post Analysis Service", () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     infoSpy.mockClear();
     errorSpy.mockClear();
 

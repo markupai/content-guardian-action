@@ -2,25 +2,25 @@
  * Unit tests for GitHub service
  */
 
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
 import type { CommitInfo } from "../../src/types/index.js";
 
 // Spy on core methods
-const infoSpy = jest.spyOn(core, "info");
-const errorSpy = jest.spyOn(core, "error");
+const infoSpy = vi.spyOn(core, "info");
+const errorSpy = vi.spyOn(core, "error");
 
 /**
  * Extract mock functions so we can use them without type assertions in tests
  */
-const mockGetCommit = jest.fn();
-const mockReposGet = jest.fn();
-const mockCreateCommitStatus = jest.fn();
-const mockGetContent = jest.fn();
-const mockCreateOrUpdateFileContents = jest.fn();
-const mockListFiles = jest.fn();
-const mockGetTree = jest.fn();
-const mockPaginate = jest.fn();
+const mockGetCommit = vi.fn();
+const mockReposGet = vi.fn();
+const mockCreateCommitStatus = vi.fn();
+const mockGetContent = vi.fn();
+const mockCreateOrUpdateFileContents = vi.fn();
+const mockListFiles = vi.fn();
+const mockGetTree = vi.fn();
+const mockPaginate = vi.fn();
 
 /**
  * Mock Octokit instance for testing.
@@ -46,10 +46,10 @@ const mockOctokit = {
 } as unknown as ReturnType<typeof import("@actions/github").getOctokit>;
 
 // Mock @actions/core and @actions/github
-jest.unstable_mockModule("@actions/core", () => core);
+vi.mock("@actions/core", () => core);
 
-const mockGetOctokit = jest.fn(() => mockOctokit);
-jest.unstable_mockModule("@actions/github", () => ({
+const mockGetOctokit = vi.fn(() => mockOctokit);
+vi.mock("@actions/github", () => ({
   getOctokit: mockGetOctokit,
   context: {
     serverUrl: "https://github.com",
@@ -66,7 +66,7 @@ const githubService = await import("../../src/services/github-service.js");
 
 describe("GitHub Service", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     infoSpy.mockClear();
     errorSpy.mockClear();
     mockGetOctokit.mockReturnValue(mockOctokit);

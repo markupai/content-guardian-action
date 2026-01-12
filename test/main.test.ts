@@ -5,16 +5,16 @@
  * functions and objects. For example, the core module is mocked in this test,
  * so that the actual '@actions/core' module is not imported.
  */
-import { jest } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as core from "./mocks/core.js";
 
 // Mocks should be declared before the module being tested is imported.
-jest.unstable_mockModule("@actions/core", () => core);
-jest.unstable_mockModule("@actions/github", () => ({
-  getOctokit: jest.fn(() => ({
+vi.mock("@actions/core", () => core);
+vi.mock("@actions/github", () => ({
+  getOctokit: vi.fn(() => ({
     rest: {
       repos: {
-        listCommits: jest.fn(() =>
+        listCommits: vi.fn(() =>
           Promise.resolve({
             data: [
               {
@@ -30,7 +30,7 @@ jest.unstable_mockModule("@actions/github", () => ({
             ],
           }),
         ),
-        getCommit: jest.fn(() =>
+        getCommit: vi.fn(() =>
           Promise.resolve({
             data: {
               sha: "abc123456789",
@@ -68,11 +68,11 @@ jest.unstable_mockModule("@actions/github", () => ({
   },
 }));
 
-jest.unstable_mockModule("@markupai/toolkit", () => {
-  const originalModule = jest.requireActual("@markupai/toolkit");
+vi.mock("@markupai/toolkit", async () => {
+  const originalModule = await vi.importActual("@markupai/toolkit");
   return {
     ...(originalModule as object),
-    styleCheck: jest.fn(() =>
+    styleCheck: vi.fn(() =>
       Promise.resolve({
         workflow: {
           id: "test-workflow-123",
@@ -115,7 +115,7 @@ jest.unstable_mockModule("@markupai/toolkit", () => {
         },
       }),
     ),
-    styleBatchCheckRequests: jest.fn(() => ({
+    styleBatchCheckRequests: vi.fn(() => ({
       progress: {
         total: 1,
         completed: 1,
@@ -218,15 +218,15 @@ jest.unstable_mockModule("@markupai/toolkit", () => {
         ],
         startTime: Date.now(),
       }),
-      cancel: jest.fn(),
+      cancel: vi.fn(),
     })),
-    Config: jest.fn(),
+    Config: vi.fn(),
   };
 });
 
 // Mock fs/promises
-jest.unstable_mockModule("fs/promises", () => ({
-  readFile: jest.fn(() => Promise.resolve("Test content for analysis")),
+vi.mock("fs/promises", () => ({
+  readFile: vi.fn(() => Promise.resolve("Test content for analysis")),
 }));
 
 // The module being tested should be imported dynamically. This ensures that the
@@ -259,7 +259,7 @@ describe("main.ts", () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     delete process.env.GITHUB_TOKEN;
     delete process.env.GITHUB_REPOSITORY;
   });

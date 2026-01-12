@@ -15,7 +15,7 @@ export default [
     },
   },
   {
-    files: ["eslint.config.js", "jest.config.js", "rollup.config.ts"],
+    files: ["eslint.config.js", "vitest.config.ts", "rollup.config.ts"],
     ...tseslint.configs.disableTypeChecked,
   },
   {
