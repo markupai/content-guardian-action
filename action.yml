@@ -44,12 +44,6 @@ outputs:
   results:
     description: JSON string containing analysis results
 
-# Define permissions required by the action
-permissions:
-  contents: read
-  pull-requests: write
-  statuses: write
-
 runs:
   using: node24
   main: dist/index.js
