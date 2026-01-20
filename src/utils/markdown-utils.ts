@@ -55,8 +55,8 @@ export function generateResultsTable(
     return "No files were analyzed.";
   }
 
-  const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|:----:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|`;
+  const tableHeader = `| File | Issues | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
+|:----:|:------:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|`;
 
   const tableRows = results
     .map((result) => {
@@ -70,7 +70,8 @@ export function generateResultsTable(
       // Create clickable file link using repository context
       const fileDisplay = generateFileDisplayLink(filePath, context);
 
-      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} |`;
+      const issuesCount = result.issues.length;
+      return `| ${fileDisplay} | ${issuesCount.toString()} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} |`;
     })
     .join("\n");
 
