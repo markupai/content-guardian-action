@@ -96,6 +96,7 @@ describe("Display Utils", () => {
               tone: buildTone(82),
             },
           },
+          issues: [],
           timestamp: "2024-01-15T10:30:00Z",
         },
       ];
@@ -131,6 +132,7 @@ describe("Display Utils", () => {
               tone: buildTone(82),
             },
           },
+          issues: [],
           timestamp: "2024-01-15T10:30:00Z",
         },
         {
@@ -149,6 +151,7 @@ describe("Display Utils", () => {
               tone: buildTone(87),
             },
           },
+          issues: [],
           timestamp: "2024-01-15T10:31:00Z",
         },
       ];
@@ -205,6 +208,7 @@ describe("Display Utils", () => {
               tone: buildTone(82),
             },
           },
+          issues: [],
           timestamp: "2024-01-15T10:30:00Z",
         },
       ];
@@ -229,6 +233,7 @@ describe("Display Utils", () => {
               clarity: buildClarity(78),
             } as unknown as StyleScores["analysis"],
           } as unknown as StyleScores,
+          issues: [],
           timestamp: "2024-01-15T10:30:00Z",
         },
       ];
