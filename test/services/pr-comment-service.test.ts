@@ -78,7 +78,7 @@ import {
   getPRNumber,
   PRCommentData,
 } from "../../src/services/pr-comment-service.js";
-import { IssueCategory } from "@markupai/toolkit";
+import { IssueCategory, IssueSeverity } from "@markupai/toolkit";
 import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 
 // Mock Octokit with proper typing
@@ -229,12 +229,16 @@ describe("PR Comment Service", () => {
           commentData,
         );
 
-        expect(mockOctokit.rest.issues.createComment).toHaveBeenCalledWith({
-          owner: "test-owner",
-          repo: "test-repo",
-          issue_number: 123,
-          body: expect.stringContaining("## <img"),
-        });
+        const createCall = mockOctokit.rest.issues.createComment.mock.calls[0][0] as {
+          owner: string;
+          repo: string;
+          issue_number: number;
+          body: string;
+        };
+        expect(createCall.owner).toBe("test-owner");
+        expect(createCall.repo).toBe("test-repo");
+        expect(createCall.issue_number).toBe(123);
+        expect(createCall.body).toContain("## <img");
       });
 
       it("should update existing comment when found", async () => {
@@ -247,12 +251,16 @@ describe("PR Comment Service", () => {
           commentData,
         );
 
-        expect(mockOctokit.rest.issues.updateComment).toHaveBeenCalledWith({
-          owner: "test-owner",
-          repo: "test-repo",
-          comment_id: 789,
-          body: expect.stringContaining("## <img"),
-        });
+        const updateCall = mockOctokit.rest.issues.updateComment.mock.calls[0][0] as {
+          owner: string;
+          repo: string;
+          comment_id: number;
+          body: string;
+        };
+        expect(updateCall.owner).toBe("test-owner");
+        expect(updateCall.repo).toBe("test-repo");
+        expect(updateCall.comment_id).toBe(789);
+        expect(updateCall.body).toContain("## <img");
       });
     });
 
@@ -526,6 +534,7 @@ describe("PR Comment Service", () => {
               subcategory: "spelling",
               category: IssueCategory.Grammar,
               suggestion: "The",
+              severity: IssueSeverity.Low,
             },
           },
         ],
@@ -544,21 +553,23 @@ describe("PR Comment Service", () => {
         createCommentData([issueResult]),
       );
 
-      expect(mockOctokit.rest.pulls.createReview).toHaveBeenCalledWith({
-        owner: "test-owner",
-        repo: "test-repo",
-        pull_number: 123,
-        commit_id: "test-sha",
-        event: "COMMENT",
-        comments: [
-          expect.objectContaining({
-            path: "test.md",
-            line: 1,
-            side: "RIGHT",
-            body: expect.stringContaining("```suggestion"),
-          }) as unknown,
-        ],
-      });
+      const reviewCall = mockOctokit.rest.pulls.createReview.mock.calls[0][0] as {
+        owner: string;
+        repo: string;
+        pull_number: number;
+        commit_id: string;
+        event: string;
+        comments: Array<{ path: string; line: number; side: string; body: string }>;
+      };
+      expect(reviewCall.owner).toBe("test-owner");
+      expect(reviewCall.repo).toBe("test-repo");
+      expect(reviewCall.pull_number).toBe(123);
+      expect(reviewCall.commit_id).toBe("test-sha");
+      expect(reviewCall.event).toBe("COMMENT");
+      expect(reviewCall.comments[0].path).toBe("test.md");
+      expect(reviewCall.comments[0].line).toBe(1);
+      expect(reviewCall.comments[0].side).toBe("RIGHT");
+      expect(reviewCall.comments[0].body).toContain("```suggestion");
 
       const createCall = mockOctokit.rest.pulls.createReview.mock.calls[0][0] as {
         comments: Array<{ body: string }>;
@@ -596,6 +607,7 @@ describe("PR Comment Service", () => {
               subcategory: "spelling",
               category: IssueCategory.Grammar,
               suggestion: "The",
+              severity: IssueSeverity.Low,
             },
           },
         ],
