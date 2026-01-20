@@ -137,7 +137,7 @@ describe("Markdown Utils", () => {
       });
 
       const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|
+|:----:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|
 | [example.md](https://github.com/owner/repo/pull/123/files#diff-812adf881bb029e57953653f71d54ffc5eac7de19829aa4cbcbbec8f7065a047) | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`;
 
       expect(result).toBe(expectedMarkdown);
@@ -163,7 +163,7 @@ describe("Markdown Utils", () => {
       });
 
       const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|
+|:----:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|
 | [example.md](https://github.com/owner/repo/blob/refs/heads/main/example.md) | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`;
 
       expect(result).toBe(expectedMarkdown);
@@ -215,7 +215,7 @@ describe("Markdown Utils", () => {
       expect(result).toContain(
         "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |",
       );
-      expect(result).toContain("|------|---------|---------|---------|---------|---------|------|");
+      expect(result).toContain("|:----:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|");
       expect(result).toContain("| [test1.md](https://github.com/test/test/blob/main/test1.md) |");
       expect(result).toContain("| [test2.md](https://github.com/test/test/blob/main/test2.md) |");
     });

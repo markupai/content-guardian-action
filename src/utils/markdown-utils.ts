@@ -56,7 +56,7 @@ export function generateResultsTable(
   }
 
   const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|`;
+|:----:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|`;
 
   const tableRows = results
     .map((result) => {
@@ -100,7 +100,7 @@ export function generateSummary(results: AnalysisResult[]): string {
 **Files Analyzed:** ${summary.totalFiles.toString()}
 
 | Metric | Average Score |
-|--------|---------------|
+|:------:|:-------------:|
 | Quality | ${Math.round(summary.averageQualityScore).toString()} |
 | Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
 | Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
