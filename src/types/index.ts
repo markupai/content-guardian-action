@@ -73,6 +73,7 @@ export interface ActionConfig {
   styleGuide: string;
   githubToken: string;
   addCommitStatus: boolean;
+  addReviewComments: boolean;
   strictMode: boolean;
 }
 
