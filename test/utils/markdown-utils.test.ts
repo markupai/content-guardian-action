@@ -525,7 +525,8 @@ describe("Markdown Utils", () => {
     it("should generate footer with configuration and event info", () => {
       const result = generateFooter(mockAnalysisOptions, "push");
 
-      expect(result).toContain("*Analysis performed on");
+      expect(result).toContain("<details>");
+      expect(result).toContain("<summary>Analysis performed on");
       expect(result).toContain("*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*");
       expect(result).toContain(
         "*Configuration: Dialect: american_english | Tone: formal | Style Guide: ap*",
@@ -567,7 +568,7 @@ describe("Markdown Utils", () => {
         "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |",
       );
       expect(result).toContain("## 📊 Summary");
-      expect(result).toContain("*Analysis performed on");
+      expect(result).toContain("<summary>Analysis performed on");
       expect(result).toContain("*Event: push*");
 
       // Should contain rounded scores
