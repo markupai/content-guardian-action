@@ -31550,6 +31550,7 @@ const INPUT_NAMES = {
     STYLE_GUIDE: "style-guide",
     GITHUB_TOKEN: "github_token",
     ADD_COMMIT_STATUS: "add_commit_status",
+    ADD_REVIEW_COMMENTS: "add_review_comments",
     STRICT_MODE: "strict_mode",
 };
 /**
@@ -31604,6 +31605,7 @@ function getActionConfig() {
     const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
+    const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
     return {
         apiToken,
         githubToken,
@@ -31611,6 +31613,7 @@ function getActionConfig() {
         tone,
         styleGuide,
         addCommitStatus,
+        addReviewComments,
         strictMode,
     };
 }
@@ -31622,6 +31625,7 @@ function getAnalysisOptions(config) {
         dialect: config.dialect,
         tone: config.tone,
         styleGuide: config.styleGuide,
+        reviewComments: config.addReviewComments,
     };
 }
 /**
@@ -31683,6 +31687,7 @@ function logConfiguration(config) {
     coreExports.info(`  Style Guide: ${config.styleGuide}`);
     coreExports.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
     coreExports.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
+    coreExports.info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
 }
 
 var j = /* @__PURE__ */ ((r) => (r.Check = "check", r.Suggestions = "suggestions", r.Rewrite = "rewrite", r))(j || {});
@@ -35677,8 +35682,40 @@ async function Bo(r, o) {
     o
   );
 }
+async function $o(r, o) {
+  return ne(
+    j.Suggestions,
+    r,
+    o
+  );
+}
+async function No(r, o) {
+  return ne(
+    j.Rewrite,
+    r,
+    o
+  );
+}
 function Fo(r, o, e = {}) {
   return se(r, o, Bo, e);
+}
+function Go(r, o, e = {}) {
+  return se(r, o, $o, e);
+}
+function zo(r, o, e = {}) {
+  return se(r, o, No, e);
+}
+function et(r, o, e, t = {}) {
+  switch (e) {
+    case "check":
+      return Fo(r, o, t);
+    case "suggestions":
+      return Go(r, o, t);
+    case "rewrite":
+      return zo(r, o, t);
+    default:
+      throw new Error(`Invalid operation type: ${String(e)}`);
+  }
 }
 
 /**
@@ -35715,6 +35752,38 @@ function filterSupportedFiles(files) {
  */
 function getFileBasename(filePath) {
     return path.basename(filePath);
+}
+/**
+ * Get 1-based line number for a character index in content.
+ */
+function getLineNumberAtIndex(content, index) {
+    if (!content || index <= 0) {
+        return 1;
+    }
+    const safeIndex = Math.min(index, content.length);
+    let line = 1;
+    for (let i = 0; i < safeIndex; i += 1) {
+        if (content[i] === "\n") {
+            line += 1;
+        }
+    }
+    return line;
+}
+/**
+ * Get line number, column, and line text for a character index.
+ */
+function getLineContextAtIndex(content, index) {
+    if (!content) {
+        return { line: 1, column: 0, lineText: "" };
+    }
+    const safeIndex = Math.min(Math.max(index, 0), content.length);
+    const line = getLineNumberAtIndex(content, safeIndex);
+    const lineStart = content.lastIndexOf("\n", safeIndex - 1) + 1;
+    const lineEndRaw = content.indexOf("\n", safeIndex);
+    const lineEnd = lineEndRaw === -1 ? content.length : lineEndRaw;
+    const lineText = content.slice(lineStart, lineEnd);
+    const column = safeIndex - lineStart;
+    return { line, column, lineText };
 }
 
 /**
@@ -35975,7 +36044,11 @@ const checkForRequestEndingError = (failed, results) => {
 };
 
 function createConfig(apiToken) {
-    return { apiKey: apiToken, headers: { "x-integration-id": "markupai-content-guardian-action" } };
+    return {
+        platform: { type: ge.Environment, value: W.Dev },
+        apiKey: apiToken,
+        headers: { "x-integration-id": "markupai-content-guardian-action" },
+    };
 }
 /**
  * Run style check on a single file
@@ -35991,10 +36064,22 @@ async function analyzeFile(filePath, content, options, config) {
             documentNameWithExtension: getFileBasename(filePath),
             ...(options.tone ? { tone: options.tone } : {}),
         };
-        const result = await Bo(request, config);
+        const result = options.reviewComments
+            ? await $o(request, config)
+            : await Bo(request, config);
+        const issues = result.original.issues.map((issue) => {
+            const context = getLineContextAtIndex(content, issue.position.start_index);
+            return {
+                issue,
+                line: context.line,
+                column: context.column,
+                lineText: context.lineText,
+            };
+        });
         return {
             filePath,
             result: result.original.scores,
+            issues,
             timestamp: new Date().toISOString(),
         };
     }
@@ -36037,7 +36122,9 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     };
     try {
         // Start batch processing
-        const batchResponse = Fo(requests, config, batchOptions);
+        const batchResponse = options.reviewComments
+            ? et(requests, config, "suggestions", batchOptions)
+            : Fo(requests, config, batchOptions);
         // Monitor progress
         const progressInterval = setInterval(() => {
             const progress = batchResponse.progress;
@@ -36064,9 +36151,20 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
         const results = [];
         for (const [index, batchResult] of finalProgress.results.entries()) {
             if (batchResult.status === "completed" && batchResult.result) {
+                const content = fileContents[index].content;
+                const issues = batchResult.result.original.issues.map((issue) => {
+                    const context = getLineContextAtIndex(content, issue.position.start_index);
+                    return {
+                        issue,
+                        line: context.line,
+                        column: context.column,
+                        lineText: context.lineText,
+                    };
+                });
                 results.push({
                     filePath: fileContents[index].filePath,
                     result: batchResult.result.original.scores,
+                    issues,
                     timestamp: new Date().toISOString(),
                 });
             }
@@ -36145,8 +36243,12 @@ function generateResultsTable(results, context) {
     if (results.length === 0) {
         return "No files were analyzed.";
     }
-    const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|`;
+    const hasToneScore = results.some((result) => typeof result.result.analysis.tone?.score === "number");
+    const tableHeader = hasToneScore
+        ? `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|`
+        : `| File | Quality | Grammar | Consistency | Terminology | Clarity | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:------:|`;
     const tableRows = results
         .map((result) => {
         const { filePath, result: scores } = result;
@@ -36156,7 +36258,10 @@ function generateResultsTable(results, context) {
             : "-";
         // Create clickable file link using repository context
         const fileDisplay = generateFileDisplayLink(filePath, context);
-        return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} |`;
+        const issuesCount = result.issues.length;
+        return hasToneScore
+            ? `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} | ${issuesCount.toString()} |`
+            : `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${issuesCount.toString()} |`;
     })
         .join("\n");
     return `${tableHeader}\n${tableRows}`;
@@ -36170,6 +36275,10 @@ function generateSummary(results) {
     }
     const summary = calculateScoreSummary(results);
     const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
+    const hasToneScore = results.some((result) => typeof result.result.analysis.tone?.score === "number");
+    const toneRow = hasToneScore
+        ? `| Tone | ${Math.round(summary.averageToneScore).toString()} |`
+        : "";
     return `
 ## 📊 Summary
 
@@ -36178,25 +36287,32 @@ function generateSummary(results) {
 **Files Analyzed:** ${summary.totalFiles.toString()}
 
 | Metric | Average Score |
-|--------|---------------|
+|:------|:-------------:|
 | Quality | ${Math.round(summary.averageQualityScore).toString()} |
 | Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
 | Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
 | Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
 | Clarity | ${Math.round(summary.averageClarityScore).toString()} |
-| Tone | ${Math.round(summary.averageToneScore).toString()} |
+${toneRow}
 `;
 }
 /**
  * Generate footer section with metadata
  */
-function generateFooter(config, eventType) {
+function generateFooter(config, eventType, context) {
+    const pipelineLink = typeof context.runId === "number"
+        ? `Workflow run: [#${context.runId.toString()}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${context.runId.toString()})`
+        : "";
     return `
 ---
-*Analysis performed on ${new Date().toLocaleString()}*
-*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
-*Event: ${eventType}*`;
+<details>
+<summary>💡 Analysis performed on ${new Date().toLocaleString()} - Click to expand</summary>
+
+- **Configuration:** Style Guide: ${config.styleGuide} | Dialect: ${config.dialect}${config.tone ? ` | Tone: ${config.tone}` : ""}
+- **Event:** ${eventType}
+${pipelineLink ? `- **Workflow run:** ${pipelineLink.replace("Workflow run: ", "")}` : ""}
+
+</details>`;
 }
 /**
  * Generate complete analysis content with customizable header
@@ -36204,27 +36320,164 @@ function generateFooter(config, eventType) {
 function generateAnalysisContent(results, config, header, eventType, context) {
     const table = generateResultsTable(results, context);
     const summary = generateSummary(results);
-    const footer = generateFooter(config, eventType);
+    const footer = generateFooter(config, eventType, context);
+    const qualityLegend = "*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*";
     return `${header}
 
 ${table}
 
 ${summary}
 
-${footer}`;
+${footer}
+
+${qualityLegend}`;
 }
 
 /**
  * PR Comment service for managing comments on pull requests
  */
+const MAX_REVIEW_COMMENTS = 50;
+const MAX_ISSUES_PER_COMMENT = 5;
+const MAX_ORIGINAL_LENGTH = 160;
 /**
  * Generate complete comment body
  */
 function generateCommentBody(results, config, eventType, context) {
-    const header = `## 🔍 Markup AI Analysis Results
+    const logoUrl = "https://github.com/markupai/content-guardian-action/raw/unlock%2FAdd-review-commit-with-suggestion/icons/markup_ai_mark_logo.svg";
+    const header = `## <img src="${logoUrl}" alt="Markup AI" width="28" height="28" /> Markup AI Analysis Results (DEV)
 
 This comment was automatically generated by the Markup AI GitHub Action for **${eventType}** event.`;
     return generateAnalysisContent(results, config, header, eventType, context);
+}
+function truncateText(value, maxLength) {
+    if (value.length <= maxLength) {
+        return value;
+    }
+    return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
+}
+function capitalizeLabel(value) {
+    if (!value) {
+        return value;
+    }
+    return value.charAt(0).toUpperCase() + value.slice(1);
+}
+function applyInlineSuggestion(issue, lineText, column) {
+    if (!("suggestion" in issue) || !issue.suggestion) {
+        return null;
+    }
+    const original = issue.original;
+    const suggestion = issue.suggestion;
+    if (lineText) {
+        const columnIndex = Math.min(Math.max(column, 0), lineText.length);
+        const after = lineText.slice(columnIndex);
+        if (after.startsWith(original)) {
+            return `${lineText.slice(0, columnIndex)}${suggestion}${after.slice(original.length)}`;
+        }
+        const fallbackIndex = lineText.indexOf(original);
+        if (fallbackIndex >= 0) {
+            return `${lineText.slice(0, fallbackIndex)}${suggestion}${lineText.slice(fallbackIndex + original.length)}`;
+        }
+    }
+    return null;
+}
+function buildReviewCommentBody(issues) {
+    const issueLines = issues.slice(0, MAX_ISSUES_PER_COMMENT).map(({ issue, lineText, column }) => {
+        const category = capitalizeLabel(issue.category);
+        const subcategory = capitalizeLabel(issue.subcategory);
+        const original = truncateText(issue.original, MAX_ORIGINAL_LENGTH);
+        const inlineSuggestion = applyInlineSuggestion(issue, lineText, column);
+        let suggestion = "";
+        if (inlineSuggestion) {
+            const explanation = "explanation" in issue && issue.explanation ? `\nExplanation: ${issue.explanation}` : "";
+            suggestion = `${explanation}\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
+        }
+        else if ("suggestion" in issue && issue.suggestion) {
+            const explanation = "explanation" in issue && issue.explanation ? `\nExplanation: ${issue.explanation}` : "";
+            suggestion = `${explanation}\nSuggestion: \`${truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH)}\``;
+        }
+        const severity = ` (Severity: ${capitalizeLabel(issue.severity)})`;
+        return `- **${category} / ${subcategory}${severity}**: \`${original}\`${suggestion}`;
+    });
+    const moreCount = issues.length - issueLines.length;
+    if (moreCount > 0) {
+        issueLines.push(`- _${moreCount.toString()} more issue(s) on this line_`);
+    }
+    return `**Markup AI** detected issues:\n${issueLines.join("\n")}`;
+}
+function buildReviewComments(results) {
+    const grouped = new Map();
+    for (const result of results) {
+        for (const issue of result.issues) {
+            if (!issue.line || issue.line <= 0) {
+                continue;
+            }
+            const key = `${result.filePath}:${issue.line.toString()}`;
+            const existing = grouped.get(key);
+            if (existing) {
+                existing.issues.push(issue);
+            }
+            else {
+                grouped.set(key, { path: result.filePath, line: issue.line, issues: [issue] });
+            }
+        }
+    }
+    const comments = [];
+    for (const { path, line, issues } of grouped.values()) {
+        if (comments.length >= MAX_REVIEW_COMMENTS) {
+            break;
+        }
+        comments.push({
+            path,
+            line,
+            side: "RIGHT",
+            body: buildReviewCommentBody(issues),
+        });
+    }
+    return comments;
+}
+function filterExistingReviewComments(reviewComments, existingKeys) {
+    const filtered = [];
+    for (const comment of reviewComments) {
+        const key = `${comment.path}:${comment.line.toString()}:${comment.body}`;
+        if (existingKeys.has(key)) {
+            coreExports.info(`Skipping existing review comment for ${comment.path}:${comment.line.toString()}`);
+            continue;
+        }
+        filtered.push(comment);
+    }
+    return filtered;
+}
+async function getExistingReviewCommentKeys(octokit, owner, repo, prNumber) {
+    try {
+        const comments = typeof octokit.paginate === "function"
+            ? await octokit.paginate(octokit.rest.pulls.listReviewComments, {
+                owner,
+                repo,
+                pull_number: prNumber,
+                per_page: 100,
+            })
+            : (await octokit.rest.pulls.listReviewComments({
+                owner,
+                repo,
+                pull_number: prNumber,
+                per_page: 100,
+            })).data;
+        const keys = new Set();
+        for (const comment of comments) {
+            if (comment.path && typeof comment.line === "number") {
+                const resolved = comment.resolved;
+                if (resolved === true) {
+                    continue;
+                }
+                keys.add(`${comment.path}:${comment.line.toString()}:${comment.body}`);
+            }
+        }
+        return keys;
+    }
+    catch (error) {
+        coreExports.warning(`Failed to load existing review comments: ${String(error)}`);
+        return new Set();
+    }
 }
 /**
  * Find existing  comment on PR
@@ -36236,7 +36489,7 @@ async function findExistingComment(octokit, owner, repo, prNumber) {
             repo,
             issue_number: prNumber,
         });
-        const comment = response.data.find((comment) => comment.body?.includes("## 🔍 Markup AI Analysis Results"));
+        const comment = response.data.find((comment) => comment.body?.includes("Markup AI Analysis Results"));
         return comment?.id || null;
     }
     catch (error) {
@@ -36271,6 +36524,7 @@ async function createOrUpdatePRComment(octokit, commentData) {
             prNumber,
             ref: githubExports.context.ref,
             baseUrl: new URL(githubExports.context.serverUrl),
+            runId: githubExports.context.runId,
         };
         const commentBody = generateCommentBody(results, config, commentData.eventType, context);
         const existingCommentId = await findExistingComment(octokit, owner, repo, prNumber);
@@ -36307,6 +36561,70 @@ async function createOrUpdatePRComment(octokit, commentData) {
         else {
             logError(githubError, "Failed to create/update PR comment");
         }
+    }
+}
+/**
+ * Create PR review comments for issues found in analysis results
+ */
+async function createPRReviewComments(octokit, commentData) {
+    const { owner, repo, prNumber, results } = commentData;
+    const reviewComments = buildReviewComments(results);
+    if (reviewComments.length === 0) {
+        coreExports.info("No review comments to create.");
+        return;
+    }
+    const existingKeys = await getExistingReviewCommentKeys(octokit, owner, repo, prNumber);
+    const filteredComments = filterExistingReviewComments(reviewComments, existingKeys);
+    if (filteredComments.length === 0) {
+        coreExports.info("No new review comments to create: all detected issues already have unresolved review comments.");
+        return;
+    }
+    const payload = githubExports.context.payload;
+    const commitId = payload.pull_request?.head?.sha;
+    if (!commitId) {
+        coreExports.warning("Unable to determine PR head SHA for review comments.");
+        return;
+    }
+    try {
+        await octokit.rest.pulls.createReview({
+            owner,
+            repo,
+            pull_number: prNumber,
+            commit_id: commitId,
+            event: "COMMENT",
+            comments: filteredComments,
+        });
+        coreExports.info(`✅ Created PR review with ${filteredComments.length.toString()} comments`);
+    }
+    catch (error) {
+        const githubError = handleGitHubError(error, "Create PR review comments");
+        if (githubError.status === 422) {
+            coreExports.warning("Some review comments could not be placed in the PR diff. Retrying individually.");
+            for (const comment of filteredComments) {
+                try {
+                    await octokit.rest.pulls.createReviewComment({
+                        owner,
+                        repo,
+                        pull_number: prNumber,
+                        commit_id: commitId,
+                        path: comment.path,
+                        line: comment.line,
+                        side: comment.side,
+                        body: comment.body,
+                    });
+                }
+                catch (commentError) {
+                    coreExports.warning(`Failed to create review comment for ${comment.path}:${comment.line.toString()}: ${String(commentError)}`);
+                }
+            }
+            return;
+        }
+        if (githubError.status === 403) {
+            coreExports.error("❌ Permission denied: Cannot create PR review comments.");
+            coreExports.error('Please ensure the GitHub token has "pull-requests: write" permission.');
+            return;
+        }
+        logError(githubError, "Failed to create PR review comments");
     }
 }
 /**
@@ -36636,6 +36954,7 @@ async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysis
             repo,
             ref,
             baseUrl: new URL(githubExports.context.serverUrl),
+            runId: githubExports.context.runId,
         };
         await createJobSummary(results, analysisOptions, eventType, context);
     }
@@ -36646,7 +36965,7 @@ async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysis
 /**
  * Handle pull request event: create or update PR comment
  */
-async function handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, eventType) {
+async function handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, addReviewComments, eventType) {
     if (!isPullRequestEvent()) {
         return;
     }
@@ -36664,6 +36983,19 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
             config: analysisOptions,
             eventType,
         });
+        if (addReviewComments) {
+            await createPRReviewComments(octokit, {
+                owner,
+                repo,
+                prNumber,
+                results,
+                config: analysisOptions,
+                eventType,
+            });
+        }
+        else {
+            coreExports.info("💬 Review comments disabled by configuration");
+        }
     }
     catch (error) {
         coreExports.error(`Failed to create PR comment: ${String(error)}`);
@@ -36690,7 +37022,7 @@ async function handlePostAnalysisActions(eventInfo, results, config, analysisOpt
             await handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysisOptions, eventInfo.eventType);
             break;
         case EVENT_TYPES.PULL_REQUEST:
-            await handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, eventInfo.eventType);
+            await handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, config.addReviewComments, eventInfo.eventType);
             break;
         default:
             coreExports.info(`No specific post-analysis actions for event type: ${eventInfo.eventType}`);
