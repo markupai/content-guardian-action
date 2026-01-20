@@ -145,6 +145,24 @@ function buildReviewComments(results: AnalysisResult[]): ReviewCommentPayload[] 
   return comments;
 }
 
+function filterExistingReviewComments(
+  reviewComments: ReviewCommentPayload[],
+  existingKeys: Set<string>,
+): ReviewCommentPayload[] {
+  const filtered: ReviewCommentPayload[] = [];
+  for (const comment of reviewComments) {
+    const key = `${comment.path}:${comment.line.toString()}:${comment.body}`;
+    if (existingKeys.has(key)) {
+      core.info(
+        `Skipping existing review comment for ${comment.path}:${comment.line.toString()}`,
+      );
+      continue;
+    }
+    filtered.push(comment);
+  }
+  return filtered;
+}
+
 async function getExistingReviewCommentKeys(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
@@ -300,13 +318,12 @@ export async function createPRReviewComments(
   }
 
   const existingKeys = await getExistingReviewCommentKeys(octokit, owner, repo, prNumber);
-  const filteredComments = reviewComments.filter(
-    (comment) =>
-      !existingKeys.has(`${comment.path}:${comment.line.toString()}:${comment.body}`),
-  );
+  const filteredComments = filterExistingReviewComments(reviewComments, existingKeys);
 
   if (filteredComments.length === 0) {
-    core.info("All review comments already exist and are unresolved.");
+    core.info(
+      "No new review comments to create: all detected issues already have unresolved review comments.",
+    );
     return;
   }
 
