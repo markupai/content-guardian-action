@@ -2,6 +2,8 @@ import * as core from "@actions/core";
 import {
   styleCheck,
   styleBatchCheckRequests,
+  styleBatchOperation,
+  styleSuggestions,
   Config,
   StyleAnalysisReq,
   PlatformType,
@@ -42,7 +44,9 @@ export async function analyzeFile(
       ...(options.tone ? { tone: options.tone } : {}),
     };
 
-    const result = await styleCheck(request, config);
+    const result = options.reviewComments
+      ? await styleSuggestions(request, config)
+      : await styleCheck(request, config);
 
     const issues = result.original.issues.map((issue) => ({
       issue,
@@ -106,7 +110,9 @@ export async function analyzeFilesBatch(
 
   try {
     // Start batch processing
-    const batchResponse = styleBatchCheckRequests(requests, config, batchOptions);
+    const batchResponse = options.reviewComments
+      ? styleBatchOperation(requests, config, "suggestions", batchOptions)
+      : styleBatchCheckRequests(requests, config, batchOptions);
 
     // Monitor progress
     const progressInterval = setInterval(() => {
