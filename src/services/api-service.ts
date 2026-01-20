@@ -10,7 +10,7 @@ import {
   Environment,
 } from "@markupai/toolkit";
 import { AnalysisResult, AnalysisOptions } from "../types/index.js";
-import { getFileBasename, getLineNumberAtIndex } from "../utils/file-utils.js";
+import { getFileBasename, getLineContextAtIndex } from "../utils/file-utils.js";
 import { calculateScoreSummary, ScoreSummary } from "../utils/score-utils.js";
 import { processFileReading } from "../utils/batch-utils.js";
 import { checkForRequestEndingError, isRequestEndingError } from "../utils/error-utils.js";
@@ -48,10 +48,15 @@ export async function analyzeFile(
       ? await styleSuggestions(request, config)
       : await styleCheck(request, config);
 
-    const issues = result.original.issues.map((issue) => ({
-      issue,
-      line: getLineNumberAtIndex(content, issue.position.start_index),
-    }));
+    const issues = result.original.issues.map((issue) => {
+      const context = getLineContextAtIndex(content, issue.position.start_index);
+      return {
+        issue,
+        line: context.line,
+        column: context.column,
+        lineText: context.lineText,
+      };
+    });
 
     return {
       filePath,
@@ -152,10 +157,15 @@ export async function analyzeFilesBatch(
     for (const [index, batchResult] of finalProgress.results.entries()) {
       if (batchResult.status === "completed" && batchResult.result) {
         const content = fileContents[index].content;
-        const issues = batchResult.result.original.issues.map((issue) => ({
-          issue,
-          line: getLineNumberAtIndex(content, issue.position.start_index),
-        }));
+        const issues = batchResult.result.original.issues.map((issue) => {
+          const context = getLineContextAtIndex(content, issue.position.start_index);
+          return {
+            issue,
+            line: context.line,
+            column: context.column,
+            lineText: context.lineText,
+          };
+        });
 
         results.push({
           filePath: fileContents[index].filePath,

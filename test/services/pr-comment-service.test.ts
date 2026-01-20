@@ -533,6 +533,8 @@ describe("PR Comment Service", () => {
         issues: [
           {
             line: 1,
+            column: 0,
+            lineText: "Teh sample line",
             issue: {
               original: "Teh",
               position: { start_index: 0 },
@@ -570,6 +572,11 @@ describe("PR Comment Service", () => {
           }) as unknown,
         ],
       });
+
+      const createCall = mockOctokit.rest.pulls.createReview.mock.calls[0][0] as {
+        comments: Array<{ body: string }>;
+      };
+      expect(createCall.comments[0].body).toContain("The sample line");
     });
 
     it("should skip review creation when no issues exist", async () => {

@@ -54,15 +54,50 @@ function truncateText(value: string, maxLength: number): string {
   return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
 }
 
+function applyInlineSuggestion(
+  issue: AnalysisIssue["issue"],
+  lineText: string,
+  column: number,
+): string | null {
+  if (!("suggestion" in issue) || !issue.suggestion) {
+    return null;
+  }
+
+  const original = issue.original;
+  const suggestion = issue.suggestion;
+
+  if (lineText) {
+    const columnIndex = Math.min(Math.max(column, 0), lineText.length);
+    const after = lineText.slice(columnIndex);
+    if (after.startsWith(original)) {
+      return `${lineText.slice(0, columnIndex)}${suggestion}${after.slice(original.length)}`;
+    }
+
+    const fallbackIndex = lineText.indexOf(original);
+    if (fallbackIndex >= 0) {
+      return `${lineText.slice(0, fallbackIndex)}${suggestion}${lineText.slice(
+        fallbackIndex + original.length,
+      )}`;
+    }
+  }
+
+  return null;
+}
+
 function buildReviewCommentBody(issues: AnalysisIssue[]): string {
-  const issueLines = issues.slice(0, MAX_ISSUES_PER_COMMENT).map(({ issue }) => {
+  const issueLines = issues
+    .slice(0, MAX_ISSUES_PER_COMMENT)
+    .map(({ issue, lineText, column }) => {
     const category = issue.category;
     const subcategory = issue.subcategory;
     const original = truncateText(issue.original, MAX_ORIGINAL_LENGTH);
-    const suggestion =
-      "suggestion" in issue && issue.suggestion
-        ? `\n\`\`\`suggestion\n${issue.suggestion}\n\`\`\``
-        : "";
+    const inlineSuggestion = applyInlineSuggestion(issue, lineText, column);
+    let suggestion = "";
+    if (inlineSuggestion) {
+      suggestion = `\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
+    } else if ("suggestion" in issue && issue.suggestion) {
+      suggestion = `\nSuggestion: \`${truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH)}\``;
+    }
     return `- **${category} / ${subcategory}**: \`${original}\`${suggestion}`;
   });
 

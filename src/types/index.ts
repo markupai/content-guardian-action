@@ -43,6 +43,8 @@ export interface AnalysisResult {
 export interface AnalysisIssue {
   issue: Issue | IssueWithSuggestion;
   line: number;
+  column: number;
+  lineText: string;
 }
 
 /**
