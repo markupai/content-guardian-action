@@ -1,12 +1,5 @@
 import * as core from "@actions/core";
-import {
-  styleCheck,
-  styleBatchCheckRequests,
-  Config,
-  StyleAnalysisReq,
-  PlatformType,
-  Environment,
-} from "@markupai/toolkit";
+import { styleCheck, styleBatchCheckRequests, Config, StyleAnalysisReq } from "@markupai/toolkit";
 import { AnalysisResult, AnalysisOptions } from "../types/index.js";
 import { getFileBasename } from "../utils/file-utils.js";
 import { calculateScoreSummary, ScoreSummary } from "../utils/score-utils.js";
@@ -15,7 +8,6 @@ import { checkForRequestEndingError, isRequestEndingError } from "../utils/error
 
 export function createConfig(apiToken: string): Config {
   return {
-    platform: { type: PlatformType.Environment, value: Environment.Dev },
     apiKey: apiToken,
     headers: { "x-integration-id": "markupai-content-guardian-action" },
   };

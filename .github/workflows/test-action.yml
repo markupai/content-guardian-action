@@ -20,7 +20,7 @@ jobs:
       - name: Run local action
         uses: ./
         with:
-          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY_DEV_KTOTH }}
+          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           dialect: "american_english"
           style-guide: "ap"
