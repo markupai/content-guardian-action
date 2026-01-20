@@ -145,6 +145,47 @@ function buildReviewComments(results: AnalysisResult[]): ReviewCommentPayload[] 
   return comments;
 }
 
+async function getExistingReviewCommentKeys(
+  octokit: ReturnType<typeof github.getOctokit>,
+  owner: string,
+  repo: string,
+  prNumber: number,
+): Promise<Set<string>> {
+  try {
+    const comments =
+      typeof octokit.paginate === "function"
+        ? await octokit.paginate(octokit.rest.pulls.listReviewComments, {
+            owner,
+            repo,
+            pull_number: prNumber,
+            per_page: 100,
+          })
+        : (
+            await octokit.rest.pulls.listReviewComments({
+              owner,
+              repo,
+              pull_number: prNumber,
+              per_page: 100,
+            })
+          ).data;
+
+    const keys = new Set<string>();
+    for (const comment of comments) {
+      if (comment.path && typeof comment.line === "number") {
+        const resolved = (comment as { resolved?: boolean }).resolved;
+        if (resolved === true) {
+          continue;
+        }
+        keys.add(`${comment.path}:${comment.line.toString()}:${comment.body}`);
+      }
+    }
+    return keys;
+  } catch (error) {
+    core.warning(`Failed to load existing review comments: ${String(error)}`);
+    return new Set<string>();
+  }
+}
+
 /**
  * Find existing  comment on PR
  */
@@ -258,6 +299,17 @@ export async function createPRReviewComments(
     return;
   }
 
+  const existingKeys = await getExistingReviewCommentKeys(octokit, owner, repo, prNumber);
+  const filteredComments = reviewComments.filter(
+    (comment) =>
+      !existingKeys.has(`${comment.path}:${comment.line.toString()}:${comment.body}`),
+  );
+
+  if (filteredComments.length === 0) {
+    core.info("All review comments already exist and are unresolved.");
+    return;
+  }
+
   const pullRequest = github.context.payload.pull_request;
   const commitId = pullRequest?.head?.sha;
   if (!commitId) {
@@ -272,16 +324,16 @@ export async function createPRReviewComments(
       pull_number: prNumber,
       commit_id: commitId,
       event: "COMMENT",
-      comments: reviewComments,
+      comments: filteredComments,
     });
-    core.info(`✅ Created PR review with ${reviewComments.length.toString()} comments`);
+    core.info(`✅ Created PR review with ${filteredComments.length.toString()} comments`);
   } catch (error: unknown) {
     const githubError = handleGitHubError(error, "Create PR review comments");
     if (githubError.status === 422) {
       core.warning(
         "Some review comments could not be placed in the PR diff. Retrying individually.",
       );
-      for (const comment of reviewComments) {
+      for (const comment of filteredComments) {
         try {
           await octokit.rest.pulls.createReviewComment({
             owner,
