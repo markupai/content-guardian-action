@@ -419,7 +419,7 @@ describe("Post Analysis Service", () => {
         );
 
         expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
-        expect(mockCreatePRReviewComments).toHaveBeenCalled();
+        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
         // The function should not throw, it should handle the error gracefully
       });
 

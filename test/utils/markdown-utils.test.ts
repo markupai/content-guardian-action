@@ -540,7 +540,7 @@ describe("Markdown Utils", () => {
         "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
       );
       expect(result).toContain("- **Event:** push");
-      expect(result).toContain("*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*");
+      expect(result).not.toContain("Quality Score Legend");
     });
 
     it("should handle different event types", () => {
@@ -580,11 +580,11 @@ describe("Markdown Utils", () => {
       // Should contain all sections
       expect(result).toContain(header);
       expect(result).toContain(
-        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Issues |",
+        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
       expect(result).toContain("## 📊 Summary");
-      expect(result).toContain("<summary>Analysis performed on");
-      expect(result).toContain("*Event: push*");
+      expect(result).toContain("<summary>💡 Analysis performed on");
+      expect(result).toContain("- **Event:** push");
 
       // Should contain rounded scores
       expect(result).toContain("🟢 86"); // 85.7 rounded to 86
@@ -603,7 +603,7 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain(header);
       expect(result).toContain("No files were analyzed.");
-      expect(result).toContain("*Event: push*");
+      expect(result).toContain("- **Event:** push");
       // Should not contain summary section for empty results
       expect(result).not.toContain("## 📊 Summary");
     });
