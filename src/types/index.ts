@@ -25,7 +25,7 @@ export interface FileChange {
   patch?: string;
 }
 
-import type { StyleScores } from "@markupai/toolkit";
+import type { Issue, IssueWithSuggestion, StyleScores } from "@markupai/toolkit";
 
 /**
  * Interface for analysis result
@@ -33,7 +33,16 @@ import type { StyleScores } from "@markupai/toolkit";
 export interface AnalysisResult {
   filePath: string;
   result: StyleScores;
+  issues: AnalysisIssue[];
   timestamp: string;
+}
+
+/**
+ * Interface for analysis issues with file line context
+ */
+export interface AnalysisIssue {
+  issue: Issue | IssueWithSuggestion;
+  line: number;
 }
 
 /**

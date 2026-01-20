@@ -7,7 +7,12 @@ import * as github from "@actions/github";
 import { AnalysisResult, EventInfo } from "../types/index.js";
 import { EVENT_TYPES } from "../constants/index.js";
 import { getAnalysisSummary } from "./api-service.js";
-import { createOrUpdatePRComment, isPullRequestEvent, getPRNumber } from "./pr-comment-service.js";
+import {
+  createOrUpdatePRComment,
+  createPRReviewComments,
+  isPullRequestEvent,
+  getPRNumber,
+} from "./pr-comment-service.js";
 import { createGitHubClient, updateCommitStatus } from "./github-service.js";
 import { createJobSummary } from "./job-summary-service.js";
 import { RepositoryContext } from "../utils/markdown-utils.js";
@@ -93,6 +98,14 @@ async function handlePullRequestEvent(
   displaySectionHeader("💬 Creating PR Comment");
   try {
     await createOrUpdatePRComment(octokit, {
+      owner,
+      repo,
+      prNumber,
+      results,
+      config: analysisOptions,
+      eventType,
+    });
+    await createPRReviewComments(octokit, {
       owner,
       repo,
       prNumber,

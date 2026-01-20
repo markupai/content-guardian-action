@@ -83,9 +83,9 @@ vi.mock("@markupai/toolkit", async () => {
           issues: [
             {
               original: "test text",
-              char_index: 10,
+              position: { start_index: 10 },
               subcategory: "passive_voice",
-              category: "style_guide",
+              category: "grammar",
             },
           ],
           scores: {
@@ -93,7 +93,6 @@ vi.mock("@markupai/toolkit", async () => {
               score: 85.2,
               grammar: { score: 90.1, issues: 2 },
               consistency: { score: 88.3, issues: 1 },
-              style_guide: { score: 88.3, issues: 1 },
               terminology: { score: 95, issues: 0 },
             },
             analysis: {
@@ -142,7 +141,6 @@ vi.mock("@markupai/toolkit", async () => {
                     score: 85.2,
                     grammar: { score: 90.1, issues: 2 },
                     consistency: { score: 88.3, issues: 1 },
-                    style_guide: { score: 88.3, issues: 1 },
                     terminology: { score: 95, issues: 0 },
                   },
                   analysis: {
@@ -193,7 +191,6 @@ vi.mock("@markupai/toolkit", async () => {
                     score: 85.2,
                     grammar: { score: 90.1, issues: 2 },
                     consistency: { score: 88.3, issues: 1 },
-                    style_guide: { score: 88.3, issues: 1 },
                     terminology: { score: 95, issues: 0 },
                   },
                   analysis: {

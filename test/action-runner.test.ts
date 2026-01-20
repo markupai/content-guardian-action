@@ -51,6 +51,7 @@ const createFileAnalysisResults = (filePaths: string[], includeAll: boolean = tr
   return filesToReturn.map((filePath) => ({
     filePath,
     result: { quality: { score: 85 } },
+    issues: [],
     timestamp: "2024-01-01T00:00:00Z",
   }));
 };
