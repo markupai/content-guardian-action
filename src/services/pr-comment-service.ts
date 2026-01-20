@@ -56,6 +56,13 @@ function truncateText(value: string, maxLength: number): string {
   return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
 }
 
+function capitalizeLabel(value: string): string {
+  if (!value) {
+    return value;
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 function applyInlineSuggestion(
   issue: AnalysisIssue["issue"],
   lineText: string,
@@ -90,17 +97,32 @@ function buildReviewCommentBody(issues: AnalysisIssue[]): string {
   const issueLines = issues
     .slice(0, MAX_ISSUES_PER_COMMENT)
     .map(({ issue, lineText, column }) => {
-    const category = issue.category;
-    const subcategory = issue.subcategory;
+    const category = capitalizeLabel(issue.category);
+    const subcategory = capitalizeLabel(issue.subcategory);
     const original = truncateText(issue.original, MAX_ORIGINAL_LENGTH);
     const inlineSuggestion = applyInlineSuggestion(issue, lineText, column);
     let suggestion = "";
     if (inlineSuggestion) {
-      suggestion = `\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
+      const explanation =
+        "explanation" in issue && issue.explanation
+          ? `\nExplanation: ${truncateText(issue.explanation, MAX_ORIGINAL_LENGTH)}`
+          : "";
+      suggestion = `${explanation}\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
     } else if ("suggestion" in issue && issue.suggestion) {
-      suggestion = `\nSuggestion: \`${truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH)}\``;
+      const explanation =
+        "explanation" in issue && issue.explanation
+          ? `\nExplanation: ${truncateText(issue.explanation, MAX_ORIGINAL_LENGTH)}`
+          : "";
+      suggestion = `${explanation}\nSuggestion: \`${truncateText(
+        issue.suggestion,
+        MAX_ORIGINAL_LENGTH,
+      )}\``;
     }
-    return `- **${category} / ${subcategory}**: \`${original}\`${suggestion}`;
+    const severity =
+      "severity" in issue && issue.severity
+        ? ` (Severity: ${capitalizeLabel(String(issue.severity))})`
+        : "";
+    return `- **${category} / ${subcategory}${severity}**: \`${original}\`${suggestion}`;
   });
 
   const moreCount = issues.length - issueLines.length;
