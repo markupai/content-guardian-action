@@ -167,7 +167,7 @@ export async function analyzeFilesBatch(
             lineText: context.lineText,
           };
         });
-        const workflowId = batchResult.workflowId || batchResult.result.workflow?.id;
+        const workflowId = batchResult.workflowId || batchResult.result.workflow.id;
 
         results.push({
           filePath: fileContents[index].filePath,
