@@ -20,7 +20,15 @@ vi.mock("@markupai/toolkit", async () => {
 const { analyzeFile, analyzeFiles, analyzeFilesBatch } =
   await import("../../src/services/api-service.js");
 import type { AnalysisOptions, AnalysisResult } from "../../src/types/index.js";
-import { PlatformType, Config, Status, ErrorType, ApiError } from "@markupai/toolkit";
+import {
+  PlatformType,
+  Config,
+  Status,
+  ErrorType,
+  ApiError,
+  IssueCategory,
+  IssueSeverity,
+} from "@markupai/toolkit";
 import { buildScores } from "../test-helpers/scores.js";
 
 describe("Markup AI Service Batch Functionality", () => {
@@ -88,7 +96,8 @@ describe("Markup AI Service Batch Functionality", () => {
                 original: "Teh",
                 position: { start_index: 0 },
                 subcategory: "spelling",
-                category: "grammar",
+                category: IssueCategory.Grammar,
+                severity: IssueSeverity.Medium,
                 suggestion: "The",
               },
             ],
