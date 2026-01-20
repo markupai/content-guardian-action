@@ -34,6 +34,7 @@ export interface AnalysisResult {
   filePath: string;
   result: StyleScores;
   issues: AnalysisIssue[];
+  workflowId?: string;
   timestamp: string;
 }
 

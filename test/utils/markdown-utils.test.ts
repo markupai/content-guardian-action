@@ -525,13 +525,31 @@ describe("Markdown Utils", () => {
 
   describe("generateFooter", () => {
     it("should generate footer with configuration and event info", () => {
-      const result = generateFooter(mockAnalysisOptions, "push", {
-        owner: "test",
-        repo: "test",
-        ref: "main",
-        baseUrl: new URL("https://github.com"),
-        runId: 123456,
-      });
+      const results = [
+        {
+          ...createMockResult("test.md", {
+            quality: 85,
+            clarity: 90,
+            grammar: 80,
+            style_guide: 88,
+            tone: 87,
+            terminology: 92,
+          }),
+          workflowId: "analysis-workflow-1",
+        },
+      ];
+      const result = generateFooter(
+        mockAnalysisOptions,
+        "push",
+        {
+          owner: "test",
+          repo: "test",
+          ref: "main",
+          baseUrl: new URL("https://github.com"),
+          runId: 123456,
+        },
+        results,
+      );
 
       expect(result).toContain("---");
       expect(result).toContain("<details>");
@@ -540,19 +558,42 @@ describe("Markdown Utils", () => {
         "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
       );
       expect(result).toContain("- **Event:** push");
+      expect(result).toContain("- **Workflow ID:** analysis-workflow-1");
+      expect(result).toContain(
+        "- **GitHub workflow run:** [#123456](https://github.com/test/test/actions/runs/123456)",
+      );
       expect(result).not.toContain("Quality Score Legend");
     });
 
     it("should handle different event types", () => {
-      const result = generateFooter(mockAnalysisOptions, "pull_request", {
-        owner: "test",
-        repo: "test",
-        ref: "main",
-        baseUrl: new URL("https://github.com"),
-        runId: 123456,
-      });
+      const results = [
+        {
+          ...createMockResult("test.md", {
+            quality: 85,
+            clarity: 90,
+            grammar: 80,
+            style_guide: 88,
+            tone: 87,
+            terminology: 92,
+          }),
+          workflowId: "analysis-workflow-2",
+        },
+      ];
+      const result = generateFooter(
+        mockAnalysisOptions,
+        "pull_request",
+        {
+          owner: "test",
+          repo: "test",
+          ref: "main",
+          baseUrl: new URL("https://github.com"),
+          runId: 123456,
+        },
+        results,
+      );
 
       expect(result).toContain("- **Event:** pull_request");
+      expect(result).toContain("- **Workflow ID:** analysis-workflow-2");
     });
   });
 
