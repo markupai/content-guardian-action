@@ -122,17 +122,17 @@ export function generateFooter(
 ): string {
   const pipelineLink =
     typeof context.runId === "number"
-      ? `Pipeline: [#${context.runId.toString()}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${context.runId.toString()})`
+      ? `Workflow run: [#${context.runId.toString()}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${context.runId.toString()})`
       : "";
   return `
 ---
 <details>
 <summary>Analysis performed on ${new Date().toLocaleString()}</summary>
 
-- Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59
 - Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}
 - Event: ${eventType}
 ${pipelineLink ? `- ${pipelineLink}` : ""}
+Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59
 </details>`;
 }
 
