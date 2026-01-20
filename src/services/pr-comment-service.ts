@@ -105,13 +105,13 @@ function buildReviewCommentBody(issues: AnalysisIssue[]): string {
     if (inlineSuggestion) {
       const explanation =
         "explanation" in issue && issue.explanation
-          ? `\nExplanation: ${truncateText(issue.explanation, MAX_ORIGINAL_LENGTH)}`
+          ? `\nExplanation: ${issue.explanation}`
           : "";
       suggestion = `${explanation}\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
     } else if ("suggestion" in issue && issue.suggestion) {
       const explanation =
         "explanation" in issue && issue.explanation
-          ? `\nExplanation: ${truncateText(issue.explanation, MAX_ORIGINAL_LENGTH)}`
+          ? `\nExplanation: ${issue.explanation}`
           : "";
       suggestion = `${explanation}\nSuggestion: \`${truncateText(
         issue.suggestion,
