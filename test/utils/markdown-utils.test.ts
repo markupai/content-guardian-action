@@ -535,11 +535,11 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("<details>");
       expect(result).toContain("<summary>Analysis performed on");
-      expect(result).toContain("- Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59");
       expect(result).toContain(
         "- Configuration: Dialect: american_english | Tone: formal | Style Guide: ap",
       );
       expect(result).toContain("- Event: push");
+      expect(result).toContain("Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59");
     });
 
     it("should handle different event types", () => {
