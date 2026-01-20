@@ -34,6 +34,10 @@ export type NonPRRepositoryContext = BaseRepositoryContext;
  */
 export type RepositoryContext = PRRepositoryContext | NonPRRepositoryContext;
 
+function isNonEmptyString(value: string | undefined): value is string {
+  return typeof value === "string" && value.length > 0;
+}
+
 /**
  * Generate file display link based on repository context
  */
@@ -129,11 +133,21 @@ export function generateFooter(
   config: AnalysisOptions,
   eventType: string,
   context: RepositoryContext,
+  results: AnalysisResult[],
 ): string {
-  const pipelineLink =
-    typeof context.runId === "number"
-      ? `Workflow run: [#${context.runId.toString()}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${context.runId.toString()})`
-      : "";
+  const workflowRunId = typeof context.runId === "number" ? context.runId.toString() : "";
+  const workflowRunLink = workflowRunId
+    ? `[#${workflowRunId}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${workflowRunId})`
+    : "";
+  const workflowIds = Array.from(
+    new Set(results.map((result) => result.workflowId).filter(isNonEmptyString)),
+  );
+  let workflowIdLine = "";
+  if (workflowIds.length === 1) {
+    workflowIdLine = `- **Markup AI workflow ID:** ${workflowIds[0]}`;
+  } else if (workflowIds.length > 1) {
+    workflowIdLine = `- **Markup AI workflow IDs:** ${workflowIds.join(", ")}`;
+  }
   return `
 ---
 <details>
@@ -141,7 +155,8 @@ export function generateFooter(
 
 - **Configuration:** Style Guide: ${config.styleGuide} | Dialect: ${config.dialect}${config.tone ? ` | Tone: ${config.tone}` : ""}
 - **Event:** ${eventType}
-${pipelineLink ? `- **Workflow run:** ${pipelineLink.replace("Workflow run: ", "")}` : ""}
+${workflowIdLine}
+${workflowRunLink ? `- **GitHub workflow run:** ${workflowRunLink}` : ""}
 
 </details>`;
 }
@@ -158,7 +173,7 @@ export function generateAnalysisContent(
 ): string {
   const table = generateResultsTable(results, context);
   const summary = generateSummary(results);
-  const footer = generateFooter(config, eventType, context);
+  const footer = generateFooter(config, eventType, context, results);
   const qualityLegend = "*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*";
 
   return `${header}

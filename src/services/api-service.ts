@@ -62,6 +62,7 @@ export async function analyzeFile(
       filePath,
       result: result.original.scores,
       issues,
+      workflowId: result.workflow.id,
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
@@ -166,11 +167,13 @@ export async function analyzeFilesBatch(
             lineText: context.lineText,
           };
         });
+        const workflowId = batchResult.workflowId || batchResult.result.workflow?.id;
 
         results.push({
           filePath: fileContents[index].filePath,
           result: batchResult.result.original.scores,
           issues,
+          workflowId,
           timestamp: new Date().toISOString(),
         });
       } else if (batchResult.status === "failed") {
