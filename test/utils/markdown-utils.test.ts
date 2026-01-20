@@ -558,7 +558,7 @@ describe("Markdown Utils", () => {
         "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
       );
       expect(result).toContain("- **Event:** push");
-      expect(result).toContain("- **Workflow ID:** analysis-workflow-1");
+      expect(result).toContain("- **Markup AI workflow ID:** analysis-workflow-1");
       expect(result).toContain(
         "- **GitHub workflow run:** [#123456](https://github.com/test/test/actions/runs/123456)",
       );
@@ -593,7 +593,7 @@ describe("Markdown Utils", () => {
       );
 
       expect(result).toContain("- **Event:** pull_request");
-      expect(result).toContain("- **Workflow ID:** analysis-workflow-2");
+      expect(result).toContain("- **Markup AI workflow ID:** analysis-workflow-2");
     });
   });
 
