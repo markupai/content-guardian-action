@@ -21,6 +21,7 @@ interface MockGitHubContext {
 type MockFunction = ReturnType<typeof vi.fn>;
 
 interface MockOctokitInstance {
+  paginate?: MockFunction;
   rest: {
     repos: {
       get: MockFunction;
@@ -33,6 +34,7 @@ interface MockOctokitInstance {
     pulls: {
       createReview: MockFunction;
       createReviewComment: MockFunction;
+      listReviewComments: MockFunction;
     };
   };
 }
@@ -93,6 +95,7 @@ const mockOctokit: MockOctokitInstance = {
     pulls: {
       createReview: vi.fn(),
       createReviewComment: vi.fn(),
+      listReviewComments: vi.fn(),
     },
   },
 };
@@ -186,6 +189,7 @@ describe("PR Comment Service", () => {
     mockOctokit.rest.issues.updateComment.mockClear();
     mockOctokit.rest.pulls.createReview.mockClear();
     mockOctokit.rest.pulls.createReviewComment.mockClear();
+    mockOctokit.rest.pulls.listReviewComments.mockClear();
     vi.mocked(github.getOctokit).mockReturnValue(
       mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
     );
@@ -533,6 +537,8 @@ describe("PR Comment Service", () => {
         },
       };
 
+      mockOctokit.paginate = vi.fn().mockResolvedValue([]);
+
       await createPRReviewComments(
         mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
         createCommentData([issueResult]),
@@ -570,6 +576,53 @@ describe("PR Comment Service", () => {
       await createPRReviewComments(
         mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
         createCommentData([createMockAnalysisResult()]),
+      );
+
+      expect(mockOctokit.rest.pulls.createReview).not.toHaveBeenCalled();
+    });
+
+    it("should skip creating duplicate unresolved comments", async () => {
+      setupSuccessfulRepositoryAccess();
+
+      const issueResult: AnalysisResult = createMockAnalysisResult({
+        issues: [
+          {
+            line: 1,
+            column: 0,
+            lineText: "Teh sample line",
+            issue: {
+              original: "Teh",
+              position: { start_index: 0 },
+              subcategory: "spelling",
+              category: IssueCategory.Grammar,
+              suggestion: "The",
+            },
+          },
+        ],
+      });
+
+      (github.context as { payload?: Record<string, unknown> }).payload = {
+        pull_request: {
+          head: { sha: "test-sha" },
+        },
+      };
+
+      const existingBody = `**Markup AI** detected issues:
+- **grammar / spelling**: \`Teh\`
+\`\`\`suggestion
+The sample line
+\`\`\``;
+      mockOctokit.paginate = vi.fn().mockResolvedValue([
+        {
+          path: "test.md",
+          line: 1,
+          body: existingBody,
+        },
+      ]);
+
+      await createPRReviewComments(
+        mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
+        createCommentData([issueResult]),
       );
 
       expect(mockOctokit.rest.pulls.createReview).not.toHaveBeenCalled();
