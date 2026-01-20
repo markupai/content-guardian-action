@@ -141,6 +141,7 @@ describe("Post Analysis Service", () => {
   const mockConfig = {
     githubToken: "test-token",
     addCommitStatus: true,
+    addReviewComments: true,
   };
 
   const mockAnalysisOptions = {
@@ -301,6 +302,25 @@ describe("Post Analysis Service", () => {
           results: mockResults,
           config: mockAnalysisOptions,
         });
+      });
+
+      it("should skip review comments when disabled", async () => {
+        mockIsPullRequestEvent.mockReturnValue(true);
+        mockGetPRNumber.mockReturnValue(123);
+
+        await postAnalysisService.handlePostAnalysisActions(
+          {
+            eventType: EVENT_TYPES.PULL_REQUEST,
+            filesCount: 1,
+            description: "Pull request event",
+          },
+          mockResults,
+          { ...mockConfig, addReviewComments: false },
+          mockAnalysisOptions,
+        );
+
+        expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
+        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
       });
 
       it("should not create PR comment when it is not a pull request event", async () => {

@@ -75,6 +75,7 @@ jobs:
           # tone is optional
           tone: "academic"
           add_commit_status: "true"
+          add_review_comments: "true"
           strict_mode: "false" # Continue even if some files fail to analyze
 ```
 
@@ -156,6 +157,7 @@ permissions:
 | `style-guide`       | Style guide for analysis (for example, `ap`, `chicago`, `apa`, or a custom style guide ID like `sg-123456`) | Yes      | -       |
 | `tone`              | Tone for analysis (for example, `formal`, `informal`, `academic`)                                           | No       | -       |
 | `add_commit_status` | Whether to add commit status updates                                                                        | No       | `true`  |
+| `add_review_comments` | Whether to add PR review comments for issues                                                               | No       | `true`  |
 | `strict_mode`       | Fail the action if any file analysis fails (default is false)                                               | No       | `false` |
 
 ## Outputs

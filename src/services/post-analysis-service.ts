@@ -84,6 +84,7 @@ async function handlePullRequestEvent(
   repo: string,
   results: AnalysisResult[],
   analysisOptions: ReturnType<typeof getAnalysisOptions>,
+  addReviewComments: boolean,
   eventType: string,
 ): Promise<void> {
   if (!isPullRequestEvent()) {
@@ -105,14 +106,18 @@ async function handlePullRequestEvent(
       config: analysisOptions,
       eventType,
     });
-    await createPRReviewComments(octokit, {
-      owner,
-      repo,
-      prNumber,
-      results,
-      config: analysisOptions,
-      eventType,
-    });
+    if (addReviewComments) {
+      await createPRReviewComments(octokit, {
+        owner,
+        repo,
+        prNumber,
+        results,
+        config: analysisOptions,
+        eventType,
+      });
+    } else {
+      core.info("💬 Review comments disabled by configuration");
+    }
   } catch (error) {
     core.error(`Failed to create PR comment: ${String(error)}`);
   }
@@ -124,7 +129,7 @@ async function handlePullRequestEvent(
 export async function handlePostAnalysisActions(
   eventInfo: EventInfo,
   results: AnalysisResult[],
-  config: { githubToken: string; addCommitStatus: boolean },
+  config: { githubToken: string; addCommitStatus: boolean; addReviewComments: boolean },
   analysisOptions: ReturnType<typeof getAnalysisOptions>,
 ): Promise<void> {
   if (results.length === 0) {
@@ -159,6 +164,7 @@ export async function handlePostAnalysisActions(
         repo,
         results,
         analysisOptions,
+        config.addReviewComments,
         eventInfo.eventType,
       );
       break;

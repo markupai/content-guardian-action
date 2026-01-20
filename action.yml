@@ -30,6 +30,10 @@ inputs:
     description: Add commit status updates (default is true)
     required: false
     default: "true"
+  add_review_comments:
+    description: Add PR review comments for issues (default is true)
+    required: false
+    default: "true"
   strict_mode:
     description: Fail the action if any file analysis fails (default is false)
     required: false

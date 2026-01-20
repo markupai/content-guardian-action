@@ -30,3 +30,4 @@ jobs:
           style-guide: "ap"
           # tone: "formal"
           strict_mode: "false"
+          add_review_comments: "true"
