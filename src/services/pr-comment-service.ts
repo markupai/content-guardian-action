@@ -40,6 +40,7 @@ function generateCommentBody(
   eventType: string,
   context: RepositoryContext,
 ): string {
+  // TODO: Replace with the logo url from the main branch
   const logoUrl =
     "https://github.com/markupai/content-guardian-action/raw/unlock%2FAdd-review-commit-with-suggestion/icons/markup_ai_mark_logo.svg";
   const header = `## <img src="${logoUrl}" alt="Markup AI" width="28" height="28" /> Markup AI Analysis Results (DEV)
