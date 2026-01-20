@@ -94,9 +94,7 @@ function applyInlineSuggestion(
 }
 
 function buildReviewCommentBody(issues: AnalysisIssue[]): string {
-  const issueLines = issues
-    .slice(0, MAX_ISSUES_PER_COMMENT)
-    .map(({ issue, lineText, column }) => {
+  const issueLines = issues.slice(0, MAX_ISSUES_PER_COMMENT).map(({ issue, lineText, column }) => {
     const category = capitalizeLabel(issue.category);
     const subcategory = capitalizeLabel(issue.subcategory);
     const original = truncateText(issue.original, MAX_ORIGINAL_LENGTH);
@@ -104,15 +102,11 @@ function buildReviewCommentBody(issues: AnalysisIssue[]): string {
     let suggestion = "";
     if (inlineSuggestion) {
       const explanation =
-        "explanation" in issue && issue.explanation
-          ? `\nExplanation: ${issue.explanation}`
-          : "";
+        "explanation" in issue && issue.explanation ? `\nExplanation: ${issue.explanation}` : "";
       suggestion = `${explanation}\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
     } else if ("suggestion" in issue && issue.suggestion) {
       const explanation =
-        "explanation" in issue && issue.explanation
-          ? `\nExplanation: ${issue.explanation}`
-          : "";
+        "explanation" in issue && issue.explanation ? `\nExplanation: ${issue.explanation}` : "";
       suggestion = `${explanation}\nSuggestion: \`${truncateText(
         issue.suggestion,
         MAX_ORIGINAL_LENGTH,
@@ -172,9 +166,7 @@ function filterExistingReviewComments(
   for (const comment of reviewComments) {
     const key = `${comment.path}:${comment.line.toString()}:${comment.body}`;
     if (existingKeys.has(key)) {
-      core.info(
-        `Skipping existing review comment for ${comment.path}:${comment.line.toString()}`,
-      );
+      core.info(`Skipping existing review comment for ${comment.path}:${comment.line.toString()}`);
       continue;
     }
     filtered.push(comment);
