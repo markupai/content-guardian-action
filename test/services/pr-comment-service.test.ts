@@ -30,6 +30,10 @@ interface MockOctokitInstance {
       createComment: MockFunction;
       updateComment: MockFunction;
     };
+    pulls: {
+      createReview: MockFunction;
+      createReviewComment: MockFunction;
+    };
   };
 }
 
@@ -66,10 +70,12 @@ vi.mock("@actions/github", () => ({
 import * as github from "@actions/github";
 import {
   createOrUpdatePRComment,
+  createPRReviewComments,
   isPullRequestEvent,
   getPRNumber,
   PRCommentData,
 } from "../../src/services/pr-comment-service.js";
+import { IssueCategory } from "@markupai/toolkit";
 import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
 
 // Mock Octokit with proper typing
@@ -82,6 +88,10 @@ const mockOctokit: MockOctokitInstance = {
       listComments: vi.fn(),
       createComment: vi.fn(),
       updateComment: vi.fn(),
+    },
+    pulls: {
+      createReview: vi.fn(),
+      createReviewComment: vi.fn(),
     },
   },
 };
@@ -103,6 +113,7 @@ const createMockAnalysisResult = (overrides: Partial<AnalysisResult> = {}): Anal
       tone: buildTone(82),
     },
   },
+  issues: [],
   timestamp: "2024-01-15T10:30:00Z",
   ...overrides,
 });
@@ -182,6 +193,8 @@ describe("PR Comment Service", () => {
     mockOctokit.rest.issues.listComments.mockClear();
     mockOctokit.rest.issues.createComment.mockClear();
     mockOctokit.rest.issues.updateComment.mockClear();
+    mockOctokit.rest.pulls.createReview.mockClear();
+    mockOctokit.rest.pulls.createReviewComment.mockClear();
     vi.mocked(github.getOctokit).mockReturnValue(
       mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
     );
@@ -508,6 +521,68 @@ describe("PR Comment Service", () => {
 
       // Test average calculation (95 + 65 + 45) / 3 = 68.33... rounded to 68
       expect(commentBody).toContain("🟡 68"); // Yellow for average score
+    });
+  });
+
+  describe("createPRReviewComments", () => {
+    it("should create review comments for issues", async () => {
+      setupSuccessfulRepositoryAccess();
+      setupNoExistingComments();
+
+      const issueResult: AnalysisResult = createMockAnalysisResult({
+        issues: [
+          {
+            line: 1,
+            issue: {
+              original: "Teh",
+              position: { start_index: 0 },
+              subcategory: "spelling",
+              category: IssueCategory.Grammar,
+            },
+          },
+        ],
+      });
+
+      (github.context as { payload?: Record<string, unknown> }).payload = {
+        pull_request: {
+          head: { sha: "test-sha" },
+        },
+      };
+
+      await createPRReviewComments(
+        mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
+        createCommentData([issueResult]),
+      );
+
+      expect(mockOctokit.rest.pulls.createReview).toHaveBeenCalledWith({
+        owner: "test-owner",
+        repo: "test-repo",
+        pull_number: 123,
+        commit_id: "test-sha",
+        event: "COMMENT",
+        comments: [
+          expect.objectContaining({
+            path: "test.md",
+            line: 1,
+            side: "RIGHT",
+          }) as unknown,
+        ],
+      });
+    });
+
+    it("should skip review creation when no issues exist", async () => {
+      (github.context as { payload?: Record<string, unknown> }).payload = {
+        pull_request: {
+          head: { sha: "test-sha" },
+        },
+      };
+
+      await createPRReviewComments(
+        mockOctokit as unknown as ReturnType<typeof github.getOctokit>,
+        createCommentData([createMockAnalysisResult()]),
+      );
+
+      expect(mockOctokit.rest.pulls.createReview).not.toHaveBeenCalled();
     });
   });
 });

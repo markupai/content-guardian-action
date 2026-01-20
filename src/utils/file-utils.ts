@@ -48,3 +48,21 @@ export function getFileExtension(filename: string): string {
 export function getFileBasename(filePath: string): string {
   return path.basename(filePath);
 }
+
+/**
+ * Get 1-based line number for a character index in content.
+ */
+export function getLineNumberAtIndex(content: string, index: number): number {
+  if (!content || index <= 0) {
+    return 1;
+  }
+
+  const safeIndex = Math.min(index, content.length);
+  let line = 1;
+  for (let i = 0; i < safeIndex; i += 1) {
+    if (content[i] === "\n") {
+      line += 1;
+    }
+  }
+  return line;
+}
