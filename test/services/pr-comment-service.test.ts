@@ -157,7 +157,7 @@ const setupExistingComment = (commentId: number): void => {
     data: [
       {
         id: commentId,
-        body: "## ![Markup AI](https://github.com/markupai/content-guardian-action/raw/unlock%2FAdd-review-commit-with-suggestion/icons/markup_ai_mark_logo.svg) Markup AI Analysis Results\nSome old content",
+        body: '## <img src="https://github.com/markupai/content-guardian-action/raw/unlock%2FAdd-review-commit-with-suggestion/icons/markup_ai_mark_logo.svg" alt="Markup AI" width="20" height="20" style="vertical-align: text-bottom;" /> Markup AI Analysis Results\nSome old content',
       },
     ],
   });
@@ -229,7 +229,7 @@ describe("PR Comment Service", () => {
           owner: "test-owner",
           repo: "test-repo",
           issue_number: 123,
-          body: expect.stringContaining("## ![Markup AI]"),
+          body: expect.stringContaining("## <img"),
         });
       });
 
@@ -247,7 +247,7 @@ describe("PR Comment Service", () => {
           owner: "test-owner",
           repo: "test-repo",
           comment_id: 789,
-          body: expect.stringContaining("## ![Markup AI]"),
+          body: expect.stringContaining("## <img"),
         });
       });
     });
@@ -349,7 +349,7 @@ describe("PR Comment Service", () => {
       const commentBody = createCall.body;
 
       // Test header and structure
-      expect(commentBody).toContain("## ![Markup AI]");
+      expect(commentBody).toContain("## <img");
       expect(commentBody).toContain("## 📊 Summary");
       expect(commentBody).toContain("Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59");
 
