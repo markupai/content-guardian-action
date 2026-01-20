@@ -19,6 +19,7 @@ export function getActionConfig(): ActionConfig {
   const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
 
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
+  const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
 
   return {
     apiToken,
@@ -27,6 +28,7 @@ export function getActionConfig(): ActionConfig {
     tone,
     styleGuide,
     addCommitStatus,
+    addReviewComments,
     strictMode,
   };
 }
@@ -114,4 +116,5 @@ export function logConfiguration(config: ActionConfig): void {
   core.info(`  Style Guide: ${config.styleGuide}`);
   core.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
   core.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
+  core.info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
 }

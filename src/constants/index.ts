@@ -34,6 +34,7 @@ export const INPUT_NAMES = {
   STYLE_GUIDE: "style-guide",
   GITHUB_TOKEN: "github_token",
   ADD_COMMIT_STATUS: "add_commit_status",
+  ADD_REVIEW_COMMENTS: "add_review_comments",
   STRICT_MODE: "strict_mode",
 } as const;
 
