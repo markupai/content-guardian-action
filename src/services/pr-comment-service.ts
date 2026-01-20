@@ -118,10 +118,7 @@ function buildReviewCommentBody(issues: AnalysisIssue[]): string {
         MAX_ORIGINAL_LENGTH,
       )}\``;
     }
-    const severity =
-      "severity" in issue && issue.severity
-        ? ` (Severity: ${capitalizeLabel(String(issue.severity))})`
-        : "";
+    const severity = ` (Severity: ${capitalizeLabel(issue.severity)})`;
     return `- **${category} / ${subcategory}${severity}**: \`${original}\`${suggestion}`;
   });
 
@@ -349,8 +346,10 @@ export async function createPRReviewComments(
     return;
   }
 
-  const pullRequest = github.context.payload.pull_request;
-  const commitId = pullRequest?.head?.sha;
+  const payload = github.context.payload as {
+    pull_request?: { head?: { sha?: string } };
+  };
+  const commitId = payload.pull_request?.head?.sha;
   if (!commitId) {
     core.warning("Unable to determine PR head SHA for review comments.");
     return;
