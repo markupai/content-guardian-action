@@ -17,6 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: Build local action bundle
+        run: |
+          npm ci
+          npm run package
       - name: Run local action
         uses: ./
         with:
