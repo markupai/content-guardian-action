@@ -54,6 +54,7 @@ vi.mock("@actions/github", () => ({
   getOctokit: vi.fn(),
   context: {
     eventName: "pull_request",
+    sha: "abc123def456",
     issue: {
       number: 123,
     },
@@ -141,46 +142,36 @@ const createGitHubError = (message: string, status?: number): GitHubError => {
 
 // Helper functions for common test setup - using explicit typing to avoid "never" issues
 const setupSuccessfulRepositoryAccess = (): void => {
-  const mockFn = mockOctokit.rest.repos.get as ReturnType<
-    typeof vi.fn<() => Promise<{ data: Record<string, unknown> }>>
-  >;
+  const mockFn = mockOctokit.rest.repos.get;
   mockFn.mockResolvedValue({ data: {} });
 };
 
 const setupNoExistingComments = (): void => {
-  const mockFn = mockOctokit.rest.issues.listComments as ReturnType<
-    typeof vi.fn<() => Promise<{ data: Array<Record<string, unknown>> }>>
-  >;
+  const mockFn = mockOctokit.rest.issues.listComments;
   mockFn.mockResolvedValue({ data: [] });
 };
 
 const setupExistingComment = (commentId: number): void => {
-  const mockFn = mockOctokit.rest.issues.listComments as ReturnType<
-    typeof vi.fn<() => Promise<{ data: Array<{ id: number; body: string }> }>>
-  >;
+  const mockFn = mockOctokit.rest.issues.listComments;
   mockFn.mockResolvedValue({
     data: [
       {
         id: commentId,
-        body: "## 🔍 Markup AI Analysis Results\nSome old content",
+        body: "## ![Markup AI](https://github.com/markupai/toolkit/raw/feature-icons/icons/markup_ai_mark_logo.svg) Markup AI Analysis Results\nSome old content",
       },
     ],
   });
 };
 
 const setupSuccessfulCommentCreation = (commentId: number): void => {
-  const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
-    typeof vi.fn<() => Promise<{ data: { id: number } }>>
-  >;
+  const mockFn = mockOctokit.rest.issues.createComment;
   mockFn.mockResolvedValue({
     data: { id: commentId },
   });
 };
 
 const setupSuccessfulCommentUpdate = (commentId: number): void => {
-  const mockFn = mockOctokit.rest.issues.updateComment as ReturnType<
-    typeof vi.fn<() => Promise<{ data: { id: number } }>>
-  >;
+  const mockFn = mockOctokit.rest.issues.updateComment;
   mockFn.mockResolvedValue({
     data: { id: commentId },
   });
@@ -238,7 +229,7 @@ describe("PR Comment Service", () => {
           owner: "test-owner",
           repo: "test-repo",
           issue_number: 123,
-          body: expect.stringContaining("## 🔍 Markup AI Analysis Results") as unknown,
+          body: expect.stringContaining("## ![Markup AI]"),
         });
       });
 
@@ -256,7 +247,7 @@ describe("PR Comment Service", () => {
           owner: "test-owner",
           repo: "test-repo",
           comment_id: 789,
-          body: expect.stringContaining("## 🔍 Markup AI Analysis Results") as unknown,
+          body: expect.stringContaining("## ![Markup AI]"),
         });
       });
     });
@@ -264,9 +255,7 @@ describe("PR Comment Service", () => {
     describe("error handling", () => {
       it("should handle permission denied error for repository access", async () => {
         const permissionError = createGitHubError("Permission denied", 403);
-        const mockFn = mockOctokit.rest.repos.get as ReturnType<
-          typeof vi.fn<() => Promise<unknown>>
-        >;
+        const mockFn = mockOctokit.rest.repos.get;
         mockFn.mockRejectedValue(permissionError);
 
         await createOrUpdatePRComment(
@@ -283,9 +272,7 @@ describe("PR Comment Service", () => {
         setupNoExistingComments();
 
         const permissionError = createGitHubError("Permission denied", 403);
-        const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
-          typeof vi.fn<() => Promise<unknown>>
-        >;
+        const mockFn = mockOctokit.rest.issues.createComment;
         mockFn.mockRejectedValue(permissionError);
 
         await createOrUpdatePRComment(
@@ -301,9 +288,7 @@ describe("PR Comment Service", () => {
         setupNoExistingComments();
 
         const notFoundError = createGitHubError("Not found", 404);
-        const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
-          typeof vi.fn<() => Promise<unknown>>
-        >;
+        const mockFn = mockOctokit.rest.issues.createComment;
         mockFn.mockRejectedValue(notFoundError);
 
         await createOrUpdatePRComment(
@@ -319,9 +304,7 @@ describe("PR Comment Service", () => {
         setupNoExistingComments();
 
         const genericError = createGitHubError("Something went wrong", 500);
-        const mockFn = mockOctokit.rest.issues.createComment as ReturnType<
-          typeof vi.fn<() => Promise<unknown>>
-        >;
+        const mockFn = mockOctokit.rest.issues.createComment;
         mockFn.mockRejectedValue(genericError);
 
         await createOrUpdatePRComment(
@@ -334,9 +317,7 @@ describe("PR Comment Service", () => {
 
       it("should handle error when finding existing comments", async () => {
         setupSuccessfulRepositoryAccess();
-        const mockFn = mockOctokit.rest.issues.listComments as ReturnType<
-          typeof vi.fn<() => Promise<unknown>>
-        >;
+        const mockFn = mockOctokit.rest.issues.listComments;
         mockFn.mockRejectedValue(new Error("Failed to list comments"));
         setupSuccessfulCommentCreation(456);
 
@@ -368,7 +349,7 @@ describe("PR Comment Service", () => {
       const commentBody = createCall.body;
 
       // Test header and structure
-      expect(commentBody).toContain("## 🔍 Markup AI Analysis Results");
+      expect(commentBody).toContain("## ![Markup AI]");
       expect(commentBody).toContain("## 📊 Summary");
       expect(commentBody).toContain("Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59");
 
