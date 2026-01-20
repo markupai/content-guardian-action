@@ -367,7 +367,7 @@ describe("PR Comment Service", () => {
 
       // Test table structure
       expect(commentBody).toContain(
-        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |",
+        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
 
       // Test emoji display
@@ -383,7 +383,7 @@ describe("PR Comment Service", () => {
 
       // Test configuration display
       expect(commentBody).toContain(
-        "Configuration: Dialect: american_english | Tone: formal | Style Guide: ap",
+        "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
       );
     });
 
@@ -620,7 +620,7 @@ describe("PR Comment Service", () => {
       };
 
       const existingBody = `**Markup AI** detected issues:
-- **grammar / spelling**: \`Teh\`
+- **Grammar / Spelling (Severity: Low)**: \`Teh\`
 \`\`\`suggestion
 The sample line
 \`\`\``;

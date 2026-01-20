@@ -146,7 +146,7 @@ describe("Job Summary Service", () => {
 
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
         expect.stringContaining(
-          "*Configuration: Dialect: american_english | Tone: formal | Style Guide: ap*",
+          "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
         ),
       );
     });
