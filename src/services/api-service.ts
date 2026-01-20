@@ -17,6 +17,7 @@ import { checkForRequestEndingError, isRequestEndingError } from "../utils/error
 
 export function createConfig(apiToken: string): Config {
   return {
+    //TODO: Change it back to prod env
     platform: { type: PlatformType.Environment, value: Environment.Dev },
     apiKey: apiToken,
     headers: { "x-integration-id": "markupai-content-guardian-action" },
