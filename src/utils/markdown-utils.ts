@@ -116,10 +116,13 @@ export function generateSummary(results: AnalysisResult[]): string {
 export function generateFooter(config: AnalysisOptions, eventType: string): string {
   return `
 ---
-*Analysis performed on ${new Date().toLocaleString()}*
+<details>
+<summary>Analysis performed on ${new Date().toLocaleString()}</summary>
+
 *Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
 *Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
-*Event: ${eventType}*`;
+*Event: ${eventType}*
+</details>`;
 }
 
 /**
