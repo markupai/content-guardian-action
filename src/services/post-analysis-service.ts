@@ -68,6 +68,7 @@ async function handleWorkflowOrScheduleEvent(
       repo,
       ref,
       baseUrl: new URL(github.context.serverUrl),
+      runId: github.context.runId,
     };
     await createJobSummary(results, analysisOptions, eventType, context);
   } catch (error) {

@@ -205,6 +205,7 @@ export async function createOrUpdatePRComment(
       prNumber,
       ref: github.context.ref,
       baseUrl: new URL(github.context.serverUrl),
+      runId: github.context.runId,
     };
     const commentBody = generateCommentBody(results, config, commentData.eventType, context);
     const existingCommentId = await findExistingComment(octokit, owner, repo, prNumber);
