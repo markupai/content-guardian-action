@@ -87,6 +87,10 @@ export function generateSummary(results: AnalysisResult[]): string {
 
   const summary = calculateScoreSummary(results);
   const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
+  const hasToneScore = results.some(
+    (result) => typeof result.result.analysis.tone?.score === "number",
+  );
+  const toneDisplay = hasToneScore ? Math.round(summary.averageToneScore).toString() : "-";
 
   return `
 ## 📊 Summary
@@ -102,7 +106,7 @@ export function generateSummary(results: AnalysisResult[]): string {
 | Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
 | Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
 | Clarity | ${Math.round(summary.averageClarityScore).toString()} |
-| Tone | ${Math.round(summary.averageToneScore).toString()} |
+| Tone | ${toneDisplay} |
 `;
 }
 

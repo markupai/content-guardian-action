@@ -361,6 +361,36 @@ describe("Markdown Utils", () => {
         "| [notone.md](https://github.com/test/test/blob/main/notone.md) | 🟡 70 | 65 | 68 | 72 | 80 | - |",
       );
     });
+
+    it("should render hyphen for Tone in summary when no tone scores exist", () => {
+      const resultObj: AnalysisResult = {
+        filePath: "notone.md",
+        result: {
+          quality: {
+            score: 70,
+            grammar: { score: 65, issues: 0 },
+            consistency: { score: 68, issues: 0 },
+            terminology: { score: 72, issues: 0 },
+          },
+          analysis: {
+            clarity: {
+              score: 80,
+              word_count: 100,
+              sentence_count: 5,
+              average_sentence_length: 20,
+              flesch_reading_ease: 70,
+              vocabulary_complexity: 0.5,
+              sentence_complexity: 0.4,
+            },
+          } as unknown as StyleScores["analysis"],
+        } as unknown as StyleScores,
+        issues: [],
+        timestamp: "2024-01-01T00:00:00Z",
+      };
+
+      const result = generateSummary([resultObj]);
+      expect(result).toContain("| Tone | - |");
+    });
   });
 
   describe("generateSummary", () => {
