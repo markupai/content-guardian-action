@@ -157,7 +157,7 @@ const setupExistingComment = (commentId: number): void => {
     data: [
       {
         id: commentId,
-        body: "## ![Markup AI](https://github.com/markupai/toolkit/raw/feature-icons/icons/markup_ai_mark_logo.svg) Markup AI Analysis Results\nSome old content",
+        body: "## ![Markup AI](https://github.com/markupai/content-guardian-action/raw/unlock%2FAdd-review-commit-with-suggestion/icons/markup_ai_mark_logo.svg) Markup AI Analysis Results\nSome old content",
       },
     ],
   });
