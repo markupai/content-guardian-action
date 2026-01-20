@@ -533,8 +533,9 @@ describe("Markdown Utils", () => {
         runId: 123456,
       });
 
+      expect(result).toContain("---");
       expect(result).toContain("<details>");
-      expect(result).toContain("<summary>Analysis performed on");
+      expect(result).toContain("<summary>💡 Analysis performed on");
       expect(result).toContain(
         "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
       );
