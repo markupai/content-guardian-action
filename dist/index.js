@@ -31692,10 +31692,10 @@ function q(r, o) {
 }
 class w extends Error {
   constructor({ message: o, statusCode: e, body: t, rawResponse: i }) {
-    super(ke({ message: o, statusCode: e, body: t })), Object.setPrototypeOf(this, w.prototype), this.statusCode = e, this.body = t, this.rawResponse = i;
+    super(xe({ message: o, statusCode: e, body: t })), Object.setPrototypeOf(this, w.prototype), this.statusCode = e, this.body = t, this.rawResponse = i;
   }
 }
-function ke({ message: r, statusCode: o, body: e }) {
+function xe({ message: r, statusCode: o, body: e }) {
   let t = [];
   return r != null && t.push(r), o != null && t.push(`Status code: ${o.toString()}`), e != null && t.push(`Body: ${X(e, void 0, 2)}`), t.join(`
 `);
@@ -31785,7 +31785,7 @@ class z extends w {
     }), Object.setPrototypeOf(this, z.prototype);
   }
 }
-var xe = function(r, o, e, t) {
+var Pe = function(r, o, e, t) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -31812,11 +31812,11 @@ var xe = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-const Pe = {
-  get: (r, o) => xe(void 0, void 0, void 0, function* () {
+const Ae = {
+  get: (r, o) => Pe(void 0, void 0, void 0, function* () {
     return typeof r == "function" ? r(o) : r;
   })
-}, Ae = {
+}, Ie = {
   arrayFormat: "indices",
   encode: true
 };
@@ -31856,14 +31856,14 @@ function ee(r, o = "", e) {
   }
   return t;
 }
-function Ie(r, o) {
-  return r == null || typeof r != "object" ? "" : ee(r, "", Object.assign(Object.assign({}, Ae), o)).join("&");
-}
 function je(r, o) {
-  const e = Ie(o, { arrayFormat: "repeat" });
+  return r == null || typeof r != "object" ? "" : ee(r, "", Object.assign(Object.assign({}, Ie), o)).join("&");
+}
+function Me(r, o) {
+  const e = je(o, { arrayFormat: "repeat" });
   return e ? `${r}?${e}` : r;
 }
-function Me(r) {
+function Ue(r) {
   const o = {
     get bodyUsed() {
       return r.bodyUsed;
@@ -31874,69 +31874,8 @@ function Me(r) {
   };
   return "bytes" in r && typeof r.bytes == "function" && (o.bytes = r.bytes.bind(r)), o;
 }
-function Ue(r) {
+function Le(r) {
   return r.body != null;
-}
-var Le = function(r, o, e, t) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(t.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(t.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((t = t.apply(r, [])).next());
-  });
-};
-function he(r, o) {
-  return Le(this, void 0, void 0, function* () {
-    if (!Ue(r))
-      return;
-    switch (o) {
-      case "binary-response":
-        return Me(r);
-      case "blob":
-        return yield r.blob();
-      case "arrayBuffer":
-        return yield r.arrayBuffer();
-      case "sse":
-        return r.body;
-      case "streaming":
-        return r.body;
-      case "text":
-        return yield r.text();
-    }
-    const e = yield r.text();
-    if (e.length > 0)
-      try {
-        return q(e);
-      } catch {
-        return {
-          ok: false,
-          error: {
-            reason: "non-json",
-            statusCode: r.status,
-            rawBody: e
-          }
-        };
-      }
-  });
 }
 var Be = function(r, o, e, t) {
   function i(a) {
@@ -31965,31 +31904,41 @@ var Be = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-function $e(r) {
+function he(r, o) {
   return Be(this, void 0, void 0, function* () {
-    var o, e, t;
-    let i = (o = r.headers.get("Content-Type")) === null || o === void 0 ? void 0 : o.toLowerCase();
-    if (i == null || i.length === 0)
-      return he(r);
-    switch (i.indexOf(";") !== -1 && (i = (t = (e = i.split(";")[0]) === null || e === void 0 ? void 0 : e.trim()) !== null && t !== void 0 ? t : ""), i) {
-      case "application/hal+json":
-      case "application/json":
-      case "application/ld+json":
-      case "application/problem+json":
-      case "application/vnd.api+json":
-      case "text/json":
-        const a = yield r.text();
-        return a.length > 0 ? q(a) : void 0;
-      default:
-        if (i.startsWith("application/vnd.") && i.endsWith("+json")) {
-          const d = yield r.text();
-          return d.length > 0 ? q(d) : void 0;
-        }
+    if (!Le(r))
+      return;
+    switch (o) {
+      case "binary-response":
+        return Ue(r);
+      case "blob":
+        return yield r.blob();
+      case "arrayBuffer":
+        return yield r.arrayBuffer();
+      case "sse":
+        return r.body;
+      case "streaming":
+        return r.body;
+      case "text":
         return yield r.text();
     }
+    const e = yield r.text();
+    if (e.length > 0)
+      try {
+        return q(e);
+      } catch {
+        return {
+          ok: false,
+          error: {
+            reason: "non-json",
+            statusCode: r.status,
+            rawBody: e
+          }
+        };
+      }
   });
 }
-var Ne = function(r, o, e, t) {
+var $e = function(r, o, e, t) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32016,12 +31965,63 @@ var Ne = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-function Fe() {
-  return Ne(this, void 0, void 0, function* () {
+function Ne(r) {
+  return $e(this, void 0, void 0, function* () {
+    var o, e, t;
+    let i = (o = r.headers.get("Content-Type")) === null || o === void 0 ? void 0 : o.toLowerCase();
+    if (i == null || i.length === 0)
+      return he(r);
+    switch (i.indexOf(";") !== -1 && (i = (t = (e = i.split(";")[0]) === null || e === void 0 ? void 0 : e.trim()) !== null && t !== void 0 ? t : ""), i) {
+      case "application/hal+json":
+      case "application/json":
+      case "application/ld+json":
+      case "application/problem+json":
+      case "application/vnd.api+json":
+      case "text/json":
+        const a = yield r.text();
+        return a.length > 0 ? q(a) : void 0;
+      default:
+        if (i.startsWith("application/vnd.") && i.endsWith("+json")) {
+          const d = yield r.text();
+          return d.length > 0 ? q(d) : void 0;
+        }
+        return yield r.text();
+    }
+  });
+}
+var Fe = function(r, o, e, t) {
+  function i(a) {
+    return a instanceof e ? a : new e(function(d) {
+      d(a);
+    });
+  }
+  return new (e || (e = Promise))(function(a, d) {
+    function l(s) {
+      try {
+        c(t.next(s));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function n(s) {
+      try {
+        c(t.throw(s));
+      } catch (u) {
+        d(u);
+      }
+    }
+    function c(s) {
+      s.done ? a(s.value) : i(s.value).then(l, n);
+    }
+    c((t = t.apply(r, [])).next());
+  });
+};
+function Ge() {
+  return Fe(this, void 0, void 0, function* () {
     return fetch;
   });
 }
-var Ge = function(r, o, e, t) {
+var ze = function(r, o, e, t) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32048,17 +32048,17 @@ var Ge = function(r, o, e, t) {
     c((t = t.apply(r, o || [])).next());
   });
 };
-function ze(r) {
-  return Ge(this, arguments, void 0, function* ({ body: o, type: e }) {
+function De(r) {
+  return ze(this, arguments, void 0, function* ({ body: o, type: e }) {
     return e.includes("json") ? X(o) : o;
   });
 }
-const De = "timeout";
-function He(r) {
-  const o = new AbortController(), e = setTimeout(() => o.abort(De), r);
+const He = "timeout";
+function We(r) {
+  const o = new AbortController(), e = setTimeout(() => o.abort(He), r);
   return { signal: o.signal, abortId: e };
 }
-function We(...r) {
+function Ve(...r) {
   const o = r.length === 1 && Array.isArray(r[0]) ? r[0] : r, e = new AbortController();
   for (const t of o) {
     if (t.aborted) {
@@ -32071,7 +32071,7 @@ function We(...r) {
   }
   return e.signal;
 }
-var Ve = function(r, o, e, t) {
+var Ke = function(r, o, e, t) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32098,15 +32098,15 @@ var Ve = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-const Ke = (r, o, e, t, i, a, d, l, n) => Ve(void 0, void 0, void 0, function* () {
+const Xe = (r, o, e, t, i, a, d, l, n) => Ke(void 0, void 0, void 0, function* () {
   const c = [];
   let s;
   if (a != null) {
-    const { signal: y, abortId: A } = He(a);
+    const { signal: y, abortId: A } = We(a);
     s = A, c.push(y);
   }
   d != null && c.push(d);
-  let u = We(c);
+  let u = Ve(c);
   const f = yield r(o, {
     method: e,
     headers: t,
@@ -32204,7 +32204,7 @@ function ce(r) {
     url: r.url
   };
 }
-var Xe = function(r, o, e, t) {
+var Ye = function(r, o, e, t) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32231,16 +32231,16 @@ var Xe = function(r, o, e, t) {
     c((t = t.apply(r, o || [])).next());
   });
 };
-const Ye = 1e3, H = 6e4, Je = 2, ye = 0.2;
-function Ze(r) {
+const Je = 1e3, H = 6e4, Ze = 2, ye = 0.2;
+function Qe(r) {
   const o = 1 + Math.random() * ye;
   return r * o;
 }
-function Qe(r) {
+function Oe(r) {
   const o = 1 + (Math.random() - 0.5) * ye;
   return r * o;
 }
-function Oe(r, o) {
+function qe(r, o) {
   const e = r.headers.get("Retry-After");
   if (e) {
     const i = parseInt(e, 10);
@@ -32259,16 +32259,16 @@ function Oe(r, o) {
     if (!isNaN(i)) {
       const a = i * 1e3 - Date.now();
       if (a > 0)
-        return Ze(Math.min(a, H));
+        return Qe(Math.min(a, H));
     }
   }
-  return Qe(Math.min(Ye * Math.pow(2, o), H));
+  return Oe(Math.min(Je * Math.pow(2, o), H));
 }
-function qe(r) {
-  return Xe(this, arguments, void 0, function* (o, e = Je) {
+function eo(r) {
+  return Ye(this, arguments, void 0, function* (o, e = Ze) {
     let t = yield o();
     for (let i = 0; i < e && ([408, 429].includes(t.status) || t.status >= 500); ++i) {
-      const a = Oe(t, i);
+      const a = qe(t, i);
       yield new Promise((d) => setTimeout(d, a)), t = yield o();
     }
     return t;
@@ -32301,14 +32301,14 @@ var oe = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-function eo(r) {
+function oo(r) {
   return oe(this, void 0, void 0, function* () {
     var o;
     const e = {};
     if (r.body !== void 0 && r.contentType != null && (e["Content-Type"] = r.contentType), r.headers == null)
       return e;
     for (const [t, i] of Object.entries(r.headers)) {
-      const a = yield Pe.get(i, { endpointMetadata: (o = r.endpointMetadata) !== null && o !== void 0 ? o : {} });
+      const a = yield Ae.get(i, { endpointMetadata: (o = r.endpointMetadata) !== null && o !== void 0 ? o : {} });
       if (typeof a == "string") {
         e[t] = a;
         continue;
@@ -32318,15 +32318,15 @@ function eo(r) {
     return e;
   });
 }
-function oo(r) {
+function to(r) {
   return oe(this, void 0, void 0, function* () {
-    const o = je(r.url, r.queryParameters), e = yield ze({
+    const o = Me(r.url, r.queryParameters), e = yield De({
       body: r.body,
       type: r.requestType === "json" ? "json" : "other"
-    }), t = yield Fe();
+    }), t = yield Ge();
     try {
-      const i = yield qe(() => oe(this, void 0, void 0, function* () {
-        return Ke(t, o, r.method, yield eo(r), e, r.timeoutMs, r.abortSignal, r.withCredentials, r.duplex);
+      const i = yield eo(() => oe(this, void 0, void 0, function* () {
+        return Xe(t, o, r.method, yield oo(r), e, r.timeoutMs, r.abortSignal, r.withCredentials, r.duplex);
       }), r.maxRetries);
       return i.status >= 200 && i.status < 400 ? {
         ok: !0,
@@ -32338,7 +32338,7 @@ function oo(r) {
         error: {
           reason: "status-code",
           statusCode: i.status,
-          body: yield $e(i)
+          body: yield Ne(i)
         },
         rawResponse: ce(i)
       };
@@ -32374,8 +32374,8 @@ function oo(r) {
     }
   });
 }
-const E = oo;
-var to = function(r, o, e, t) {
+const E = to;
+var ro = function(r, o, e, t) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32477,12 +32477,12 @@ class m extends Promise {
    * @returns A promise resolving to a `WithRawResponse` object.
    */
   withRawResponse() {
-    return to(this, void 0, void 0, function* () {
+    return ro(this, void 0, void 0, function* () {
       return yield this.innerPromise;
     });
   }
 }
-var ro = function(r, o, e, t) {
+var no = function(r, o, e, t) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32510,11 +32510,11 @@ var ro = function(r, o, e, t) {
   });
 };
 const h = {
-  get: (r) => ro(void 0, void 0, void 0, function* () {
+  get: (r) => no(void 0, void 0, void 0, function* () {
     return typeof r == "function" ? r() : r;
   })
-}, te = no();
-function no() {
+}, te = so();
+function so() {
   var r, o, e, t, i;
   return typeof window < "u" && typeof window.document < "u" ? {
     type: "browser",
@@ -32608,7 +32608,7 @@ var G = function(r, o, e, t) {
     }
     c((t = t.apply(r, [])).next());
   });
-}, so = function(r) {
+}, io = function(r) {
   if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
   var o = r[Symbol.asyncIterator], e;
   return o ? o.call(r) : (r = typeof __values == "function" ? __values(r) : r[Symbol.iterator](), e = {}, t("next"), t("throw"), t("return"), e[Symbol.asyncIterator] = function() {
@@ -32627,29 +32627,29 @@ var G = function(r, o, e, t) {
     }, d);
   }
 };
-function io(r) {
+function ao(r) {
   return typeof r == "object" && r != null && "name" in r;
 }
-function ao(r) {
+function lo(r) {
   return typeof r == "object" && r != null && "path" in r;
 }
-function lo(r) {
+function co(r) {
   return typeof r == "object" && r != null && ("read" in r || "pipe" in r);
 }
 function ve(r) {
   return typeof r == "object" && r != null && "getReader" in r;
 }
-function co(r) {
+function uo(r) {
   return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(r);
 }
-function uo(r) {
+function wo(r) {
   return ArrayBuffer.isView(r);
 }
-function wo(r) {
+function ho(r) {
   const o = r.lastIndexOf("/"), e = r.lastIndexOf("\\"), t = Math.max(o, e);
   return t >= 0 ? r.substring(t + 1) : r;
 }
-function ho(r) {
+function fo(r) {
   return G(this, void 0, void 0, function* () {
     var o, e, t, i, a, d, l;
     if (te.type === "node") {
@@ -32657,7 +32657,7 @@ function ho(r) {
       if (r instanceof n) {
         const c = [];
         try {
-          for (o = !0, e = so(r); t = yield e.next(), i = t.done, !i; o = !0) {
+          for (o = !0, e = io(r); t = yield e.next(), i = t.done, !i; o = !0) {
             l = t.value, o = !1;
             const s = l;
             c.push(Buffer.isBuffer(s) ? s : Buffer.from(s));
@@ -32697,10 +32697,10 @@ function ho(r) {
 }
 function D() {
   return G(this, void 0, void 0, function* () {
-    return new fo();
+    return new yo();
   });
 }
-class fo {
+class yo {
   constructor() {
     this.fd = new FormData();
   }
@@ -32714,18 +32714,18 @@ class fo {
   getFileName(o, e) {
     if (e != null)
       return e;
-    if (io(o))
+    if (ao(o))
       return o.name;
-    if (ao(o) && o.path)
-      return wo(o.path.toString());
+    if (lo(o) && o.path)
+      return ho(o.path.toString());
   }
   convertToBlob(o) {
     return G(this, void 0, void 0, function* () {
-      if (lo(o) || ve(o)) {
-        const e = yield ho(o);
+      if (co(o) || ve(o)) {
+        const e = yield fo(o);
         return new Blob([e]);
       }
-      return o instanceof Blob ? o : co(o) ? new Blob([o]) : o instanceof ArrayBuffer ? new Blob([o]) : uo(o) ? new Blob([o]) : typeof o == "string" ? new Blob([o]) : typeof o == "object" && o !== null ? new Blob([X(o)], { type: "application/json" }) : new Blob([String(o)]);
+      return o instanceof Blob ? o : uo(o) ? new Blob([o]) : o instanceof ArrayBuffer ? new Blob([o]) : wo(o) ? new Blob([o]) : typeof o == "string" ? new Blob([o]) : typeof o == "object" && o !== null ? new Blob([X(o)], { type: "application/json" }) : new Blob([String(o)]);
     });
   }
   appendFile(o, e, t) {
@@ -32785,7 +32785,7 @@ var L = function(r, o, e, t) {
     c((t = t.apply(r, o || [])).next());
   });
 };
-class yo {
+class mo {
   constructor(o) {
     this._options = o;
   }
@@ -33185,7 +33185,7 @@ var J = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-class mo {
+class po {
   constructor(o) {
     this._options = o;
   }
@@ -33374,7 +33374,7 @@ var Z = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-class po {
+class vo {
   constructor(o) {
     this._options = o;
   }
@@ -33563,7 +33563,7 @@ var Q = function(r, o, e, t) {
     c((t = t.apply(r, [])).next());
   });
 };
-class vo {
+class go {
   constructor(o) {
     this._options = o;
   }
@@ -33752,7 +33752,7 @@ var x = function(r, o, e, t) {
     c((t = t.apply(r, o || [])).next());
   });
 };
-class go {
+class Ro {
   constructor(o) {
     this._options = o;
   }
@@ -34938,36 +34938,36 @@ class go {
     });
   }
 }
-class Ro {
+class _o {
   constructor(o) {
     this._options = Object.assign(Object.assign({}, o), { headers: b({
       "X-Fern-Language": "JavaScript",
       "X-Fern-SDK-Name": "@markupai/api",
-      "X-Fern-SDK-Version": "1.4.0",
-      "User-Agent": "@markupai/api/1.4.0",
+      "X-Fern-SDK-Version": "1.5.0",
+      "User-Agent": "@markupai/api/1.5.0",
       "X-Fern-Runtime": te.type,
       "X-Fern-Runtime-Version": te.version
     }, o?.headers) });
   }
   get styleGuides() {
     var o;
-    return (o = this._styleGuides) !== null && o !== void 0 ? o : this._styleGuides = new yo(this._options);
+    return (o = this._styleGuides) !== null && o !== void 0 ? o : this._styleGuides = new mo(this._options);
   }
   get styleChecks() {
     var o;
-    return (o = this._styleChecks) !== null && o !== void 0 ? o : this._styleChecks = new mo(this._options);
+    return (o = this._styleChecks) !== null && o !== void 0 ? o : this._styleChecks = new po(this._options);
   }
   get styleSuggestions() {
     var o;
-    return (o = this._styleSuggestions) !== null && o !== void 0 ? o : this._styleSuggestions = new po(this._options);
+    return (o = this._styleSuggestions) !== null && o !== void 0 ? o : this._styleSuggestions = new vo(this._options);
   }
   get styleRewrites() {
     var o;
-    return (o = this._styleRewrites) !== null && o !== void 0 ? o : this._styleRewrites = new vo(this._options);
+    return (o = this._styleRewrites) !== null && o !== void 0 ? o : this._styleRewrites = new go(this._options);
   }
   get terminology() {
     var o;
-    return (o = this._terminology) !== null && o !== void 0 ? o : this._terminology = new go(this._options);
+    return (o = this._terminology) !== null && o !== void 0 ? o : this._terminology = new Ro(this._options);
   }
 }
 var $ = /* @__PURE__ */ ((r) => (r.Queued = "queued", r.Running = "running", r.Completed = "completed", r.Failed = "failed", r))($ || {}), W = /* @__PURE__ */ ((r) => (r.Stage = "stage", r.Dev = "dev", r.Prod = "prod", r))(W || {}), ge = /* @__PURE__ */ ((r) => (r.Environment = "environment", r.Url = "url", r))(ge || {});
@@ -35214,15 +35214,15 @@ class p extends Error {
     return {};
   }
 }
-const O = "https://api.markup.ai", _o = "https://api.stg.markup.ai", bo = "https://api.dev.markup.ai";
+const O = "https://api.markup.ai", bo = "https://api.stg.markup.ai", So = "https://api.dev.markup.ai";
 function re(r) {
   if (r.platform)
     if (r.platform.type === ge.Environment)
       switch (r.platform.value) {
         case W.Stage:
-          return _o;
-        case W.Dev:
           return bo;
+        case W.Dev:
+          return So;
         case W.Prod:
           return O;
         default:
@@ -35233,14 +35233,14 @@ function re(r) {
   return O;
 }
 function I(r) {
-  const o = re(r), e = new Ro({
+  const o = re(r), e = new _o({
     token: r.apiKey,
     baseUrl: o,
     ...r.headers ? { headers: r.headers } : {}
   });
-  return Co(e, r);
+  return ko(e, r);
 }
-async function To(r, o, e) {
+async function Co(r, o, e) {
   const t = o.rateLimit?.maxRetries ?? 5, i = o.rateLimit?.initialDelayMs ?? 1e3, a = o.rateLimit?.maxDelayMs ?? 16e3, d = o.rateLimit?.jitter ?? true;
   let l = 0;
   for (; ; )
@@ -35294,7 +35294,7 @@ async function To(r, o, e) {
       continue;
     }
 }
-function Co(r, o, e = "client") {
+function ko(r, o, e = "client") {
   const t = /* @__PURE__ */ new WeakMap(), i = (a, d) => {
     const l = t.get(a);
     if (l) return l;
@@ -35303,7 +35303,7 @@ function Co(r, o, e = "client") {
         const f = Reflect.get(c, s, u);
         if (typeof f == "function") {
           const y = `${d}.${String(s)}`, A = f;
-          return (...P) => To(() => A.apply(c, P), o, y);
+          return (...P) => Co(() => A.apply(c, P), o, y);
         }
         return typeof f == "object" && f !== null ? i(f, `${d}.${String(s)}`) : f;
       }
@@ -35336,12 +35336,12 @@ function we(r) {
       return "application/octet-stream";
   }
 }
-function xo(r) {
+function Po(r) {
   return typeof Buffer < "u" ? Buffer.isBuffer(r) : false;
 }
 async function _e(r, o) {
   if (typeof r.content == "string") {
-    const e = we(o), t = jo(e, r.content);
+    const e = we(o), t = Mo(e, r.content);
     return { parts: [r.content], type: t, filename: o };
   }
   if (typeof File < "u" && typeof r.content != "string" && "file" in r.content && r.content.file instanceof File) {
@@ -35353,7 +35353,7 @@ async function _e(r, o) {
       file: e.file
     };
   }
-  if (typeof r.content != "string" && "buffer" in r.content && xo(r.content.buffer)) {
+  if (typeof r.content != "string" && "buffer" in r.content && Po(r.content.buffer)) {
     const e = r.content, t = e.mimeType || we(e.documentNameWithExtension || o);
     return { parts: [e.buffer.buffer.slice(
       e.buffer.byteOffset,
@@ -35362,18 +35362,18 @@ async function _e(r, o) {
   }
   throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
 }
-class Po extends Blob {
+class Ao extends Blob {
   name;
   lastModified;
   constructor(o, e, t = {}) {
     super(o, t), this.name = e, this.lastModified = t.lastModified || Date.now();
   }
 }
-async function Ao(r) {
-  const o = Te(r), { parts: e, type: t } = await _e(r, o);
-  return new Po(e, o, { type: t });
-}
 async function Io(r) {
+  const o = Te(r), { parts: e, type: t } = await _e(r, o);
+  return new Ao(e, o, { type: t });
+}
+async function jo(r) {
   const o = Te(r);
   if (typeof File < "u" && typeof r.content != "string" && "file" in r.content && r.content.file instanceof File)
     return r.content.file;
@@ -35381,7 +35381,7 @@ async function Io(r) {
   return new File(e, o, { type: t });
 }
 async function Y(r) {
-  return Re() ? Ao(r) : Io(r);
+  return Re() ? Io(r) : jo(r);
 }
 function be(r) {
   const o = r.trimStart().slice(0, 256).toLowerCase();
@@ -35395,7 +35395,7 @@ function Ee(r) {
   const o = r.trimStart().slice(0, 512);
   return !!(/^---\n[\s\S]*?\n---\n/.test(o) || /^#{1,6}\s+.+/m.test(o) || /^(?:\s*[-*+]\s+\S|\s*\d+\.\s+\S)/m.test(o) || /\[[^\]]+\]\([^)]+\)/.test(o) || /!\[[^\]]*\]\([^)]+\)/.test(o) || /```[\s\S]*?```/.test(o));
 }
-function jo(r, o) {
+function Mo(r, o) {
   return r === "application/octet-stream" ? Ee(o) ? "text/markdown" : Se(o) ? "application/dita+xml" : be(o) ? "text/html" : "text/plain" : r;
 }
 function Te(r) {
@@ -35446,7 +35446,7 @@ async function ne(r, o, e) {
   }
   if (!d.workflow_id)
     throw new Error(`No workflow_id received from initial ${r} request`);
-  const l = await Uo(
+  const l = await Lo(
     d.workflow_id,
     e,
     r,
@@ -35456,7 +35456,7 @@ async function ne(r, o, e) {
     return l;
   throw new Error(`${r} failed with status: ${l.workflow.status}`);
 }
-class Mo {
+class Uo {
   constructor(o, e, t, i, a) {
     this.requests = o, this.config = e, this.styleFunction = t, this.options = i, this.onProgressUpdate = a, this.startTime = Date.now(), this.initializeResults();
   }
@@ -35588,7 +35588,7 @@ function se(r, o, e, t = {}) {
     throw new Error("maxConcurrent must be between 1 and 100");
   if (a.retryAttempts < 0 || a.retryAttempts > 5)
     throw new Error("retryAttempts must be between 0 and 5");
-  const d = new Mo(r, o, e, a), l = d.start();
+  const d = new Uo(r, o, e, a), l = d.start();
   return {
     progress: {
       get total() {
@@ -35622,7 +35622,7 @@ function se(r, o, e, t = {}) {
     }
   };
 }
-async function Uo(r, o, e, t = Date.now()) {
+async function Lo(r, o, e, t = Date.now()) {
   let i = 0;
   const a = 2e3, d = o.timeoutMillis ?? Ce, l = Math.floor(d / a), n = async () => {
     const c = Date.now() - t;
@@ -35670,15 +35670,15 @@ async function Uo(r, o, e, t = Date.now()) {
   };
   return n();
 }
-async function Lo(r, o) {
+async function Bo(r, o) {
   return ne(
     j.Check,
     r,
     o
   );
 }
-function No(r, o, e = {}) {
-  return se(r, o, Lo, e);
+function Fo(r, o, e = {}) {
+  return se(r, o, Bo, e);
 }
 
 /**
@@ -35991,7 +35991,7 @@ async function analyzeFile(filePath, content, options, config) {
             documentNameWithExtension: getFileBasename(filePath),
             ...(options.tone ? { tone: options.tone } : {}),
         };
-        const result = await Lo(request, config);
+        const result = await Bo(request, config);
         return {
             filePath,
             result: result.original.scores,
@@ -36037,7 +36037,7 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     };
     try {
         // Start batch processing
-        const batchResponse = No(requests, config, batchOptions);
+        const batchResponse = Fo(requests, config, batchOptions);
         // Monitor progress
         const progressInterval = setInterval(() => {
             const progress = batchResponse.progress;
