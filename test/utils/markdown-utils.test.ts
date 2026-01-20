@@ -136,9 +136,9 @@ describe("Markdown Utils", () => {
         baseUrl: new URL("https://github.com"),
       });
 
-      const expectedMarkdown = `| File | Issues | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|:----:|:------:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|
-| [example.md](https://github.com/owner/repo/pull/123/files#diff-812adf881bb029e57953653f71d54ffc5eac7de19829aa4cbcbbec8f7065a047) | 0 | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`;
+      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|
+| [example.md](https://github.com/owner/repo/pull/123/files#diff-812adf881bb029e57953653f71d54ffc5eac7de19829aa4cbcbbec8f7065a047) | 🟢 85 | 80 | 88 | 92 | 90 | 87 | 0 |`;
 
       expect(result).toBe(expectedMarkdown);
     });
@@ -162,9 +162,9 @@ describe("Markdown Utils", () => {
         baseUrl: new URL("https://github.com"),
       });
 
-      const expectedMarkdown = `| File | Issues | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|:----:|:------:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|
-| [example.md](https://github.com/owner/repo/blob/refs/heads/main/example.md) | 0 | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`;
+      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|
+| [example.md](https://github.com/owner/repo/blob/refs/heads/main/example.md) | 🟢 85 | 80 | 88 | 92 | 90 | 87 | 0 |`;
 
       expect(result).toBe(expectedMarkdown);
     });
@@ -213,10 +213,10 @@ describe("Markdown Utils", () => {
 
       // Check table structure
       expect(result).toContain(
-        "| File | Issues | Quality | Grammar | Consistency | Terminology | Clarity | Tone |",
+        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
       expect(result).toContain(
-        "|:----:|:------:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|",
+        "|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|",
       );
       expect(result).toContain("| [test1.md](https://github.com/test/test/blob/main/test1.md) |");
       expect(result).toContain("| [test2.md](https://github.com/test/test/blob/main/test2.md) |");
@@ -297,7 +297,7 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("🔴 0");
       expect(result).toContain(
-        "| [test.md](https://github.com/test/test/blob/main/test.md) | 0 | 🔴 0 | 0 | 0 | 0 | 0 | 0 |",
+        "| [test.md](https://github.com/test/test/blob/main/test.md) | 🔴 0 | 0 | 0 | 0 | 0 | 0 | 0 |",
       );
     });
 
@@ -322,7 +322,7 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("🟢 100");
       expect(result).toContain(
-        "| [test.md](https://github.com/test/test/blob/main/test.md) | 0 | 🟢 100 | 100 | 100 | 100 | 100 | 100 |",
+        "| [test.md](https://github.com/test/test/blob/main/test.md) | 🟢 100 | 100 | 100 | 100 | 100 | 100 | 0 |",
       );
     });
 
@@ -360,7 +360,7 @@ describe("Markdown Utils", () => {
       });
 
       expect(result).toContain(
-        "| [notone.md](https://github.com/test/test/blob/main/notone.md) | 0 | 🟡 70 | 65 | 68 | 72 | 80 | - |",
+        "| [notone.md](https://github.com/test/test/blob/main/notone.md) | 🟡 70 | 65 | 68 | 72 | 80 | - | 0 |",
       );
     });
 
@@ -567,7 +567,7 @@ describe("Markdown Utils", () => {
       // Should contain all sections
       expect(result).toContain(header);
       expect(result).toContain(
-        "| File | Issues | Quality | Grammar | Consistency | Terminology | Clarity | Tone |",
+        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
       expect(result).toContain("## 📊 Summary");
       expect(result).toContain("<summary>Analysis performed on");
