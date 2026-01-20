@@ -538,6 +538,7 @@ describe("PR Comment Service", () => {
               position: { start_index: 0 },
               subcategory: "spelling",
               category: IssueCategory.Grammar,
+              suggestion: "The",
             },
           },
         ],
@@ -565,6 +566,7 @@ describe("PR Comment Service", () => {
             path: "test.md",
             line: 1,
             side: "RIGHT",
+            body: expect.stringContaining("```suggestion"),
           }) as unknown,
         ],
       });
