@@ -66,3 +66,25 @@ export function getLineNumberAtIndex(content: string, index: number): number {
   }
   return line;
 }
+
+/**
+ * Get line number, column, and line text for a character index.
+ */
+export function getLineContextAtIndex(
+  content: string,
+  index: number,
+): { line: number; column: number; lineText: string } {
+  if (!content) {
+    return { line: 1, column: 0, lineText: "" };
+  }
+
+  const safeIndex = Math.min(Math.max(index, 0), content.length);
+  const line = getLineNumberAtIndex(content, safeIndex);
+  const lineStart = content.lastIndexOf("\n", safeIndex - 1) + 1;
+  const lineEndRaw = content.indexOf("\n", safeIndex);
+  const lineEnd = lineEndRaw === -1 ? content.length : lineEndRaw;
+  const lineText = content.slice(lineStart, lineEnd);
+  const column = safeIndex - lineStart;
+
+  return { line, column, lineText };
+}
