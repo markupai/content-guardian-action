@@ -55,8 +55,8 @@ export function generateResultsTable(
     return "No files were analyzed.";
   }
 
-  const tableHeader = `| File | Issues | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|:----:|:------:|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|`;
+  const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|`;
 
   const tableRows = results
     .map((result) => {
@@ -71,7 +71,7 @@ export function generateResultsTable(
       const fileDisplay = generateFileDisplayLink(filePath, context);
 
       const issuesCount = result.issues.length;
-      return `| ${fileDisplay} | ${issuesCount.toString()} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} |`;
+      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} | ${issuesCount.toString()} |`;
     })
     .join("\n");
 
@@ -101,7 +101,7 @@ export function generateSummary(results: AnalysisResult[]): string {
 **Files Analyzed:** ${summary.totalFiles.toString()}
 
 | Metric | Average Score |
-|:------:|:-------------:|
+|:------|:-------------:|
 | Quality | ${Math.round(summary.averageQualityScore).toString()} |
 | Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
 | Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
