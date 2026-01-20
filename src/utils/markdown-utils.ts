@@ -127,12 +127,12 @@ export function generateFooter(
   return `
 ---
 <details>
-<summary>Analysis performed on ${new Date().toLocaleString()}</summary>
+<summary>Analysis performed on ${new Date().toLocaleString()} - Click to expand</summary>
 
-- Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}
-- Event: ${eventType}
-${pipelineLink ? `- ${pipelineLink}` : ""}
-Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59
+- **Configuration:** Dialect: ${config.dialect}${config.tone ? ` | Tone: ${config.tone}` : ""} | Style Guide: ${config.styleGuide}
+- **Event:** ${eventType}
+${pipelineLink ? `- **Workflow run:** ${pipelineLink.replace("Workflow run: ", "")}` : ""}
+
 </details>`;
 }
 
@@ -149,6 +149,8 @@ export function generateAnalysisContent(
   const table = generateResultsTable(results, context);
   const summary = generateSummary(results);
   const footer = generateFooter(config, eventType, context);
+  const qualityLegend =
+    '<div align="right"><em>Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59</em></div>';
 
   return `${header}
 
@@ -156,5 +158,7 @@ ${table}
 
 ${summary}
 
-${footer}`;
+${footer}
+
+${qualityLegend}`;
 }
