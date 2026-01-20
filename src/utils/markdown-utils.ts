@@ -159,8 +159,7 @@ export function generateAnalysisContent(
   const table = generateResultsTable(results, context);
   const summary = generateSummary(results);
   const footer = generateFooter(config, eventType, context);
-  const qualityLegend =
-    "*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*";
+  const qualityLegend = "*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*";
 
   return `${header}
 
