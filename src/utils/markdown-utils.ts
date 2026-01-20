@@ -135,7 +135,6 @@ export function generateFooter(
       ? `Workflow run: [#${context.runId.toString()}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${context.runId.toString()})`
       : "";
   return `
----
 <details>
 <summary>Analysis performed on ${new Date().toLocaleString()} - Click to expand</summary>
 
