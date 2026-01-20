@@ -61,7 +61,7 @@ function buildReviewCommentBody(issues: AnalysisIssue[]): string {
     const original = truncateText(issue.original, MAX_ORIGINAL_LENGTH);
     const suggestion =
       "suggestion" in issue && issue.suggestion
-        ? `\nSuggestion: \`${truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH)}\``
+        ? `\n\`\`\`suggestion\n${issue.suggestion}\n\`\`\``
         : "";
     return `- **${category} / ${subcategory}**: \`${original}\`${suggestion}`;
   });
