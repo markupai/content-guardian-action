@@ -103,6 +103,49 @@ vi.mock("@markupai/toolkit", async () => {
         },
       }),
     ),
+    styleSuggestions: vi.fn(() =>
+      Promise.resolve({
+        workflow: {
+          id: "test-workflow-123",
+          type: "suggestions",
+          api_version: "1.0.0",
+          generated_at: "2025-01-15T14:22:33Z",
+          status: "completed",
+          webhook_response: {
+            url: "https://api.example.com/webhook",
+            status_code: 200,
+          },
+        },
+        config: {
+          dialect: "american_english",
+          style_guide: { style_guide_type: "ap", style_guide_id: "sg-123" },
+          tone: "formal",
+        },
+        original: {
+          issues: [
+            {
+              original: "test text",
+              position: { start_index: 10 },
+              subcategory: "passive_voice",
+              category: "grammar",
+              suggestion: "Test text",
+            },
+          ],
+          scores: {
+            quality: {
+              score: 85.2,
+              grammar: { score: 90.1, issues: 2 },
+              consistency: { score: 88.3, issues: 1 },
+              terminology: { score: 95, issues: 0 },
+            },
+            analysis: {
+              clarity: { score: 78.5 },
+              tone: { score: 82.3 },
+            },
+          },
+        },
+      }),
+    ),
     styleBatchCheckRequests: vi.fn(() => ({
       progress: {
         total: 1,
@@ -168,6 +211,109 @@ vi.mock("@markupai/toolkit", async () => {
               workflow: {
                 id: "test-workflow-123",
                 type: "checks",
+                api_version: "1.0.0",
+                generated_at: "2025-01-15T14:22:33Z",
+                status: "completed",
+                webhook_response: {
+                  url: "https://api.example.com/webhook",
+                  status_code: 200,
+                },
+              },
+              config: {
+                dialect: "american_english",
+                style_guide: {
+                  style_guide_type: "ap",
+                  style_guide_id: "sg-123",
+                },
+                tone: "formal",
+              },
+              original: {
+                issues: [],
+                scores: {
+                  quality: {
+                    score: 85.2,
+                    grammar: { score: 90.1, issues: 2 },
+                    consistency: { score: 88.3, issues: 1 },
+                    terminology: { score: 95, issues: 0 },
+                  },
+                  analysis: {
+                    clarity: { score: 78.5 },
+                    tone: { score: 82.3 },
+                  },
+                },
+              },
+            },
+          },
+        ],
+        startTime: Date.now(),
+      }),
+      cancel: vi.fn(),
+    })),
+    styleBatchOperation: vi.fn(() => ({
+      progress: {
+        total: 1,
+        completed: 1,
+        failed: 0,
+        inProgress: 0,
+        pending: 0,
+        results: [
+          {
+            index: 0,
+            status: "completed",
+            result: {
+              workflow: {
+                id: "test-workflow-123",
+                type: "suggestions",
+                api_version: "1.0.0",
+                generated_at: "2025-01-15T14:22:33Z",
+                status: "completed",
+                webhook_response: {
+                  url: "https://api.example.com/webhook",
+                  status_code: 200,
+                },
+              },
+              config: {
+                dialect: "american_english",
+                style_guide: {
+                  style_guide_type: "ap",
+                  style_guide_id: "sg-123",
+                },
+                tone: "formal",
+              },
+              original: {
+                issues: [],
+                scores: {
+                  quality: {
+                    score: 85.2,
+                    grammar: { score: 90.1, issues: 2 },
+                    consistency: { score: 88.3, issues: 1 },
+                    terminology: { score: 95, issues: 0 },
+                  },
+                  analysis: {
+                    clarity: { score: 78.5 },
+                    tone: { score: 82.3 },
+                  },
+                },
+              },
+            },
+          },
+        ],
+        startTime: Date.now(),
+      },
+      promise: Promise.resolve({
+        total: 1,
+        completed: 1,
+        failed: 0,
+        inProgress: 0,
+        pending: 0,
+        results: [
+          {
+            index: 0,
+            status: "completed",
+            result: {
+              workflow: {
+                id: "test-workflow-123",
+                type: "suggestions",
                 api_version: "1.0.0",
                 generated_at: "2025-01-15T14:22:33Z",
                 status: "completed",

@@ -113,7 +113,7 @@ vi.mock("@actions/github", () => ({
   },
 }));
 
-const mockAnalyzeFiles = vi.fn<(files: string[]) => Promise<unknown[]>>();
+const mockAnalyzeFiles = vi.fn<(...args: unknown[]) => Promise<unknown[]>>();
 
 vi.mock("../src/services/api-service.js", () => ({
   analyzeFiles: mockAnalyzeFiles,
