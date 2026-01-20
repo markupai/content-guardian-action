@@ -360,7 +360,7 @@ describe("Markdown Utils", () => {
       });
 
       expect(result).toContain(
-        "| [notone.md](https://github.com/test/test/blob/main/notone.md) | 🟡 70 | 65 | 68 | 72 | 80 | - | 0 |",
+        "| [notone.md](https://github.com/test/test/blob/main/notone.md) | 🟡 70 | 65 | 68 | 72 | 80 | 0 |",
       );
     });
 
@@ -391,7 +391,7 @@ describe("Markdown Utils", () => {
       };
 
       const result = generateSummary([resultObj]);
-      expect(result).toContain("| Tone | - |");
+      expect(result).not.toContain("| Tone |");
     });
   });
 
@@ -535,9 +535,10 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("<details>");
       expect(result).toContain("<summary>Analysis performed on");
-      expect(result).toContain(
-        "- **Configuration:** Dialect: american_english | Tone: formal | Style Guide: ap",
-      );
+      expect(result).toContain("- **Configuration:**");
+      expect(result).toContain("- Style Guide: ap");
+      expect(result).toContain("- Dialect: american_english");
+      expect(result).toContain("- Tone: formal");
       expect(result).toContain("- **Event:** push");
       expect(result).toContain(
         '<div align="right"><em>Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59</em></div>',
@@ -581,7 +582,7 @@ describe("Markdown Utils", () => {
       // Should contain all sections
       expect(result).toContain(header);
       expect(result).toContain(
-        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
+        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Issues |",
       );
       expect(result).toContain("## 📊 Summary");
       expect(result).toContain("<summary>Analysis performed on");

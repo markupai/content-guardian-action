@@ -56,8 +56,14 @@ export function generateResultsTable(
     return "No files were analyzed.";
   }
 
-  const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
-|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|`;
+  const hasToneScore = results.some(
+    (result) => typeof result.result.analysis.tone?.score === "number",
+  );
+  const tableHeader = hasToneScore
+    ? `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|`
+    : `| File | Quality | Grammar | Consistency | Terminology | Clarity | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:------:|`;
 
   const tableRows = results
     .map((result) => {
@@ -72,7 +78,9 @@ export function generateResultsTable(
       const fileDisplay = generateFileDisplayLink(filePath, context);
 
       const issuesCount = result.issues.length;
-      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} | ${issuesCount.toString()} |`;
+      return hasToneScore
+        ? `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} | ${issuesCount.toString()} |`
+        : `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${issuesCount.toString()} |`;
     })
     .join("\n");
 
@@ -92,7 +100,9 @@ export function generateSummary(results: AnalysisResult[]): string {
   const hasToneScore = results.some(
     (result) => typeof result.result.analysis.tone?.score === "number",
   );
-  const toneDisplay = hasToneScore ? Math.round(summary.averageToneScore).toString() : "-";
+  const toneRow = hasToneScore
+    ? `| Tone | ${Math.round(summary.averageToneScore).toString()} |`
+    : "";
 
   return `
 ## 📊 Summary
@@ -108,7 +118,7 @@ export function generateSummary(results: AnalysisResult[]): string {
 | Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
 | Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
 | Clarity | ${Math.round(summary.averageClarityScore).toString()} |
-| Tone | ${toneDisplay} |
+${toneRow}
 `;
 }
 
@@ -129,7 +139,10 @@ export function generateFooter(
 <details>
 <summary>Analysis performed on ${new Date().toLocaleString()} - Click to expand</summary>
 
-- **Configuration:** Dialect: ${config.dialect}${config.tone ? ` | Tone: ${config.tone}` : ""} | Style Guide: ${config.styleGuide}
+- **Configuration:**
+  - Style Guide: ${config.styleGuide}
+  - Dialect: ${config.dialect}
+  ${config.tone ? `- Tone: ${config.tone}` : ""}
 - **Event:** ${eventType}
 ${pipelineLink ? `- **Workflow run:** ${pipelineLink.replace("Workflow run: ", "")}` : ""}
 
