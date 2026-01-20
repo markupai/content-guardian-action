@@ -159,7 +159,7 @@ export function generateAnalysisContent(
   const summary = generateSummary(results);
   const footer = generateFooter(config, eventType, context);
   const qualityLegend =
-    '<div align="right"><em>Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59</em></div>';
+    "*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*";
 
   return `${header}
 
