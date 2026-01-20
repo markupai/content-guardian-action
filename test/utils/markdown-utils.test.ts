@@ -525,7 +525,13 @@ describe("Markdown Utils", () => {
 
   describe("generateFooter", () => {
     it("should generate footer with configuration and event info", () => {
-      const result = generateFooter(mockAnalysisOptions, "push");
+      const result = generateFooter(mockAnalysisOptions, "push", {
+        owner: "test",
+        repo: "test",
+        ref: "main",
+        baseUrl: new URL("https://github.com"),
+        runId: 123456,
+      });
 
       expect(result).toContain("<details>");
       expect(result).toContain("<summary>Analysis performed on");
@@ -537,7 +543,13 @@ describe("Markdown Utils", () => {
     });
 
     it("should handle different event types", () => {
-      const result = generateFooter(mockAnalysisOptions, "pull_request");
+      const result = generateFooter(mockAnalysisOptions, "pull_request", {
+        owner: "test",
+        repo: "test",
+        ref: "main",
+        baseUrl: new URL("https://github.com"),
+        runId: 123456,
+      });
 
       expect(result).toContain("*Event: pull_request*");
     });

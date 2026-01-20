@@ -14,6 +14,7 @@ interface BaseRepositoryContext {
   repo: string;
   ref: string;
   baseUrl: URL;
+  runId?: number;
 }
 
 /**
@@ -114,7 +115,15 @@ export function generateSummary(results: AnalysisResult[]): string {
 /**
  * Generate footer section with metadata
  */
-export function generateFooter(config: AnalysisOptions, eventType: string): string {
+export function generateFooter(
+  config: AnalysisOptions,
+  eventType: string,
+  context: RepositoryContext,
+): string {
+  const pipelineLink =
+    typeof context.runId === "number"
+      ? `*Pipeline: [#${context.runId.toString()}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${context.runId.toString()})*`
+      : "";
   return `
 ---
 <details>
@@ -123,6 +132,7 @@ export function generateFooter(config: AnalysisOptions, eventType: string): stri
 *Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
 *Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
 *Event: ${eventType}*
+${pipelineLink}
 </details>`;
 }
 
@@ -138,7 +148,7 @@ export function generateAnalysisContent(
 ): string {
   const table = generateResultsTable(results, context);
   const summary = generateSummary(results);
-  const footer = generateFooter(config, eventType);
+  const footer = generateFooter(config, eventType, context);
 
   return `${header}
 
