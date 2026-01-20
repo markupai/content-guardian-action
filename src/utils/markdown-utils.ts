@@ -155,8 +155,8 @@ export function generateFooter(
 
 - **Configuration:** Style Guide: ${config.styleGuide} | Dialect: ${config.dialect}${config.tone ? ` | Tone: ${config.tone}` : ""}
 - **Event:** ${eventType}
-${workflowIdLine}
 ${workflowRunLink ? `- **GitHub workflow run:** ${workflowRunLink}` : ""}
+${workflowIdLine}
 
 </details>`;
 }
