@@ -535,10 +535,9 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("<details>");
       expect(result).toContain("<summary>Analysis performed on");
-      expect(result).toContain("- **Configuration:**");
-      expect(result).toContain("- Style Guide: ap");
-      expect(result).toContain("- Dialect: american_english");
-      expect(result).toContain("- Tone: formal");
+      expect(result).toContain(
+        "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
+      );
       expect(result).toContain("- **Event:** push");
       expect(result).toContain(
         '<div align="right"><em>Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59</em></div>',

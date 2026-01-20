@@ -139,10 +139,7 @@ export function generateFooter(
 <details>
 <summary>Analysis performed on ${new Date().toLocaleString()} - Click to expand</summary>
 
-- **Configuration:**
-  - Style Guide: ${config.styleGuide}
-  - Dialect: ${config.dialect}
-  ${config.tone ? `- Tone: ${config.tone}` : ""}
+- **Configuration:** Style Guide: ${config.styleGuide} | Dialect: ${config.dialect}${config.tone ? ` | Tone: ${config.tone}` : ""}
 - **Event:** ${eventType}
 ${pipelineLink ? `- **Workflow run:** ${pipelineLink.replace("Workflow run: ", "")}` : ""}
 
