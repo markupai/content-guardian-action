@@ -47,6 +47,7 @@ describe("Action Config", () => {
         dialect: "british_english",
         tone: "informal",
         styleGuide: "chicago",
+        reviewComments: true,
       });
     });
 
@@ -68,6 +69,7 @@ describe("Action Config", () => {
         dialect: "",
         tone: undefined,
         styleGuide: "",
+        reviewComments: true,
       });
     });
   });

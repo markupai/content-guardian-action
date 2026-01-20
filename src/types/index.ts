@@ -84,6 +84,7 @@ export interface AnalysisOptions {
   dialect: string;
   tone?: string;
   styleGuide: string;
+  reviewComments?: boolean;
 }
 
 // Re-export types from SDK

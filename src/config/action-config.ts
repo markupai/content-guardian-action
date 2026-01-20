@@ -41,6 +41,7 @@ export function getAnalysisOptions(config: ActionConfig): AnalysisOptions {
     dialect: config.dialect,
     tone: config.tone,
     styleGuide: config.styleGuide,
+    reviewComments: config.addReviewComments,
   };
 }
 
