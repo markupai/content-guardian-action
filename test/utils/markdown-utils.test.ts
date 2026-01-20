@@ -101,6 +101,7 @@ describe("Markdown Utils", () => {
         },
       },
     },
+    issues: [],
     timestamp: "2024-01-01T00:00:00Z",
   });
 
@@ -345,6 +346,7 @@ describe("Markdown Utils", () => {
             },
           } as unknown as StyleScores["analysis"],
         } as unknown as StyleScores,
+        issues: [],
         timestamp: "2024-01-01T00:00:00Z",
       };
 
