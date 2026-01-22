@@ -27,7 +27,7 @@ jobs:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           dialect: "american_english"
-          style-guide: "ap"
+          style-guide: "microsoft"
           # tone: "formal"
-          strict_mode: "false"
+          strict_mode: "true"
           add_review_comments: "true"
