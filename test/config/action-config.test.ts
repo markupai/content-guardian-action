@@ -188,6 +188,23 @@ describe("Action Config", () => {
       expect(core.info).toHaveBeenCalledWith("  Review Comments: disabled");
     });
 
+    it("should suppress placeholder tone", () => {
+      const config: ActionConfig = {
+        dialect: "american_english",
+        tone: "None (keep tone unchanged)",
+        styleGuide: "ap",
+        apiToken: "token123",
+        githubToken: "github-token123",
+        addCommitStatus: true,
+        addReviewComments: true,
+        strictMode: false,
+      };
+
+      logConfiguration(config);
+
+      expect(core.info).toHaveBeenCalledWith("  Tone: ");
+    });
+
     it("should log empty values when not provided", () => {
       const config: ActionConfig = {
         dialect: "",

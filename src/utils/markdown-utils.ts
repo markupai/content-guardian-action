@@ -126,11 +126,14 @@ ${toneRow}
  * Generate footer section with metadata
  */
 export function generateFooter(config: AnalysisOptions, eventType: string): string {
+  const toneValue = config.tone?.trim();
+  const toneSegment =
+    toneValue && toneValue !== "None (keep tone unchanged)" ? ` Tone: ${toneValue} |` : "";
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
 *Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
+*Configuration: Dialect: ${config.dialect} |${toneSegment} Style Guide: ${config.styleGuide}*
 *Event: ${eventType}*`;
 }
 

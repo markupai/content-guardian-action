@@ -111,9 +111,11 @@ function validateAnalysisOption(name: string, value: string): void {
  * Log configuration (without sensitive data)
  */
 export function logConfiguration(config: ActionConfig): void {
+  const toneValue = config.tone?.trim();
+  const toneDisplay = toneValue && toneValue !== "None (keep tone unchanged)" ? toneValue : "";
   core.info("🔧 Action Configuration:");
   core.info(`  Dialect: ${config.dialect}`);
-  core.info(`  Tone: ${config.tone ?? ""}`);
+  core.info(`  Tone: ${toneDisplay}`);
   core.info(`  Style Guide: ${config.styleGuide}`);
   core.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
   core.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);

@@ -536,6 +536,18 @@ describe("Markdown Utils", () => {
       expect(result).toContain("*Event: push*");
     });
 
+    it("should omit tone when placeholder is used", () => {
+      const result = generateFooter(
+        { ...mockAnalysisOptions, tone: "None (keep tone unchanged)" },
+        "push",
+      );
+
+      expect(result).toContain(
+        "*Configuration: Dialect: american_english | Style Guide: ap*",
+      );
+      expect(result).not.toContain("Tone: None (keep tone unchanged)");
+    });
+
     it("should handle different event types", () => {
       const result = generateFooter(mockAnalysisOptions, "pull_request");
 
