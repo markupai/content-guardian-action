@@ -238,7 +238,7 @@ describe("PR Comment Service", () => {
         expect(createCall.owner).toBe("test-owner");
         expect(createCall.repo).toBe("test-repo");
         expect(createCall.issue_number).toBe(123);
-        expect(createCall.body).toContain("## Markup AI Analysis Results (DEV)");
+        expect(createCall.body).toContain("## Markup AI Analysis Results");
       });
 
       it("should update existing comment when found", async () => {
@@ -260,7 +260,7 @@ describe("PR Comment Service", () => {
         expect(updateCall.owner).toBe("test-owner");
         expect(updateCall.repo).toBe("test-repo");
         expect(updateCall.comment_id).toBe(789);
-        expect(updateCall.body).toContain("## Markup AI Analysis Results (DEV)");
+        expect(updateCall.body).toContain("## Markup AI Analysis Results");
       });
     });
 
@@ -361,7 +361,7 @@ describe("PR Comment Service", () => {
       const commentBody = createCall.body;
 
       // Test header and structure
-      expect(commentBody).toContain("## Markup AI Analysis Results (DEV)");
+      expect(commentBody).toContain("## Markup AI Analysis Results");
       expect(commentBody).toContain("## 📊 Summary");
       expect(commentBody).toContain("Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59");
 
