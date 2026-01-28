@@ -34,10 +34,6 @@ export type NonPRRepositoryContext = BaseRepositoryContext;
  */
 export type RepositoryContext = PRRepositoryContext | NonPRRepositoryContext;
 
-function isNonEmptyString(value: string | undefined): value is string {
-  return typeof value === "string" && value.length > 0;
-}
-
 /**
  * Generate file display link based on repository context
  */
@@ -129,36 +125,13 @@ ${toneRow}
 /**
  * Generate footer section with metadata
  */
-export function generateFooter(
-  config: AnalysisOptions,
-  eventType: string,
-  context: RepositoryContext,
-  results: AnalysisResult[],
-): string {
-  const workflowRunId = typeof context.runId === "number" ? context.runId.toString() : "";
-  const workflowRunLink = workflowRunId
-    ? `[#${workflowRunId}](${context.baseUrl.origin}/${context.owner}/${context.repo}/actions/runs/${workflowRunId})`
-    : "";
-  const workflowIds = Array.from(
-    new Set(results.map((result) => result.workflowId).filter(isNonEmptyString)),
-  );
-  let workflowIdLine = "";
-  if (workflowIds.length === 1) {
-    workflowIdLine = `- **Markup AI workflow ID:** ${workflowIds[0]}`;
-  } else if (workflowIds.length > 1) {
-    workflowIdLine = `- **Markup AI workflow IDs:** ${workflowIds.join(", ")}`;
-  }
+export function generateFooter(config: AnalysisOptions, eventType: string): string {
   return `
 ---
-<details>
-<summary>Show analysis details - Analysis performed on ${new Date().toLocaleString()}</summary>
-
-- **Configuration:** Style Guide: ${config.styleGuide} | Dialect: ${config.dialect}${config.tone ? ` | Tone: ${config.tone}` : ""}
-- **Event:** ${eventType}
-${workflowRunLink ? `- **GitHub workflow run:** ${workflowRunLink}` : ""}
-${workflowIdLine}
-
-</details>`;
+*Analysis performed on ${new Date().toLocaleString()}*
+*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
+*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
+*Event: ${eventType}*`;
 }
 
 /**
@@ -173,8 +146,7 @@ export function generateAnalysisContent(
 ): string {
   const table = generateResultsTable(results, context);
   const summary = generateSummary(results);
-  const footer = generateFooter(config, eventType, context, results);
-  const qualityLegend = "*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*";
+  const footer = generateFooter(config, eventType);
 
   return `${header}
 
@@ -183,6 +155,5 @@ ${table}
 ${summary}
 
 ${footer}
-
-${qualityLegend}`;
+`;
 }

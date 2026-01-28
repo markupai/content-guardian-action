@@ -525,75 +525,21 @@ describe("Markdown Utils", () => {
 
   describe("generateFooter", () => {
     it("should generate footer with configuration and event info", () => {
-      const results = [
-        {
-          ...createMockResult("test.md", {
-            quality: 85,
-            clarity: 90,
-            grammar: 80,
-            style_guide: 88,
-            tone: 87,
-            terminology: 92,
-          }),
-          workflowId: "analysis-workflow-1",
-        },
-      ];
-      const result = generateFooter(
-        mockAnalysisOptions,
-        "push",
-        {
-          owner: "test",
-          repo: "test",
-          ref: "main",
-          baseUrl: new URL("https://github.com"),
-          runId: 123456,
-        },
-        results,
-      );
+      const result = generateFooter(mockAnalysisOptions, "push");
 
       expect(result).toContain("---");
-      expect(result).toContain("<details>");
-      expect(result).toContain("<summary>Show analysis details - Analysis performed on");
+      expect(result).toContain("*Analysis performed on");
+      expect(result).toContain("*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*");
       expect(result).toContain(
-        "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
+        "*Configuration: Dialect: american_english | Tone: formal | Style Guide: ap*",
       );
-      expect(result).toContain("- **Event:** push");
-      expect(result).toContain("- **Markup AI workflow ID:** analysis-workflow-1");
-      expect(result).toContain(
-        "- **GitHub workflow run:** [#123456](https://github.com/test/test/actions/runs/123456)",
-      );
-      expect(result).not.toContain("Quality Score Legend");
+      expect(result).toContain("*Event: push*");
     });
 
     it("should handle different event types", () => {
-      const results = [
-        {
-          ...createMockResult("test.md", {
-            quality: 85,
-            clarity: 90,
-            grammar: 80,
-            style_guide: 88,
-            tone: 87,
-            terminology: 92,
-          }),
-          workflowId: "analysis-workflow-2",
-        },
-      ];
-      const result = generateFooter(
-        mockAnalysisOptions,
-        "pull_request",
-        {
-          owner: "test",
-          repo: "test",
-          ref: "main",
-          baseUrl: new URL("https://github.com"),
-          runId: 123456,
-        },
-        results,
-      );
+      const result = generateFooter(mockAnalysisOptions, "pull_request");
 
-      expect(result).toContain("- **Event:** pull_request");
-      expect(result).toContain("- **Markup AI workflow ID:** analysis-workflow-2");
+      expect(result).toContain("*Event: pull_request*");
     });
   });
 
@@ -624,8 +570,8 @@ describe("Markdown Utils", () => {
         "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
       expect(result).toContain("## 📊 Summary");
-      expect(result).toContain("<summary>Show analysis details - Analysis performed on");
-      expect(result).toContain("- **Event:** push");
+      expect(result).toContain("*Analysis performed on");
+      expect(result).toContain("*Event: push*");
 
       // Should contain rounded scores
       expect(result).toContain("🟢 86"); // 85.7 rounded to 86
@@ -644,7 +590,7 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain(header);
       expect(result).toContain("No files were analyzed.");
-      expect(result).toContain("- **Event:** push");
+      expect(result).toContain("*Event: push*");
       // Should not contain summary section for empty results
       expect(result).not.toContain("## 📊 Summary");
     });

@@ -97,7 +97,7 @@ describe("Job Summary Service", () => {
 
       expect(mockSummary.addRaw).toHaveBeenCalledTimes(1);
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
-        expect.stringContaining("# 🔍 Analysis Results"),
+        expect.stringContaining("# 🔍 Markup AI Analysis Results"),
       );
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
         expect.stringContaining(
@@ -146,7 +146,7 @@ describe("Job Summary Service", () => {
 
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
         expect.stringContaining(
-          "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
+          "*Configuration: Dialect: american_english | Tone: formal | Style Guide: ap*",
         ),
       );
     });

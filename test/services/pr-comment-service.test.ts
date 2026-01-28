@@ -383,7 +383,7 @@ describe("PR Comment Service", () => {
 
       // Test configuration display
       expect(commentBody).toContain(
-        "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
+        "*Configuration: Dialect: american_english | Tone: formal | Style Guide: ap*",
       );
     });
 
