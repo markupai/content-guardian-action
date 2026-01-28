@@ -23,7 +23,8 @@ export function wrapInlineCode(value: string): string {
   const matches = value.match(/`+/g);
   const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
   const fence = "`".repeat(maxLength + 1);
-  const needsPadding = value.startsWith(" ") || value.endsWith(" ");
+  const needsPadding =
+    value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
   const wrappedValue = needsPadding ? ` ${value} ` : value;
   return `${fence}${wrappedValue}${fence}`;
 }
