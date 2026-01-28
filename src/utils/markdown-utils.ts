@@ -5,6 +5,7 @@
 import { createHash } from "node:crypto";
 import { AnalysisResult, AnalysisOptions } from "../types/index.js";
 import { getQualityEmoji, calculateScoreSummary } from "./score-utils.js";
+import { getToneValue } from "./string-utils.js";
 
 /**
  * Base repository context with common fields
@@ -126,9 +127,8 @@ ${toneRow}
  * Generate footer section with metadata
  */
 export function generateFooter(config: AnalysisOptions, eventType: string): string {
-  const toneValue = config.tone?.trim();
-  const toneSegment =
-    toneValue && toneValue !== "None (keep tone unchanged)" ? ` Tone: ${toneValue} |` : "";
+  const toneValue = getToneValue(config.tone);
+  const toneSegment = toneValue ? ` Tone: ${toneValue} |` : "";
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*

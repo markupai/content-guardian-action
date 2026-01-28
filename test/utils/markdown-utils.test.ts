@@ -542,9 +542,7 @@ describe("Markdown Utils", () => {
         "push",
       );
 
-      expect(result).toContain(
-        "*Configuration: Dialect: american_english | Style Guide: ap*",
-      );
+      expect(result).toContain("*Configuration: Dialect: american_english | Style Guide: ap*");
       expect(result).not.toContain("Tone: None (keep tone unchanged)");
     });
 

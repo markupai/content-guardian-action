@@ -4,6 +4,7 @@
 
 import * as core from "@actions/core";
 import { ActionConfig, AnalysisOptions } from "../types/index.js";
+import { getToneValue } from "../utils/string-utils.js";
 import { INPUT_NAMES, ENV_VARS, ERROR_MESSAGES } from "../constants/index.js";
 
 /**
@@ -111,8 +112,7 @@ function validateAnalysisOption(name: string, value: string): void {
  * Log configuration (without sensitive data)
  */
 export function logConfiguration(config: ActionConfig): void {
-  const toneValue = config.tone?.trim();
-  const toneDisplay = toneValue && toneValue !== "None (keep tone unchanged)" ? toneValue : "";
+  const toneDisplay = getToneValue(config.tone) ?? "";
   core.info("🔧 Action Configuration:");
   core.info(`  Dialect: ${config.dialect}`);
   core.info(`  Tone: ${toneDisplay}`);
