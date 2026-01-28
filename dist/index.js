@@ -36347,6 +36347,14 @@ function truncateText(value, maxLength) {
     }
     return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
 }
+function wrapInlineCode(value) {
+    const matches = value.match(/`+/g);
+    const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
+    const fence = "`".repeat(maxLength + 1);
+    const needsPadding = value.startsWith(" ") || value.endsWith(" ");
+    const wrappedValue = needsPadding ? ` ${value} ` : value;
+    return `${fence}${wrappedValue}${fence}`;
+}
 function capitalizeLabel(value) {
     if (!value) {
         return value;
@@ -36385,10 +36393,10 @@ function buildReviewCommentBody(issues) {
         }
         else if ("suggestion" in issue && issue.suggestion) {
             const explanation = "explanation" in issue && issue.explanation ? `\nExplanation: ${issue.explanation}` : "";
-            suggestion = `${explanation}\nSuggestion: \`${truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH)}\``;
+            suggestion = `${explanation}\nSuggestion: ${wrapInlineCode(truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH))}`;
         }
         const severity = ` (Severity: ${capitalizeLabel(issue.severity)})`;
-        return `- **${category} / ${subcategory}${severity}**: \`${original}\`${suggestion}`;
+        return `- **${category} / ${subcategory}${severity}**: ${wrapInlineCode(original)}${suggestion}`;
     });
     const moreCount = issues.length - issueLines.length;
     if (moreCount > 0) {
