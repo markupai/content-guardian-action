@@ -31546,7 +31546,7 @@ function wrapInlineCode(value) {
     const matches = value.match(/`+/g);
     const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
     const fence = "`".repeat(maxLength + 1);
-    const needsPadding = value.startsWith(" ") || value.endsWith(" ");
+    const needsPadding = value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
     const wrappedValue = needsPadding ? ` ${value} ` : value;
     return `${fence}${wrappedValue}${fence}`;
 }
@@ -36403,11 +36403,11 @@ function buildReviewCommentBody(issues) {
         const inlineSuggestion = applyInlineSuggestion(issue, lineText, column);
         let suggestion = "";
         if (inlineSuggestion) {
-            const explanation = "explanation" in issue && issue.explanation ? `\nExplanation: ${issue.explanation}` : "";
+            const explanation = "explanation" in issue && issue.explanation ? `\n*Explanation: ${issue.explanation}*` : "";
             suggestion = `${explanation}\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
         }
         else if ("suggestion" in issue && issue.suggestion) {
-            const explanation = "explanation" in issue && issue.explanation ? `\nExplanation: ${issue.explanation}` : "";
+            const explanation = "explanation" in issue && issue.explanation ? `\n*Explanation: ${issue.explanation}*` : "";
             suggestion = `${explanation}\nSuggestion: ${wrapInlineCode(truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH))}`;
         }
         const severity = ` (Severity: ${capitalizeLabel(issue.severity)})`;
