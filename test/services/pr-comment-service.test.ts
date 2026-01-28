@@ -534,6 +534,7 @@ describe("PR Comment Service", () => {
               subcategory: "spelling",
               category: IssueCategory.Grammar,
               suggestion: "The",
+              explanation: "Use the correct spelling.",
               severity: IssueSeverity.Low,
             },
           },
@@ -570,6 +571,8 @@ describe("PR Comment Service", () => {
       expect(reviewCall.comments[0].line).toBe(1);
       expect(reviewCall.comments[0].side).toBe("RIGHT");
       expect(reviewCall.comments[0].body).toContain("```suggestion");
+      expect(reviewCall.comments[0].body).toContain("*Explanation: Use the correct spelling.*");
+      expect(reviewCall.comments[0].body).toContain("Severity: Low");
 
       const createCall = mockOctokit.rest.pulls.createReview.mock.calls[0][0] as {
         comments: Array<{ body: string }>;
