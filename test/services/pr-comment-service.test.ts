@@ -238,7 +238,7 @@ describe("PR Comment Service", () => {
         expect(createCall.owner).toBe("test-owner");
         expect(createCall.repo).toBe("test-repo");
         expect(createCall.issue_number).toBe(123);
-        expect(createCall.body).toContain("## <img");
+        expect(createCall.body).toContain("## Markup AI Analysis Results (DEV)");
       });
 
       it("should update existing comment when found", async () => {
@@ -260,7 +260,7 @@ describe("PR Comment Service", () => {
         expect(updateCall.owner).toBe("test-owner");
         expect(updateCall.repo).toBe("test-repo");
         expect(updateCall.comment_id).toBe(789);
-        expect(updateCall.body).toContain("## <img");
+        expect(updateCall.body).toContain("## Markup AI Analysis Results (DEV)");
       });
     });
 
@@ -361,7 +361,7 @@ describe("PR Comment Service", () => {
       const commentBody = createCall.body;
 
       // Test header and structure
-      expect(commentBody).toContain("## <img");
+      expect(commentBody).toContain("## Markup AI Analysis Results (DEV)");
       expect(commentBody).toContain("## 📊 Summary");
       expect(commentBody).toContain("Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59");
 
@@ -619,7 +619,7 @@ describe("PR Comment Service", () => {
         },
       };
 
-      const existingBody = `**Markup AI** detected issues:
+      const existingBody = `**Markup AI** detected issues: <img src="https://github.com/markupai/content-guardian-action/raw/unlock%2FAdd-review-commit-with-suggestion/icons/markup_ai_mark_logo.svg" alt="Markup AI" width="24" height="24" align="right" />
 - **Grammar / Spelling (Severity: Low)**: \`Teh\`
 \`\`\`suggestion
 The sample line

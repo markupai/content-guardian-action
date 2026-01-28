@@ -553,7 +553,7 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("---");
       expect(result).toContain("<details>");
-      expect(result).toContain("<summary>💡 Analysis performed on");
+      expect(result).toContain("<summary>Show analysis details - Analysis performed on");
       expect(result).toContain(
         "- **Configuration:** Style Guide: ap | Dialect: american_english | Tone: formal",
       );
@@ -624,7 +624,7 @@ describe("Markdown Utils", () => {
         "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
       expect(result).toContain("## 📊 Summary");
-      expect(result).toContain("<summary>💡 Analysis performed on");
+      expect(result).toContain("<summary>Show analysis details - Analysis performed on");
       expect(result).toContain("- **Event:** push");
 
       // Should contain rounded scores
