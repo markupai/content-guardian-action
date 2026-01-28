@@ -36364,8 +36364,29 @@ ${footer}
 /**
  * PR Comment service for managing comments on pull requests
  */
+/**
+ * Maximum number of review comments to post in a single run.
+ *
+ * This is set to 50 to avoid overwhelming the pull request with too many
+ * inline comments while staying well under GitHub's soft limits and
+ * abuse detection thresholds for review comment creation.
+ */
 const MAX_REVIEW_COMMENTS = 50;
+/**
+ * Maximum number of issues grouped into a single review comment.
+ *
+ * A small value (5) keeps each comment readable and scannable in the
+ * GitHub UI, instead of packing a large number of issues into one place.
+ */
 const MAX_ISSUES_PER_COMMENT = 5;
+/**
+ * Maximum length (in characters) of the original text excerpt shown
+ * in an inline suggestion.
+ *
+ * Limiting this to 160 characters ensures suggestions remain concise
+ * and fit comfortably within GitHub's diff and comment UI without
+ * creating excessively large payloads.
+ */
 const MAX_ORIGINAL_LENGTH = 160;
 /**
  * Generate complete comment body
@@ -36462,6 +36483,13 @@ function filterExistingReviewComments(reviewComments, existingKeys) {
     }
     return filtered;
 }
+/**
+ * Load existing PR review comments and return a lookup set.
+ *
+ * Note: when `octokit.paginate` is unavailable, the fallback only fetches the
+ * first page (up to 100 comments). In that case, review comments beyond the
+ * first page are not checked for duplicates.
+ */
 async function getExistingReviewCommentKeys(octokit, owner, repo, prNumber) {
     try {
         const comments = typeof octokit.paginate === "function"
