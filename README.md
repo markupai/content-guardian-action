@@ -154,7 +154,7 @@ permissions:
 | `markup_ai_api_key`   | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable             | Yes      | -       |
 | `github_token`        | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable                   | Yes      | -       |
 | `dialect`             | Language dialect for analysis (for example, `american_english`, `british_english`)                          | Yes      | -       |
-| `style-guide`         | Style guide for analysis (for example, `ap`, `chicago`, `apa`, or a custom style guide ID like `sg-123456`) | Yes      | -       |
+| `style-guide`         | Style guide for analysis (for example, `ap`, `chicago`, `microsoft`, or a custom style guide ID like `sg-123456`) | Yes      | -       |
 | `tone`                | Tone for analysis (for example, `formal`, `informal`, `academic`)                                           | No       | -       |
 | `add_commit_status`   | Whether to add commit status updates                                                                        | No       | `true`  |
 | `add_review_comments` | Whether to add PR review comments for issues                                                                | No       | `true`  |
