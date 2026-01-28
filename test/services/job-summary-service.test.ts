@@ -49,6 +49,7 @@ describe("Job Summary Service", () => {
           tone: buildTone(82),
         },
       },
+      issues: [],
       timestamp: "2024-01-15T10:30:00Z",
     },
     {
@@ -67,6 +68,7 @@ describe("Job Summary Service", () => {
           tone: buildTone(78),
         },
       },
+      issues: [],
       timestamp: "2024-01-15T10:35:00Z",
     },
   ] as import("../../src/types/index.js").AnalysisResult[];
@@ -95,7 +97,7 @@ describe("Job Summary Service", () => {
 
       expect(mockSummary.addRaw).toHaveBeenCalledTimes(1);
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
-        expect.stringContaining("# 🔍 Analysis Results"),
+        expect.stringContaining("# 🔍 Markup AI Analysis Results"),
       );
       expect(mockSummary.addRaw).toHaveBeenCalledWith(
         expect.stringContaining(

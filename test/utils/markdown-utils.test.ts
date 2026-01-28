@@ -101,6 +101,7 @@ describe("Markdown Utils", () => {
         },
       },
     },
+    issues: [],
     timestamp: "2024-01-01T00:00:00Z",
   });
 
@@ -135,9 +136,9 @@ describe("Markdown Utils", () => {
         baseUrl: new URL("https://github.com"),
       });
 
-      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|
-| [example.md](https://github.com/owner/repo/pull/123/files#diff-812adf881bb029e57953653f71d54ffc5eac7de19829aa4cbcbbec8f7065a047) | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`;
+      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|
+| [example.md](https://github.com/owner/repo/pull/123/files#diff-812adf881bb029e57953653f71d54ffc5eac7de19829aa4cbcbbec8f7065a047) | 🟢 85 | 80 | 88 | 92 | 90 | 87 | 0 |`;
 
       expect(result).toBe(expectedMarkdown);
     });
@@ -161,9 +162,9 @@ describe("Markdown Utils", () => {
         baseUrl: new URL("https://github.com"),
       });
 
-      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|
-| [example.md](https://github.com/owner/repo/blob/refs/heads/main/example.md) | 🟢 85 | 80 | 88 | 92 | 90 | 87 |`;
+      const expectedMarkdown = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|
+| [example.md](https://github.com/owner/repo/blob/refs/heads/main/example.md) | 🟢 85 | 80 | 88 | 92 | 90 | 87 | 0 |`;
 
       expect(result).toBe(expectedMarkdown);
     });
@@ -212,9 +213,11 @@ describe("Markdown Utils", () => {
 
       // Check table structure
       expect(result).toContain(
-        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |",
+        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
-      expect(result).toContain("|------|---------|---------|---------|---------|---------|------|");
+      expect(result).toContain(
+        "|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|",
+      );
       expect(result).toContain("| [test1.md](https://github.com/test/test/blob/main/test1.md) |");
       expect(result).toContain("| [test2.md](https://github.com/test/test/blob/main/test2.md) |");
     });
@@ -294,7 +297,7 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("🔴 0");
       expect(result).toContain(
-        "| [test.md](https://github.com/test/test/blob/main/test.md) | 🔴 0 | 0 | 0 | 0 | 0 | 0 |",
+        "| [test.md](https://github.com/test/test/blob/main/test.md) | 🔴 0 | 0 | 0 | 0 | 0 | 0 | 0 |",
       );
     });
 
@@ -319,7 +322,7 @@ describe("Markdown Utils", () => {
 
       expect(result).toContain("🟢 100");
       expect(result).toContain(
-        "| [test.md](https://github.com/test/test/blob/main/test.md) | 🟢 100 | 100 | 100 | 100 | 100 | 100 |",
+        "| [test.md](https://github.com/test/test/blob/main/test.md) | 🟢 100 | 100 | 100 | 100 | 100 | 100 | 0 |",
       );
     });
 
@@ -345,6 +348,7 @@ describe("Markdown Utils", () => {
             },
           } as unknown as StyleScores["analysis"],
         } as unknown as StyleScores,
+        issues: [],
         timestamp: "2024-01-01T00:00:00Z",
       };
 
@@ -356,8 +360,38 @@ describe("Markdown Utils", () => {
       });
 
       expect(result).toContain(
-        "| [notone.md](https://github.com/test/test/blob/main/notone.md) | 🟡 70 | 65 | 68 | 72 | 80 | - |",
+        "| [notone.md](https://github.com/test/test/blob/main/notone.md) | 🟡 70 | 65 | 68 | 72 | 80 | 0 |",
       );
+    });
+
+    it("should render hyphen for Tone in summary when no tone scores exist", () => {
+      const resultObj: AnalysisResult = {
+        filePath: "notone.md",
+        result: {
+          quality: {
+            score: 70,
+            grammar: { score: 65, issues: 0 },
+            consistency: { score: 68, issues: 0 },
+            terminology: { score: 72, issues: 0 },
+          },
+          analysis: {
+            clarity: {
+              score: 80,
+              word_count: 100,
+              sentence_count: 5,
+              average_sentence_length: 20,
+              flesch_reading_ease: 70,
+              vocabulary_complexity: 0.5,
+              sentence_complexity: 0.4,
+            },
+          } as unknown as StyleScores["analysis"],
+        } as unknown as StyleScores,
+        issues: [],
+        timestamp: "2024-01-01T00:00:00Z",
+      };
+
+      const result = generateSummary([resultObj]);
+      expect(result).not.toContain("| Tone |");
     });
   });
 
@@ -493,12 +527,23 @@ describe("Markdown Utils", () => {
     it("should generate footer with configuration and event info", () => {
       const result = generateFooter(mockAnalysisOptions, "push");
 
+      expect(result).toContain("---");
       expect(result).toContain("*Analysis performed on");
       expect(result).toContain("*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*");
       expect(result).toContain(
         "*Configuration: Dialect: american_english | Tone: formal | Style Guide: ap*",
       );
       expect(result).toContain("*Event: push*");
+    });
+
+    it("should omit tone when placeholder is used", () => {
+      const result = generateFooter(
+        { ...mockAnalysisOptions, tone: "None (keep tone unchanged)" },
+        "push",
+      );
+
+      expect(result).toContain("*Configuration: Dialect: american_english | Style Guide: ap*");
+      expect(result).not.toContain("Tone: None (keep tone unchanged)");
     });
 
     it("should handle different event types", () => {
@@ -532,7 +577,7 @@ describe("Markdown Utils", () => {
       // Should contain all sections
       expect(result).toContain(header);
       expect(result).toContain(
-        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |",
+        "| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |",
       );
       expect(result).toContain("## 📊 Summary");
       expect(result).toContain("*Analysis performed on");

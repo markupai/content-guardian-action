@@ -94,9 +94,10 @@ vi.mock("@markupai/toolkit", async () => {
           issues: [
             {
               original: "test text",
-              char_index: 10,
+              position: { start_index: 10 },
               subcategory: "passive_voice",
-              category: "style_guide",
+              category: "grammar",
+              severity: "low",
             },
           ],
           scores: {
@@ -246,8 +247,10 @@ describe("main.ts", () => {
           return "";
         case "style-guide":
           return "ap";
-        case "github-token":
+        case "github_token":
           return "test-token";
+        case "add_review_comments":
+          return "false";
         default:
           return "";
       }

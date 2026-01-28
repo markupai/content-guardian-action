@@ -50,6 +50,7 @@ const mockUpdateCommitStatus = vi.fn<() => Promise<void>>();
 const mockIsPullRequestEvent = vi.fn<() => boolean>();
 const mockGetPRNumber = vi.fn<() => number | null>();
 const mockCreateOrUpdatePRComment = vi.fn<() => Promise<void>>();
+const mockCreatePRReviewComments = vi.fn<() => Promise<void>>();
 const mockDisplaySectionHeader = vi.fn<() => void>();
 const mockCreateJobSummary = vi.fn<() => Promise<void>>();
 
@@ -64,6 +65,7 @@ vi.mock("../../src/services/github-service.js", () => ({
 
 vi.mock("../../src/services/pr-comment-service.js", () => ({
   createOrUpdatePRComment: mockCreateOrUpdatePRComment,
+  createPRReviewComments: mockCreatePRReviewComments,
   isPullRequestEvent: mockIsPullRequestEvent,
   getPRNumber: mockGetPRNumber,
 }));
@@ -131,6 +133,7 @@ describe("Post Analysis Service", () => {
           tone: buildTone(82),
         },
       },
+      issues: [],
       timestamp: "2024-01-15T10:30:00Z",
     },
   ];
@@ -138,6 +141,7 @@ describe("Post Analysis Service", () => {
   const mockConfig = {
     githubToken: "test-token",
     addCommitStatus: true,
+    addReviewComments: true,
   };
 
   const mockAnalysisOptions = {
@@ -290,6 +294,33 @@ describe("Post Analysis Service", () => {
           results: mockResults,
           config: mockAnalysisOptions,
         });
+        expect(mockCreatePRReviewComments).toHaveBeenCalledWith(mockOctokit, {
+          owner: "test-owner",
+          eventType: "pull_request",
+          repo: "test-repo",
+          prNumber: 123,
+          results: mockResults,
+          config: mockAnalysisOptions,
+        });
+      });
+
+      it("should skip review comments when disabled", async () => {
+        mockIsPullRequestEvent.mockReturnValue(true);
+        mockGetPRNumber.mockReturnValue(123);
+
+        await postAnalysisService.handlePostAnalysisActions(
+          {
+            eventType: EVENT_TYPES.PULL_REQUEST,
+            filesCount: 1,
+            description: "Pull request event",
+          },
+          mockResults,
+          { ...mockConfig, addReviewComments: false },
+          mockAnalysisOptions,
+        );
+
+        expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
+        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
       });
 
       it("should not create PR comment when it is not a pull request event", async () => {
@@ -308,6 +339,7 @@ describe("Post Analysis Service", () => {
 
         expect(mockDisplaySectionHeader).not.toHaveBeenCalled();
         expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
+        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
       });
 
       it("should not create PR comment when PR number is null", async () => {
@@ -327,6 +359,7 @@ describe("Post Analysis Service", () => {
 
         expect(mockDisplaySectionHeader).not.toHaveBeenCalled();
         expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
+        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
       });
     });
 
@@ -386,6 +419,7 @@ describe("Post Analysis Service", () => {
         );
 
         expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
+        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
         // The function should not throw, it should handle the error gracefully
       });
 

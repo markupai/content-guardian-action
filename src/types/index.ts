@@ -25,7 +25,7 @@ export interface FileChange {
   patch?: string;
 }
 
-import type { StyleScores } from "@markupai/toolkit";
+import type { Issue, IssueWithSuggestion, StyleScores } from "@markupai/toolkit";
 
 /**
  * Interface for analysis result
@@ -33,7 +33,19 @@ import type { StyleScores } from "@markupai/toolkit";
 export interface AnalysisResult {
   filePath: string;
   result: StyleScores;
+  issues: AnalysisIssue[];
+  workflowId?: string;
   timestamp: string;
+}
+
+/**
+ * Interface for analysis issues with file line context
+ */
+export interface AnalysisIssue {
+  issue: Issue | IssueWithSuggestion;
+  line: number;
+  column: number;
+  lineText: string;
 }
 
 /**
@@ -64,6 +76,7 @@ export interface ActionConfig {
   styleGuide: string;
   githubToken: string;
   addCommitStatus: boolean;
+  addReviewComments: boolean;
   strictMode: boolean;
 }
 
@@ -74,6 +87,7 @@ export interface AnalysisOptions {
   dialect: string;
   tone?: string;
   styleGuide: string;
+  reviewComments?: boolean;
 }
 
 // Re-export types from SDK

@@ -75,6 +75,7 @@ jobs:
           # tone is optional
           tone: "academic"
           add_commit_status: "true"
+          add_review_comments: "true"
           strict_mode: "false" # Continue even if some files fail to analyze
 ```
 
@@ -148,15 +149,16 @@ permissions:
 
 ## Inputs
 
-| Input               | Description                                                                                                 | Required | Default |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- | -------- | ------- |
-| `markup_ai_api_key` | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable             | Yes      | -       |
-| `github_token`      | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable                   | Yes      | -       |
-| `dialect`           | Language dialect for analysis (for example, `american_english`, `british_english`)                          | Yes      | -       |
-| `style-guide`       | Style guide for analysis (for example, `ap`, `chicago`, `apa`, or a custom style guide ID like `sg-123456`) | Yes      | -       |
-| `tone`              | Tone for analysis (for example, `formal`, `informal`, `academic`)                                           | No       | -       |
-| `add_commit_status` | Whether to add commit status updates                                                                        | No       | `true`  |
-| `strict_mode`       | Fail the action if any file analysis fails (default is false)                                               | No       | `false` |
+| Input                 | Description                                                                                                       | Required | Default |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| `markup_ai_api_key`   | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable                   | Yes      | -       |
+| `github_token`        | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable                         | Yes      | -       |
+| `dialect`             | Language dialect for analysis (for example, `american_english`, `british_english`)                                | Yes      | -       |
+| `style-guide`         | Style guide for analysis (for example, `ap`, `chicago`, `microsoft`, or a custom style guide ID like `sg-123456`) | Yes      | -       |
+| `tone`                | Tone for analysis (for example, `formal`, `informal`, `academic`, or none to keep the tone unchanged)             | No       | -       |
+| `add_commit_status`   | Whether to add commit status updates                                                                              | No       | `true`  |
+| `add_review_comments` | Whether to add PR review comments for issues                                                                      | No       | `true`  |
+| `strict_mode`         | Fail the action if any file analysis fails (default is false)                                                     | No       | `false` |
 
 ## Outputs
 
@@ -179,7 +181,7 @@ The action automatically adapts its behavior based on the GitHub event type:
 ### Pull Request Events (`on: [pull_request]`)
 
 - **Scope**: Analyzes files changed in the PR
-- **Features**: Detailed PR comments with analysis results
+- **Features**: Detailed PR comments with analysis results and inline suggestions
 - **Use Case**: Pre-merge quality checks
 
 ### Manual Workflows (`on: [workflow_dispatch]`)
@@ -243,12 +245,12 @@ jobs:
           style-guide: "ap"
           # tone is optional
           tone: "formal"
-          strict_mode: "true" # Fail PR if any file analysis fails
+          strict_mode: "true" # Fail the PR if any file analysis fails
 
       - name: Check Quality Score
         run: |
           results='${{ steps.analysis.outputs.results }}'
-          # Add your quality threshold logic here
+          # Add your quality threshold logic here to enforce a quality gate
 ```
 
 ### Scheduled Repository Analysis
@@ -412,10 +414,10 @@ For push events, the action automatically updates commit status with:
 
 For pull request events, the action creates detailed comments with:
 
-- Quality score summary
+- Per-file quality scores and summary
 - Detailed metrics table
 - Configuration used
-- Specific issues found
+- PR review comments with issues and inline suggestions (when enabled)
 
 ## Example Output
 
