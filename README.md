@@ -181,7 +181,7 @@ The action automatically adapts its behavior based on the GitHub event type:
 ### Pull Request Events (`on: [pull_request]`)
 
 - **Scope**: Analyzes files changed in the PR
-- **Features**: Detailed PR comments with analysis results
+- **Features**: Detailed PR comments with analysis results and inline suggestions
 - **Use Case**: Pre-merge quality checks
 
 ### Manual Workflows (`on: [workflow_dispatch]`)
@@ -245,12 +245,12 @@ jobs:
           style-guide: "ap"
           # tone is optional
           tone: "formal"
-          strict_mode: "true" # Fail PR if any file analysis fails
+          strict_mode: "true" # Fail the PR if any file analysis fails
 
       - name: Check Quality Score
         run: |
           results='${{ steps.analysis.outputs.results }}'
-          # Add your quality threshold logic here
+          # Add your quality threshold logic here to enforce a quality gate
 ```
 
 ### Scheduled Repository Analysis
@@ -414,10 +414,10 @@ For push events, the action automatically updates commit status with:
 
 For pull request events, the action creates detailed comments with:
 
-- Quality score summary
+- Per-file quality scores and summary
 - Detailed metrics table
 - Configuration used
-- Specific issues found
+- PR review comments with issues and inline suggestions (when enabled)
 
 ## Example Output
 
