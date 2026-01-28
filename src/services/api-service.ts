@@ -1,13 +1,23 @@
 import * as core from "@actions/core";
-import { styleCheck, styleBatchCheckRequests, Config, StyleAnalysisReq } from "@markupai/toolkit";
+import {
+  styleCheck,
+  styleBatchCheckRequests,
+  styleBatchOperation,
+  styleSuggestions,
+  Config,
+  StyleAnalysisReq,
+} from "@markupai/toolkit";
 import { AnalysisResult, AnalysisOptions } from "../types/index.js";
-import { getFileBasename } from "../utils/file-utils.js";
+import { getFileBasename, getLineContextAtIndex } from "../utils/file-utils.js";
 import { calculateScoreSummary, ScoreSummary } from "../utils/score-utils.js";
 import { processFileReading } from "../utils/batch-utils.js";
 import { checkForRequestEndingError, isRequestEndingError } from "../utils/error-utils.js";
 
 export function createConfig(apiToken: string): Config {
-  return { apiKey: apiToken, headers: { "x-integration-id": "markupai-content-guardian-action" } };
+  return {
+    apiKey: apiToken,
+    headers: { "x-integration-id": "markupai-content-guardian-action" },
+  };
 }
 
 /**
@@ -31,11 +41,25 @@ export async function analyzeFile(
       ...(options.tone ? { tone: options.tone } : {}),
     };
 
-    const result = await styleCheck(request, config);
+    const result = options.reviewComments
+      ? await styleSuggestions(request, config)
+      : await styleCheck(request, config);
+
+    const issues = result.original.issues.map((issue) => {
+      const context = getLineContextAtIndex(content, issue.position.start_index);
+      return {
+        issue,
+        line: context.line,
+        column: context.column,
+        lineText: context.lineText,
+      };
+    });
 
     return {
       filePath,
       result: result.original.scores,
+      issues,
+      workflowId: result.workflow.id,
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
@@ -89,7 +113,9 @@ export async function analyzeFilesBatch(
 
   try {
     // Start batch processing
-    const batchResponse = styleBatchCheckRequests(requests, config, batchOptions);
+    const batchResponse = options.reviewComments
+      ? styleBatchOperation(requests, config, "suggestions", batchOptions)
+      : styleBatchCheckRequests(requests, config, batchOptions);
 
     // Monitor progress
     const progressInterval = setInterval(() => {
@@ -128,9 +154,23 @@ export async function analyzeFilesBatch(
     const results: AnalysisResult[] = [];
     for (const [index, batchResult] of finalProgress.results.entries()) {
       if (batchResult.status === "completed" && batchResult.result) {
+        const content = fileContents[index].content;
+        const issues = batchResult.result.original.issues.map((issue) => {
+          const context = getLineContextAtIndex(content, issue.position.start_index);
+          return {
+            issue,
+            line: context.line,
+            column: context.column,
+            lineText: context.lineText,
+          };
+        });
+        const workflowId = batchResult.workflowId || batchResult.result.workflow.id;
+
         results.push({
           filePath: fileContents[index].filePath,
           result: batchResult.result.original.scores,
+          issues,
+          workflowId,
           timestamp: new Date().toISOString(),
         });
       } else if (batchResult.status === "failed") {

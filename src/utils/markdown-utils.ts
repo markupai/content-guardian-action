@@ -5,6 +5,7 @@
 import { createHash } from "node:crypto";
 import { AnalysisResult, AnalysisOptions } from "../types/index.js";
 import { getQualityEmoji, calculateScoreSummary } from "./score-utils.js";
+import { getToneValue } from "./string-utils.js";
 
 /**
  * Base repository context with common fields
@@ -14,6 +15,7 @@ interface BaseRepositoryContext {
   repo: string;
   ref: string;
   baseUrl: URL;
+  runId?: number;
 }
 
 /**
@@ -55,8 +57,14 @@ export function generateResultsTable(
     return "No files were analyzed.";
   }
 
-  const tableHeader = `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone |
-|------|---------|---------|---------|---------|---------|------|`;
+  const hasToneScore = results.some(
+    (result) => typeof result.result.analysis.tone?.score === "number",
+  );
+  const tableHeader = hasToneScore
+    ? `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|`
+    : `| File | Quality | Grammar | Consistency | Terminology | Clarity | Issues |
+|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:------:|`;
 
   const tableRows = results
     .map((result) => {
@@ -70,7 +78,10 @@ export function generateResultsTable(
       // Create clickable file link using repository context
       const fileDisplay = generateFileDisplayLink(filePath, context);
 
-      return `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} |`;
+      const issuesCount = result.issues.length;
+      return hasToneScore
+        ? `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} | ${issuesCount.toString()} |`
+        : `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${issuesCount.toString()} |`;
     })
     .join("\n");
 
@@ -87,6 +98,12 @@ export function generateSummary(results: AnalysisResult[]): string {
 
   const summary = calculateScoreSummary(results);
   const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
+  const hasToneScore = results.some(
+    (result) => typeof result.result.analysis.tone?.score === "number",
+  );
+  const toneRow = hasToneScore
+    ? `| Tone | ${Math.round(summary.averageToneScore).toString()} |`
+    : "";
 
   return `
 ## 📊 Summary
@@ -96,13 +113,13 @@ export function generateSummary(results: AnalysisResult[]): string {
 **Files Analyzed:** ${summary.totalFiles.toString()}
 
 | Metric | Average Score |
-|--------|---------------|
+|:------|:-------------:|
 | Quality | ${Math.round(summary.averageQualityScore).toString()} |
 | Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
 | Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
 | Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
 | Clarity | ${Math.round(summary.averageClarityScore).toString()} |
-| Tone | ${Math.round(summary.averageToneScore).toString()} |
+${toneRow}
 `;
 }
 
@@ -110,11 +127,13 @@ export function generateSummary(results: AnalysisResult[]): string {
  * Generate footer section with metadata
  */
 export function generateFooter(config: AnalysisOptions, eventType: string): string {
+  const toneValue = getToneValue(config.tone);
+  const toneSegment = toneValue ? ` Tone: ${toneValue} |` : "";
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
 *Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${config.tone ? ` Tone: ${config.tone} |` : ""} Style Guide: ${config.styleGuide}*
+*Configuration: Dialect: ${config.dialect} |${toneSegment} Style Guide: ${config.styleGuide}*
 *Event: ${eventType}*`;
 }
 
@@ -138,5 +157,6 @@ ${table}
 
 ${summary}
 
-${footer}`;
+${footer}
+`;
 }

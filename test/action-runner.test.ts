@@ -51,6 +51,7 @@ const createFileAnalysisResults = (filePaths: string[], includeAll: boolean = tr
   return filesToReturn.map((filePath) => ({
     filePath,
     result: { quality: { score: 85 } },
+    issues: [],
     timestamp: "2024-01-01T00:00:00Z",
   }));
 };
@@ -112,7 +113,7 @@ vi.mock("@actions/github", () => ({
   },
 }));
 
-const mockAnalyzeFiles = vi.fn<(files: string[]) => Promise<unknown[]>>();
+const mockAnalyzeFiles = vi.fn<(...args: unknown[]) => Promise<unknown[]>>();
 
 vi.mock("../src/services/api-service.js", () => ({
   analyzeFiles: mockAnalyzeFiles,

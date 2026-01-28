@@ -37,6 +37,7 @@ describe("Action Config", () => {
         apiToken: "token",
         githubToken: "github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -46,6 +47,7 @@ describe("Action Config", () => {
         dialect: "british_english",
         tone: "informal",
         styleGuide: "chicago",
+        reviewComments: true,
       });
     });
 
@@ -57,6 +59,7 @@ describe("Action Config", () => {
         apiToken: "token",
         githubToken: "github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -66,6 +69,7 @@ describe("Action Config", () => {
         dialect: "",
         tone: undefined,
         styleGuide: "",
+        reviewComments: true,
       });
     });
   });
@@ -79,6 +83,7 @@ describe("Action Config", () => {
         apiToken: "valid-token",
         githubToken: "valid-github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -95,6 +100,7 @@ describe("Action Config", () => {
         apiToken: "",
         githubToken: "valid-github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -111,6 +117,7 @@ describe("Action Config", () => {
         apiToken: "valid-token",
         githubToken: "",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -128,6 +135,7 @@ describe("Action Config", () => {
         apiToken: "valid-token",
         githubToken: "valid-github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -146,6 +154,7 @@ describe("Action Config", () => {
         apiToken: "valid-token",
         githubToken: "valid-github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -164,6 +173,7 @@ describe("Action Config", () => {
         apiToken: "token123",
         githubToken: "github-token123",
         addCommitStatus: true,
+        addReviewComments: false,
         strictMode: false,
       };
 
@@ -175,6 +185,24 @@ describe("Action Config", () => {
       expect(core.info).toHaveBeenCalledWith("  Style Guide: chicago");
       expect(core.info).toHaveBeenCalledWith("  API Token: [PROVIDED]");
       expect(core.info).toHaveBeenCalledWith("  GitHub Token: [PROVIDED]");
+      expect(core.info).toHaveBeenCalledWith("  Review Comments: disabled");
+    });
+
+    it("should suppress placeholder tone", () => {
+      const config: ActionConfig = {
+        dialect: "american_english",
+        tone: "None (keep tone unchanged)",
+        styleGuide: "ap",
+        apiToken: "token123",
+        githubToken: "github-token123",
+        addCommitStatus: true,
+        addReviewComments: true,
+        strictMode: false,
+      };
+
+      logConfiguration(config);
+
+      expect(core.info).toHaveBeenCalledWith("  Tone: ");
     });
 
     it("should log empty values when not provided", () => {
@@ -185,6 +213,7 @@ describe("Action Config", () => {
         apiToken: "token123",
         githubToken: "github-token123",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       };
 
@@ -214,6 +243,7 @@ describe("Action Config", () => {
         apiToken: "markup_ai_api_key",
         githubToken: "github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       });
     });
@@ -234,6 +264,7 @@ describe("Action Config", () => {
         apiToken: "env-markup-ai-api-key",
         githubToken: "env-github-token",
         addCommitStatus: true,
+        addReviewComments: true,
         strictMode: false,
       });
     });

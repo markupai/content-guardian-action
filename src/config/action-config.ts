@@ -4,6 +4,7 @@
 
 import * as core from "@actions/core";
 import { ActionConfig, AnalysisOptions } from "../types/index.js";
+import { getToneValue } from "../utils/string-utils.js";
 import { INPUT_NAMES, ENV_VARS, ERROR_MESSAGES } from "../constants/index.js";
 
 /**
@@ -19,6 +20,7 @@ export function getActionConfig(): ActionConfig {
   const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
 
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
+  const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
 
   return {
     apiToken,
@@ -27,6 +29,7 @@ export function getActionConfig(): ActionConfig {
     tone,
     styleGuide,
     addCommitStatus,
+    addReviewComments,
     strictMode,
   };
 }
@@ -39,6 +42,7 @@ export function getAnalysisOptions(config: ActionConfig): AnalysisOptions {
     dialect: config.dialect,
     tone: config.tone,
     styleGuide: config.styleGuide,
+    reviewComments: config.addReviewComments,
   };
 }
 
@@ -108,10 +112,12 @@ function validateAnalysisOption(name: string, value: string): void {
  * Log configuration (without sensitive data)
  */
 export function logConfiguration(config: ActionConfig): void {
+  const toneDisplay = getToneValue(config.tone) ?? "";
   core.info("🔧 Action Configuration:");
   core.info(`  Dialect: ${config.dialect}`);
-  core.info(`  Tone: ${config.tone ?? ""}`);
+  core.info(`  Tone: ${toneDisplay}`);
   core.info(`  Style Guide: ${config.styleGuide}`);
   core.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
   core.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
+  core.info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
 }

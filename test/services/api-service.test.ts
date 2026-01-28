@@ -10,6 +10,8 @@ vi.mock("@markupai/toolkit", async () => {
     ...(originalModule as object),
     styleCheck: vi.fn(),
     styleBatchCheckRequests: vi.fn(),
+    styleBatchOperation: vi.fn(),
+    styleSuggestions: vi.fn(),
     Config: vi.fn(),
   };
 });
@@ -18,7 +20,15 @@ vi.mock("@markupai/toolkit", async () => {
 const { analyzeFile, analyzeFiles, analyzeFilesBatch } =
   await import("../../src/services/api-service.js");
 import type { AnalysisOptions, AnalysisResult } from "../../src/types/index.js";
-import { PlatformType, Config, Status, ErrorType, ApiError } from "@markupai/toolkit";
+import {
+  PlatformType,
+  Config,
+  Status,
+  ErrorType,
+  ApiError,
+  IssueCategory,
+  IssueSeverity,
+} from "@markupai/toolkit";
 import { buildScores } from "../test-helpers/scores.js";
 
 describe("Markup AI Service Batch Functionality", () => {
@@ -37,6 +47,7 @@ describe("Markup AI Service Batch Functionality", () => {
     mockOptions = {
       dialect: "en-US",
       styleGuide: "microsoft",
+      reviewComments: false,
     };
 
     mockReadFileContent = vi.fn().mockImplementation((filePath: unknown) => {
@@ -54,6 +65,56 @@ describe("Markup AI Service Batch Functionality", () => {
       );
 
       expect(result).toEqual([]);
+    });
+
+    describe("analyzeFiles with suggestions", () => {
+      it("should use suggestions API when review comments are enabled", async () => {
+        const { styleSuggestions } = await import("@markupai/toolkit");
+        vi.mocked(styleSuggestions).mockResolvedValue({
+          workflow: {
+            id: "test-workflow-1",
+            type: "suggestions",
+            api_version: "1.0.0",
+            generated_at: "2025-01-15T14:22:33Z",
+            status: Status.Completed,
+            webhook_response: {
+              url: "https://api.example.com/webhook",
+              status_code: 200,
+            },
+          },
+          config: {
+            dialect: "en-US",
+            style_guide: {
+              style_guide_type: "microsoft",
+              style_guide_id: "test-style-guide-1",
+            },
+            tone: "formal",
+          },
+          original: {
+            issues: [
+              {
+                original: "Teh",
+                position: { start_index: 0 },
+                subcategory: "spelling",
+                category: IssueCategory.Grammar,
+                severity: IssueSeverity.Medium,
+                suggestion: "The",
+              },
+            ],
+            scores: buildScores(85, 90, 88),
+          },
+        });
+
+        const result = await analyzeFile(
+          "file1.txt",
+          "Teh content",
+          { ...mockOptions, reviewComments: true },
+          mockConfig,
+        );
+
+        expect(styleSuggestions).toHaveBeenCalled();
+        expect(result?.issues[0].issue).toHaveProperty("suggestion", "The");
+      });
     });
 
     it("should handle files with no valid content", async () => {
