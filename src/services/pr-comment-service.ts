@@ -178,6 +178,13 @@ function filterExistingReviewComments(
   return filtered;
 }
 
+/**
+ * Load existing PR review comments and return a lookup set.
+ *
+ * Note: when `octokit.paginate` is unavailable, the fallback only fetches the
+ * first page (up to 100 comments). In that case, review comments beyond the
+ * first page are not checked for duplicates.
+ */
 async function getExistingReviewCommentKeys(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
