@@ -31723,19 +31723,19 @@ function logConfiguration(config) {
     coreExports.info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
 }
 
-var j = /* @__PURE__ */ ((r) => (r.Check = "check", r.Suggestions = "suggestions", r.Rewrite = "rewrite", r))(j || {});
-const X = (r, o, e) => JSON.stringify(r, o, e);
-function q(r, o) {
-  return JSON.parse(r, o);
+var j = /* @__PURE__ */ ((t) => (t.Check = "check", t.Suggestions = "suggestions", t.Rewrite = "rewrite", t))(j || {});
+const X = (t, o, e) => JSON.stringify(t, o, e);
+function q(t, o) {
+  return JSON.parse(t, o);
 }
 class w extends Error {
-  constructor({ message: o, statusCode: e, body: t, rawResponse: i }) {
-    super(xe({ message: o, statusCode: e, body: t })), Object.setPrototypeOf(this, w.prototype), this.statusCode = e, this.body = t, this.rawResponse = i;
+  constructor({ message: o, statusCode: e, body: r, rawResponse: i }) {
+    super(Ue({ message: o, statusCode: e, body: r })), Object.setPrototypeOf(this, w.prototype), this.statusCode = e, this.body = r, this.rawResponse = i;
   }
 }
-function xe({ message: r, statusCode: o, body: e }) {
-  let t = [];
-  return r != null && t.push(r), o != null && t.push(`Status code: ${o.toString()}`), e != null && t.push(`Body: ${X(e, void 0, 2)}`), t.join(`
+function Ue({ message: t, statusCode: o, body: e }) {
+  let r = [];
+  return t != null && r.push(t), o != null && r.push(`Status code: ${o.toString()}`), e != null && r.push(`Body: ${X(e, void 0, 2)}`), r.join(`
 `);
 }
 class v extends Error {
@@ -31793,14 +31793,14 @@ class V extends w {
     }), Object.setPrototypeOf(this, V.prototype);
   }
 }
-class F extends w {
+class N extends w {
   constructor(o, e) {
     super({
       message: "ContentTooLargeError",
       statusCode: 413,
       body: o,
       rawResponse: e
-    }), Object.setPrototypeOf(this, F.prototype);
+    }), Object.setPrototypeOf(this, N.prototype);
   }
 }
 class M extends w {
@@ -31813,17 +31813,17 @@ class M extends w {
     }), Object.setPrototypeOf(this, M.prototype);
   }
 }
-class z extends w {
+class D extends w {
   constructor(o, e) {
     super({
       message: "TooManyRequestsError",
       statusCode: 429,
       body: o,
       rawResponse: e
-    }), Object.setPrototypeOf(this, z.prototype);
+    }), Object.setPrototypeOf(this, D.prototype);
   }
 }
-var Pe = function(r, o, e, t) {
+var Le = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -31832,14 +31832,14 @@ var Pe = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -31847,26 +31847,26 @@ var Pe = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-const Ae = {
-  get: (r, o) => Pe(void 0, void 0, void 0, function* () {
-    return typeof r == "function" ? r(o) : r;
+const $e = {
+  get: (t, o) => Le(void 0, void 0, void 0, function* () {
+    return typeof t == "function" ? t(o) : t;
   })
-}, Ie = {
+}, Be = {
   arrayFormat: "indices",
   encode: true
 };
-function ae(r, o) {
-  if (r === void 0 || r === null)
+function ae(t, o) {
+  if (t === void 0 || t === null)
     return "";
-  const e = String(r);
+  const e = String(t);
   return o ? encodeURIComponent(e) : e;
 }
-function ee(r, o = "", e) {
-  const t = [];
-  for (const [i, a] of Object.entries(r)) {
+function ee(t, o = "", e) {
+  const r = [];
+  for (const [i, a] of Object.entries(t)) {
     const d = o ? `${o}[${i}]` : i;
     if (a !== void 0)
       if (Array.isArray(a)) {
@@ -31877,45 +31877,45 @@ function ee(r, o = "", e) {
           if (n !== void 0)
             if (typeof n == "object" && !Array.isArray(n) && n !== null) {
               const c = e.arrayFormat === "indices" ? `${d}[${l}]` : d;
-              t.push(...ee(n, c, e));
+              r.push(...ee(n, c, e));
             } else {
               const c = e.arrayFormat === "indices" ? `${d}[${l}]` : d, s = e.encode ? encodeURIComponent(c) : c;
-              t.push(`${s}=${ae(n, e.encode)}`);
+              r.push(`${s}=${ae(n, e.encode)}`);
             }
         }
       } else if (typeof a == "object" && a !== null) {
         if (Object.keys(a).length === 0)
           continue;
-        t.push(...ee(a, d, e));
+        r.push(...ee(a, d, e));
       } else {
         const l = e.encode ? encodeURIComponent(d) : d;
-        t.push(`${l}=${ae(a, e.encode)}`);
+        r.push(`${l}=${ae(a, e.encode)}`);
       }
   }
-  return t;
+  return r;
 }
-function je(r, o) {
-  return r == null || typeof r != "object" ? "" : ee(r, "", Object.assign(Object.assign({}, Ie), o)).join("&");
+function Fe(t, o) {
+  return t == null || typeof t != "object" ? "" : ee(t, "", Object.assign(Object.assign({}, Be), o)).join("&");
 }
-function Me(r, o) {
-  const e = je(o, { arrayFormat: "repeat" });
-  return e ? `${r}?${e}` : r;
+function Ne(t, o) {
+  const e = Fe(o, { arrayFormat: "repeat" });
+  return e ? `${t}?${e}` : t;
 }
-function Ue(r) {
+function ze(t) {
   const o = {
     get bodyUsed() {
-      return r.bodyUsed;
+      return t.bodyUsed;
     },
-    stream: () => r.body,
-    arrayBuffer: r.arrayBuffer.bind(r),
-    blob: r.blob.bind(r)
+    stream: () => t.body,
+    arrayBuffer: t.arrayBuffer.bind(t),
+    blob: t.blob.bind(t)
   };
-  return "bytes" in r && typeof r.bytes == "function" && (o.bytes = r.bytes.bind(r)), o;
+  return "bytes" in t && typeof t.bytes == "function" && (o.bytes = t.bytes.bind(t)), o;
 }
-function Le(r) {
-  return r.body != null;
+function De(t) {
+  return t.body != null;
 }
-var Be = function(r, o, e, t) {
+var Ge = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -31924,14 +31924,14 @@ var Be = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -31939,28 +31939,28 @@ var Be = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-function he(r, o) {
-  return Be(this, void 0, void 0, function* () {
-    if (!Le(r))
+function he(t, o) {
+  return Ge(this, void 0, void 0, function* () {
+    if (!De(t))
       return;
     switch (o) {
       case "binary-response":
-        return Ue(r);
+        return ze(t);
       case "blob":
-        return yield r.blob();
+        return yield t.blob();
       case "arrayBuffer":
-        return yield r.arrayBuffer();
+        return yield t.arrayBuffer();
       case "sse":
-        return r.body;
+        return t.body;
       case "streaming":
-        return r.body;
+        return t.body;
       case "text":
-        return yield r.text();
+        return yield t.text();
     }
-    const e = yield r.text();
+    const e = yield t.text();
     if (e.length > 0)
       try {
         return q(e);
@@ -31969,14 +31969,14 @@ function he(r, o) {
           ok: false,
           error: {
             reason: "non-json",
-            statusCode: r.status,
+            statusCode: t.status,
             rawBody: e
           }
         };
       }
   });
 }
-var $e = function(r, o, e, t) {
+var We = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -31985,14 +31985,14 @@ var $e = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32000,34 +32000,34 @@ var $e = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-function Ne(r) {
-  return $e(this, void 0, void 0, function* () {
-    var o, e, t;
-    let i = (o = r.headers.get("Content-Type")) === null || o === void 0 ? void 0 : o.toLowerCase();
+function He(t) {
+  return We(this, void 0, void 0, function* () {
+    var o, e, r;
+    let i = (o = t.headers.get("Content-Type")) === null || o === void 0 ? void 0 : o.toLowerCase();
     if (i == null || i.length === 0)
-      return he(r);
-    switch (i.indexOf(";") !== -1 && (i = (t = (e = i.split(";")[0]) === null || e === void 0 ? void 0 : e.trim()) !== null && t !== void 0 ? t : ""), i) {
+      return he(t);
+    switch (i.indexOf(";") !== -1 && (i = (r = (e = i.split(";")[0]) === null || e === void 0 ? void 0 : e.trim()) !== null && r !== void 0 ? r : ""), i) {
       case "application/hal+json":
       case "application/json":
       case "application/ld+json":
       case "application/problem+json":
       case "application/vnd.api+json":
       case "text/json":
-        const a = yield r.text();
+        const a = yield t.text();
         return a.length > 0 ? q(a) : void 0;
       default:
         if (i.startsWith("application/vnd.") && i.endsWith("+json")) {
-          const d = yield r.text();
+          const d = yield t.text();
           return d.length > 0 ? q(d) : void 0;
         }
-        return yield r.text();
+        return yield t.text();
     }
   });
 }
-var Fe = function(r, o, e, t) {
+var Ve = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32036,14 +32036,14 @@ var Fe = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32051,15 +32051,15 @@ var Fe = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-function Ge() {
-  return Fe(this, void 0, void 0, function* () {
+function Ke() {
+  return Ve(this, void 0, void 0, function* () {
     return fetch;
   });
 }
-var ze = function(r, o, e, t) {
+var Xe = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32068,14 +32068,14 @@ var ze = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32083,33 +32083,33 @@ var ze = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, o || [])).next());
+    c((r = r.apply(t, o || [])).next());
   });
 };
-function De(r) {
-  return ze(this, arguments, void 0, function* ({ body: o, type: e }) {
+function Ye(t) {
+  return Xe(this, arguments, void 0, function* ({ body: o, type: e }) {
     return e.includes("json") ? X(o) : o;
   });
 }
-const He = "timeout";
-function We(r) {
-  const o = new AbortController(), e = setTimeout(() => o.abort(He), r);
+const Je = "timeout";
+function Ze(t) {
+  const o = new AbortController(), e = setTimeout(() => o.abort(Je), t);
   return { signal: o.signal, abortId: e };
 }
-function Ve(...r) {
-  const o = r.length === 1 && Array.isArray(r[0]) ? r[0] : r, e = new AbortController();
-  for (const t of o) {
-    if (t.aborted) {
-      e.abort(t?.reason);
+function Qe(...t) {
+  const o = t.length === 1 && Array.isArray(t[0]) ? t[0] : t, e = new AbortController();
+  for (const r of o) {
+    if (r.aborted) {
+      e.abort(r?.reason);
       break;
     }
-    t.addEventListener("abort", () => e.abort(t?.reason), {
+    r.addEventListener("abort", () => e.abort(r?.reason), {
       signal: e.signal
     });
   }
   return e.signal;
 }
-var Ke = function(r, o, e, t) {
+var Oe = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32118,14 +32118,14 @@ var Ke = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32133,21 +32133,21 @@ var Ke = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-const Xe = (r, o, e, t, i, a, d, l, n) => Ke(void 0, void 0, void 0, function* () {
+const qe = (t, o, e, r, i, a, d, l, n) => Oe(void 0, void 0, void 0, function* () {
   const c = [];
   let s;
   if (a != null) {
-    const { signal: y, abortId: A } = We(a);
+    const { signal: y, abortId: A } = Ze(a);
     s = A, c.push(y);
   }
   d != null && c.push(d);
-  let u = Ve(c);
-  const f = yield r(o, {
+  let u = Qe(c);
+  const f = yield t(o, {
     method: e,
-    headers: t,
+    headers: r,
     body: i,
     signal: u,
     credentials: l ? "include" : void 0,
@@ -32161,43 +32161,43 @@ typeof globalThis.Headers < "u" ? K = globalThis.Headers : K = class fe {
   constructor(o) {
     if (this.headers = /* @__PURE__ */ new Map(), o)
       if (o instanceof fe)
-        o.forEach((e, t) => this.append(t, e));
+        o.forEach((e, r) => this.append(r, e));
       else if (Array.isArray(o))
-        for (const [e, t] of o)
-          if (typeof e == "string" && typeof t == "string")
-            this.append(e, t);
+        for (const [e, r] of o)
+          if (typeof e == "string" && typeof r == "string")
+            this.append(e, r);
           else
             throw new TypeError("Each header entry must be a [string, string] tuple");
       else
-        for (const [e, t] of Object.entries(o))
-          if (typeof t == "string")
-            this.append(e, t);
+        for (const [e, r] of Object.entries(o))
+          if (typeof r == "string")
+            this.append(e, r);
           else
             throw new TypeError("Header values must be strings");
   }
   append(o, e) {
-    const t = o.toLowerCase(), i = this.headers.get(t) || [];
-    this.headers.set(t, [...i, e]);
+    const r = o.toLowerCase(), i = this.headers.get(r) || [];
+    this.headers.set(r, [...i, e]);
   }
   delete(o) {
     const e = o.toLowerCase();
     this.headers.delete(e);
   }
   get(o) {
-    const e = o.toLowerCase(), t = this.headers.get(e);
-    return t ? t.join(", ") : null;
+    const e = o.toLowerCase(), r = this.headers.get(e);
+    return r ? r.join(", ") : null;
   }
   has(o) {
     const e = o.toLowerCase();
     return this.headers.has(e);
   }
   set(o, e) {
-    const t = o.toLowerCase();
-    this.headers.set(t, [e]);
+    const r = o.toLowerCase();
+    this.headers.set(r, [e]);
   }
   forEach(o, e) {
-    const t = e ? o.bind(e) : o;
-    this.headers.forEach((i, a) => t(i.join(", "), a, this));
+    const r = e ? o.bind(e) : o;
+    this.headers.forEach((i, a) => r(i.join(", "), a, this));
   }
   getSetCookie() {
     return this.headers.get("set-cookie") || [];
@@ -32232,17 +32232,17 @@ const de = {
   type: "error",
   url: ""
 };
-function ce(r) {
+function ce(t) {
   return {
-    headers: r.headers,
-    redirected: r.redirected,
-    status: r.status,
-    statusText: r.statusText,
-    type: r.type,
-    url: r.url
+    headers: t.headers,
+    redirected: t.redirected,
+    status: t.status,
+    statusText: t.statusText,
+    type: t.type,
+    url: t.url
   };
 }
-var Ye = function(r, o, e, t) {
+var eo = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32251,14 +32251,14 @@ var Ye = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32266,53 +32266,53 @@ var Ye = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, o || [])).next());
+    c((r = r.apply(t, o || [])).next());
   });
 };
-const Je = 1e3, H = 6e4, Ze = 2, ye = 0.2;
-function Qe(r) {
+const oo = 1e3, W = 6e4, to = 2, ye = 0.2;
+function ro(t) {
   const o = 1 + Math.random() * ye;
-  return r * o;
+  return t * o;
 }
-function Oe(r) {
+function no(t) {
   const o = 1 + (Math.random() - 0.5) * ye;
-  return r * o;
+  return t * o;
 }
-function qe(r, o) {
-  const e = r.headers.get("Retry-After");
+function so(t, o) {
+  const e = t.headers.get("Retry-After");
   if (e) {
     const i = parseInt(e, 10);
     if (!isNaN(i) && i > 0)
-      return Math.min(i * 1e3, H);
+      return Math.min(i * 1e3, W);
     const a = new Date(e);
     if (!isNaN(a.getTime())) {
       const d = a.getTime() - Date.now();
       if (d > 0)
-        return Math.min(Math.max(d, 0), H);
+        return Math.min(Math.max(d, 0), W);
     }
   }
-  const t = r.headers.get("X-RateLimit-Reset");
-  if (t) {
-    const i = parseInt(t, 10);
+  const r = t.headers.get("X-RateLimit-Reset");
+  if (r) {
+    const i = parseInt(r, 10);
     if (!isNaN(i)) {
       const a = i * 1e3 - Date.now();
       if (a > 0)
-        return Qe(Math.min(a, H));
+        return ro(Math.min(a, W));
     }
   }
-  return Oe(Math.min(Je * Math.pow(2, o), H));
+  return no(Math.min(oo * Math.pow(2, o), W));
 }
-function eo(r) {
-  return Ye(this, arguments, void 0, function* (o, e = Ze) {
-    let t = yield o();
-    for (let i = 0; i < e && ([408, 429].includes(t.status) || t.status >= 500); ++i) {
-      const a = qe(t, i);
-      yield new Promise((d) => setTimeout(d, a)), t = yield o();
+function io(t) {
+  return eo(this, arguments, void 0, function* (o, e = to) {
+    let r = yield o();
+    for (let i = 0; i < e && ([408, 429].includes(r.status) || r.status >= 500); ++i) {
+      const a = so(r, i);
+      yield new Promise((d) => setTimeout(d, a)), r = yield o();
     }
-    return t;
+    return r;
   });
 }
-var oe = function(r, o, e, t) {
+var oe = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32321,14 +32321,14 @@ var oe = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32336,39 +32336,39 @@ var oe = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-function oo(r) {
+function ao(t) {
   return oe(this, void 0, void 0, function* () {
     var o;
     const e = {};
-    if (r.body !== void 0 && r.contentType != null && (e["Content-Type"] = r.contentType), r.headers == null)
+    if (t.body !== void 0 && t.contentType != null && (e["Content-Type"] = t.contentType), t.headers == null)
       return e;
-    for (const [t, i] of Object.entries(r.headers)) {
-      const a = yield Ae.get(i, { endpointMetadata: (o = r.endpointMetadata) !== null && o !== void 0 ? o : {} });
+    for (const [r, i] of Object.entries(t.headers)) {
+      const a = yield $e.get(i, { endpointMetadata: (o = t.endpointMetadata) !== null && o !== void 0 ? o : {} });
       if (typeof a == "string") {
-        e[t] = a;
+        e[r] = a;
         continue;
       }
-      a != null && (e[t] = `${a}`);
+      a != null && (e[r] = `${a}`);
     }
     return e;
   });
 }
-function to(r) {
+function lo(t) {
   return oe(this, void 0, void 0, function* () {
-    const o = Me(r.url, r.queryParameters), e = yield De({
-      body: r.body,
-      type: r.requestType === "json" ? "json" : "other"
-    }), t = yield Ge();
+    const o = Ne(t.url, t.queryParameters), e = yield Ye({
+      body: t.body,
+      type: t.requestType === "json" ? "json" : "other"
+    }), r = yield Ke();
     try {
-      const i = yield eo(() => oe(this, void 0, void 0, function* () {
-        return Xe(t, o, r.method, yield oo(r), e, r.timeoutMs, r.abortSignal, r.withCredentials, r.duplex);
-      }), r.maxRetries);
+      const i = yield io(() => oe(this, void 0, void 0, function* () {
+        return qe(r, o, t.method, yield ao(t), e, t.timeoutMs, t.abortSignal, t.withCredentials, t.duplex);
+      }), t.maxRetries);
       return i.status >= 200 && i.status < 400 ? {
         ok: !0,
-        body: yield he(i, r.responseType),
+        body: yield he(i, t.responseType),
         headers: i.headers,
         rawResponse: ce(i)
       } : {
@@ -32376,12 +32376,12 @@ function to(r) {
         error: {
           reason: "status-code",
           statusCode: i.status,
-          body: yield Ne(i)
+          body: yield He(i)
         },
         rawResponse: ce(i)
       };
     } catch (i) {
-      return r.abortSignal != null && r.abortSignal.aborted ? {
+      return t.abortSignal != null && t.abortSignal.aborted ? {
         ok: false,
         error: {
           reason: "unknown",
@@ -32412,8 +32412,8 @@ function to(r) {
     }
   });
 }
-const E = to;
-var ro = function(r, o, e, t) {
+const T = lo;
+var co = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32422,14 +32422,14 @@ var ro = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32437,7 +32437,7 @@ var ro = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
 class m extends Promise {
@@ -32515,12 +32515,12 @@ class m extends Promise {
    * @returns A promise resolving to a `WithRawResponse` object.
    */
   withRawResponse() {
-    return ro(this, void 0, void 0, function* () {
+    return co(this, void 0, void 0, function* () {
       return yield this.innerPromise;
     });
   }
 }
-var no = function(r, o, e, t) {
+var uo = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32529,14 +32529,14 @@ var no = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32544,24 +32544,24 @@ var no = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
 const h = {
-  get: (r) => no(void 0, void 0, void 0, function* () {
-    return typeof r == "function" ? r() : r;
+  get: (t) => uo(void 0, void 0, void 0, function* () {
+    return typeof t == "function" ? t() : t;
   })
-}, te = so();
-function so() {
-  var r, o, e, t, i;
+}, te = wo();
+function wo() {
+  var t, o, e, r, i;
   return typeof window < "u" && typeof window.document < "u" ? {
     type: "browser",
     version: window.navigator.userAgent
-  } : typeof globalThis < "u" && ((r = globalThis?.navigator) === null || r === void 0 ? void 0 : r.userAgent) === "Cloudflare-Workers" ? {
+  } : typeof globalThis < "u" && ((t = globalThis?.navigator) === null || t === void 0 ? void 0 : t.userAgent) === "Cloudflare-Workers" ? {
     type: "workerd"
   } : typeof EdgeRuntime == "string" ? {
     type: "edge-runtime"
-  } : typeof self == "object" && typeof self?.importScripts == "function" && (((o = self.constructor) === null || o === void 0 ? void 0 : o.name) === "DedicatedWorkerGlobalScope" || ((e = self.constructor) === null || e === void 0 ? void 0 : e.name) === "ServiceWorkerGlobalScope" || ((t = self.constructor) === null || t === void 0 ? void 0 : t.name) === "SharedWorkerGlobalScope") ? {
+  } : typeof self == "object" && typeof self?.importScripts == "function" && (((o = self.constructor) === null || o === void 0 ? void 0 : o.name) === "DedicatedWorkerGlobalScope" || ((e = self.constructor) === null || e === void 0 ? void 0 : e.name) === "ServiceWorkerGlobalScope" || ((r = self.constructor) === null || r === void 0 ? void 0 : r.name) === "SharedWorkerGlobalScope") ? {
     type: "web-worker"
   } : typeof Deno < "u" && typeof Deno.version < "u" && typeof Deno.version.deno < "u" ? {
     type: "deno",
@@ -32579,48 +32579,48 @@ function so() {
     type: "unknown"
   };
 }
-function T(r, ...o) {
-  if (!r)
+function E(t, ...o) {
+  if (!t)
     return "";
   if (o.length === 0)
-    return r;
-  if (r.includes("://")) {
+    return t;
+  if (t.includes("://")) {
     let e;
     try {
-      e = new URL(r);
+      e = new URL(t);
     } catch {
-      return ue(r, ...o);
+      return ue(t, ...o);
     }
-    const t = o[o.length - 1], i = t && t.endsWith("/");
+    const r = o[o.length - 1], i = r && r.endsWith("/");
     for (const a of o) {
       const d = pe(a);
       d && (e.pathname = me(e.pathname, d));
     }
     return i && !e.pathname.endsWith("/") && (e.pathname += "/"), e.toString();
   }
-  return ue(r, ...o);
+  return ue(t, ...o);
 }
-function ue(r, ...o) {
+function ue(t, ...o) {
   if (o.length === 0)
-    return r;
-  let e = r;
-  const t = o[o.length - 1], i = t && t.endsWith("/");
+    return t;
+  let e = t;
+  const r = o[o.length - 1], i = r && r.endsWith("/");
   for (const a of o) {
     const d = pe(a);
     d && (e = me(e, d));
   }
   return i && !e.endsWith("/") && (e += "/"), e;
 }
-function me(r, o) {
-  return r.endsWith("/") ? r + o : r + "/" + o;
+function me(t, o) {
+  return t.endsWith("/") ? t + o : t + "/" + o;
 }
-function pe(r) {
-  if (!r)
-    return r;
-  let o = 0, e = r.length;
-  return r.startsWith("/") && (o = 1), r.endsWith("/") && (e = r.length - 1), o === 0 && e === r.length ? r : r.slice(o, e);
+function pe(t) {
+  if (!t)
+    return t;
+  let o = 0, e = t.length;
+  return t.startsWith("/") && (o = 1), t.endsWith("/") && (e = t.length - 1), o === 0 && e === t.length ? t : t.slice(o, e);
 }
-var G = function(r, o, e, t) {
+var z = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32629,14 +32629,14 @@ var G = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32644,18 +32644,18 @@ var G = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
-}, io = function(r) {
+}, ho = function(t) {
   if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-  var o = r[Symbol.asyncIterator], e;
-  return o ? o.call(r) : (r = typeof __values == "function" ? __values(r) : r[Symbol.iterator](), e = {}, t("next"), t("throw"), t("return"), e[Symbol.asyncIterator] = function() {
+  var o = t[Symbol.asyncIterator], e;
+  return o ? o.call(t) : (t = typeof __values == "function" ? __values(t) : t[Symbol.iterator](), e = {}, r("next"), r("throw"), r("return"), e[Symbol.asyncIterator] = function() {
     return this;
   }, e);
-  function t(a) {
-    e[a] = r[a] && function(d) {
+  function r(a) {
+    e[a] = t[a] && function(d) {
       return new Promise(function(l, n) {
-        d = r[a](d), i(l, n, d.done, d.value);
+        d = t[a](d), i(l, n, d.done, d.value);
       });
     };
   }
@@ -32665,38 +32665,38 @@ var G = function(r, o, e, t) {
     }, d);
   }
 };
-function ao(r) {
-  return typeof r == "object" && r != null && "name" in r;
+function fo(t) {
+  return typeof t == "object" && t != null && "name" in t;
 }
-function lo(r) {
-  return typeof r == "object" && r != null && "path" in r;
+function yo(t) {
+  return typeof t == "object" && t != null && "path" in t;
 }
-function co(r) {
-  return typeof r == "object" && r != null && ("read" in r || "pipe" in r);
+function mo(t) {
+  return typeof t == "object" && t != null && ("read" in t || "pipe" in t);
 }
-function ve(r) {
-  return typeof r == "object" && r != null && "getReader" in r;
+function ve(t) {
+  return typeof t == "object" && t != null && "getReader" in t;
 }
-function uo(r) {
-  return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(r);
+function po(t) {
+  return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(t);
 }
-function wo(r) {
-  return ArrayBuffer.isView(r);
+function vo(t) {
+  return ArrayBuffer.isView(t);
 }
-function ho(r) {
-  const o = r.lastIndexOf("/"), e = r.lastIndexOf("\\"), t = Math.max(o, e);
-  return t >= 0 ? r.substring(t + 1) : r;
+function go(t) {
+  const o = t.lastIndexOf("/"), e = t.lastIndexOf("\\"), r = Math.max(o, e);
+  return r >= 0 ? t.substring(r + 1) : t;
 }
-function fo(r) {
-  return G(this, void 0, void 0, function* () {
-    var o, e, t, i, a, d, l;
+function Ro(t) {
+  return z(this, void 0, void 0, function* () {
+    var o, e, r, i, a, d, l;
     if (te.type === "node") {
       const { Readable: n } = yield import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
-      if (r instanceof n) {
+      if (t instanceof n) {
         const c = [];
         try {
-          for (o = !0, e = io(r); t = yield e.next(), i = t.done, !i; o = !0) {
-            l = t.value, o = !1;
+          for (o = !0, e = ho(t); r = yield e.next(), i = r.done, !i; o = !0) {
+            l = r.value, o = !1;
             const s = l;
             c.push(Buffer.isBuffer(s) ? s : Buffer.from(s));
           }
@@ -32712,8 +32712,8 @@ function fo(r) {
         return Buffer.concat(c);
       }
     }
-    if (ve(r)) {
-      const n = r.getReader(), c = [];
+    if (ve(t)) {
+      const n = t.getReader(), c = [];
       try {
         for (; ; ) {
           const { done: y, value: A } = yield n.read();
@@ -32730,20 +32730,20 @@ function fo(r) {
         u.set(y, f), f += y.length;
       return Buffer.from(u);
     }
-    throw new Error("Unsupported stream type: " + typeof r + ". Expected Node.js Readable stream or Web ReadableStream.");
+    throw new Error("Unsupported stream type: " + typeof t + ". Expected Node.js Readable stream or Web ReadableStream.");
   });
 }
-function D() {
-  return G(this, void 0, void 0, function* () {
-    return new yo();
+function G() {
+  return z(this, void 0, void 0, function* () {
+    return new _o();
   });
 }
-class yo {
+class _o {
   constructor() {
     this.fd = new FormData();
   }
   setup() {
-    return G(this, void 0, void 0, function* () {
+    return z(this, void 0, void 0, function* () {
     });
   }
   append(o, e) {
@@ -32752,25 +32752,25 @@ class yo {
   getFileName(o, e) {
     if (e != null)
       return e;
-    if (ao(o))
+    if (fo(o))
       return o.name;
-    if (lo(o) && o.path)
-      return ho(o.path.toString());
+    if (yo(o) && o.path)
+      return go(o.path.toString());
   }
   convertToBlob(o) {
-    return G(this, void 0, void 0, function* () {
-      if (co(o) || ve(o)) {
-        const e = yield fo(o);
+    return z(this, void 0, void 0, function* () {
+      if (mo(o) || ve(o)) {
+        const e = yield Ro(o);
         return new Blob([e]);
       }
-      return o instanceof Blob ? o : uo(o) ? new Blob([o]) : o instanceof ArrayBuffer ? new Blob([o]) : wo(o) ? new Blob([o]) : typeof o == "string" ? new Blob([o]) : typeof o == "object" && o !== null ? new Blob([X(o)], { type: "application/json" }) : new Blob([String(o)]);
+      return o instanceof Blob ? o : po(o) ? new Blob([o]) : o instanceof ArrayBuffer ? new Blob([o]) : vo(o) ? new Blob([o]) : typeof o == "string" ? new Blob([o]) : typeof o == "object" && o !== null ? new Blob([X(o)], { type: "application/json" }) : new Blob([String(o)]);
     });
   }
-  appendFile(o, e, t) {
-    return G(this, void 0, void 0, function* () {
-      t = this.getFileName(e, t);
+  appendFile(o, e, r) {
+    return z(this, void 0, void 0, function* () {
+      r = this.getFileName(e, r);
       const i = yield this.convertToBlob(e);
-      t ? this.fd.append(o, i, t) : this.fd.append(o, i);
+      r ? this.fd.append(o, i, r) : this.fd.append(o, i);
     });
   }
   getRequest() {
@@ -32781,22 +32781,22 @@ class yo {
     };
   }
 }
-function b(...r) {
+function b(...t) {
   const o = {};
-  for (const [e, t] of r.filter((i) => i != null).flatMap((i) => Object.entries(i)))
-    t != null ? o[e] = t : e in o && delete o[e];
+  for (const [e, r] of t.filter((i) => i != null).flatMap((i) => Object.entries(i)))
+    r != null ? o[e] = r : e in o && delete o[e];
   return o;
 }
-function C(...r) {
+function C(...t) {
   const o = {};
-  for (const [e, t] of r.filter((i) => i != null).flatMap((i) => Object.entries(i)))
-    t != null && (o[e] = t);
+  for (const [e, r] of t.filter((i) => i != null).flatMap((i) => Object.entries(i)))
+    r != null && (o[e] = r);
   return o;
 }
 const k = {
   Default: "https://api.markup.ai"
 };
-var L = function(r, o, e, t) {
+var L = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -32805,14 +32805,14 @@ var L = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -32820,10 +32820,10 @@ var L = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, o || [])).next());
+    c((r = r.apply(t, o || [])).next());
   });
 };
-class mo {
+class bo {
   constructor(o) {
     this._options = o;
   }
@@ -32845,10 +32845,10 @@ class mo {
   }
   __listStyleGuides(o) {
     return L(this, void 0, void 0, function* () {
-      var e, t, i, a;
+      var e, r, i, a;
       let d = b((e = this._options) === null || e === void 0 ? void 0 : e.headers, C({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
-      const l = yield ((t = this._options.fetcher) !== null && t !== void 0 ? t : E)({
-        url: T((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/style-guides"),
+      const l = yield ((r = this._options.fetcher) !== null && r !== void 0 ? r : T)({
+        url: E((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/style-guides"),
         method: "GET",
         headers: d,
         queryParameters: o?.queryParams,
@@ -32917,15 +32917,15 @@ class mo {
   }
   __createStyleGuide(o, e) {
     return L(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      const l = yield D();
+      var r, i, a, d;
+      const l = yield G();
       if (yield l.appendFile("file_upload", o.file_upload), l.append("name", o.name), o.base_style_guide != null && l.append("base_style_guide", o.base_style_guide), o.terminology_domain_ids != null)
         for (const u of o.terminology_domain_ids)
           l.append("terminology_domain_ids", u);
       const n = yield l.getRequest();
-      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style-guides"),
+      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style-guides"),
         method: "POST",
         headers: c,
         queryParameters: e?.queryParams,
@@ -32947,7 +32947,7 @@ class mo {
           case 409:
             throw new V(s.error.body, s.rawResponse);
           case 413:
-            throw new F(s.error.body, s.rawResponse);
+            throw new N(s.error.body, s.rawResponse);
           case 422:
             throw new S(s.error.body, s.rawResponse);
           case 500:
@@ -32996,10 +32996,10 @@ class mo {
   }
   __getStyleGuide(o, e) {
     return L(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
         queryParameters: e?.queryParams,
@@ -33065,10 +33065,10 @@ class mo {
   }
   __deleteStyleGuide(o, e) {
     return L(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
         method: "DELETE",
         headers: l,
         queryParameters: e?.queryParams,
@@ -33131,21 +33131,21 @@ class mo {
    * @example
    *     await client.styleGuides.updateStyleGuide("style_guide_id")
    */
-  updateStyleGuide(o, e = {}, t) {
-    return m.fromPromise(this.__updateStyleGuide(o, e, t));
+  updateStyleGuide(o, e = {}, r) {
+    return m.fromPromise(this.__updateStyleGuide(o, e, r));
   }
   __updateStyleGuide(o) {
-    return L(this, arguments, void 0, function* (e, t = {}, i) {
+    return L(this, arguments, void 0, function* (e, r = {}, i) {
       var a, d, l, n;
       let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
-        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/style-guides/${encodeURIComponent(e)}`),
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
+        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/style-guides/${encodeURIComponent(e)}`),
         method: "PATCH",
         headers: c,
         contentType: "application/json",
         queryParameters: i?.queryParams,
         requestType: "json",
-        body: t,
+        body: r,
         timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
         maxRetries: i?.maxRetries,
         abortSignal: i?.abortSignal
@@ -33196,7 +33196,7 @@ class mo {
     });
   }
 }
-var J = function(r, o, e, t) {
+var J = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -33205,14 +33205,14 @@ var J = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -33220,10 +33220,10 @@ var J = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-class po {
+class So {
   constructor(o) {
     this._options = o;
   }
@@ -33253,13 +33253,13 @@ class po {
   }
   __createStyleCheck(o, e) {
     return J(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      const l = yield D();
+      var r, i, a, d;
+      const l = yield G();
       l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
       const n = yield l.getRequest();
-      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/checks"),
+      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/checks"),
         method: "POST",
         headers: c,
         queryParameters: e?.queryParams,
@@ -33279,11 +33279,11 @@ class po {
           case 403:
             throw new R(s.error.body, s.rawResponse);
           case 413:
-            throw new F(s.error.body, s.rawResponse);
+            throw new N(s.error.body, s.rawResponse);
           case 422:
             throw new S(s.error.body, s.rawResponse);
           case 429:
-            throw new z(s.error.body, s.rawResponse);
+            throw new D(s.error.body, s.rawResponse);
           case 500:
             throw new _(s.error.body, s.rawResponse);
           default:
@@ -33330,10 +33330,10 @@ class po {
   }
   __getStyleCheck(o, e) {
     return J(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/checks/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/checks/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
         queryParameters: e?.queryParams,
@@ -33385,7 +33385,7 @@ class po {
     });
   }
 }
-var Z = function(r, o, e, t) {
+var Z = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -33394,14 +33394,14 @@ var Z = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -33409,10 +33409,10 @@ var Z = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-class vo {
+class To {
   constructor(o) {
     this._options = o;
   }
@@ -33442,13 +33442,13 @@ class vo {
   }
   __createStyleSuggestion(o, e) {
     return Z(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      const l = yield D();
+      var r, i, a, d;
+      const l = yield G();
       l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
       const n = yield l.getRequest();
-      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/suggestions"),
+      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/suggestions"),
         method: "POST",
         headers: c,
         queryParameters: e?.queryParams,
@@ -33468,11 +33468,11 @@ class vo {
           case 403:
             throw new R(s.error.body, s.rawResponse);
           case 413:
-            throw new F(s.error.body, s.rawResponse);
+            throw new N(s.error.body, s.rawResponse);
           case 422:
             throw new S(s.error.body, s.rawResponse);
           case 429:
-            throw new z(s.error.body, s.rawResponse);
+            throw new D(s.error.body, s.rawResponse);
           case 500:
             throw new _(s.error.body, s.rawResponse);
           default:
@@ -33519,10 +33519,10 @@ class vo {
   }
   __getStyleSuggestion(o, e) {
     return Z(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/suggestions/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/suggestions/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
         queryParameters: e?.queryParams,
@@ -33574,7 +33574,7 @@ class vo {
     });
   }
 }
-var Q = function(r, o, e, t) {
+var Q = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -33583,14 +33583,14 @@ var Q = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -33598,10 +33598,10 @@ var Q = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, [])).next());
+    c((r = r.apply(t, [])).next());
   });
 };
-class go {
+class Eo {
   constructor(o) {
     this._options = o;
   }
@@ -33631,13 +33631,13 @@ class go {
   }
   __createStyleRewrite(o, e) {
     return Q(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      const l = yield D();
+      var r, i, a, d;
+      const l = yield G();
       l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
       const n = yield l.getRequest();
-      let c = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/rewrites"),
+      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
+      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/rewrites"),
         method: "POST",
         headers: c,
         queryParameters: e?.queryParams,
@@ -33657,11 +33657,11 @@ class go {
           case 403:
             throw new R(s.error.body, s.rawResponse);
           case 413:
-            throw new F(s.error.body, s.rawResponse);
+            throw new N(s.error.body, s.rawResponse);
           case 422:
             throw new S(s.error.body, s.rawResponse);
           case 429:
-            throw new z(s.error.body, s.rawResponse);
+            throw new D(s.error.body, s.rawResponse);
           case 500:
             throw new _(s.error.body, s.rawResponse);
           default:
@@ -33708,10 +33708,10 @@ class go {
   }
   __getStyleRewrite(o, e) {
     return Q(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/rewrites/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/rewrites/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
         queryParameters: e?.queryParams,
@@ -33763,7 +33763,7 @@ class go {
     });
   }
 }
-var x = function(r, o, e, t) {
+var x = function(t, o, e, r) {
   function i(a) {
     return a instanceof e ? a : new e(function(d) {
       d(a);
@@ -33772,14 +33772,14 @@ var x = function(r, o, e, t) {
   return new (e || (e = Promise))(function(a, d) {
     function l(s) {
       try {
-        c(t.next(s));
+        c(r.next(s));
       } catch (u) {
         d(u);
       }
     }
     function n(s) {
       try {
-        c(t.throw(s));
+        c(r.throw(s));
       } catch (u) {
         d(u);
       }
@@ -33787,10 +33787,10 @@ var x = function(r, o, e, t) {
     function c(s) {
       s.done ? a(s.value) : i(s.value).then(l, n);
     }
-    c((t = t.apply(r, o || [])).next());
+    c((r = r.apply(t, o || [])).next());
   });
 };
-class Ro {
+class Co {
   constructor(o) {
     this._options = o;
   }
@@ -33811,10 +33811,10 @@ class Ro {
   }
   __exportTerminology(o) {
     return x(this, void 0, void 0, function* () {
-      var e, t, i, a;
+      var e, r, i, a;
       let d = b((e = this._options) === null || e === void 0 ? void 0 : e.headers, C({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
-      const l = yield ((t = this._options.fetcher) !== null && t !== void 0 ? t : E)({
-        url: T((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/terminology"),
+      const l = yield ((r = this._options.fetcher) !== null && r !== void 0 ? r : T)({
+        url: E((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/terminology"),
         method: "GET",
         headers: d,
         queryParameters: o?.queryParams,
@@ -33886,15 +33886,15 @@ class Ro {
   }
   __importTerminology(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
+      var r, i, a, d;
       const l = {};
       o.delete_existing != null && (l.delete_existing = o.delete_existing.toString());
-      const n = yield D();
+      const n = yield G();
       yield n.appendFile("file", o.file);
       const c = yield n.getRequest();
-      let s = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, c.headers)), e?.headers);
-      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology"),
+      let s = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, c.headers)), e?.headers);
+      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology"),
         method: "POST",
         headers: s,
         queryParameters: Object.assign(Object.assign({}, l), e?.queryParams),
@@ -33965,12 +33965,12 @@ class Ro {
   }
   __searchTerminology(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
+      var r, i, a, d;
       const { query: l, domain_ids: n } = o, c = {};
       c.query = l, n != null && (Array.isArray(n) ? c.domain_ids = n.map((f) => f) : c.domain_ids = n);
-      let s = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/search"),
+      let s = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/search"),
         method: "GET",
         headers: s,
         queryParameters: Object.assign(Object.assign({}, c), e?.queryParams),
@@ -34039,12 +34039,12 @@ class Ro {
   }
   __listTermSets() {
     return x(this, arguments, void 0, function* (o = {}, e) {
-      var t, i, a, d;
+      var r, i, a, d;
       const { page: l, page_size: n, search_term: c, domain_ids: s } = o, u = {};
       l != null && (u.page = l.toString()), n != null && (u.page_size = n.toString()), c != null && (u.search_term = c), s != null && (Array.isArray(s) ? u.domain_ids = s.map((A) => A) : u.domain_ids = s);
-      let f = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const y = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
+      let f = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const y = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
         method: "GET",
         headers: f,
         queryParameters: Object.assign(Object.assign({}, u), e?.queryParams),
@@ -34110,10 +34110,10 @@ class Ro {
   }
   __createTermSet(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
         method: "POST",
         headers: l,
         contentType: "application/json",
@@ -34177,10 +34177,10 @@ class Ro {
   }
   __getTermSet(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
         queryParameters: e?.queryParams,
@@ -34241,10 +34241,10 @@ class Ro {
   }
   __deleteTermSet(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
         method: "DELETE",
         headers: l,
         queryParameters: e?.queryParams,
@@ -34301,21 +34301,21 @@ class Ro {
    * @example
    *     await client.terminology.updateTermSet("term_set_id")
    */
-  updateTermSet(o, e = {}, t) {
-    return m.fromPromise(this.__updateTermSet(o, e, t));
+  updateTermSet(o, e = {}, r) {
+    return m.fromPromise(this.__updateTermSet(o, e, r));
   }
   __updateTermSet(o) {
-    return x(this, arguments, void 0, function* (e, t = {}, i) {
+    return x(this, arguments, void 0, function* (e, r = {}, i) {
       var a, d, l, n;
       let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
-        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(e)}`),
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
+        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(e)}`),
         method: "PATCH",
         headers: c,
         contentType: "application/json",
         queryParameters: i?.queryParams,
         requestType: "json",
-        body: t,
+        body: r,
         timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
         maxRetries: i?.maxRetries,
         abortSignal: i?.abortSignal
@@ -34378,24 +34378,24 @@ class Ro {
    *         type: "preferred"
    *     })
    */
-  createTerm(o, e, t) {
-    return m.fromPromise(this.__createTerm(o, e, t));
+  createTerm(o, e, r) {
+    return m.fromPromise(this.__createTerm(o, e, r));
   }
-  __createTerm(o, e, t) {
+  __createTerm(o, e, r) {
     return x(this, void 0, void 0, function* () {
       var i, a, d, l;
-      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : E)({
-        url: T((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms`),
+      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), r?.headers);
+      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : T)({
+        url: E((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms`),
         method: "POST",
         headers: n,
         contentType: "application/json",
-        queryParameters: t?.queryParams,
+        queryParameters: r?.queryParams,
         requestType: "json",
         body: e,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        timeoutMs: r?.timeoutInSeconds != null ? r.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: r?.maxRetries,
+        abortSignal: r?.abortSignal
       });
       if (c.ok)
         return { data: c.body, rawResponse: c.rawResponse };
@@ -34446,21 +34446,21 @@ class Ro {
    * @example
    *     await client.terminology.getTerm("term_set_id", "term_id")
    */
-  getTerm(o, e, t) {
-    return m.fromPromise(this.__getTerm(o, e, t));
+  getTerm(o, e, r) {
+    return m.fromPromise(this.__getTerm(o, e, r));
   }
-  __getTerm(o, e, t) {
+  __getTerm(o, e, r) {
     return x(this, void 0, void 0, function* () {
       var i, a, d, l;
-      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : E)({
-        url: T((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
+      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), r?.headers);
+      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : T)({
+        url: E((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
         method: "GET",
         headers: n,
-        queryParameters: t?.queryParams,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        queryParameters: r?.queryParams,
+        timeoutMs: r?.timeoutInSeconds != null ? r.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: r?.maxRetries,
+        abortSignal: r?.abortSignal
       });
       if (c.ok)
         return { data: c.body, rawResponse: c.rawResponse };
@@ -34515,21 +34515,21 @@ class Ro {
    *         type: "preferred"
    *     })
    */
-  updateTerm(o, e, t, i) {
-    return m.fromPromise(this.__updateTerm(o, e, t, i));
+  updateTerm(o, e, r, i) {
+    return m.fromPromise(this.__updateTerm(o, e, r, i));
   }
-  __updateTerm(o, e, t, i) {
+  __updateTerm(o, e, r, i) {
     return x(this, void 0, void 0, function* () {
       var a, d, l, n;
       let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
-        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
+        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
         method: "PUT",
         headers: c,
         contentType: "application/json",
         queryParameters: i?.queryParams,
         requestType: "json",
-        body: t,
+        body: r,
         timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
         maxRetries: i?.maxRetries,
         abortSignal: i?.abortSignal
@@ -34583,21 +34583,21 @@ class Ro {
    * @example
    *     await client.terminology.deleteTerm("term_set_id", "term_id")
    */
-  deleteTerm(o, e, t) {
-    return m.fromPromise(this.__deleteTerm(o, e, t));
+  deleteTerm(o, e, r) {
+    return m.fromPromise(this.__deleteTerm(o, e, r));
   }
-  __deleteTerm(o, e, t) {
+  __deleteTerm(o, e, r) {
     return x(this, void 0, void 0, function* () {
       var i, a, d, l;
-      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), t?.headers);
-      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : E)({
-        url: T((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
+      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), r?.headers);
+      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : T)({
+        url: E((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
         method: "DELETE",
         headers: n,
-        queryParameters: t?.queryParams,
-        timeoutMs: t?.timeoutInSeconds != null ? t.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: t?.maxRetries,
-        abortSignal: t?.abortSignal
+        queryParameters: r?.queryParams,
+        timeoutMs: r?.timeoutInSeconds != null ? r.timeoutInSeconds * 1e3 : 6e4,
+        maxRetries: r?.maxRetries,
+        abortSignal: r?.abortSignal
       });
       if (c.ok)
         return { data: void 0, rawResponse: c.rawResponse };
@@ -34656,12 +34656,12 @@ class Ro {
   }
   __listDomains() {
     return x(this, arguments, void 0, function* (o = {}, e) {
-      var t, i, a, d;
+      var r, i, a, d;
       const { page: l, page_size: n, search: c } = o, s = {};
       l != null && (s.page = l.toString()), n != null && (s.page_size = n.toString()), c != null && (s.search = c);
-      let u = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const f = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
+      let u = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const f = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
         method: "GET",
         headers: u,
         queryParameters: Object.assign(Object.assign({}, s), e?.queryParams),
@@ -34724,10 +34724,10 @@ class Ro {
   }
   __createDomain(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
         method: "POST",
         headers: l,
         contentType: "application/json",
@@ -34791,10 +34791,10 @@ class Ro {
   }
   __getDomain(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
         method: "GET",
         headers: l,
         queryParameters: e?.queryParams,
@@ -34855,10 +34855,10 @@ class Ro {
   }
   __deleteDomain(o, e) {
     return x(this, void 0, void 0, function* () {
-      var t, i, a, d;
-      let l = b((t = this._options) === null || t === void 0 ? void 0 : t.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : E)({
-        url: T((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
+      var r, i, a, d;
+      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
+      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
+        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
         method: "DELETE",
         headers: l,
         queryParameters: e?.queryParams,
@@ -34915,21 +34915,21 @@ class Ro {
    * @example
    *     await client.terminology.updateDomain("domain_id")
    */
-  updateDomain(o, e = {}, t) {
-    return m.fromPromise(this.__updateDomain(o, e, t));
+  updateDomain(o, e = {}, r) {
+    return m.fromPromise(this.__updateDomain(o, e, r));
   }
   __updateDomain(o) {
-    return x(this, arguments, void 0, function* (e, t = {}, i) {
+    return x(this, arguments, void 0, function* (e, r = {}, i) {
       var a, d, l, n;
       let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : E)({
-        url: T((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/domains/${encodeURIComponent(e)}`),
+      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
+        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/domains/${encodeURIComponent(e)}`),
         method: "PATCH",
         headers: c,
         contentType: "application/json",
         queryParameters: i?.queryParams,
         requestType: "json",
-        body: t,
+        body: r,
         timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
         maxRetries: i?.maxRetries,
         abortSignal: i?.abortSignal
@@ -34976,7 +34976,7 @@ class Ro {
     });
   }
 }
-class _o {
+class ko {
   constructor(o) {
     this._options = Object.assign(Object.assign({}, o), { headers: b({
       "X-Fern-Language": "JavaScript",
@@ -34989,34 +34989,34 @@ class _o {
   }
   get styleGuides() {
     var o;
-    return (o = this._styleGuides) !== null && o !== void 0 ? o : this._styleGuides = new mo(this._options);
+    return (o = this._styleGuides) !== null && o !== void 0 ? o : this._styleGuides = new bo(this._options);
   }
   get styleChecks() {
     var o;
-    return (o = this._styleChecks) !== null && o !== void 0 ? o : this._styleChecks = new po(this._options);
+    return (o = this._styleChecks) !== null && o !== void 0 ? o : this._styleChecks = new So(this._options);
   }
   get styleSuggestions() {
     var o;
-    return (o = this._styleSuggestions) !== null && o !== void 0 ? o : this._styleSuggestions = new vo(this._options);
+    return (o = this._styleSuggestions) !== null && o !== void 0 ? o : this._styleSuggestions = new To(this._options);
   }
   get styleRewrites() {
     var o;
-    return (o = this._styleRewrites) !== null && o !== void 0 ? o : this._styleRewrites = new go(this._options);
+    return (o = this._styleRewrites) !== null && o !== void 0 ? o : this._styleRewrites = new Eo(this._options);
   }
   get terminology() {
     var o;
-    return (o = this._terminology) !== null && o !== void 0 ? o : this._terminology = new Ro(this._options);
+    return (o = this._terminology) !== null && o !== void 0 ? o : this._terminology = new Co(this._options);
   }
 }
-var $ = /* @__PURE__ */ ((r) => (r.Queued = "queued", r.Running = "running", r.Completed = "completed", r.Failed = "failed", r))($ || {}), W = /* @__PURE__ */ ((r) => (r.Stage = "stage", r.Dev = "dev", r.Prod = "prod", r))(W || {}), ge = /* @__PURE__ */ ((r) => (r.Environment = "environment", r.Url = "url", r))(ge || {});
-var N = /* @__PURE__ */ ((r) => (r.VALIDATION_ERROR = "VALIDATION_ERROR", r.UNKNOWN_ERROR = "UNKNOWN_ERROR", r.WORKFLOW_NOT_FOUND = "workflowNotFound", r.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", r.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", r.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", r.NETWORK_ERROR = "NETWORK_ERROR", r.TIMEOUT_ERROR = "TIMEOUT_ERROR", r.WORKFLOW_FAILED = "WORKFLOW_FAILED", r.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", r.POLLING_ERROR = "POLLING_ERROR", r.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", r))(N || {});
+var B = /* @__PURE__ */ ((t) => (t.Queued = "queued", t.Running = "running", t.Completed = "completed", t.Failed = "failed", t.NotFound = "not_found", t))(B || {}), H = /* @__PURE__ */ ((t) => (t.Stage = "stage", t.Dev = "dev", t.Prod = "prod", t))(H || {}), ge = /* @__PURE__ */ ((t) => (t.Environment = "environment", t.Url = "url", t))(ge || {});
+var F = /* @__PURE__ */ ((t) => (t.VALIDATION_ERROR = "VALIDATION_ERROR", t.UNKNOWN_ERROR = "UNKNOWN_ERROR", t.WORKFLOW_NOT_FOUND = "workflowNotFound", t.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", t.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", t.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", t.NETWORK_ERROR = "NETWORK_ERROR", t.TIMEOUT_ERROR = "TIMEOUT_ERROR", t.WORKFLOW_FAILED = "WORKFLOW_FAILED", t.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", t.POLLING_ERROR = "POLLING_ERROR", t.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", t))(F || {});
 class p extends Error {
   statusCode;
   // Optional - only present for API errors
   type;
   rawErrorData;
-  constructor(o, e, t, i = {}, a) {
-    super(o, a === void 0 ? void 0 : { cause: a }), this.name = "ApiError", this.statusCode = t, this.type = e, this.rawErrorData = a instanceof Error ? { ...i, originalError: a } : i, Object.setPrototypeOf(this, p.prototype);
+  constructor(o, e, r, i = {}, a) {
+    super(o, a === void 0 ? void 0 : { cause: a }), this.name = "ApiError", this.statusCode = r, this.type = e, this.rawErrorData = a instanceof Error ? { ...i, originalError: a } : i, Object.setPrototypeOf(this, p.prototype);
   }
   /**
    * Creates an ApiError from an API response
@@ -35046,7 +35046,7 @@ class p extends Error {
    * Handle 400 Bad Request errors
    */
   static handle400Error(o, e) {
-    const t = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = t || i || `Bad Request (${String(e)})`;
+    const r = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = r || i || `Bad Request (${String(e)})`;
     return new p(a, "UNKNOWN_ERROR", e, o);
   }
   /**
@@ -35090,7 +35090,7 @@ class p extends Error {
    * Handle 429 Too Many Requests (rate limit) errors
    */
   static handle429Error(o, e) {
-    const t = o, a = (typeof t.detail == "string" ? t.detail : void 0) || `Rate limit exceeded (${String(e)})`;
+    const r = o, a = (typeof r.detail == "string" ? r.detail : void 0) || `Rate limit exceeded (${String(e)})`;
     return new p(a, "RATE_LIMIT_ERROR", e, o);
   }
   /**
@@ -35112,15 +35112,15 @@ class p extends Error {
    * Handle 500 Internal Server errors
    */
   static handle500Error(o, e) {
-    const t = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = t || i || `Internal Server Error (${String(e)})`;
+    const r = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = r || i || `Internal Server Error (${String(e)})`;
     return new p(a, "INTERNAL_SERVER_ERROR", e, o);
   }
   /**
    * Handle unknown status codes
    */
   static handleUnknownError(o, e) {
-    const t = typeof o.message == "string" && o.message || typeof o.detail == "string" && o.detail || `HTTP error! status: ${String(e)}`;
-    return new p(t, "UNKNOWN_ERROR", e, o);
+    const r = typeof o.message == "string" && o.message || typeof o.detail == "string" && o.detail || `HTTP error! status: ${String(e)}`;
+    return new p(r, "UNKNOWN_ERROR", e, o);
   }
   /**
    * Creates an ApiError for non-API errors (network, timeout, etc.)
@@ -35150,8 +35150,8 @@ class p extends Error {
   static isValidationErrorResponse(o) {
     return !("detail" in o) || !Array.isArray(o.detail) || o.detail.length === 0 ? false : o.detail.every((e) => {
       if (typeof e != "object" || e === null) return false;
-      const t = e;
-      return "loc" in t && "msg" in t && "type" in t && Array.isArray(t.loc) && typeof t.msg == "string" && typeof t.type == "string";
+      const r = e;
+      return "loc" in r && "msg" in r && "type" in r && Array.isArray(r.loc) && typeof r.msg == "string" && typeof r.type == "string";
     });
   }
   /**
@@ -35160,8 +35160,8 @@ class p extends Error {
   static isValidationErrorResponse422(o) {
     return !("detail" in o) || !("status" in o) || !("request_id" in o) || !("errors" in o) || !Array.isArray(o.errors) || o.errors.length === 0 ? false : o.errors.every((e) => {
       if (typeof e != "object" || e === null) return false;
-      const t = e;
-      return "loc" in t && "msg" in t && "type" in t && Array.isArray(t.loc) && typeof t.msg == "string" && typeof t.type == "string";
+      const r = e;
+      return "loc" in r && "msg" in r && "type" in r && Array.isArray(r.loc) && typeof r.msg == "string" && typeof r.type == "string";
     });
   }
   /**
@@ -35236,59 +35236,59 @@ class p extends Error {
     if (Array.isArray(this.rawErrorData.errors)) {
       const o = {};
       for (const e of this.rawErrorData.errors) {
-        const t = e.loc.join("."), i = o[t];
-        i ? i.push(e.msg) : o[t] = [e.msg];
+        const r = e.loc.join("."), i = o[r];
+        i ? i.push(e.msg) : o[r] = [e.msg];
       }
       return o;
     }
     if (Array.isArray(this.rawErrorData.detail)) {
       const o = {};
       for (const e of this.rawErrorData.detail) {
-        const t = e.loc.join("."), i = o[t];
-        i ? i.push(e.msg) : o[t] = [e.msg];
+        const r = e.loc.join("."), i = o[r];
+        i ? i.push(e.msg) : o[r] = [e.msg];
       }
       return o;
     }
     return {};
   }
 }
-const O = "https://api.markup.ai", bo = "https://api.stg.markup.ai", So = "https://api.dev.markup.ai";
-function re(r) {
-  if (r.platform)
-    if (r.platform.type === ge.Environment)
-      switch (r.platform.value) {
-        case W.Stage:
-          return bo;
-        case W.Dev:
-          return So;
-        case W.Prod:
+const O = "https://api.markup.ai", xo = "https://api.stg.markup.ai", Po = "https://api.dev.markup.ai";
+function re(t) {
+  if (t.platform)
+    if (t.platform.type === ge.Environment)
+      switch (t.platform.value) {
+        case H.Stage:
+          return xo;
+        case H.Dev:
+          return Po;
+        case H.Prod:
           return O;
         default:
           return O;
       }
     else
-      return r.platform.value;
+      return t.platform.value;
   return O;
 }
-function I(r) {
-  const o = re(r), e = new _o({
-    token: r.apiKey,
+function I(t) {
+  const o = re(t), e = new ko({
+    token: t.apiKey,
     baseUrl: o,
-    ...r.headers ? { headers: r.headers } : {}
+    ...t.headers ? { headers: t.headers } : {}
   });
-  return ko(e, r);
+  return Mo(e, t);
 }
-async function Co(r, o, e) {
-  const t = o.rateLimit?.maxRetries ?? 5, i = o.rateLimit?.initialDelayMs ?? 1e3, a = o.rateLimit?.maxDelayMs ?? 16e3, d = o.rateLimit?.jitter ?? true;
+async function jo(t, o, e) {
+  const r = o.rateLimit?.maxRetries ?? 5, i = o.rateLimit?.initialDelayMs ?? 1e3, a = o.rateLimit?.maxDelayMs ?? 16e3, d = o.rateLimit?.jitter ?? true;
   let l = 0;
   for (; ; )
     try {
-      return await r();
+      return await t();
     } catch (n) {
       const c = n;
       if (!((c.statusCode ?? c.status) === 429))
         throw n;
-      if (l >= t) {
+      if (l >= r) {
         if ("statusCode" in c) {
           const P = c.body ?? {
             detail: "Rate limit exceeded"
@@ -35303,7 +35303,7 @@ async function Co(r, o, e) {
         }
         throw new p(
           "Rate limit exceeded",
-          N.RATE_LIMIT_ERROR,
+          F.RATE_LIMIT_ERROR,
           429,
           {},
           n
@@ -35332,29 +35332,29 @@ async function Co(r, o, e) {
       continue;
     }
 }
-function ko(r, o, e = "client") {
-  const t = /* @__PURE__ */ new WeakMap(), i = (a, d) => {
-    const l = t.get(a);
+function Mo(t, o, e = "client") {
+  const r = /* @__PURE__ */ new WeakMap(), i = (a, d) => {
+    const l = r.get(a);
     if (l) return l;
     const n = new Proxy(a, {
       get: (c, s, u) => {
         const f = Reflect.get(c, s, u);
         if (typeof f == "function") {
           const y = `${d}.${String(s)}`, A = f;
-          return (...P) => Co(() => A.apply(c, P), o, y);
+          return (...P) => jo(() => A.apply(c, P), o, y);
         }
         return typeof f == "object" && f !== null ? i(f, `${d}.${String(s)}`) : f;
       }
     });
-    return t.set(a, n), n;
+    return r.set(a, n), n;
   };
-  return i(r, e);
+  return i(t, e);
 }
 function Re() {
   return !!(typeof process > "u" ? void 0 : process)?.versions?.node;
 }
-function we(r) {
-  switch (r.split(".").pop()?.toLowerCase()) {
+function we(t) {
+  switch (t.split(".").pop()?.toLowerCase()) {
     case "dita":
       return "application/dita+xml";
     case "htm":
@@ -35374,83 +35374,83 @@ function we(r) {
       return "application/octet-stream";
   }
 }
-function Po(r) {
-  return typeof Buffer < "u" ? Buffer.isBuffer(r) : false;
+function Lo(t) {
+  return typeof Buffer < "u" ? Buffer.isBuffer(t) : false;
 }
-async function _e(r, o) {
-  if (typeof r.content == "string") {
-    const e = we(o), t = Mo(e, r.content);
-    return { parts: [r.content], type: t, filename: o };
+async function _e(t, o) {
+  if (typeof t.content == "string") {
+    const e = we(o), r = No(e, t.content);
+    return { parts: [t.content], type: r, filename: o };
   }
-  if (typeof File < "u" && typeof r.content != "string" && "file" in r.content && r.content.file instanceof File) {
-    const e = r.content, t = await e.file.arrayBuffer(), i = e.mimeType || e.file.type || "application/octet-stream";
+  if (typeof File < "u" && typeof t.content != "string" && "file" in t.content && t.content.file instanceof File) {
+    const e = t.content, r = await e.file.arrayBuffer(), i = e.mimeType || e.file.type || "application/octet-stream";
     return {
-      parts: [t],
+      parts: [r],
       type: i,
       filename: e.file.name,
       file: e.file
     };
   }
-  if (typeof r.content != "string" && "buffer" in r.content && Po(r.content.buffer)) {
-    const e = r.content, t = e.mimeType || we(e.documentNameWithExtension || o);
+  if (typeof t.content != "string" && "buffer" in t.content && Lo(t.content.buffer)) {
+    const e = t.content, r = e.mimeType || we(e.documentNameWithExtension || o);
     return { parts: [e.buffer.buffer.slice(
       e.buffer.byteOffset,
       e.buffer.byteOffset + e.buffer.byteLength
-    )], type: t, filename: o };
+    )], type: r, filename: o };
   }
   throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
 }
-class Ao extends Blob {
+class $o extends Blob {
   name;
   lastModified;
-  constructor(o, e, t = {}) {
-    super(o, t), this.name = e, this.lastModified = t.lastModified || Date.now();
+  constructor(o, e, r = {}) {
+    super(o, r), this.name = e, this.lastModified = r.lastModified || Date.now();
   }
 }
-async function Io(r) {
-  const o = Te(r), { parts: e, type: t } = await _e(r, o);
-  return new Ao(e, o, { type: t });
+async function Bo(t) {
+  const o = Ee(t), { parts: e, type: r } = await _e(t, o);
+  return new $o(e, o, { type: r });
 }
-async function jo(r) {
-  const o = Te(r);
-  if (typeof File < "u" && typeof r.content != "string" && "file" in r.content && r.content.file instanceof File)
-    return r.content.file;
-  const { parts: e, type: t } = await _e(r, o);
-  return new File(e, o, { type: t });
+async function Fo(t) {
+  const o = Ee(t);
+  if (typeof File < "u" && typeof t.content != "string" && "file" in t.content && t.content.file instanceof File)
+    return t.content.file;
+  const { parts: e, type: r } = await _e(t, o);
+  return new File(e, o, { type: r });
 }
-async function Y(r) {
-  return Re() ? Io(r) : jo(r);
+async function Y(t) {
+  return Re() ? Bo(t) : Fo(t);
 }
-function be(r) {
-  const o = r.trimStart().slice(0, 256).toLowerCase();
+function be(t) {
+  const o = t.trimStart().slice(0, 256).toLowerCase();
   return o.startsWith("<!doctype html") || o.startsWith("<html") ? true : /<(head|body|title|div|span|p|h1|h2|h3|h4|h5|h6)\b/.test(o);
 }
-function Se(r) {
-  const o = r.trimStart().slice(0, 512).toLowerCase(), e = "topic|concept|task|reference|map|bookmap|glossentry|subjectScheme";
+function Se(t) {
+  const o = t.trimStart().slice(0, 512).toLowerCase(), e = "topic|concept|task|reference|map|bookmap|glossentry|subjectScheme";
   return new RegExp(String.raw`<!DOCTYPE\s+(?:${e})\b.*\/.*\/DITA`, "is").test(o) || new RegExp(String.raw`<!DOCTYPE\s+(?:${e})\b.*?["'][^"']*\.dtd["']`, "is").test(o) || new RegExp(String.raw`^(?:\s*<\?xml[^>]*\?>)?\s*<(?:${e})\b`, "is").test(o) ? true : /\bclass="[^"]*\btopic\/topic\b/i.test(o);
 }
-function Ee(r) {
-  const o = r.trimStart().slice(0, 512);
+function Te(t) {
+  const o = t.trimStart().slice(0, 512);
   return !!(/^---\n[\s\S]*?\n---\n/.test(o) || /^#{1,6}\s+.+/m.test(o) || /^(?:\s*[-*+]\s+\S|\s*\d+\.\s+\S)/m.test(o) || /\[[^\]]+\]\([^)]+\)/.test(o) || /!\[[^\]]*\]\([^)]+\)/.test(o) || /```[\s\S]*?```/.test(o));
 }
-function Mo(r, o) {
-  return r === "application/octet-stream" ? Ee(o) ? "text/markdown" : Se(o) ? "application/dita+xml" : be(o) ? "text/html" : "text/plain" : r;
+function No(t, o) {
+  return t === "application/octet-stream" ? Te(o) ? "text/markdown" : Se(o) ? "application/dita+xml" : be(o) ? "text/html" : "text/plain" : t;
 }
-function Te(r) {
-  if ("content" in r && typeof r.content == "string") {
-    const o = r;
-    return o.documentNameWithExtension ? o.documentNameWithExtension : Se(o.content) ? "unknown.dita" : be(o.content) ? "unknown.html" : Ee(o.content) ? "unknown.md" : "unknown.txt";
+function Ee(t) {
+  if ("content" in t && typeof t.content == "string") {
+    const o = t;
+    return o.documentNameWithExtension ? o.documentNameWithExtension : Se(o.content) ? "unknown.dita" : be(o.content) ? "unknown.html" : Te(o.content) ? "unknown.md" : "unknown.txt";
   }
-  if (!r.content)
+  if (!t.content)
     throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
-  return "content" in r && typeof r.content == "object" && "buffer" in r.content ? r.content.documentNameWithExtension : "content" in r && typeof r.content == "object" && "file" in r.content ? r.content.file.name : "unknown.txt";
+  return "content" in t && typeof t.content == "object" && "buffer" in t.content ? t.content.documentNameWithExtension : "content" in t && typeof t.content == "object" && "file" in t.content ? t.content.file.name : "unknown.txt";
 }
 const Ce = 3e5;
-async function ne(r, o, e) {
-  const t = Date.now(), i = I(e), a = await Y(o);
+async function ne(t, o, e) {
+  const r = Date.now(), i = I(e), a = await Y(o);
   let d;
   try {
-    switch (r) {
+    switch (t) {
       case j.Check:
         d = await i.styleChecks.createStyleCheck({
           file_upload: a,
@@ -35483,20 +35483,20 @@ async function ne(r, o, e) {
     throw n instanceof w ? p.fromResponse(n.statusCode || 0, n.body) : new Error(`Failed to submit style analysis: ${String(n)}`);
   }
   if (!d.workflow_id)
-    throw new Error(`No workflow_id received from initial ${r} request`);
-  const l = await Lo(
+    throw new Error(`No workflow_id received from initial ${t} request`);
+  const l = await Do(
     d.workflow_id,
     e,
-    r,
-    t
+    t,
+    r
   );
-  if (l.workflow.status === $.Completed)
+  if (l.workflow.status === B.Completed)
     return l;
-  throw new Error(`${r} failed with status: ${l.workflow.status}`);
+  throw new Error(`${t} failed with status: ${l.workflow.status}`);
 }
-class Uo {
-  constructor(o, e, t, i, a) {
-    this.requests = o, this.config = e, this.styleFunction = t, this.options = i, this.onProgressUpdate = a, this.startTime = Date.now(), this.initializeResults();
+class zo {
+  constructor(o, e, r, i, a) {
+    this.requests = o, this.config = e, this.styleFunction = r, this.options = i, this.onProgressUpdate = a, this.startTime = Date.now(), this.initializeResults();
   }
   inProgress = /* @__PURE__ */ new Set();
   results = [];
@@ -35513,12 +35513,12 @@ class Uo {
     }));
   }
   getProgress() {
-    const o = this.results.filter((a) => a.status === "completed").length, e = this.results.filter((a) => a.status === "failed").length, t = this.results.filter((a) => a.status === "in-progress").length, i = this.results.filter((a) => a.status === "pending").length;
+    const o = this.results.filter((a) => a.status === "completed").length, e = this.results.filter((a) => a.status === "failed").length, r = this.results.filter((a) => a.status === "in-progress").length, i = this.results.filter((a) => a.status === "pending").length;
     return {
       total: this.requests.length,
       completed: o,
       failed: e,
-      inProgress: t,
+      inProgress: r,
       pending: i,
       results: [...this.results],
       startTime: Date.now()
@@ -35535,8 +35535,8 @@ class Uo {
           status: "in-progress",
           startTime: Date.now()
         }, this.updateProgress();
-        const t = await this.executeWithRetry(e);
-        t === void 0 ? this.results[o] = {
+        const r = await this.executeWithRetry(e);
+        r === void 0 ? this.results[o] = {
           ...this.results[o],
           status: "failed",
           error: new Error("Batch operation returned undefined result"),
@@ -35544,14 +35544,14 @@ class Uo {
         } : this.results[o] = {
           ...this.results[o],
           status: "completed",
-          result: t,
+          result: r,
           endTime: Date.now()
         };
-      } catch (t) {
+      } catch (r) {
         this.results[o] = {
           ...this.results[o],
           status: "failed",
-          error: t instanceof Error ? t : new Error(String(t)),
+          error: r instanceof Error ? r : new Error(String(r)),
           endTime: Date.now()
         };
       } finally {
@@ -35560,7 +35560,7 @@ class Uo {
   }
   async executeWithRetry(o) {
     let e;
-    for (let t = 0; t <= this.options.retryAttempts; t++)
+    for (let r = 0; r <= this.options.retryAttempts; r++)
       try {
         return await this.styleFunction(o, {
           ...this.config,
@@ -35569,7 +35569,7 @@ class Uo {
       } catch (i) {
         if (e = i instanceof Error ? i : new Error(String(i)), this.shouldNotRetry(e))
           throw e;
-        t < this.options.retryAttempts && await this.delay(this.options.retryDelay * Math.pow(2, t));
+        r < this.options.retryAttempts && await this.delay(this.options.retryDelay * Math.pow(2, r));
       }
     throw e ?? new Error("Unknown error occurred during retry");
   }
@@ -35582,7 +35582,7 @@ class Uo {
       "unauthorized",
       "forbidden",
       "rate limit"
-    ].some((t) => o.message.toLowerCase().includes(t)) || o instanceof p && o.type === N.RATE_LIMIT_ERROR);
+    ].some((r) => o.message.toLowerCase().includes(r)) || o instanceof p && o.type === F.RATE_LIMIT_ERROR);
   }
   delay(o) {
     return new Promise((e) => setTimeout(e, o));
@@ -35599,8 +35599,8 @@ class Uo {
   start() {
     return new Promise((o, e) => {
       this.resolvePromise = o, this.rejectPromise = e;
-      const t = Math.min(this.options.maxConcurrent, this.requests.length);
-      for (let i = 0; i < t; i++)
+      const r = Math.min(this.options.maxConcurrent, this.requests.length);
+      for (let i = 0; i < r; i++)
         this.inProgress.add(i), this.processRequest(i, this.requests[i]);
     });
   }
@@ -35608,10 +35608,10 @@ class Uo {
     this.cancelled = true, this.rejectPromise?.(new Error("Batch operation cancelled"));
   }
 }
-function se(r, o, e, t = {}) {
-  if (r.length === 0)
+function se(t, o, e, r = {}) {
+  if (t.length === 0)
     throw new Error("Requests array cannot be empty");
-  if (r.length > 1e3)
+  if (t.length > 1e3)
     throw new Error("Maximum 1000 requests allowed per batch");
   const a = {
     ...{
@@ -35620,17 +35620,17 @@ function se(r, o, e, t = {}) {
       retryDelay: 1e3,
       timeoutMillis: Ce
     },
-    ...t
+    ...r
   };
   if (a.maxConcurrent < 1 || a.maxConcurrent > 100)
     throw new Error("maxConcurrent must be between 1 and 100");
   if (a.retryAttempts < 0 || a.retryAttempts > 5)
     throw new Error("retryAttempts must be between 0 and 5");
-  const d = new Uo(r, o, e, a), l = d.start();
+  const d = new zo(t, o, e, a), l = d.start();
   return {
     progress: {
       get total() {
-        return r.length;
+        return t.length;
       },
       get completed() {
         return d.results.filter((c) => c.status === "completed").length;
@@ -35660,14 +35660,14 @@ function se(r, o, e, t = {}) {
     }
   };
 }
-async function Lo(r, o, e, t = Date.now()) {
+async function Do(t, o, e, r = Date.now()) {
   let i = 0;
   const a = 2e3, d = o.timeoutMillis ?? Ce, l = Math.floor(d / a), n = async () => {
-    const c = Date.now() - t;
+    const c = Date.now() - r;
     if (c > d)
       throw new p(
         `Workflow timed out after ${String(c)}ms`,
-        N.TIMEOUT_ERROR
+        F.TIMEOUT_ERROR
       );
     try {
       const s = I(o);
@@ -35675,77 +35675,77 @@ async function Lo(r, o, e, t = Date.now()) {
       switch (e) {
         case j.Check:
           u = await s.styleChecks.getStyleCheck(
-            r
+            t
           );
           break;
         case j.Suggestions:
           u = await s.styleSuggestions.getStyleSuggestion(
-            r
+            t
           );
           break;
         case j.Rewrite:
           u = await s.styleRewrites.getStyleRewrite(
-            r
+            t
           );
           break;
       }
       const f = u.workflow.status;
-      if (f === $.Failed)
+      if (f === B.Failed)
         throw new p(
-          `Workflow failed with status: ${$.Failed}`,
-          N.WORKFLOW_FAILED
+          `Workflow failed with status: ${B.Failed}`,
+          F.WORKFLOW_FAILED
         );
-      return f === $.Completed ? u : (i++, await new Promise((y) => setTimeout(y, a)), await n());
+      return f === B.Completed ? u : (i++, await new Promise((y) => setTimeout(y, a)), await n());
     } catch (s) {
       throw s instanceof w ? p.fromResponse(s.statusCode || 0, s.body) : (console.error(
         `Unknown polling error (attempt ${String(i + 1)}/${String(l)}):`,
         s
       ), p.fromError(
         s instanceof Error ? s : new Error("Unknown error occurred"),
-        N.POLLING_ERROR
+        F.POLLING_ERROR
       ));
     }
   };
   return n();
 }
-async function Bo(r, o) {
+async function Go(t, o) {
   return ne(
     j.Check,
-    r,
+    t,
     o
   );
 }
-async function $o(r, o) {
+async function Wo(t, o) {
   return ne(
     j.Suggestions,
-    r,
+    t,
     o
   );
 }
-async function No(r, o) {
+async function Ho(t, o) {
   return ne(
     j.Rewrite,
-    r,
+    t,
     o
   );
 }
-function Fo(r, o, e = {}) {
-  return se(r, o, Bo, e);
+function Vo(t, o, e = {}) {
+  return se(t, o, Go, e);
 }
-function Go(r, o, e = {}) {
-  return se(r, o, $o, e);
+function Ko(t, o, e = {}) {
+  return se(t, o, Wo, e);
 }
-function zo(r, o, e = {}) {
-  return se(r, o, No, e);
+function Xo(t, o, e = {}) {
+  return se(t, o, Ho, e);
 }
-function et(r, o, e, t = {}) {
+function it(t, o, e, r = {}) {
   switch (e) {
     case "check":
-      return Fo(r, o, t);
+      return Vo(t, o, r);
     case "suggestions":
-      return Go(r, o, t);
+      return Ko(t, o, r);
     case "rewrite":
-      return zo(r, o, t);
+      return Xo(t, o, r);
     default:
       throw new Error(`Invalid operation type: ${String(e)}`);
   }
@@ -36054,7 +36054,7 @@ const isRequestEndingError = (error) => {
     if (!error)
         return false;
     const apiError = error;
-    const typeIsEnding = [N.UNAUTHORIZED_ERROR, N.INTERNAL_SERVER_ERROR].includes(apiError.type);
+    const typeIsEnding = [F.UNAUTHORIZED_ERROR, F.INTERNAL_SERVER_ERROR].includes(apiError.type);
     const statusCodeIsEnding = typeof apiError.statusCode === "number" &&
         (apiError.statusCode === 401 || apiError.statusCode >= 500);
     return typeIsEnding || statusCodeIsEnding;
@@ -36097,8 +36097,8 @@ async function analyzeFile(filePath, content, options, config) {
             ...(options.tone ? { tone: options.tone } : {}),
         };
         const result = options.reviewComments
-            ? await $o(request, config)
-            : await Bo(request, config);
+            ? await Wo(request, config)
+            : await Go(request, config);
         const issues = result.original.issues.map((issue) => {
             const context = getLineContextAtIndex(content, issue.position.start_index);
             return {
@@ -36156,8 +36156,8 @@ async function analyzeFilesBatch(files, options, config, readFileContent) {
     try {
         // Start batch processing
         const batchResponse = options.reviewComments
-            ? et(requests, config, "suggestions", batchOptions)
-            : Fo(requests, config, batchOptions);
+            ? it(requests, config, "suggestions", batchOptions)
+            : Vo(requests, config, batchOptions);
         // Monitor progress
         const progressInterval = setInterval(() => {
             const progress = batchResponse.progress;

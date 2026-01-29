@@ -38,7 +38,7 @@
   "dependencies": {
     "@actions/core": "2.0.2",
     "@actions/github": "7.0.0",
-    "@markupai/toolkit": "2.2.3",
+    "@markupai/toolkit": "2.2.4",
     "octokit": "5.0.5"
   },
   "devDependencies": {
