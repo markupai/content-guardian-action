@@ -87662,6 +87662,7 @@ const INPUT_NAMES = {
     ADD_COMMIT_STATUS: "add_commit_status",
     ADD_REVIEW_COMMENTS: "add_review_comments",
     STRICT_MODE: "strict_mode",
+    PATHS: "paths",
 };
 const ENV_VARS = {
     MARKUP_AI_API_KEY: "MARKUP_AI_API_KEY",
@@ -87695,6 +87696,7 @@ function getActionConfig() {
     // `target` is optional: when omitted, the action falls back to the org's
     // default target (the one flagged `is_default: true` in /style-agent/targets).
     const target = getOptionalInput(INPUT_NAMES.TARGET, "TARGET");
+    const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
     const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
@@ -87702,10 +87704,30 @@ function getActionConfig() {
         apiToken,
         githubToken,
         target,
+        paths,
         addCommitStatus,
         addReviewComments,
         strictMode,
     };
+}
+/**
+ * Parse the `paths` input into a list of repo-relative paths. Accepts both
+ * comma- and newline-separated input so the YAML can be written either as
+ * `paths: README.md, docs/intro.md` or as a multi-line block:
+ *
+ *   paths: |
+ *     README.md
+ *     docs/intro.md
+ *
+ * Empty entries (blank lines, leading/trailing commas) are dropped.
+ */
+function parsePaths(raw) {
+    if (!raw)
+        return [];
+    return raw
+        .split(/[\n,]+/)
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0);
 }
 function getRequiredInput(inputName, envVarName) {
     const value = getInput(inputName) || process.env[envVarName];
@@ -87741,6 +87763,7 @@ function logConfiguration(config) {
     info(`  Target: ${config.target || "(org default)"}`);
     info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
     info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
+    info(`  Paths Filter: ${config.paths.length > 0 ? config.paths.join(", ") : "(none)"}`);
     info(`  Commit Status: ${config.addCommitStatus ? "enabled" : "disabled"}`);
     info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
     info(`  Strict Mode: ${config.strictMode ? "on" : "off"}`);
@@ -89465,17 +89488,26 @@ async function runAction() {
         displaySectionHeader("🔍 Discovering Files");
         const allFiles = await strategy.getFilesToAnalyze();
         const supportedFiles = filterSupportedFiles(allFiles);
-        eventInfo.filesCount = supportedFiles.length;
         info(`📊 Found ${supportedFiles.length.toString()} supported files out of ${allFiles.length.toString()} total files`);
-        if (supportedFiles.length === 0) {
+        // Apply the user-supplied `paths` whitelist last so it intersects with
+        // whatever the event-specific strategy surfaced. Empty array = no
+        // filtering.
+        const filteredFiles = config.paths.length === 0
+            ? supportedFiles
+            : supportedFiles.filter((f) => config.paths.includes(f));
+        if (config.paths.length > 0) {
+            info(`📌 Paths filter active (${config.paths.length.toString()} pattern(s)); ${filteredFiles.length.toString()}/${supportedFiles.length.toString()} files match`);
+        }
+        eventInfo.filesCount = filteredFiles.length;
+        if (filteredFiles.length === 0) {
             info("No supported files found to analyze.");
             setOutputs(eventInfo, []);
             return;
         }
-        displayFilesToAnalyze(supportedFiles);
+        displayFilesToAnalyze(filteredFiles);
         // Analyze
         displaySectionHeader("🔍 Running Analysis");
-        const results = await analyzeFiles(config.apiToken, supportedFiles, analysisOptions, readFileContent);
+        const results = await analyzeFiles(config.apiToken, filteredFiles, analysisOptions, readFileContent);
         if (results.length === 0) {
             setFailed("Failed to analyze supported files.");
             return;
@@ -89483,7 +89515,7 @@ async function runAction() {
         displayResults(results, analysisOptions);
         setOutputs(eventInfo, results);
         await handlePostAnalysisActions(eventInfo, results, config, analysisOptions);
-        if (config.strictMode && results.length !== supportedFiles.length) {
+        if (config.strictMode && results.length !== filteredFiles.length) {
             setFailed("Some files were not analyzed.");
             return;
         }

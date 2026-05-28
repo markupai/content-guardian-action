@@ -26,6 +26,7 @@ inputs:
       listing several paths. Empty means analyze every discovered file
       (default)."
     required: false
+  github_token:
     description: GitHub token for API access (can also be provided via the GITHUB_TOKEN
       environment variable).
     required: true
