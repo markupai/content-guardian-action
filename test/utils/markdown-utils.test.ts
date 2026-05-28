@@ -25,7 +25,7 @@ const repo: RepositoryContext = {
 const prRepo: RepositoryContext = { ...repo, prNumber: 7 };
 
 describe("generateResultsTable", () => {
-  it("risk mode header lists Risk column, not Quality", () => {
+  it("risk mode header lists Risk column only (no Quality)", () => {
     const table = generateResultsTable(
       [buildAnalysisResult({ issues: severities("high") })],
       buildAnalysisOptions({ numericScoringEnabled: false }),
@@ -35,7 +35,7 @@ describe("generateResultsTable", () => {
     expect(table).not.toMatch(/\| Quality \|/);
   });
 
-  it("numeric mode header lists Quality column", () => {
+  it("numeric mode header keeps Risk and appends Quality", () => {
     const table = generateResultsTable(
       [
         buildAnalysisResult({
@@ -46,8 +46,28 @@ describe("generateResultsTable", () => {
       buildAnalysisOptions({ numericScoringEnabled: true }),
       repo,
     );
+    // Both columns must be present — risk is primary, quality is additional.
+    expect(table).toMatch(/\| Risk \|/);
     expect(table).toMatch(/\| Quality \|/);
     expect(table).toMatch(/87/);
+  });
+
+  it("numeric mode row places risk first and quality last", () => {
+    const table = generateResultsTable(
+      [
+        buildAnalysisResult({
+          filePath: "x.md",
+          scores: buildScores({ score: 87 }),
+          issues: severities("medium"),
+        }),
+      ],
+      buildAnalysisOptions({ numericScoringEnabled: true }),
+      repo,
+    );
+    const dataRow = table.split("\n").find((l) => l.includes("x.md"));
+    if (!dataRow) throw new Error("expected to find row for x.md");
+    // The Quality cell ("87") must come after the Risk cell ("Medium").
+    expect(dataRow.indexOf("Medium")).toBeLessThan(dataRow.indexOf("87"));
   });
 
   it("renders an empty marker for no results", () => {
@@ -74,7 +94,7 @@ describe("generateResultsTable", () => {
 });
 
 describe("generateSummary", () => {
-  it("risk mode summary leads with Overall Risk", () => {
+  it("risk mode summary shows Overall Risk only (no Quality Score line)", () => {
     const summary = generateSummary(
       [buildAnalysisResult({ issues: severities("medium") })],
       buildAnalysisOptions({ numericScoringEnabled: false }),
@@ -83,16 +103,31 @@ describe("generateSummary", () => {
     expect(summary).not.toMatch(/Overall Quality Score/);
   });
 
-  it("numeric mode summary leads with Overall Quality Score", () => {
+  it("numeric mode shows Overall Risk AND Overall Quality Score (layered, risk first)", () => {
     const summary = generateSummary(
       [
-        buildAnalysisResult({ scores: buildScores({ score: 90 }) }),
+        buildAnalysisResult({
+          issues: severities("medium"),
+          scores: buildScores({ score: 90 }),
+        }),
         buildAnalysisResult({ scores: buildScores({ score: 70 }) }),
       ],
       buildAnalysisOptions({ numericScoringEnabled: true }),
     );
+    expect(summary).toMatch(/Overall Risk/);
     expect(summary).toMatch(/Overall Quality Score/);
     expect(summary).toMatch(/80/);
+    // Risk is primary — must appear before the quality line.
+    expect(summary.indexOf("Overall Risk")).toBeLessThan(summary.indexOf("Overall Quality Score"));
+  });
+
+  it("numeric mode without any scoresByGoal data still emits the risk line and skips quality", () => {
+    const summary = generateSummary(
+      [buildAnalysisResult({ scores: null, issues: severities("low") })],
+      buildAnalysisOptions({ numericScoringEnabled: true }),
+    );
+    expect(summary).toMatch(/Overall Risk/);
+    expect(summary).not.toMatch(/Overall Quality Score/);
   });
 
   it("returns empty string when no results", () => {
@@ -101,19 +136,23 @@ describe("generateSummary", () => {
 });
 
 describe("generateFooter", () => {
-  it("labels the scoring mode", () => {
-    expect(generateFooter(buildAnalysisOptions({ numericScoringEnabled: true }), "push")).toMatch(
-      /Numeric scoring/,
-    );
-    expect(generateFooter(buildAnalysisOptions({ numericScoringEnabled: false }), "push")).toMatch(
-      /Risk-based/,
-    );
+  it("does not include scoring-mode wording (Mode line was removed)", () => {
+    const numeric = generateFooter(buildAnalysisOptions({ numericScoringEnabled: true }), "push");
+    const risk = generateFooter(buildAnalysisOptions({ numericScoringEnabled: false }), "push");
+    expect(numeric).not.toMatch(/Mode:/);
+    expect(numeric).not.toMatch(/Numeric scoring/);
+    expect(risk).not.toMatch(/Mode:/);
+    expect(risk).not.toMatch(/Risk-based scoring/);
   });
 
   it("includes the target display name", () => {
     expect(
       generateFooter(buildAnalysisOptions({ targetDisplayName: "Brand Voice" }), "push"),
     ).toMatch(/Brand Voice/);
+  });
+
+  it("includes the event type", () => {
+    expect(generateFooter(buildAnalysisOptions(), "pull_request")).toMatch(/pull_request/);
   });
 });
 
@@ -203,7 +242,7 @@ describe("generateAnalysisContent", () => {
     );
     expect(content).toMatch(/My Header/);
     expect(content).toMatch(/Overall Risk/);
-    expect(content).toMatch(/Risk-based/);
+    expect(content).not.toMatch(/Mode:/);
   });
 
   it("inserts the per-goal details between table and summary in numeric mode", () => {

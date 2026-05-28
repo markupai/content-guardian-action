@@ -1,12 +1,11 @@
 /**
  * Markdown generation for PR comments and job summaries.
  *
- * Branches on `AnalysisOptions.numericScoringEnabled`:
- * - Numeric on: shows the overall quality score per file plus the per-goal
- *   breakdown if available.
- * - Numeric off: hides all scores. Shows severity counts and a risk label.
- *
- * In both modes the issue-count column is always present.
+ * Risk-based scoring is the primary view in all modes — every file row leads
+ * with a risk label and severity counts. When `AnalysisOptions.numericScoringEnabled`
+ * is true, the action layers an additional Quality column onto the table, an
+ * Overall Quality Score line into the summary, and a collapsible per-goal
+ * breakdown — none of which replaces the risk view.
  */
 
 import { createHash } from "node:crypto";
@@ -55,26 +54,25 @@ export function generateResultsTable(
     return "No files were analyzed.";
   }
 
-  if (options.numericScoringEnabled) {
-    const header = `| File | Quality | Issues | Breakdown |
-|:-----|:-------:|:------:|:----------|`;
-    const rows = results.map((r) => {
-      const score = r.scores?.score;
-      const qualityCell =
-        typeof score === "number"
-          ? `${getQualityEmoji(score)} ${Math.round(score).toString()}`
-          : "-";
-      return `| ${generateFileDisplayLink(r.filePath, context)} | ${qualityCell} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
-    });
-    return `${header}\n${rows.join("\n")}`;
-  }
-
-  const header = `| File | Risk | Issues | Breakdown |
+  // Risk is always the primary view. When the org has numeric scoring enabled,
+  // we append an additional Quality column rather than replacing risk.
+  const showQuality = options.numericScoringEnabled;
+  const header = showQuality
+    ? `| File | Risk | Issues | Breakdown | Quality |
+|:-----|:----:|:------:|:----------|:-------:|`
+    : `| File | Risk | Issues | Breakdown |
 |:-----|:----:|:------:|:----------|`;
+
   const rows = results.map((r) => {
     const risk = classifyRisk(r.issueCounts);
-    return `| ${generateFileDisplayLink(r.filePath, context)} | ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
+    const base = `| ${generateFileDisplayLink(r.filePath, context)} | ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
+    if (!showQuality) return base;
+    const score = r.scores?.score;
+    const qualityCell =
+      typeof score === "number" ? `${getQualityEmoji(score)} ${Math.round(score).toString()}` : "-";
+    return `${base} ${qualityCell} |`;
   });
+
   return `${header}\n${rows.join("\n")}`;
 }
 
@@ -82,26 +80,22 @@ export function generateSummary(results: AnalysisResult[], options: AnalysisOpti
   if (results.length === 0) return "";
 
   const totals = aggregateCounts(results);
+  const risk = aggregateRisk(results);
+  const riskLine = `**Overall Risk:** ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]}`;
 
+  let qualityLine = "";
   if (options.numericScoringEnabled) {
     const summary = calculateScoreSummary(results);
-    const emoji = getQualityEmoji(summary.averageQualityScore);
-    return `
-## 📊 Summary
-
-**Overall Quality Score:** ${emoji} ${Math.round(summary.averageQualityScore).toString()}
-
-**Files Analyzed:** ${summary.totalFiles.toString()}
-
-**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})
-`;
+    if (summary.filesWithScores > 0) {
+      const emoji = getQualityEmoji(summary.averageQualityScore);
+      qualityLine = `\n\n**Overall Quality Score:** ${emoji} ${Math.round(summary.averageQualityScore).toString()}`;
+    }
   }
 
-  const risk = aggregateRisk(results);
   return `
 ## 📊 Summary
 
-**Overall Risk:** ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]}
+${riskLine}${qualityLine}
 
 **Files Analyzed:** ${results.length.toString()}
 
@@ -145,13 +139,10 @@ ${rows.join("\n\n")}
 }
 
 export function generateFooter(options: AnalysisOptions, eventType: string): string {
-  const scoringMode = options.numericScoringEnabled
-    ? "Numeric scoring (0–100)"
-    : "Risk-based scoring";
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName} | Mode: ${scoringMode}*
+*Target: ${options.targetDisplayName}*
 *Event: ${eventType}*`;
 }
 

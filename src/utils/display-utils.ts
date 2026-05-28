@@ -20,17 +20,17 @@ export function displayEventInfo(eventInfo: EventInfo): void {
   }
 }
 
+function logRiskLabel(result: AnalysisResult): void {
+  const risk = classifyRisk(result.issueCounts);
+  core.info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
+}
+
 function logNumericScores(result: AnalysisResult): void {
   if (!result.scores) return;
   core.info(`📈 Quality Score: ${result.scores.score.toString()}`);
   for (const goal of result.scores.scoresByGoal ?? []) {
     core.info(`   • ${goal.displayName}: ${goal.score.toString()}`);
   }
-}
-
-function logRiskLabel(result: AnalysisResult): void {
-  const risk = classifyRisk(result.issueCounts);
-  core.info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
 }
 
 function logIssueCounts(result: AnalysisResult): void {
@@ -42,10 +42,10 @@ function logIssueCounts(result: AnalysisResult): void {
 
 function displaySingleResult(result: AnalysisResult, options: AnalysisOptions): void {
   core.info(`\n📄 File: ${result.filePath}`);
+  // Risk is primary; numeric quality is layered on when available.
+  logRiskLabel(result);
   if (options.numericScoringEnabled && result.scores) {
     logNumericScores(result);
-  } else {
-    logRiskLabel(result);
   }
   logIssueCounts(result);
 }

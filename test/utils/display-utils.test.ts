@@ -61,7 +61,7 @@ describe("displayFilesToAnalyze", () => {
 });
 
 describe("displayResults", () => {
-  it("risk mode shows risk label, not score", () => {
+  it("risk mode shows risk label and no quality score", () => {
     const result = buildAnalysisResult({ issues: severities("high", "medium") });
     displayResults([result], buildAnalysisOptions({ numericScoringEnabled: false }));
     const lines = infoLines();
@@ -69,15 +69,29 @@ describe("displayResults", () => {
     expect(lines.every((l) => !l.includes("Quality Score"))).toBe(true);
   });
 
-  it("numeric mode shows quality score line", () => {
+  it("numeric mode shows BOTH risk label and quality score (layered)", () => {
     const result = buildAnalysisResult({
       scores: buildScores({ score: 78 }),
       issues: severities("low"),
     });
     displayResults([result], buildAnalysisOptions({ numericScoringEnabled: true }));
     const lines = infoLines();
+    expect(lines.some((l) => l.includes("Risk"))).toBe(true);
     expect(lines.some((l) => l.includes("Quality Score"))).toBe(true);
     expect(lines.some((l) => l.includes("78"))).toBe(true);
+    // Risk is primary — must appear before quality.
+    const riskIdx = lines.findIndex((l) => l.includes("Risk:"));
+    const qualityIdx = lines.findIndex((l) => l.includes("Quality Score"));
+    expect(riskIdx).toBeGreaterThan(-1);
+    expect(qualityIdx).toBeGreaterThan(riskIdx);
+  });
+
+  it("numeric mode with no scores payload still shows risk", () => {
+    const result = buildAnalysisResult({ scores: null, issues: severities("low") });
+    displayResults([result], buildAnalysisOptions({ numericScoringEnabled: true }));
+    const lines = infoLines();
+    expect(lines.some((l) => l.includes("Risk"))).toBe(true);
+    expect(lines.every((l) => !l.includes("Quality Score"))).toBe(true);
   });
 
   it("handles empty results array", () => {

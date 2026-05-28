@@ -12,7 +12,6 @@ import {
   IssueCounts,
 } from "../types/index.js";
 import { withRetry, logError } from "../utils/error-utils.js";
-import { getQualityStatus } from "../utils/score-utils.js";
 import { aggregateCounts, aggregateRisk, RISK_LABEL } from "../utils/issue-utils.js";
 import { isValidSHA } from "../utils/type-guards.js";
 
@@ -152,24 +151,21 @@ export async function updateCommitStatus(
     }
 
     const counts = aggregateCounts(results);
-    let state: "success" | "failure" | "error";
-    let description: string;
+    const risk = aggregateRisk(results);
+    const state: "success" | "failure" | "error" = riskToState(risk);
 
+    let qualitySegment = "";
     if (options.numericScoringEnabled) {
       const scores = results
         .map((r) => r.scores?.score)
         .filter((s): s is number => typeof s === "number");
-      const avg =
-        scores.length === 0
-          ? 0
-          : Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
-      state = getQualityStatus(avg);
-      description = `Quality ${Math.round(avg).toString()} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
-    } else {
-      const risk = aggregateRisk(results);
-      state = riskToState(risk);
-      description = `Risk ${RISK_LABEL[risk]} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
+      if (scores.length > 0) {
+        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+        qualitySegment = ` | Quality ${Math.round(avg).toString()}`;
+      }
     }
+
+    const description = `Risk ${RISK_LABEL[risk]}${qualitySegment} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
 
     const serverUrl = github.context.serverUrl || "https://github.com";
     const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${github.context.runId.toString()}`;

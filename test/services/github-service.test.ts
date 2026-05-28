@@ -164,7 +164,7 @@ describe("updateCommitStatus", () => {
     expect(octokit.rest.repos.createCommitStatus).not.toHaveBeenCalled();
   });
 
-  it("numeric mode includes quality score in description", async () => {
+  it("numeric mode keeps Risk leading and appends Quality", async () => {
     const octokit = makeOctokit();
     octokit.rest.repos.createCommitStatus.mockResolvedValue({});
     await updateCommitStatus(
@@ -179,13 +179,16 @@ describe("updateCommitStatus", () => {
       buildAnalysisOptions({ numericScoringEnabled: true }),
     );
     const call = octokit.rest.repos.createCommitStatus.mock.calls[0]?.[0] as
-      | { sha?: string; description?: string }
+      | { sha?: string; state?: string; description?: string }
       | undefined;
     expect(call?.sha).toBe("abc123def456");
+    // Risk is primary — drives the state — and leads the description.
+    expect(call?.state).toBe("error"); // high severity present
+    expect(call?.description).toMatch(/^Risk\s+High/);
     expect(call?.description).toMatch(/Quality\s+70/);
   });
 
-  it("risk mode leads with Risk label", async () => {
+  it("risk mode shows Risk only (no Quality segment)", async () => {
     const octokit = makeOctokit();
     octokit.rest.repos.createCommitStatus.mockResolvedValue({});
     await updateCommitStatus(
@@ -201,5 +204,6 @@ describe("updateCommitStatus", () => {
       | undefined;
     expect(call?.state).toBe("failure");
     expect(call?.description).toMatch(/Risk\s+Medium/);
+    expect(call?.description).not.toMatch(/Quality/);
   });
 });

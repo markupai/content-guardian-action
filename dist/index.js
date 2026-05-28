@@ -88211,13 +88211,6 @@ const QUALITY_EMOJIS = {
     GOOD: "🟡",
     POOR: "🔴",
 };
-function getQualityStatus(score) {
-    if (score >= QUALITY_THRESHOLDS.EXCELLENT)
-        return "success";
-    if (score >= QUALITY_THRESHOLDS.GOOD)
-        return "failure";
-    return "error";
-}
 function getQualityEmoji(score) {
     if (score >= QUALITY_THRESHOLDS.EXCELLENT)
         return QUALITY_EMOJIS.EXCELLENT;
@@ -88264,23 +88257,22 @@ function generateResultsTable(results, options, context) {
     if (results.length === 0) {
         return "No files were analyzed.";
     }
-    if (options.numericScoringEnabled) {
-        const header = `| File | Quality | Issues | Breakdown |
-|:-----|:-------:|:------:|:----------|`;
-        const rows = results.map((r) => {
-            const score = r.scores?.score;
-            const qualityCell = typeof score === "number"
-                ? `${getQualityEmoji(score)} ${Math.round(score).toString()}`
-                : "-";
-            return `| ${generateFileDisplayLink(r.filePath, context)} | ${qualityCell} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
-        });
-        return `${header}\n${rows.join("\n")}`;
-    }
-    const header = `| File | Risk | Issues | Breakdown |
+    // Risk is always the primary view. When the org has numeric scoring enabled,
+    // we append an additional Quality column rather than replacing risk.
+    const showQuality = options.numericScoringEnabled;
+    const header = showQuality
+        ? `| File | Risk | Issues | Breakdown | Quality |
+|:-----|:----:|:------:|:----------|:-------:|`
+        : `| File | Risk | Issues | Breakdown |
 |:-----|:----:|:------:|:----------|`;
     const rows = results.map((r) => {
         const risk = classifyRisk(r.issueCounts);
-        return `| ${generateFileDisplayLink(r.filePath, context)} | ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
+        const base = `| ${generateFileDisplayLink(r.filePath, context)} | ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
+        if (!showQuality)
+            return base;
+        const score = r.scores?.score;
+        const qualityCell = typeof score === "number" ? `${getQualityEmoji(score)} ${Math.round(score).toString()}` : "-";
+        return `${base} ${qualityCell} |`;
     });
     return `${header}\n${rows.join("\n")}`;
 }
@@ -88288,24 +88280,20 @@ function generateSummary(results, options) {
     if (results.length === 0)
         return "";
     const totals = aggregateCounts(results);
+    const risk = aggregateRisk(results);
+    const riskLine = `**Overall Risk:** ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]}`;
+    let qualityLine = "";
     if (options.numericScoringEnabled) {
         const summary = calculateScoreSummary(results);
-        const emoji = getQualityEmoji(summary.averageQualityScore);
-        return `
-## 📊 Summary
-
-**Overall Quality Score:** ${emoji} ${Math.round(summary.averageQualityScore).toString()}
-
-**Files Analyzed:** ${summary.totalFiles.toString()}
-
-**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})
-`;
+        if (summary.filesWithScores > 0) {
+            const emoji = getQualityEmoji(summary.averageQualityScore);
+            qualityLine = `\n\n**Overall Quality Score:** ${emoji} ${Math.round(summary.averageQualityScore).toString()}`;
+        }
     }
-    const risk = aggregateRisk(results);
     return `
 ## 📊 Summary
 
-**Overall Risk:** ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]}
+${riskLine}${qualityLine}
 
 **Files Analyzed:** ${results.length.toString()}
 
@@ -88344,13 +88332,10 @@ ${rows.join("\n\n")}
 `;
 }
 function generateFooter(options, eventType) {
-    const scoringMode = options.numericScoringEnabled
-        ? "Numeric scoring (0–100)"
-        : "Risk-based scoring";
     return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName} | Mode: ${scoringMode}*
+*Target: ${options.targetDisplayName}*
 *Event: ${eventType}*`;
 }
 function generateAnalysisContent(results, options, header, eventType, context) {
@@ -88975,23 +88960,19 @@ async function updateCommitStatus(octokit, owner, repo, sha, results, options) {
             return;
         }
         const counts = aggregateCounts(results);
-        let state;
-        let description;
+        const risk = aggregateRisk(results);
+        const state = riskToState(risk);
+        let qualitySegment = "";
         if (options.numericScoringEnabled) {
             const scores = results
                 .map((r) => r.scores?.score)
                 .filter((s) => typeof s === "number");
-            const avg = scores.length === 0
-                ? 0
-                : Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
-            state = getQualityStatus(avg);
-            description = `Quality ${Math.round(avg).toString()} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
+            if (scores.length > 0) {
+                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                qualitySegment = ` | Quality ${Math.round(avg).toString()}`;
+            }
         }
-        else {
-            const risk = aggregateRisk(results);
-            state = riskToState(risk);
-            description = `Risk ${RISK_LABEL[risk]} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
-        }
+        const description = `Risk ${RISK_LABEL[risk]}${qualitySegment} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
         const serverUrl = context.serverUrl || "https://github.com";
         const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${context.runId.toString()}`;
         info(`📊 Commit status: ${state} - ${description}`);
@@ -89055,6 +89036,10 @@ function displayEventInfo(eventInfo) {
         }
     }
 }
+function logRiskLabel(result) {
+    const risk = classifyRisk(result.issueCounts);
+    info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
+}
 function logNumericScores(result) {
     if (!result.scores)
         return;
@@ -89063,21 +89048,16 @@ function logNumericScores(result) {
         info(`   • ${goal.displayName}: ${goal.score.toString()}`);
     }
 }
-function logRiskLabel(result) {
-    const risk = classifyRisk(result.issueCounts);
-    info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
-}
 function logIssueCounts(result) {
     const { total, high, medium, low } = result.issueCounts;
     info(`⚠️  Issues: ${total.toString()} (H:${high.toString()} M:${medium.toString()} L:${low.toString()})`);
 }
 function displaySingleResult(result, options) {
     info(`\n📄 File: ${result.filePath}`);
+    // Risk is primary; numeric quality is layered on when available.
+    logRiskLabel(result);
     if (options.numericScoringEnabled && result.scores) {
         logNumericScores(result);
-    }
-    else {
-        logRiskLabel(result);
     }
     logIssueCounts(result);
 }
