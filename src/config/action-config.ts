@@ -12,6 +12,7 @@ export function getActionConfig(): ActionConfig {
   // `target` is optional: when omitted, the action falls back to the org's
   // default target (the one flagged `is_default: true` in /style-agent/targets).
   const target = getOptionalInput(INPUT_NAMES.TARGET, "TARGET");
+  const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
   const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
   const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
@@ -20,10 +21,30 @@ export function getActionConfig(): ActionConfig {
     apiToken,
     githubToken,
     target,
+    paths,
     addCommitStatus,
     addReviewComments,
     strictMode,
   };
+}
+
+/**
+ * Parse the `paths` input into a list of repo-relative paths. Accepts both
+ * comma- and newline-separated input so the YAML can be written either as
+ * `paths: README.md, docs/intro.md` or as a multi-line block:
+ *
+ *   paths: |
+ *     README.md
+ *     docs/intro.md
+ *
+ * Empty entries (blank lines, leading/trailing commas) are dropped.
+ */
+function parsePaths(raw: string): string[] {
+  if (!raw) return [];
+  return raw
+    .split(/[\n,]+/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
 }
 
 function getRequiredInput(inputName: string, envVarName: string): string {
@@ -66,6 +87,7 @@ export function logConfiguration(config: ActionConfig): void {
   core.info(`  Target: ${config.target || "(org default)"}`);
   core.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
   core.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
+  core.info(`  Paths Filter: ${config.paths.length > 0 ? config.paths.join(", ") : "(none)"}`);
   core.info(`  Commit Status: ${config.addCommitStatus ? "enabled" : "disabled"}`);
   core.info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
   core.info(`  Strict Mode: ${config.strictMode ? "on" : "off"}`);

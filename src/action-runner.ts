@@ -76,24 +76,37 @@ export async function runAction(): Promise<void> {
     displaySectionHeader("🔍 Discovering Files");
     const allFiles = await strategy.getFilesToAnalyze();
     const supportedFiles = filterSupportedFiles(allFiles);
-    eventInfo.filesCount = supportedFiles.length;
     core.info(
       `📊 Found ${supportedFiles.length.toString()} supported files out of ${allFiles.length.toString()} total files`,
     );
 
-    if (supportedFiles.length === 0) {
+    // Apply the user-supplied `paths` whitelist last so it intersects with
+    // whatever the event-specific strategy surfaced. Empty array = no
+    // filtering.
+    const filteredFiles =
+      config.paths.length === 0
+        ? supportedFiles
+        : supportedFiles.filter((f) => config.paths.includes(f));
+    if (config.paths.length > 0) {
+      core.info(
+        `📌 Paths filter active (${config.paths.length.toString()} pattern(s)); ${filteredFiles.length.toString()}/${supportedFiles.length.toString()} files match`,
+      );
+    }
+    eventInfo.filesCount = filteredFiles.length;
+
+    if (filteredFiles.length === 0) {
       core.info("No supported files found to analyze.");
       setOutputs(eventInfo, []);
       return;
     }
 
-    displayFilesToAnalyze(supportedFiles);
+    displayFilesToAnalyze(filteredFiles);
 
     // Analyze
     displaySectionHeader("🔍 Running Analysis");
     const results = await analyzeFiles(
       config.apiToken,
-      supportedFiles,
+      filteredFiles,
       analysisOptions,
       readFileContent,
     );
@@ -108,7 +121,7 @@ export async function runAction(): Promise<void> {
 
     await handlePostAnalysisActions(eventInfo, results, config, analysisOptions);
 
-    if (config.strictMode && results.length !== supportedFiles.length) {
+    if (config.strictMode && results.length !== filteredFiles.length) {
       core.setFailed("Some files were not analyzed.");
       return;
     }

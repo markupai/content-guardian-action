@@ -201,4 +201,31 @@ describe("runAction — edge cases", () => {
       expect.stringContaining("Required input 'markup_ai_api_key'"),
     );
   });
+
+  it("paths input narrows analysis to the listed files", async () => {
+    mockCore.getInput.mockImplementation(defaultInputMock({ paths: "README.md" }));
+    const allDiscovered = ["README.md", "src/main.ts", "docs/api.md", "CHANGELOG.md"];
+    mockStrategy.getFilesToAnalyze.mockResolvedValue(allDiscovered);
+    apiServiceMocks.analyzeFiles.mockImplementation((_key, files: unknown) => {
+      return Promise.resolve(buildResults(files as string[]));
+    });
+
+    await runAction();
+
+    // Only README.md should have been passed to analyzeFiles.
+    expect(apiServiceMocks.analyzeFiles).toHaveBeenCalledTimes(1);
+    const filesArg = apiServiceMocks.analyzeFiles.mock.calls[0]?.[1] as string[];
+    expect(filesArg).toEqual(["README.md"]);
+    expect(mockCore.setOutput).toHaveBeenCalledWith("files-analyzed", "1");
+  });
+
+  it("paths input that matches nothing short-circuits with files-analyzed=0", async () => {
+    mockCore.getInput.mockImplementation(defaultInputMock({ paths: "DOES_NOT_EXIST.md" }));
+    mockStrategy.getFilesToAnalyze.mockResolvedValue(["README.md", "docs/api.md"]);
+
+    await runAction();
+
+    expect(apiServiceMocks.analyzeFiles).not.toHaveBeenCalled();
+    expect(mockCore.setOutput).toHaveBeenCalledWith("files-analyzed", "0");
+  });
 });

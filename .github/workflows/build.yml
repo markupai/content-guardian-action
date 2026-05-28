@@ -46,3 +46,26 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # End-to-end test of the action against itself. Scoped via the `paths`
+  # input to README.md so it touches one file at most per run — keeps PR
+  # noise low while still exercising the real wire path against the live
+  # Markup AI API.
+  github-action-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Test Local Action
+        uses: ./
+        with:
+          paths: README.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY_PROD }}

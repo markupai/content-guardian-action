@@ -18,7 +18,14 @@ inputs:
       omitted, the action uses the organization's default target (the one
       flagged `is_default: true` in /style-agent/targets)."
     required: false
-  github_token:
+  paths:
+    description: "Optional whitelist of repo-relative paths to analyze. When
+      set, the discovered file list is intersected with this whitelist; only
+      matching files are sent to the style agent. Accepts comma- or
+      newline-separated values, e.g. `README.md` or a multi-line YAML block
+      listing several paths. Empty means analyze every discovered file
+      (default)."
+    required: false
     description: GitHub token for API access (can also be provided via the GITHUB_TOKEN
       environment variable).
     required: true

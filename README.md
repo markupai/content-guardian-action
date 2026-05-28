@@ -133,14 +133,15 @@ Either inputs or env vars work; inputs take precedence when both are set.
 
 ## Inputs
 
-| Input                 | Description                                                                                                | Required | Default     |
-| --------------------- | ---------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| `markup_ai_api_key`   | Markup AI API key (or `MARKUP_AI_API_KEY` env var)                                                         | Yes      | -           |
-| `github_token`        | GitHub token (or `GITHUB_TOKEN` env var)                                                                   | Yes      | -           |
-| `target`              | Style guide / target — target ID or display_name (case-insensitive). Omit to use the org's default target. | No       | org default |
-| `add_commit_status`   | Add commit status updates for push events                                                                  | No       | `true`      |
-| `add_review_comments` | Add PR review comments for issues                                                                          | No       | `true`      |
-| `strict_mode`         | Fail the action if any file fails analysis                                                                 | No       | `false`     |
+| Input                 | Description                                                                                                                                                        | Required | Default     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ----------- |
+| `markup_ai_api_key`   | Markup AI API key (or `MARKUP_AI_API_KEY` env var)                                                                                                                 | Yes      | -           |
+| `github_token`        | GitHub token (or `GITHUB_TOKEN` env var)                                                                                                                           | Yes      | -           |
+| `target`              | Style guide / target — target ID or display_name (case-insensitive). Omit to use the org's default target.                                                         | No       | org default |
+| `paths`               | Comma- or newline-separated repo-relative paths. When set, intersects with the discovered files; only matches are analyzed. Empty = analyze everything discovered. | No       | (none)      |
+| `add_commit_status`   | Add commit status updates for push events                                                                                                                          | No       | `true`      |
+| `add_review_comments` | Add PR review comments for issues                                                                                                                                  | No       | `true`      |
+| `strict_mode`         | Fail the action if any file fails analysis                                                                                                                         | No       | `false`     |
 
 ## Outputs
 
@@ -242,6 +243,43 @@ either the `id` or the `display_name`:
 curl -H "Authorization: Bearer $MARKUP_AI_API_KEY" \
   https://api.markup.ai/style-agent/targets | jq '.[] | {id, display_name, is_default}'
 ```
+
+## Narrowing analysis with `paths`
+
+By default, the action analyzes every supported file the event surfaces (every
+file modified in the push, every file changed in the PR, or every supported
+file in the repo for `workflow_dispatch` / `schedule`). When you want a
+narrower scope, set the `paths` input:
+
+```yaml
+- uses: markupai/content-guardian-action@v2
+  with:
+    paths: README.md
+```
+
+Or multiple files:
+
+```yaml
+- uses: markupai/content-guardian-action@v2
+  with:
+    paths: |
+      README.md
+      docs/intro.md
+      CONTRIBUTING.md
+```
+
+Behaviour:
+
+- Empty / not set → no filtering (current default behaviour).
+- Set → the discovered file list is intersected with the whitelist before any
+  files are sent to the style agent. If none of the discovered files match,
+  the run short-circuits with `files-analyzed=0`.
+- Paths are matched exactly (after both sides are normalized to repo-relative
+  posix paths). No globs today; pass each file you want to gate on.
+
+Typical use: drop a `paths: README.md` on the action's own self-test
+workflow so the build matrix exercises the wire path on every PR without
+spamming a 20-file analysis result.
 
 ## Strict mode
 

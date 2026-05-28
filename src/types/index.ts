@@ -149,6 +149,10 @@ export interface ActionConfig {
   apiToken: string;
   githubToken: string;
   target: string;
+  /** Optional whitelist of repo-relative paths. When non-empty, the
+   * discovered file set is intersected with this list before analysis.
+   * Empty array means "no filtering — analyze everything discovered". */
+  paths: string[];
   addCommitStatus: boolean;
   addReviewComments: boolean;
   strictMode: boolean;

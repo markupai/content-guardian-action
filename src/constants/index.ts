@@ -40,6 +40,7 @@ export const INPUT_NAMES = {
   ADD_COMMIT_STATUS: "add_commit_status",
   ADD_REVIEW_COMMENTS: "add_review_comments",
   STRICT_MODE: "strict_mode",
+  PATHS: "paths",
 } as const;
 
 export const ENV_VARS = {

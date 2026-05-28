@@ -25,6 +25,7 @@ function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
     apiToken: "token",
     githubToken: "ghtok",
     target: "",
+    paths: [],
     addCommitStatus: true,
     addReviewComments: true,
     strictMode: false,
@@ -83,10 +84,34 @@ describe("getActionConfig", () => {
       apiToken: "tok",
       githubToken: "gh",
       target: "Marketing Voice",
+      paths: [],
       addCommitStatus: true,
       addReviewComments: true,
       strictMode: false,
     });
+  });
+
+  it("parses comma-separated paths input", () => {
+    inputs({
+      markup_ai_api_key: "tok",
+      github_token: "gh",
+      paths: "README.md, docs/intro.md , ",
+    });
+    expect(getActionConfig().paths).toEqual(["README.md", "docs/intro.md"]);
+  });
+
+  it("parses newline-separated paths input", () => {
+    inputs({
+      markup_ai_api_key: "tok",
+      github_token: "gh",
+      paths: "README.md\ndocs/intro.md\n\n",
+    });
+    expect(getActionConfig().paths).toEqual(["README.md", "docs/intro.md"]);
+  });
+
+  it("returns empty paths array when no paths input is given", () => {
+    inputs({ markup_ai_api_key: "tok", github_token: "gh" });
+    expect(getActionConfig().paths).toEqual([]);
   });
 
   it("falls back to env vars when inputs are empty", () => {
