@@ -88490,7 +88490,7 @@ function uniqueAgentsAcrossResults(results) {
 }
 function generateFooter(results, options, eventType) {
     const agents = uniqueAgentsAcrossResults(results);
-    const agentLine = agents.length > 0 ? `\n*Detected by: ${agents.join(", ")}*` : "";
+    const agentLine = agents.length > 0 ? `\n*Agents run: ${agents.join(", ")}*` : "";
     return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*

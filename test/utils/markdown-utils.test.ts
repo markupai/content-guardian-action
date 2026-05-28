@@ -165,7 +165,7 @@ describe("generateFooter", () => {
     expect(generateFooter([], buildAnalysisOptions(), "pull_request")).toMatch(/pull_request/);
   });
 
-  it("includes a 'Detected by' line listing the agents that produced issues", () => {
+  it("includes an 'Agents run' line listing the agents that produced issues", () => {
     const result = buildAnalysisResult({
       issues: [
         buildAnalysisIssueFromHelper({ agent: "style_agent" }),
@@ -173,16 +173,16 @@ describe("generateFooter", () => {
       ],
     });
     const footer = generateFooter([result], buildAnalysisOptions(), "push");
-    expect(footer).toMatch(/Detected by:.*Style Agent/);
+    expect(footer).toMatch(/Agents run:.*Style Agent/);
     expect(footer).toMatch(/Terminology/);
   });
 
-  it("omits the 'Detected by' line when no issues carry an agent tag", () => {
+  it("omits the 'Agents run' line when no issues carry an agent tag", () => {
     const result = buildAnalysisResult({
       issues: [buildAnalysisIssueFromHelper({ agent: undefined })],
     });
     const footer = generateFooter([result], buildAnalysisOptions(), "push");
-    expect(footer).not.toMatch(/Detected by:/);
+    expect(footer).not.toMatch(/Agents run:/);
   });
 });
 
