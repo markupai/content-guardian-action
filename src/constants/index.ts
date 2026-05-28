@@ -41,6 +41,7 @@ export const INPUT_NAMES = {
   ADD_REVIEW_COMMENTS: "add_review_comments",
   STRICT_MODE: "strict_mode",
   PATHS: "paths",
+  DRY_RUN: "dry_run",
 } as const;
 
 export const ENV_VARS = {

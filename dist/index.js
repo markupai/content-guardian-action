@@ -87663,6 +87663,7 @@ const INPUT_NAMES = {
     ADD_REVIEW_COMMENTS: "add_review_comments",
     STRICT_MODE: "strict_mode",
     PATHS: "paths",
+    DRY_RUN: "dry_run",
 };
 const ENV_VARS = {
     MARKUP_AI_API_KEY: "MARKUP_AI_API_KEY",
@@ -87700,6 +87701,7 @@ function getActionConfig() {
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
     const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
+    const dryRun = getBooleanInput(INPUT_NAMES.DRY_RUN, false);
     return {
         apiToken,
         githubToken,
@@ -87708,6 +87710,7 @@ function getActionConfig() {
         addCommitStatus,
         addReviewComments,
         strictMode,
+        dryRun,
     };
 }
 /**
@@ -87767,6 +87770,7 @@ function logConfiguration(config) {
     info(`  Commit Status: ${config.addCommitStatus ? "enabled" : "disabled"}`);
     info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
     info(`  Strict Mode: ${config.strictMode ? "on" : "off"}`);
+    info(`  Dry Run: ${config.dryRun ? "on (no GitHub writes)" : "off"}`);
 }
 
 /**
@@ -89311,9 +89315,36 @@ async function handlePullRequestEvent(octokit, owner, repo, results, options, ad
         error(`Failed to create PR comment: ${String(error$1)}`);
     }
 }
+/**
+ * Dry-run short-circuit. Renders the markdown that would have been posted
+ * (summary comment for PRs / job summary for manual+scheduled) and logs it
+ * to the run output so reviewers can inspect the would-be result without
+ * any GitHub-side writes happening.
+ */
+function logDryRun(eventInfo, results, options) {
+    displaySectionHeader("🧪 Dry Run");
+    info("Dry-run mode is enabled — skipping commit status updates, PR comments, inline reviews, and job summary writes.");
+    const { owner, repo } = context.repo;
+    const context$1 = {
+        owner,
+        repo,
+        ref: context.ref,
+        baseUrl: new URL(context.serverUrl),
+        runId: context.runId,
+    };
+    const header = `## 🔍 Markup AI Analysis Results (dry run)
+
+This is the markdown that would have been posted for **${eventInfo.eventType}** if dry_run were off.`;
+    const markdown = generateAnalysisContent(results, options, header, eventInfo.eventType, context$1);
+    info(`Rendered preview:\n${markdown}`);
+}
 async function handlePostAnalysisActions(eventInfo, results, config, options) {
     if (results.length === 0) {
         info("No results to process for post-analysis actions.");
+        return;
+    }
+    if (config.dryRun) {
+        logDryRun(eventInfo, results, options);
         return;
     }
     const octokit = createGitHubClient(config.githubToken);

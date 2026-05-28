@@ -14,7 +14,7 @@ import {
 } from "./pr-comment-service.js";
 import { createGitHubClient, updateCommitStatus } from "./github-service.js";
 import { createJobSummary } from "./job-summary-service.js";
-import { RepositoryContext } from "../utils/markdown-utils.js";
+import { generateAnalysisContent, RepositoryContext } from "../utils/markdown-utils.js";
 import { displaySectionHeader } from "../utils/display-utils.js";
 
 async function handlePushEvent(
@@ -101,14 +101,56 @@ async function handlePullRequestEvent(
   }
 }
 
+/**
+ * Dry-run short-circuit. Renders the markdown that would have been posted
+ * (summary comment for PRs / job summary for manual+scheduled) and logs it
+ * to the run output so reviewers can inspect the would-be result without
+ * any GitHub-side writes happening.
+ */
+function logDryRun(
+  eventInfo: EventInfo,
+  results: AnalysisResult[],
+  options: AnalysisOptions,
+): void {
+  displaySectionHeader("🧪 Dry Run");
+  core.info(
+    "Dry-run mode is enabled — skipping commit status updates, PR comments, inline reviews, and job summary writes.",
+  );
+  const { owner, repo } = github.context.repo;
+  const context: RepositoryContext = {
+    owner,
+    repo,
+    ref: github.context.ref,
+    baseUrl: new URL(github.context.serverUrl),
+    runId: github.context.runId,
+  };
+  const header = `## 🔍 Markup AI Analysis Results (dry run)
+
+This is the markdown that would have been posted for **${eventInfo.eventType}** if dry_run were off.`;
+  const markdown = generateAnalysisContent(results, options, header, eventInfo.eventType, context);
+  core.info(`Rendered preview:\n${markdown}`);
+}
+
+export interface PostAnalysisConfig {
+  githubToken: string;
+  addCommitStatus: boolean;
+  addReviewComments: boolean;
+  dryRun: boolean;
+}
+
 export async function handlePostAnalysisActions(
   eventInfo: EventInfo,
   results: AnalysisResult[],
-  config: { githubToken: string; addCommitStatus: boolean; addReviewComments: boolean },
+  config: PostAnalysisConfig,
   options: AnalysisOptions,
 ): Promise<void> {
   if (results.length === 0) {
     core.info("No results to process for post-analysis actions.");
+    return;
+  }
+
+  if (config.dryRun) {
+    logDryRun(eventInfo, results, options);
     return;
   }
 

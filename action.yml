@@ -42,6 +42,14 @@ inputs:
     description: Fail the action if any file fails analysis (default false).
     required: false
     default: "false"
+  dry_run:
+    description: "When true, the action performs the full analysis and emits
+      `outputs.results` JSON as usual, but skips every write to GitHub: no
+      PR comments, no inline reviews, no commit status, no job summary. The
+      rendered markdown is logged so the result is observable. Useful for
+      self-testing the action without polluting a PR."
+    required: false
+    default: "false"
 
 outputs:
   event-type:

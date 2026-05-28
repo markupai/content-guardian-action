@@ -46,7 +46,12 @@ import { EVENT_TYPES } from "../../src/constants/index.js";
 const { handlePostAnalysisActions } = await import("../../src/services/post-analysis-service.js");
 
 const mockOctokit = { rest: {} };
-const config = { githubToken: "tok", addCommitStatus: true, addReviewComments: true };
+const config = {
+  githubToken: "tok",
+  addCommitStatus: true,
+  addReviewComments: true,
+  dryRun: false,
+};
 const options = buildAnalysisOptions();
 const results = [buildAnalysisResult()];
 
@@ -163,5 +168,59 @@ describe("handlePostAnalysisActions", () => {
     expect(mockUpdateCommitStatus).not.toHaveBeenCalled();
     expect(mockCreateJobSummary).not.toHaveBeenCalled();
     expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
+  });
+
+  describe("dryRun: true", () => {
+    const dryConfig = { ...config, dryRun: true };
+
+    it("skips commit status on push events", async () => {
+      mockIsPullRequestEvent.mockReturnValue(false);
+      await handlePostAnalysisActions(
+        { eventType: EVENT_TYPES.PUSH, filesCount: 1, description: "" },
+        results,
+        dryConfig,
+        options,
+      );
+      expect(mockCreateGitHubClient).not.toHaveBeenCalled();
+      expect(mockUpdateCommitStatus).not.toHaveBeenCalled();
+    });
+
+    it("skips PR comment + inline reviews on pull_request events", async () => {
+      mockIsPullRequestEvent.mockReturnValue(true);
+      mockGetPRNumber.mockReturnValue(42);
+      await handlePostAnalysisActions(
+        { eventType: EVENT_TYPES.PULL_REQUEST, filesCount: 1, description: "" },
+        results,
+        dryConfig,
+        options,
+      );
+      expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
+      expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
+    });
+
+    it("skips the job summary on workflow_dispatch/schedule events", async () => {
+      await handlePostAnalysisActions(
+        { eventType: EVENT_TYPES.WORKFLOW_DISPATCH, filesCount: 1, description: "" },
+        results,
+        dryConfig,
+        options,
+      );
+      expect(mockCreateJobSummary).not.toHaveBeenCalled();
+    });
+
+    it("still emits a dry-run section header so the run is observable", async () => {
+      const coreModule = await import("@actions/core");
+      await handlePostAnalysisActions(
+        { eventType: EVENT_TYPES.PULL_REQUEST, filesCount: 1, description: "" },
+        results,
+        dryConfig,
+        options,
+      );
+      const messages = (coreModule.info as unknown as { mock: { calls: unknown[][] } }).mock.calls
+        .map((args) => args[0] as string)
+        .filter((msg): msg is string => typeof msg === "string");
+      expect(messages.some((m) => m.includes("Dry Run"))).toBe(true);
+      expect(messages.some((m) => m.includes("Dry-run mode"))).toBe(true);
+    });
   });
 });

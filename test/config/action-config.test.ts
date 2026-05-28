@@ -29,6 +29,7 @@ function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
     addCommitStatus: true,
     addReviewComments: true,
     strictMode: false,
+    dryRun: false,
     ...overrides,
   };
 }
@@ -88,6 +89,7 @@ describe("getActionConfig", () => {
       addCommitStatus: true,
       addReviewComments: true,
       strictMode: false,
+      dryRun: false,
     });
   });
 

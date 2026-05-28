@@ -65,6 +65,15 @@ jobs:
       - name: Test Local Action
         uses: ./
         with:
+          # `dry_run: true` runs the full analysis (config, target resolve,
+          # /run, polling) and emits `outputs.results` JSON to the run log,
+          # but skips every GitHub-side write — no PR comments, no inline
+          # reviews, no commit status. Keeps this job pollution-free while
+          # still exercising the live wire path.
+          # `paths: README.md` and `add_review_comments: false` are redundant
+          # under dry-run but kept as belt-and-suspenders.
+          dry_run: "true"
+          add_review_comments: "false"
           paths: README.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
