@@ -88312,6 +88312,37 @@ function generateSummary(results, options) {
 **Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})
 `;
 }
+/**
+ * Per-goal score breakdown, rendered inside a `<details>` block so the
+ * summary table stays compact. Only emitted in numeric mode and only when at
+ * least one file has `scoresByGoal` data; otherwise returns an empty string
+ * so the caller can interpolate it unconditionally.
+ */
+function generatePerGoalDetails(results, options) {
+    if (!options.numericScoringEnabled)
+        return "";
+    const rows = results
+        .map((r) => {
+        const goals = r.scores?.scoresByGoal ?? [];
+        if (goals.length === 0)
+            return null;
+        const parts = goals
+            .map((g) => `${g.displayName} ${Math.round(g.score).toString()}`)
+            .join(" · ");
+        return `**${r.filePath}** — ${parts}`;
+    })
+        .filter((line) => line !== null);
+    if (rows.length === 0)
+        return "";
+    return `
+<details>
+<summary>Per-goal breakdown</summary>
+
+${rows.join("\n\n")}
+
+</details>
+`;
+}
 function generateFooter(options, eventType) {
     const scoringMode = options.numericScoringEnabled
         ? "Numeric scoring (0–100)"
@@ -88326,7 +88357,7 @@ function generateAnalysisContent(results, options, header, eventType, context) {
     return `${header}
 
 ${generateResultsTable(results, options, context)}
-
+${generatePerGoalDetails(results, options)}
 ${generateSummary(results, options)}
 
 ${generateFooter(options, eventType)}

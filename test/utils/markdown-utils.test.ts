@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   generateAnalysisContent,
   generateFooter,
+  generatePerGoalDetails,
   generateResultsTable,
   generateSummary,
   RepositoryContext,
@@ -116,6 +117,81 @@ describe("generateFooter", () => {
   });
 });
 
+describe("generatePerGoalDetails", () => {
+  it("returns empty string in risk mode", () => {
+    const result = buildAnalysisResult({
+      scores: buildScores({
+        score: 80,
+        scoresByGoal: [{ id: "g1", displayName: "Clarity", score: 78, count: 2 }],
+      }),
+    });
+    expect(
+      generatePerGoalDetails([result], buildAnalysisOptions({ numericScoringEnabled: false })),
+    ).toBe("");
+  });
+
+  it("returns empty string in numeric mode when no scoresByGoal data is present", () => {
+    const result = buildAnalysisResult({ scores: buildScores({ score: 80 }) });
+    expect(
+      generatePerGoalDetails([result], buildAnalysisOptions({ numericScoringEnabled: true })),
+    ).toBe("");
+  });
+
+  it("renders a <details> block with per-file per-goal scores when present", () => {
+    const results = [
+      buildAnalysisResult({
+        filePath: "README.md",
+        scores: buildScores({
+          score: 74,
+          scoresByGoal: [
+            { id: "clarity", displayName: "Clarity", score: 78.4, count: 3 },
+            { id: "grammar", displayName: "Grammar", score: 91, count: 1 },
+            { id: "tone", displayName: "Tone", score: 62, count: 4 },
+          ],
+        }),
+      }),
+      buildAnalysisResult({
+        filePath: "docs/api.md",
+        scores: buildScores({
+          score: 52,
+          scoresByGoal: [
+            { id: "clarity", displayName: "Clarity", score: 60, count: 6 },
+            { id: "grammar", displayName: "Grammar", score: 55, count: 5 },
+          ],
+        }),
+      }),
+    ];
+    const output = generatePerGoalDetails(
+      results,
+      buildAnalysisOptions({ numericScoringEnabled: true }),
+    );
+    expect(output).toMatch(/<details>/);
+    expect(output).toMatch(/<\/details>/);
+    expect(output).toMatch(/Per-goal breakdown/);
+    expect(output).toMatch(/\*\*README.md\*\* — Clarity 78 · Grammar 91 · Tone 62/);
+    expect(output).toMatch(/\*\*docs\/api.md\*\* — Clarity 60 · Grammar 55/);
+  });
+
+  it("skips files with no scoresByGoal but still renders the block when at least one file has data", () => {
+    const results = [
+      buildAnalysisResult({ filePath: "a.md", scores: buildScores({ score: 80 }) }),
+      buildAnalysisResult({
+        filePath: "b.md",
+        scores: buildScores({
+          score: 70,
+          scoresByGoal: [{ id: "g", displayName: "Clarity", score: 70, count: 1 }],
+        }),
+      }),
+    ];
+    const output = generatePerGoalDetails(
+      results,
+      buildAnalysisOptions({ numericScoringEnabled: true }),
+    );
+    expect(output).toMatch(/\*\*b.md\*\*/);
+    expect(output).not.toMatch(/\*\*a.md\*\*/);
+  });
+});
+
 describe("generateAnalysisContent", () => {
   it("wraps table + summary + footer below a header", () => {
     const content = generateAnalysisContent(
@@ -128,5 +204,28 @@ describe("generateAnalysisContent", () => {
     expect(content).toMatch(/My Header/);
     expect(content).toMatch(/Overall Risk/);
     expect(content).toMatch(/Risk-based/);
+  });
+
+  it("inserts the per-goal details between table and summary in numeric mode", () => {
+    const result = buildAnalysisResult({
+      filePath: "README.md",
+      scores: buildScores({
+        score: 80,
+        scoresByGoal: [{ id: "c", displayName: "Clarity", score: 80, count: 1 }],
+      }),
+    });
+    const content = generateAnalysisContent(
+      [result],
+      buildAnalysisOptions({ numericScoringEnabled: true }),
+      "## Header",
+      "pull_request",
+      repo,
+    );
+    const tableIdx = content.indexOf("| Quality |");
+    const detailsIdx = content.indexOf("<details>");
+    const summaryIdx = content.indexOf("Overall Quality Score");
+    expect(tableIdx).toBeGreaterThan(-1);
+    expect(detailsIdx).toBeGreaterThan(tableIdx);
+    expect(summaryIdx).toBeGreaterThan(detailsIdx);
   });
 });
