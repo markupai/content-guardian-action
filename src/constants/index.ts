@@ -29,6 +29,10 @@ export const POLL_TIMEOUT_MS = 300_000;
  * endpoint is rate limited (10 RPM by default). */
 export const MAX_CONCURRENT_FILES = 3;
 
+/** Hard cap on the number of inline review comments the action will post on
+ * one PR run. Above this, the PR summary surfaces a "N more" indicator. */
+export const MAX_INLINE_REVIEW_COMMENTS = 50;
+
 export const INPUT_NAMES = {
   MARKUP_AI_API_KEY: "markup_ai_api_key",
   TARGET: "target",

@@ -258,6 +258,10 @@ describe("createPRReviewComments — integration", () => {
     expect(call?.event).toBe("COMMENT");
     expect(call?.comments?.[0]).toMatchObject({ path: "README.md", line: 3, side: "RIGHT" });
     expect(call?.comments?.[0].body).toContain(REVIEW_MARKER);
+    // Header attribution: single-agent issue ⇒ agent named in the header.
+    expect(call?.comments?.[0].body).toMatch(/\*\*Markup AI \/ Style Agent\*\* detected issues:/);
+    // Single agent ⇒ no per-bullet `[Agent]` prefix needed.
+    expect(call?.comments?.[0].body).not.toMatch(/\[Style Agent\]/);
     expect(octokit.rest.pulls.updateReviewComment).not.toHaveBeenCalled();
     expect(octokit.rest.pulls.deleteReviewComment).not.toHaveBeenCalled();
   });
@@ -409,6 +413,52 @@ describe("createPRReviewComments — integration", () => {
     expect(octokit.rest.pulls.createReview).not.toHaveBeenCalled();
     expect(octokit.rest.pulls.updateReviewComment).not.toHaveBeenCalled();
     expect(octokit.rest.pulls.deleteReviewComment).not.toHaveBeenCalled();
+  });
+
+  it("multi-agent at the same line: header lists all, per-bullet [Agent] prefix appears", async () => {
+    const octokit = makeOctokit();
+    const result = buildAnalysisResult({
+      filePath: "README.md",
+      issues: [
+        buildAnalysisIssue({
+          line: 3,
+          column: 0,
+          lineText: "Sample text.",
+          issue: buildIssue({
+            agent: "style_agent",
+            severity: "high",
+            category: "grammar",
+            guideline_name: "subject-verb",
+            position: { start: 0, end: 6, text: "Sample" },
+          }),
+        }),
+        buildAnalysisIssue({
+          line: 3,
+          column: 0,
+          lineText: "Sample text.",
+          issue: buildIssue({
+            agent: "terminology",
+            severity: "medium",
+            category: "term",
+            guideline_name: "preferred-term",
+            position: { start: 7, end: 11, text: "text" },
+          }),
+        }),
+      ],
+    });
+    const { payload } = commentData(octokit, [result]);
+    await createPRReviewComments(
+      octokit as unknown as Parameters<typeof createPRReviewComments>[0],
+      payload,
+    );
+    const body = (
+      octokit.rest.pulls.createReview.mock.calls[0]?.[0] as
+        | { comments?: { body: string }[] }
+        | undefined
+    )?.comments?.[0].body;
+    expect(body).toMatch(/\*\*Markup AI \/ Style Agent \+ Terminology\*\* detected issues:/);
+    expect(body).toMatch(/\[Style Agent\]/);
+    expect(body).toMatch(/\[Terminology\]/);
   });
 
   it("falls back to per-comment posting on 422 from createReview", async () => {

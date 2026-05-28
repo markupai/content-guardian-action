@@ -4,7 +4,7 @@
 
 import * as core from "@actions/core";
 import { ActionConfig } from "../types/index.js";
-import { INPUT_NAMES, ENV_VARS, ERROR_MESSAGES } from "../constants/index.js";
+import { INPUT_NAMES, ENV_VARS } from "../constants/index.js";
 
 export function getActionConfig(): ActionConfig {
   const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
@@ -49,14 +49,16 @@ function getBooleanInput(inputName: string, defaultValue: boolean): boolean {
   return value.toLowerCase() === "true";
 }
 
+/**
+ * No-op kept for API symmetry with `getActionConfig` / `logConfiguration`.
+ * All validation happens at input-read time inside `getActionConfig`
+ * (`getRequiredInput` throws for missing api token / github token); `target`
+ * is optional. The runner still calls this so future invariants have a
+ * natural home.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function validateConfig(config: ActionConfig): void {
-  if (!config.apiToken) {
-    throw new Error(ERROR_MESSAGES.API_TOKEN_REQUIRED);
-  }
-  if (!config.githubToken) {
-    core.warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
-  }
-  // `target` is optional — empty means "use the org's default target".
+  // intentionally empty
 }
 
 export function logConfiguration(config: ActionConfig): void {

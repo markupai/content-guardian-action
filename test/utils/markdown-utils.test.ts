@@ -8,11 +8,17 @@ import {
   RepositoryContext,
 } from "../../src/utils/markdown-utils.js";
 import {
+  buildAnalysisIssue,
   buildAnalysisOptions,
   buildAnalysisResult,
+  buildIssue,
   buildScores,
   severities,
 } from "../test-helpers/scores.js";
+
+function buildAnalysisIssueFromHelper(overrides: { agent?: string }) {
+  return buildAnalysisIssue({ issue: buildIssue({ agent: overrides.agent }) });
+}
 
 const repo: RepositoryContext = {
   owner: "octo",
@@ -137,8 +143,12 @@ describe("generateSummary", () => {
 
 describe("generateFooter", () => {
   it("does not include scoring-mode wording (Mode line was removed)", () => {
-    const numeric = generateFooter(buildAnalysisOptions({ numericScoringEnabled: true }), "push");
-    const risk = generateFooter(buildAnalysisOptions({ numericScoringEnabled: false }), "push");
+    const numeric = generateFooter(
+      [],
+      buildAnalysisOptions({ numericScoringEnabled: true }),
+      "push",
+    );
+    const risk = generateFooter([], buildAnalysisOptions({ numericScoringEnabled: false }), "push");
     expect(numeric).not.toMatch(/Mode:/);
     expect(numeric).not.toMatch(/Numeric scoring/);
     expect(risk).not.toMatch(/Mode:/);
@@ -147,12 +157,32 @@ describe("generateFooter", () => {
 
   it("includes the target display name", () => {
     expect(
-      generateFooter(buildAnalysisOptions({ targetDisplayName: "Brand Voice" }), "push"),
+      generateFooter([], buildAnalysisOptions({ targetDisplayName: "Brand Voice" }), "push"),
     ).toMatch(/Brand Voice/);
   });
 
   it("includes the event type", () => {
-    expect(generateFooter(buildAnalysisOptions(), "pull_request")).toMatch(/pull_request/);
+    expect(generateFooter([], buildAnalysisOptions(), "pull_request")).toMatch(/pull_request/);
+  });
+
+  it("includes a 'Detected by' line listing the agents that produced issues", () => {
+    const result = buildAnalysisResult({
+      issues: [
+        buildAnalysisIssueFromHelper({ agent: "style_agent" }),
+        buildAnalysisIssueFromHelper({ agent: "terminology" }),
+      ],
+    });
+    const footer = generateFooter([result], buildAnalysisOptions(), "push");
+    expect(footer).toMatch(/Detected by:.*Style Agent/);
+    expect(footer).toMatch(/Terminology/);
+  });
+
+  it("omits the 'Detected by' line when no issues carry an agent tag", () => {
+    const result = buildAnalysisResult({
+      issues: [buildAnalysisIssueFromHelper({ agent: undefined })],
+    });
+    const footer = generateFooter([result], buildAnalysisOptions(), "push");
+    expect(footer).not.toMatch(/Detected by:/);
   });
 });
 

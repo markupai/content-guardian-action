@@ -135,4 +135,46 @@ describe("analyzeFiles", () => {
     expect(results).toEqual([]);
     expect(mocks.runStyleAgent).not.toHaveBeenCalled();
   });
+
+  it("propagates a fatal API error across the run instead of swallowing it", async () => {
+    // Reviewer-flagged bug: `Promise.allSettled` inside processWithConcurrency
+    // used to swallow throws from analyzeFile, leaving a fatal 401/403/5xx
+    // invisible to the caller. analyzeFiles must surface it.
+    mocks.runStyleAgent.mockRejectedValue(new MarkupApiErrorRef("auth", 401));
+    mocks.isFatalApiError.mockReturnValue(true);
+
+    const readFileContent = vi.fn((p: string) => Promise.resolve<string | null>(`content of ${p}`));
+    await expect(
+      analyzeFiles("k", ["a.md", "b.md", "c.md"], options, readFileContent),
+    ).rejects.toThrow("auth");
+  });
+
+  it("once a fatal error fires, queued tasks skip without making more API calls", async () => {
+    let pending = 0;
+    let peakConcurrent = 0;
+    let totalApiCalls = 0;
+
+    mocks.runStyleAgent.mockImplementation(async () => {
+      totalApiCalls++;
+      pending++;
+      peakConcurrent = Math.max(peakConcurrent, pending);
+      try {
+        await new Promise((r) => setTimeout(r, 10));
+        throw new MarkupApiErrorRef("auth", 401);
+      } finally {
+        pending--;
+      }
+    });
+    mocks.isFatalApiError.mockReturnValue(true);
+
+    const readFileContent = vi.fn((p: string) => Promise.resolve<string | null>(`content of ${p}`));
+    const files = Array.from({ length: 12 }, (_, i) => `f${i.toString()}.md`);
+    await expect(analyzeFiles("k", files, options, readFileContent)).rejects.toThrow("auth");
+
+    // With MAX_CONCURRENT_FILES=3, only the in-flight batch should hit the
+    // API once the first fatal throws; the rest must bail. Strict upper bound
+    // = peak concurrency + 1 grace slot.
+    expect(totalApiCalls).toBeLessThanOrEqual(peakConcurrent + 1);
+    expect(totalApiCalls).toBeLessThan(files.length);
+  });
 });

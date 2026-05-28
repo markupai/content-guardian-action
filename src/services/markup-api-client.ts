@@ -29,6 +29,8 @@ export class MarkupApiError extends Error {
     public readonly status: number,
     public readonly requestId?: string,
     public readonly body?: unknown,
+    /** Parsed `Retry-After` HTTP header value, in seconds, when present. */
+    public readonly retryAfterSeconds?: number,
   ) {
     super(message);
     this.name = "MarkupApiError";
@@ -98,20 +100,22 @@ async function request<T>(apiKey: string, options: RequestOptions): Promise<Requ
     }
   }
 
+  // Capture Retry-After on every response — it's almost always set on 429,
+  // sometimes on 503, and occasionally on 2xx (advisory). Threaded through
+  // both the error path and the success path so waitForRateLimit can honor it.
+  const retryAfterHeader = response.headers.get("retry-after");
+  const retryAfterRaw = retryAfterHeader === null ? NaN : Number(retryAfterHeader);
+  const retryAfterSeconds = Number.isFinite(retryAfterRaw) ? retryAfterRaw : undefined;
+
   if (!response.ok) {
     const { message, requestId } = extractMessage(
       parsed,
       `${options.method} ${options.path} failed with ${response.status.toString()}`,
     );
-    throw new MarkupApiError(message, response.status, requestId, parsed);
+    throw new MarkupApiError(message, response.status, requestId, parsed, retryAfterSeconds);
   }
 
-  const retryAfterHeader = response.headers.get("retry-after");
-  const retryAfterSeconds = retryAfterHeader ? Number(retryAfterHeader) : undefined;
-  return {
-    body: parsed as T,
-    retryAfterSeconds: Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : undefined,
-  };
+  return { body: parsed as T, retryAfterSeconds };
 }
 
 const DEFAULT_RATE_LIMIT_BACKOFF_MS = 6_500;
@@ -131,6 +135,10 @@ function pickNumber(obj: Record<string, unknown>, ...keys: string[]): number | u
 }
 
 function parseRetryAfter(error: MarkupApiError): number | undefined {
+  // HTTP Retry-After header (in seconds) takes priority over body fields.
+  if (typeof error.retryAfterSeconds === "number") {
+    return error.retryAfterSeconds * 1000;
+  }
   const body = error.body;
   if (!body || typeof body !== "object") return undefined;
   const seconds = pickNumber(body as Record<string, unknown>, "retry_after", "retry_after_seconds");
@@ -138,6 +146,7 @@ function parseRetryAfter(error: MarkupApiError): number | undefined {
 }
 
 const MAX_RATE_LIMIT_RETRIES = 2;
+const MAX_TRANSIENT_RETRIES = 1;
 
 function isRateLimit(error: unknown): error is MarkupApiError {
   return error instanceof MarkupApiError && error.status === 429;
@@ -164,12 +173,18 @@ async function waitForRateLimit(
 
 /**
  * Wraps `request` with:
- * - one retry on 5xx / network errors
- * - up to two retries on 429 (rate limit) with exponential backoff and respect
- *   for a `retry_after`/`Retry-After` hint when the server provides one.
+ * - up to MAX_TRANSIENT_RETRIES retries on 5xx / network errors
+ * - up to MAX_RATE_LIMIT_RETRIES retries on 429 (rate limit) with backoff
+ *   honoring the `Retry-After` header (and `retry_after` body fields as a
+ *   fallback)
+ *
+ * Both retries flow through the same loop so a transient → 429 (or vice
+ * versa) cascade is handled correctly — a retry that itself throws is caught
+ * by the next iteration's try block.
  */
 async function requestWithRetry<T>(apiKey: string, options: RequestOptions): Promise<T> {
   let rateLimitAttempts = 0;
+  let transientAttempts = 0;
 
   for (;;) {
     try {
@@ -182,10 +197,13 @@ async function requestWithRetry<T>(apiKey: string, options: RequestOptions): Pro
         rateLimitAttempts++;
         continue;
       }
-      if (!isRetryableTransient(error)) throw error;
-      core.warning(`Retrying ${options.method} ${options.path}: ${String(error)}`);
-      const result = await request<T>(apiKey, options);
-      return result.body;
+      if (isRetryableTransient(error)) {
+        if (transientAttempts >= MAX_TRANSIENT_RETRIES) throw error;
+        core.warning(`Retrying ${options.method} ${options.path}: ${String(error)}`);
+        transientAttempts++;
+        continue;
+      }
+      throw error;
     }
   }
 }

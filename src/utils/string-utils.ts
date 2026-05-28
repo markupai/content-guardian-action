@@ -25,3 +25,17 @@ export function capitalizeLabel(value: string): string {
   }
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+/**
+ * Format an agent identifier from the API (snake_case, e.g. `style_agent`)
+ * as a human-readable label (`Style Agent`). Returns the input unchanged if
+ * it's empty or already formatted.
+ */
+export function formatAgentName(agent: string): string {
+  if (!agent) return agent;
+  return agent
+    .split(/[_\s]+/)
+    .filter((word) => word.length > 0)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}

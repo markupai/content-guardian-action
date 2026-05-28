@@ -138,6 +138,38 @@ describe("markup-api-client request", () => {
     }
   });
 
+  it("honors the Retry-After HTTP header on 429 (not just the JSON body)", async () => {
+    vi.useFakeTimers();
+    try {
+      // First response: 429 with Retry-After: 7. Second: success.
+      fetchMock
+        .mockResolvedValueOnce(
+          makeResp(
+            { detail: "Rate limited" },
+            { ok: false, status: 429, headers: { "retry-after": "7" } },
+          ),
+        )
+        .mockResolvedValueOnce(
+          makeResp({
+            is_acrolinx_classic: false,
+            style_agent: "enabled",
+            style_agent_numeric_scoring: false,
+          }),
+        );
+      const promise = getStyleAgentConfig("k");
+      // Advance less than 7s — the second request should NOT have been issued.
+      await vi.advanceTimersByTimeAsync(5_000);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      // Advance past the 7s backoff — now the retry fires.
+      await vi.advanceTimersByTimeAsync(3_000);
+      const result = await promise;
+      expect(result.style_agent).toBe("enabled");
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("gives up after two 429 retries", async () => {
     vi.useFakeTimers();
     try {

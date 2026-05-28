@@ -10,6 +10,8 @@
 
 import { createHash } from "node:crypto";
 import { AnalysisResult, AnalysisOptions, IssueCounts } from "../types/index.js";
+import { MAX_INLINE_REVIEW_COMMENTS } from "../constants/index.js";
+import { formatAgentName } from "./string-utils.js";
 import { getQualityEmoji, calculateScoreSummary } from "./score-utils.js";
 import {
   aggregateCounts,
@@ -76,6 +78,20 @@ export function generateResultsTable(
   return `${header}\n${rows.join("\n")}`;
 }
 
+/** Unique `path:line` pairs across all anchored issues — i.e., the upper
+ * bound on the number of inline review comments the action could post on
+ * this run. Issues without a position (line ≤ 0) are excluded since they
+ * can't be anchored. */
+function countAnchoredIssueLines(results: AnalysisResult[]): number {
+  const seen = new Set<string>();
+  for (const r of results) {
+    for (const i of r.issues) {
+      if (i.line > 0) seen.add(`${r.filePath}:${i.line.toString()}`);
+    }
+  }
+  return seen.size;
+}
+
 export function generateSummary(results: AnalysisResult[], options: AnalysisOptions): string {
   if (results.length === 0) return "";
 
@@ -92,6 +108,16 @@ export function generateSummary(results: AnalysisResult[], options: AnalysisOpti
     }
   }
 
+  // Inline-review truncation note: when the number of flaggable line groups
+  // exceeds MAX_INLINE_REVIEW_COMMENTS, the action can only post the first
+  // N as inline comments. Surface the overflow here so reviewers know to
+  // check the full `outputs.results` JSON.
+  const anchored = countAnchoredIssueLines(results);
+  const truncationLine =
+    anchored > MAX_INLINE_REVIEW_COMMENTS
+      ? `\n\n_Inline reviews are capped at ${MAX_INLINE_REVIEW_COMMENTS.toString()}; ${(anchored - MAX_INLINE_REVIEW_COMMENTS).toString()} additional flagged line(s) are not shown inline — see \`outputs.results\` for the full set._`
+      : "";
+
   return `
 ## 📊 Summary
 
@@ -99,7 +125,7 @@ ${riskLine}${qualityLine}
 
 **Files Analyzed:** ${results.length.toString()}
 
-**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})
+**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})${truncationLine}
 `;
 }
 
@@ -138,11 +164,27 @@ ${rows.join("\n\n")}
 `;
 }
 
-export function generateFooter(options: AnalysisOptions, eventType: string): string {
+function uniqueAgentsAcrossResults(results: AnalysisResult[]): string[] {
+  const seen = new Set<string>();
+  for (const r of results) {
+    for (const { issue } of r.issues) {
+      if (issue.agent) seen.add(formatAgentName(issue.agent));
+    }
+  }
+  return [...seen].sort((a, b) => a.localeCompare(b));
+}
+
+export function generateFooter(
+  results: AnalysisResult[],
+  options: AnalysisOptions,
+  eventType: string,
+): string {
+  const agents = uniqueAgentsAcrossResults(results);
+  const agentLine = agents.length > 0 ? `\n*Detected by: ${agents.join(", ")}*` : "";
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName}*
+*Target: ${options.targetDisplayName}*${agentLine}
 *Event: ${eventType}*`;
 }
 
@@ -159,6 +201,6 @@ ${generateResultsTable(results, options, context)}
 ${generatePerGoalDetails(results, options)}
 ${generateSummary(results, options)}
 
-${generateFooter(options, eventType)}
+${generateFooter(results, options, eventType)}
 `;
 }

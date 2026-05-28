@@ -20,7 +20,12 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { AnalysisIssue, AnalysisOptions, AnalysisResult } from "../types/index.js";
 import { generateAnalysisContent, RepositoryContext } from "../utils/markdown-utils.js";
-import { capitalizeLabel, truncateText, wrapInlineCode } from "../utils/string-utils.js";
+import {
+  capitalizeLabel,
+  formatAgentName,
+  truncateText,
+  wrapInlineCode,
+} from "../utils/string-utils.js";
 import { handleGitHubError, logError } from "../utils/error-utils.js";
 
 export interface PRCommentData {
@@ -52,7 +57,7 @@ export interface ReviewCommentReconcileResult {
   toDelete: number[];
 }
 
-const MAX_REVIEW_COMMENTS = 50;
+import { MAX_INLINE_REVIEW_COMMENTS as MAX_REVIEW_COMMENTS } from "../constants/index.js";
 const MAX_ISSUES_PER_COMMENT = 5;
 const MAX_ORIGINAL_LENGTH = 160;
 
@@ -113,7 +118,18 @@ function applyInlineSuggestion(
   return null;
 }
 
+function uniqueAgents(issues: AnalysisIssue[]): string[] {
+  const seen = new Set<string>();
+  for (const { issue } of issues) {
+    if (issue.agent) seen.add(formatAgentName(issue.agent));
+  }
+  return [...seen].sort((a, b) => a.localeCompare(b));
+}
+
 function buildReviewCommentBody(issues: AnalysisIssue[]): string {
+  const agents = uniqueAgents(issues);
+  const multiAgent = agents.length > 1;
+
   const lines = issues.slice(0, MAX_ISSUES_PER_COMMENT).map(({ issue, lineText, column }) => {
     const category = capitalizeLabel(issue.category);
     const guideline = issue.guideline_name ? capitalizeLabel(issue.guideline_name) : "";
@@ -136,7 +152,11 @@ function buildReviewCommentBody(issues: AnalysisIssue[]): string {
     }
 
     const severity = ` (Severity: ${capitalizeLabel(issue.severity)})`;
-    return `- **${heading}${severity}**: ${wrapInlineCode(original || "(no excerpt)")}${suggestionBlock}`;
+    // Per-issue agent prefix kicks in only when this comment groups issues
+    // from more than one agent. With a single agent, the header line already
+    // identifies it — no need to repeat it on every bullet.
+    const agentPrefix = multiAgent && issue.agent ? `[${formatAgentName(issue.agent)}] ` : "";
+    return `- **${agentPrefix}${heading}${severity}**: ${wrapInlineCode(original || "(no excerpt)")}${suggestionBlock}`;
   });
 
   const moreCount = issues.length - lines.length;
@@ -144,7 +164,11 @@ function buildReviewCommentBody(issues: AnalysisIssue[]): string {
     lines.push(`- _${moreCount.toString()} more issue(s) on this line_`);
   }
 
-  return `${REVIEW_MARKER}\n**Markup AI** detected issues:\n${lines.join("\n")}`;
+  // Header attribution: when all issues here come from one agent, name it
+  // ("Markup AI / Style Agent"); when mixed, list them; when none are tagged,
+  // fall back to the original phrasing.
+  const headerSuffix = agents.length === 0 ? "" : ` / ${agents.join(" + ")}`;
+  return `${REVIEW_MARKER}\n**Markup AI${headerSuffix}** detected issues:\n${lines.join("\n")}`;
 }
 
 function buildReviewComments(results: AnalysisResult[]): ReviewCommentPayload[] {

@@ -87652,6 +87652,9 @@ const POLL_TIMEOUT_MS = 300_000;
 /** Files analyzed concurrently. Kept low because the style agent's `/run`
  * endpoint is rate limited (10 RPM by default). */
 const MAX_CONCURRENT_FILES = 3;
+/** Hard cap on the number of inline review comments the action will post on
+ * one PR run. Above this, the PR summary surfaces a "N more" indicator. */
+const MAX_INLINE_REVIEW_COMMENTS = 50;
 const INPUT_NAMES = {
     MARKUP_AI_API_KEY: "markup_ai_api_key",
     TARGET: "target",
@@ -87680,8 +87683,6 @@ const DISPLAY = {
     SEPARATOR_LENGTH: 50,
 };
 const ERROR_MESSAGES = {
-    API_TOKEN_REQUIRED: "API token is required",
-    GITHUB_TOKEN_WARNING: "GitHub token not provided. Cannot fetch commit information.",
     STYLE_AGENT_DISABLED: "Style Agent is not enabled for your organization. Contact Markup AI support to enable it.",
 };
 
@@ -87724,14 +87725,16 @@ function getBooleanInput(inputName, defaultValue) {
     }
     return value.toLowerCase() === "true";
 }
+/**
+ * No-op kept for API symmetry with `getActionConfig` / `logConfiguration`.
+ * All validation happens at input-read time inside `getActionConfig`
+ * (`getRequiredInput` throws for missing api token / github token); `target`
+ * is optional. The runner still calls this so future invariants have a
+ * natural home.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function validateConfig(config) {
-    if (!config.apiToken) {
-        throw new Error(ERROR_MESSAGES.API_TOKEN_REQUIRED);
-    }
-    if (!config.githubToken) {
-        warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
-    }
-    // `target` is optional — empty means "use the org's default target".
+    // intentionally empty
 }
 function logConfiguration(config) {
     info("🔧 Action Configuration:");
@@ -87754,11 +87757,15 @@ class MarkupApiError extends Error {
     status;
     requestId;
     body;
-    constructor(message, status, requestId, body) {
+    retryAfterSeconds;
+    constructor(message, status, requestId, body, 
+    /** Parsed `Retry-After` HTTP header value, in seconds, when present. */
+    retryAfterSeconds) {
         super(message);
         this.status = status;
         this.requestId = requestId;
         this.body = body;
+        this.retryAfterSeconds = retryAfterSeconds;
         this.name = "MarkupApiError";
     }
 }
@@ -87809,16 +87816,17 @@ async function request(apiKey, options) {
             parsed = text;
         }
     }
+    // Capture Retry-After on every response — it's almost always set on 429,
+    // sometimes on 503, and occasionally on 2xx (advisory). Threaded through
+    // both the error path and the success path so waitForRateLimit can honor it.
+    const retryAfterHeader = response.headers.get("retry-after");
+    const retryAfterRaw = retryAfterHeader === null ? NaN : Number(retryAfterHeader);
+    const retryAfterSeconds = Number.isFinite(retryAfterRaw) ? retryAfterRaw : undefined;
     if (!response.ok) {
         const { message, requestId } = extractMessage(parsed, `${options.method} ${options.path} failed with ${response.status.toString()}`);
-        throw new MarkupApiError(message, response.status, requestId, parsed);
+        throw new MarkupApiError(message, response.status, requestId, parsed, retryAfterSeconds);
     }
-    const retryAfterHeader = response.headers.get("retry-after");
-    const retryAfterSeconds = retryAfterHeader ? Number(retryAfterHeader) : undefined;
-    return {
-        body: parsed,
-        retryAfterSeconds: Number.isFinite(retryAfterSeconds) ? retryAfterSeconds : undefined,
-    };
+    return { body: parsed, retryAfterSeconds };
 }
 const DEFAULT_RATE_LIMIT_BACKOFF_MS = 6_500;
 function sleep(ms) {
@@ -87834,6 +87842,10 @@ function pickNumber(obj, ...keys) {
     return undefined;
 }
 function parseRetryAfter(error) {
+    // HTTP Retry-After header (in seconds) takes priority over body fields.
+    if (typeof error.retryAfterSeconds === "number") {
+        return error.retryAfterSeconds * 1000;
+    }
     const body = error.body;
     if (!body || typeof body !== "object")
         return undefined;
@@ -87841,6 +87853,7 @@ function parseRetryAfter(error) {
     return seconds === undefined ? undefined : seconds * 1000;
 }
 const MAX_RATE_LIMIT_RETRIES = 2;
+const MAX_TRANSIENT_RETRIES = 1;
 function isRateLimit(error) {
     return error instanceof MarkupApiError && error.status === 429;
 }
@@ -87857,12 +87870,18 @@ async function waitForRateLimit(error, attempt, options) {
 }
 /**
  * Wraps `request` with:
- * - one retry on 5xx / network errors
- * - up to two retries on 429 (rate limit) with exponential backoff and respect
- *   for a `retry_after`/`Retry-After` hint when the server provides one.
+ * - up to MAX_TRANSIENT_RETRIES retries on 5xx / network errors
+ * - up to MAX_RATE_LIMIT_RETRIES retries on 429 (rate limit) with backoff
+ *   honoring the `Retry-After` header (and `retry_after` body fields as a
+ *   fallback)
+ *
+ * Both retries flow through the same loop so a transient → 429 (or vice
+ * versa) cascade is handled correctly — a retry that itself throws is caught
+ * by the next iteration's try block.
  */
 async function requestWithRetry(apiKey, options) {
     let rateLimitAttempts = 0;
+    let transientAttempts = 0;
     for (;;) {
         try {
             const result = await request(apiKey, options);
@@ -87876,11 +87895,14 @@ async function requestWithRetry(apiKey, options) {
                 rateLimitAttempts++;
                 continue;
             }
-            if (!isRetryableTransient(error))
-                throw error;
-            warning(`Retrying ${options.method} ${options.path}: ${String(error)}`);
-            const result = await request(apiKey, options);
-            return result.body;
+            if (isRetryableTransient(error)) {
+                if (transientAttempts >= MAX_TRANSIENT_RETRIES)
+                    throw error;
+                warning(`Retrying ${options.method} ${options.path}: ${String(error)}`);
+                transientAttempts++;
+                continue;
+            }
+            throw error;
         }
     }
 }
@@ -88138,7 +88160,13 @@ function buildAnalysisIssues(content, issues) {
     if (!issues || issues.length === 0)
         return [];
     return issues.map((issue) => {
-        const startIndex = issue.position?.start ?? 0;
+        const startIndex = issue.position?.start;
+        if (typeof startIndex !== "number") {
+            // No position → can't anchor an inline review comment. Surface with
+            // line/column 0 so downstream code skips it for inline comments (which
+            // require line > 0) but still counts it in summary totals.
+            return { issue, line: 0, column: 0, lineText: "" };
+        }
         const { line, column, lineText } = getLineContextAtIndex(content, startIndex);
         return { issue, line, column, lineText };
     });
@@ -88188,20 +88216,91 @@ async function analyzeFile(apiKey, filePath, content, options) {
     }
 }
 /**
- * Analyze multiple files concurrently. Fatal API errors short-circuit; per-file
- * failures are logged and dropped from the result list.
+ * Analyze multiple files concurrently. Fatal API errors (401/403/5xx)
+ * short-circuit the whole run: the first fatal error is captured, queued
+ * tasks bail without making more API calls, and the error is rethrown so
+ * the action surfaces it as a top-level failure. Per-file non-fatal failures
+ * are logged and dropped from the result list.
+ *
+ * Note: `processWithConcurrency` uses `Promise.allSettled` internally, which
+ * would swallow a raw `throw` from the processor. We catch the throw here,
+ * set a shared abort flag, and let `processWithConcurrency` settle — then
+ * rethrow once.
  */
 async function analyzeFiles(apiKey, files, options, readFileContent) {
     if (files.length === 0)
         return [];
     info(`🚀 Analyzing ${files.length.toString()} file(s) with up to ${MAX_CONCURRENT_FILES.toString()} in flight`);
+    let fatalError = null;
     const results = await processWithConcurrency(files, async (filePath) => {
+        // Already aborted by a peer task → skip without doing any work.
+        if (fatalError)
+            return null;
         const content = await readFileContent(filePath);
         if (content === null)
             return null;
-        return analyzeFile(apiKey, filePath, content, options);
+        try {
+            return await analyzeFile(apiKey, filePath, content, options);
+        }
+        catch (error) {
+            if (isFatalApiError(error)) {
+                // First fatal error wins; later ones are silently ignored.
+                fatalError ??= error;
+            }
+            return null;
+        }
     }, MAX_CONCURRENT_FILES);
+    if (fatalError !== null) {
+        if (fatalError instanceof Error)
+            throw fatalError;
+        let detail = "(unstringifiable error)";
+        try {
+            detail = JSON.stringify(fatalError);
+        }
+        catch {
+            // Keep fallback. Circular refs / BigInt values can throw here.
+        }
+        throw new Error(`Fatal API error: ${detail}`);
+    }
     return results.filter((r) => r !== null);
+}
+
+/**
+ * Common string utilities.
+ */
+function truncateText(value, maxLength) {
+    if (value.length <= maxLength) {
+        return value;
+    }
+    return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
+}
+function wrapInlineCode(value) {
+    const matches = value.match(/`+/g);
+    const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
+    const fence = "`".repeat(maxLength + 1);
+    const needsPadding = value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
+    const wrappedValue = needsPadding ? ` ${value} ` : value;
+    return `${fence}${wrappedValue}${fence}`;
+}
+function capitalizeLabel(value) {
+    if (!value) {
+        return value;
+    }
+    return value.charAt(0).toUpperCase() + value.slice(1);
+}
+/**
+ * Format an agent identifier from the API (snake_case, e.g. `style_agent`)
+ * as a human-readable label (`Style Agent`). Returns the input unchanged if
+ * it's empty or already formatted.
+ */
+function formatAgentName(agent) {
+    if (!agent)
+        return agent;
+    return agent
+        .split(/[_\s]+/)
+        .filter((word) => word.length > 0)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
 }
 
 /**
@@ -88279,6 +88378,20 @@ function generateResultsTable(results, options, context) {
     });
     return `${header}\n${rows.join("\n")}`;
 }
+/** Unique `path:line` pairs across all anchored issues — i.e., the upper
+ * bound on the number of inline review comments the action could post on
+ * this run. Issues without a position (line ≤ 0) are excluded since they
+ * can't be anchored. */
+function countAnchoredIssueLines(results) {
+    const seen = new Set();
+    for (const r of results) {
+        for (const i of r.issues) {
+            if (i.line > 0)
+                seen.add(`${r.filePath}:${i.line.toString()}`);
+        }
+    }
+    return seen.size;
+}
 function generateSummary(results, options) {
     if (results.length === 0)
         return "";
@@ -88293,6 +88406,14 @@ function generateSummary(results, options) {
             qualityLine = `\n\n**Overall Quality Score:** ${emoji} ${Math.round(summary.averageQualityScore).toString()}`;
         }
     }
+    // Inline-review truncation note: when the number of flaggable line groups
+    // exceeds MAX_INLINE_REVIEW_COMMENTS, the action can only post the first
+    // N as inline comments. Surface the overflow here so reviewers know to
+    // check the full `outputs.results` JSON.
+    const anchored = countAnchoredIssueLines(results);
+    const truncationLine = anchored > MAX_INLINE_REVIEW_COMMENTS
+        ? `\n\n_Inline reviews are capped at ${MAX_INLINE_REVIEW_COMMENTS.toString()}; ${(anchored - MAX_INLINE_REVIEW_COMMENTS).toString()} additional flagged line(s) are not shown inline — see \`outputs.results\` for the full set._`
+        : "";
     return `
 ## 📊 Summary
 
@@ -88300,7 +88421,7 @@ ${riskLine}${qualityLine}
 
 **Files Analyzed:** ${results.length.toString()}
 
-**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})
+**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})${truncationLine}
 `;
 }
 /**
@@ -88334,11 +88455,23 @@ ${rows.join("\n\n")}
 </details>
 `;
 }
-function generateFooter(options, eventType) {
+function uniqueAgentsAcrossResults(results) {
+    const seen = new Set();
+    for (const r of results) {
+        for (const { issue } of r.issues) {
+            if (issue.agent)
+                seen.add(formatAgentName(issue.agent));
+        }
+    }
+    return [...seen].sort((a, b) => a.localeCompare(b));
+}
+function generateFooter(results, options, eventType) {
+    const agents = uniqueAgentsAcrossResults(results);
+    const agentLine = agents.length > 0 ? `\n*Detected by: ${agents.join(", ")}*` : "";
     return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName}*
+*Target: ${options.targetDisplayName}*${agentLine}
 *Event: ${eventType}*`;
 }
 function generateAnalysisContent(results, options, header, eventType, context) {
@@ -88348,32 +88481,8 @@ ${generateResultsTable(results, options, context)}
 ${generatePerGoalDetails(results, options)}
 ${generateSummary(results, options)}
 
-${generateFooter(options, eventType)}
+${generateFooter(results, options, eventType)}
 `;
-}
-
-/**
- * Common string utilities.
- */
-function truncateText(value, maxLength) {
-    if (value.length <= maxLength) {
-        return value;
-    }
-    return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
-}
-function wrapInlineCode(value) {
-    const matches = value.match(/`+/g);
-    const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
-    const fence = "`".repeat(maxLength + 1);
-    const needsPadding = value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
-    const wrappedValue = needsPadding ? ` ${value} ` : value;
-    return `${fence}${wrappedValue}${fence}`;
-}
-function capitalizeLabel(value) {
-    if (!value) {
-        return value;
-    }
-    return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 /**
@@ -88464,7 +88573,6 @@ function logError(error$1, context) {
  * are treated as foreign and left untouched, except as a back-compat fallback
  * for the very first run after this code lands (see findExistingComment).
  */
-const MAX_REVIEW_COMMENTS = 50;
 const MAX_ISSUES_PER_COMMENT = 5;
 const MAX_ORIGINAL_LENGTH = 160;
 /** Hidden HTML markers used to identify comments owned by this action. */
@@ -88507,7 +88615,17 @@ function applyInlineSuggestion(issue, lineText, column) {
     }
     return null;
 }
+function uniqueAgents(issues) {
+    const seen = new Set();
+    for (const { issue } of issues) {
+        if (issue.agent)
+            seen.add(formatAgentName(issue.agent));
+    }
+    return [...seen].sort((a, b) => a.localeCompare(b));
+}
 function buildReviewCommentBody(issues) {
+    const agents = uniqueAgents(issues);
+    const multiAgent = agents.length > 1;
     const lines = issues.slice(0, MAX_ISSUES_PER_COMMENT).map(({ issue, lineText, column }) => {
         const category = capitalizeLabel(issue.category);
         const guideline = issue.guideline_name ? capitalizeLabel(issue.guideline_name) : "";
@@ -88527,13 +88645,21 @@ function buildReviewCommentBody(issues) {
             suggestionBlock = explanationLine;
         }
         const severity = ` (Severity: ${capitalizeLabel(issue.severity)})`;
-        return `- **${heading}${severity}**: ${wrapInlineCode(original || "(no excerpt)")}${suggestionBlock}`;
+        // Per-issue agent prefix kicks in only when this comment groups issues
+        // from more than one agent. With a single agent, the header line already
+        // identifies it — no need to repeat it on every bullet.
+        const agentPrefix = multiAgent && issue.agent ? `[${formatAgentName(issue.agent)}] ` : "";
+        return `- **${agentPrefix}${heading}${severity}**: ${wrapInlineCode(original || "(no excerpt)")}${suggestionBlock}`;
     });
     const moreCount = issues.length - lines.length;
     if (moreCount > 0) {
         lines.push(`- _${moreCount.toString()} more issue(s) on this line_`);
     }
-    return `${REVIEW_MARKER}\n**Markup AI** detected issues:\n${lines.join("\n")}`;
+    // Header attribution: when all issues here come from one agent, name it
+    // ("Markup AI / Style Agent"); when mixed, list them; when none are tagged,
+    // fall back to the original phrasing.
+    const headerSuffix = agents.length === 0 ? "" : ` / ${agents.join(" + ")}`;
+    return `${REVIEW_MARKER}\n**Markup AI${headerSuffix}** detected issues:\n${lines.join("\n")}`;
 }
 function buildReviewComments(results) {
     const grouped = new Map();
@@ -88553,7 +88679,7 @@ function buildReviewComments(results) {
     }
     const comments = [];
     for (const { path, line, issues } of grouped.values()) {
-        if (comments.length >= MAX_REVIEW_COMMENTS)
+        if (comments.length >= MAX_INLINE_REVIEW_COMMENTS)
             break;
         comments.push({
             path,

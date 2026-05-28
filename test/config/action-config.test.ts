@@ -33,29 +33,23 @@ function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
 }
 
 describe("validateConfig", () => {
-  it("passes for a valid config (no target — will use org default)", () => {
+  // `validateConfig` is intentionally a no-op now — input-time validation in
+  // `getActionConfig` (via `getRequiredInput`) covers everything that was
+  // previously asserted here. Kept as an extension point for future
+  // invariants.
+  it("does not throw for any valid-shape ActionConfig", () => {
     expect(() => {
       validateConfig(baseConfig());
     }).not.toThrow();
-  });
-
-  it("passes when target is explicitly provided", () => {
     expect(() => {
       validateConfig(baseConfig({ target: "Main" }));
     }).not.toThrow();
-  });
-
-  it("throws when API token is missing", () => {
     expect(() => {
       validateConfig(baseConfig({ apiToken: "" }));
-    }).toThrow(/API token/);
-  });
-
-  it("warns when GitHub token is missing but does not throw", () => {
+    }).not.toThrow();
     expect(() => {
       validateConfig(baseConfig({ githubToken: "" }));
     }).not.toThrow();
-    expect(core.warning).toHaveBeenCalled();
   });
 });
 
