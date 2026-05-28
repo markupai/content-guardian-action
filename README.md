@@ -50,6 +50,16 @@ permissions:
 
 name: Analyze with Markup AI
 on: [push, pull_request]
+
+# Recommended: cancel the previous in-flight run when a new commit lands on the
+# same PR. The action reconciles its inline review comments against the latest
+# analysis (creating, updating, and deleting tagged comments as needed); two
+# overlapping runs can race on that reconciliation if both read the same
+# starting state.
+concurrency:
+  group: markup-ai-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
@@ -136,6 +146,15 @@ quality score (numeric mode) or risk label (risk mode).
 
 Analyzes files changed in the PR. Posts a single PR comment with the results
 table and inline review comments for each flagged line.
+
+**Comment lifecycle.** On every run the action:
+
+1. Updates its existing summary comment in place (one comment per PR, never duplicated).
+2. Reconciles the set of inline review comments against the current analysis — new findings are posted, changed bodies are updated in place, and comments whose underlying issue is gone are **deleted**. The PR stays in sync with the latest state.
+
+The action only touches comments it owns; both the summary and review comments are tagged with a hidden HTML marker (`<!-- markup-ai-action:summary -->` / `<!-- markup-ai-action:review -->`). Comments from other tools or humans are never modified.
+
+If two pushes hit the PR within seconds of each other, the two runs can race on the reconciliation. Use the `concurrency` block shown in the [Basic usage](#basic-usage) example to serialize runs per PR.
 
 ### Manual (`on: [workflow_dispatch]`) and scheduled (`on: [schedule]`)
 

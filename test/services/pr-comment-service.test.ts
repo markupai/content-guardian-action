@@ -26,6 +26,7 @@ import {
   createPRReviewComments,
   getPRNumber,
   isPullRequestEvent,
+  reconcileReviewComments,
 } from "../../src/services/pr-comment-service.js";
 import {
   buildAnalysisIssue,
@@ -40,7 +41,13 @@ interface MockOctokit {
   rest: {
     repos: { get: MockFn };
     issues: { listComments: MockFn; createComment: MockFn; updateComment: MockFn };
-    pulls: { createReview: MockFn; createReviewComment: MockFn; listReviewComments: MockFn };
+    pulls: {
+      createReview: MockFn;
+      createReviewComment: MockFn;
+      listReviewComments: MockFn;
+      updateReviewComment: MockFn;
+      deleteReviewComment: MockFn;
+    };
   };
 }
 
@@ -57,10 +64,15 @@ function makeOctokit(): MockOctokit {
         createReview: vi.fn().mockResolvedValue({ data: {} }),
         createReviewComment: vi.fn().mockResolvedValue({ data: {} }),
         listReviewComments: vi.fn().mockResolvedValue({ data: [] }),
+        updateReviewComment: vi.fn().mockResolvedValue({ data: {} }),
+        deleteReviewComment: vi.fn().mockResolvedValue({ data: {} }),
       },
     },
   };
 }
+
+const SUMMARY_MARKER = "<!-- markup-ai-action:summary -->";
+const REVIEW_MARKER = "<!-- markup-ai-action:review -->";
 
 function commentData(octokit: MockOctokit, results = [buildAnalysisResult()]) {
   return {
@@ -97,13 +109,17 @@ describe("createOrUpdatePRComment", () => {
       payload,
     );
     expect(octokit.rest.issues.createComment).toHaveBeenCalled();
+    const body = (
+      octokit.rest.issues.createComment.mock.calls[0]?.[0] as { body?: string } | undefined
+    )?.body;
+    expect(body).toContain(SUMMARY_MARKER);
     expect(octokit.rest.issues.updateComment).not.toHaveBeenCalled();
   });
 
-  it("updates the existing Markup AI comment when one exists", async () => {
+  it("updates the existing marker-tagged comment when one exists", async () => {
     const octokit = makeOctokit();
     octokit.rest.issues.listComments.mockResolvedValueOnce({
-      data: [{ id: 7, body: "## 🔍 Markup AI Analysis Results — old" }],
+      data: [{ id: 7, body: `${SUMMARY_MARKER}\n## Old contents` }],
     });
     const { payload } = commentData(octokit);
     await createOrUpdatePRComment(
@@ -114,6 +130,21 @@ describe("createOrUpdatePRComment", () => {
       expect.objectContaining({ comment_id: 7 }),
     );
     expect(octokit.rest.issues.createComment).not.toHaveBeenCalled();
+  });
+
+  it("migrates a legacy (pre-marker) comment in place", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.issues.listComments.mockResolvedValueOnce({
+      data: [{ id: 11, body: "## 🔍 Markup AI Analysis Results — old contents (no marker)" }],
+    });
+    const { payload } = commentData(octokit);
+    await createOrUpdatePRComment(
+      octokit as unknown as Parameters<typeof createOrUpdatePRComment>[0],
+      payload,
+    );
+    expect(octokit.rest.issues.updateComment).toHaveBeenCalledWith(
+      expect.objectContaining({ comment_id: 11 }),
+    );
   });
 
   it("bails out gracefully on 403 from repos.get", async () => {
@@ -150,8 +181,66 @@ function resultWithIssue() {
   });
 }
 
-describe("createPRReviewComments", () => {
-  it("creates a review with one inline comment for the issue line", async () => {
+describe("reconcileReviewComments (pure)", () => {
+  it("creates all when nothing exists", () => {
+    const desired = [
+      { path: "a.md", line: 1, side: "RIGHT" as const, body: `${REVIEW_MARKER}\nx` },
+    ];
+    const { toCreate, toUpdate, toDelete } = reconcileReviewComments([], desired);
+    expect(toCreate).toEqual(desired);
+    expect(toUpdate).toEqual([]);
+    expect(toDelete).toEqual([]);
+  });
+
+  it("deletes all when nothing desired", () => {
+    const existing = [{ id: 1, path: "a.md", line: 5, body: `${REVIEW_MARKER}\nold` }];
+    const { toCreate, toUpdate, toDelete } = reconcileReviewComments(existing, []);
+    expect(toDelete).toEqual([1]);
+    expect(toCreate).toEqual([]);
+    expect(toUpdate).toEqual([]);
+  });
+
+  it("no-ops on identical bodies at same line", () => {
+    const body = `${REVIEW_MARKER}\nsame`;
+    const existing = [{ id: 1, path: "a.md", line: 5, body }];
+    const desired = [{ path: "a.md", line: 5, side: "RIGHT" as const, body }];
+    const result = reconcileReviewComments(existing, desired);
+    expect(result).toEqual({ toCreate: [], toUpdate: [], toDelete: [] });
+  });
+
+  it("updates when body diverges at same line", () => {
+    const existing = [{ id: 9, path: "a.md", line: 5, body: `${REVIEW_MARKER}\nold` }];
+    const desired = [
+      { path: "a.md", line: 5, side: "RIGHT" as const, body: `${REVIEW_MARKER}\nnew` },
+    ];
+    const { toCreate, toUpdate, toDelete } = reconcileReviewComments(existing, desired);
+    expect(toCreate).toEqual([]);
+    expect(toUpdate).toEqual([{ id: 9, body: `${REVIEW_MARKER}\nnew` }]);
+    expect(toDelete).toEqual([]);
+  });
+
+  it("mixes create + update + delete", () => {
+    const existing = [
+      { id: 1, path: "a.md", line: 1, body: `${REVIEW_MARKER}\nkeep-as-is` },
+      { id: 2, path: "a.md", line: 2, body: `${REVIEW_MARKER}\nupdate-me` },
+      { id: 3, path: "a.md", line: 3, body: `${REVIEW_MARKER}\ndelete-me` },
+    ];
+    const desired = [
+      { path: "a.md", line: 1, side: "RIGHT" as const, body: `${REVIEW_MARKER}\nkeep-as-is` },
+      { path: "a.md", line: 2, side: "RIGHT" as const, body: `${REVIEW_MARKER}\nupdated` },
+      { path: "a.md", line: 4, side: "RIGHT" as const, body: `${REVIEW_MARKER}\nbrand-new` },
+    ];
+    const { toCreate, toUpdate, toDelete } = reconcileReviewComments(existing, desired);
+    expect(toCreate).toEqual([
+      { path: "a.md", line: 4, side: "RIGHT", body: `${REVIEW_MARKER}\nbrand-new` },
+    ]);
+    expect(toUpdate).toEqual([{ id: 2, body: `${REVIEW_MARKER}\nupdated` }]);
+    expect(toDelete).toEqual([3]);
+  });
+});
+
+describe("createPRReviewComments — integration", () => {
+  it("creates a review with one inline comment when nothing exists yet", async () => {
     const octokit = makeOctokit();
     const { payload } = commentData(octokit, [resultWithIssue()]);
     await createPRReviewComments(
@@ -162,22 +251,107 @@ describe("createPRReviewComments", () => {
       | {
           commit_id?: string;
           event?: string;
-          comments?: { path: string; line: number; side: string }[];
+          comments?: { path: string; line: number; side: string; body: string }[];
         }
       | undefined;
     expect(call?.commit_id).toBe("head-sha");
     expect(call?.event).toBe("COMMENT");
     expect(call?.comments?.[0]).toMatchObject({ path: "README.md", line: 3, side: "RIGHT" });
+    expect(call?.comments?.[0].body).toContain(REVIEW_MARKER);
+    expect(octokit.rest.pulls.updateReviewComment).not.toHaveBeenCalled();
+    expect(octokit.rest.pulls.deleteReviewComment).not.toHaveBeenCalled();
   });
 
-  it("does nothing when there are no issues with line numbers", async () => {
+  it("deletes stale tagged comments when the underlying issue is gone", async () => {
     const octokit = makeOctokit();
-    const { payload } = commentData(octokit);
+    octokit.rest.pulls.listReviewComments.mockResolvedValueOnce({
+      data: [
+        {
+          id: 99,
+          path: "README.md",
+          line: 3,
+          body: `${REVIEW_MARKER}\n**Markup AI** detected issues:\n- old`,
+        },
+      ],
+    });
+    const { payload } = commentData(octokit, [buildAnalysisResult({ filePath: "README.md" })]);
     await createPRReviewComments(
       octokit as unknown as Parameters<typeof createPRReviewComments>[0],
       payload,
     );
+    expect(octokit.rest.pulls.deleteReviewComment).toHaveBeenCalledWith(
+      expect.objectContaining({ comment_id: 99 }),
+    );
     expect(octokit.rest.pulls.createReview).not.toHaveBeenCalled();
+    expect(octokit.rest.pulls.updateReviewComment).not.toHaveBeenCalled();
+  });
+
+  it("updates a tagged comment in place when only the body changed", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.pulls.listReviewComments.mockResolvedValueOnce({
+      data: [{ id: 42, path: "README.md", line: 3, body: `${REVIEW_MARKER}\nstale body` }],
+    });
+    const { payload } = commentData(octokit, [resultWithIssue()]);
+    await createPRReviewComments(
+      octokit as unknown as Parameters<typeof createPRReviewComments>[0],
+      payload,
+    );
+    expect(octokit.rest.pulls.updateReviewComment).toHaveBeenCalledWith(
+      expect.objectContaining({ comment_id: 42 }),
+    );
+    expect(octokit.rest.pulls.createReview).not.toHaveBeenCalled();
+    expect(octokit.rest.pulls.deleteReviewComment).not.toHaveBeenCalled();
+  });
+
+  it("ignores existing review comments without our marker (treats them as foreign)", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.pulls.listReviewComments.mockResolvedValueOnce({
+      data: [
+        // Different tool's review comment — must not be touched.
+        { id: 500, path: "README.md", line: 3, body: "Some other reviewer's comment" },
+      ],
+    });
+    const { payload } = commentData(octokit, [resultWithIssue()]);
+    await createPRReviewComments(
+      octokit as unknown as Parameters<typeof createPRReviewComments>[0],
+      payload,
+    );
+    expect(octokit.rest.pulls.deleteReviewComment).not.toHaveBeenCalled();
+    // We do create our own at the same line — they live independently.
+    expect(octokit.rest.pulls.createReview).toHaveBeenCalled();
+  });
+
+  it("is a no-op when current state already matches existing tagged comments", async () => {
+    const octokit = makeOctokit();
+    // Run once to capture the body the action would post.
+    const { payload } = commentData(octokit, [resultWithIssue()]);
+    await createPRReviewComments(
+      octokit as unknown as Parameters<typeof createPRReviewComments>[0],
+      payload,
+    );
+    const captured = (
+      octokit.rest.pulls.createReview.mock.calls[0]?.[0] as
+        | { comments?: { path: string; line: number; body: string }[] }
+        | undefined
+    )?.comments?.[0];
+    if (!captured) throw new Error("expected at least one captured comment");
+
+    // Reset and feed that exact body back in as existing state.
+    octokit.rest.pulls.createReview.mockClear();
+    octokit.rest.pulls.updateReviewComment.mockClear();
+    octokit.rest.pulls.deleteReviewComment.mockClear();
+    octokit.rest.pulls.listReviewComments.mockResolvedValueOnce({
+      data: [{ id: 1, path: captured.path, line: captured.line, body: captured.body }],
+    });
+
+    await createPRReviewComments(
+      octokit as unknown as Parameters<typeof createPRReviewComments>[0],
+      payload,
+    );
+
+    expect(octokit.rest.pulls.createReview).not.toHaveBeenCalled();
+    expect(octokit.rest.pulls.updateReviewComment).not.toHaveBeenCalled();
+    expect(octokit.rest.pulls.deleteReviewComment).not.toHaveBeenCalled();
   });
 
   it("falls back to per-comment posting on 422 from createReview", async () => {
