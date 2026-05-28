@@ -14,22 +14,32 @@ manual, and scheduled events.
 - **Single `target` input** — replaces v1's `dialect` / `tone` / `style-guide`
   combo. Pass a target ID or its display name (look up at
   [console.markup.ai](https://console.markup.ai)).
-- **Risk-based scoring by default** — if your organization has numeric scoring
-  disabled, the action surfaces severity counts and a risk label instead of
-  fabricated scores. Numeric scoring is shown only when your org enables it.
+- **Risk-based scoring is the primary view, always.** Every PR comment, commit
+  status, and job summary leads with a risk label and severity counts.
+- **Numeric scoring is layered on, never replacing risk.** If your org has
+  `style_agent_numeric_scoring` enabled, the action appends a Quality column
+  to the table, an Overall Quality Score line to the summary, and a
+  collapsible per-goal breakdown (Clarity / Grammar / Tone / Consistency / …).
+- **PR comments are reconciled on every run.** The summary comment updates in
+  place; inline review comments at fixed-issue lines are deleted automatically
+  on the next run (see [Comment lifecycle](#pull-request-on-pull_request)).
 
 Migrating from v1: drop `dialect`, `tone`, and `style-guide`; add `target`.
 
 ## Features
 
-- 🔍 **Smart File Discovery**: Detects files to analyze based on the GitHub event
-- 📝 **Event-Based Analysis**: Optimized behavior for push, pull request,
+- 🔍 **Smart file discovery**: Detects files to analyze based on the GitHub event
+- 📝 **Event-based analysis**: Optimized behavior for push, pull request,
   manual, and scheduled events
-- 📊 **Risk or numeric scoring**: Severity counts (high/medium/low) plus an
-  overall risk label, or a 0–100 quality score, driven by your org config
-- 🏷️ **Visual feedback**: Commit status updates, PR comments, inline review
-  suggestions
-- 📋 **Rich outputs**: JSON results and detailed reporting
+- 📊 **Risk-based scoring (always) + optional numeric layer**: Severity counts
+  (high/medium/low) and an overall risk label in every output; per-file 0–100
+  quality scores and per-goal breakdown appended when your org has numeric
+  scoring enabled
+- 🏷️ **Self-managing PR comments**: A single summary comment is updated in
+  place; inline review comments are created, updated, or deleted to match the
+  current analysis — no accumulation of stale comments
+- 📋 **Rich outputs**: Full JSON of every analysis result (issues, scores when
+  available, workflow IDs) for downstream consumers
 
 ## Supported file types
 
@@ -139,8 +149,11 @@ Either inputs or env vars work; inputs take precedence when both are set.
 
 ### Push (`on: [push]`)
 
-Analyzes files modified in the push. Updates the commit status with the overall
-quality score (numeric mode) or risk label (risk mode).
+Analyzes files modified in the push. Updates the commit status on the pushed
+SHA with the overall risk label (and, if numeric scoring is enabled for the
+org, the average quality score appended after it). The commit status state
+itself — `success` / `failure` / `error` — is always derived from the risk
+level so PR checks behave consistently regardless of scoring mode.
 
 ### Pull request (`on: [pull_request]`)
 
@@ -161,23 +174,53 @@ If two pushes hit the PR within seconds of each other, the two runs can race on 
 Analyzes every supported file in the repository at the current ref. Writes the
 results to the workflow's job summary.
 
-## Risk vs. numeric scoring
+## Scoring: risk-based (always) + optional numeric
 
-The action queries `GET /style-agent/config` once per run. If your org has
-`style_agent_numeric_scoring` enabled, the action shows:
+The action queries `GET /style-agent/config` once per run to check whether
+your org has `style_agent_numeric_scoring` enabled.
 
-- per-file quality score (0–100) and per-goal breakdown
-- summary average quality across files
-- commit status `Quality 78 | Files 4 | Issues 12 (H:1 M:5 L:6)`
+**Risk-based scoring is always shown** — it doesn't depend on the org flag:
 
-If your org does not have numeric scoring enabled, the action shows:
+- Each file gets a risk label derived from the worst severity issue on it:
+  `🔴 High` if any high-severity issue is present, else `🟡 Medium` if any
+  medium, else `🟢 Low`, else `✅ No issues`.
+- The PR summary leads with `Overall Risk` (the worst level across files) and
+  shows total issue counts broken down by severity (`H:_ M:_ L:_`).
+- The commit status posted to the head SHA leads with `Risk <level>` and its
+  `state` is `error` for `High`, `failure` for `Medium`, otherwise `success`.
 
-- per-file severity counts (high / medium / low) and a risk label
-- an overall risk = highest severity present across files
-- commit status `Risk Medium | Files 4 | Issues 12 (H:1 M:5 L:6)`
+**Numeric scoring is layered on additively** when the org enables it. The
+per-file Quality column, the Overall Quality Score line, and the per-goal
+`<details>` block all appear _alongside_ the risk view — never as a
+replacement. Example PR-comment table in numeric mode:
 
-In both modes the `outputs.results` JSON contains the full per-file structure so
-downstream steps can act on the raw data.
+```
+| File             | Risk    | Issues | Breakdown      | Quality |
+|:-----------------|:-------:|:------:|:---------------|:-------:|
+| README.md        | 🟡 Medium | 8    | H:1 M:4 L:3   | 🟡 74   |
+| docs/api.md      | 🔴 High   | 15   | H:7 M:5 L:3   | 🔴 52   |
+```
+
+…with a collapsible per-goal section under the table:
+
+```
+<details>
+<summary>Per-goal breakdown</summary>
+
+**README.md** — Clarity 78 · Grammar 91 · Tone 62 · Consistency 65
+**docs/api.md** — Clarity 60 · Grammar 55 · Tone 50 · Consistency 40
+
+</details>
+```
+
+Commit status format:
+
+- Numeric off: `Risk Medium | Files 4 | Issues 12 (H:1 M:5 L:6)`
+- Numeric on: `Risk Medium | Quality 74 | Files 4 | Issues 12 (H:1 M:5 L:6)`
+
+The full per-file structure (issues, scores when available, workflow IDs) is
+always available in the `outputs.results` JSON for downstream consumers,
+regardless of which view is rendered.
 
 ## Finding your `target` value
 
