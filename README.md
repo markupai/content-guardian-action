@@ -11,9 +11,11 @@ manual, and scheduled events.
 
 - **Direct agentic API** — no longer uses `@markupai/toolkit`; talks to
   `https://api.markup.ai` directly.
-- **Single `target` input** — replaces v1's `dialect` / `tone` / `style-guide`
-  combo. Pass a target ID or its display name (look up at
-  [console.markup.ai](https://console.markup.ai)).
+- **Single optional `target` input** — replaces v1's `dialect` / `tone` /
+  `style-guide` combo. Omit it to use the organization's default target
+  (the one flagged `is_default: true`); pass a target ID or display name
+  to pin a specific one. Look them up at
+  [console.markup.ai](https://console.markup.ai).
 - **Risk-based scoring is the primary view, always.** Every PR comment, commit
   status, and job summary leads with a risk label and severity counts.
 - **Numeric scoring is layered on, never replacing risk.** If your org has
@@ -24,7 +26,10 @@ manual, and scheduled events.
   place; inline review comments at fixed-issue lines are deleted automatically
   on the next run (see [Comment lifecycle](#pull-request-on-pull_request)).
 
-Migrating from v1: drop `dialect`, `tone`, and `style-guide`; add `target`.
+Migrating from v1: drop `dialect`, `tone`, and `style-guide`. The new
+`target` input is optional — set your org's default target in
+[console.markup.ai](https://console.markup.ai) and you don't need to pass
+anything; otherwise pass `target: <id or display name>`.
 
 ## Features
 
@@ -80,7 +85,7 @@ jobs:
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          target: Marketing Voice
+          # `target` omitted → uses the organization's default target.
 ```
 
 ### Advanced configuration
@@ -103,7 +108,7 @@ jobs:
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          target: ${{ secrets.MARKUP_AI_TARGET_ID }} # accepts ID or display name
+          target: ${{ secrets.MARKUP_AI_TARGET_ID }} # optional — accepts ID or display name; omit to use the org's default
           add_commit_status: "true"
           add_review_comments: "true"
           strict_mode: "false"
@@ -128,14 +133,14 @@ Either inputs or env vars work; inputs take precedence when both are set.
 
 ## Inputs
 
-| Input                 | Description                                                                       | Required | Default |
-| --------------------- | --------------------------------------------------------------------------------- | -------- | ------- |
-| `markup_ai_api_key`   | Markup AI API key (or `MARKUP_AI_API_KEY` env var)                                | Yes      | -       |
-| `github_token`        | GitHub token (or `GITHUB_TOKEN` env var)                                          | Yes      | -       |
-| `target`              | Style guide / target — accepts a target ID or its display name (case-insensitive) | Yes      | -       |
-| `add_commit_status`   | Add commit status updates for push events                                         | No       | `true`  |
-| `add_review_comments` | Add PR review comments for issues                                                 | No       | `true`  |
-| `strict_mode`         | Fail the action if any file fails analysis                                        | No       | `false` |
+| Input                 | Description                                                                                                | Required | Default     |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- | -------- | ----------- |
+| `markup_ai_api_key`   | Markup AI API key (or `MARKUP_AI_API_KEY` env var)                                                         | Yes      | -           |
+| `github_token`        | GitHub token (or `GITHUB_TOKEN` env var)                                                                   | Yes      | -           |
+| `target`              | Style guide / target — target ID or display_name (case-insensitive). Omit to use the org's default target. | No       | org default |
+| `add_commit_status`   | Add commit status updates for push events                                                                  | No       | `true`      |
+| `add_review_comments` | Add PR review comments for issues                                                                          | No       | `true`      |
+| `strict_mode`         | Fail the action if any file fails analysis                                                                 | No       | `false`     |
 
 ## Outputs
 
@@ -224,12 +229,19 @@ regardless of which view is rendered.
 
 ## Finding your `target` value
 
+The `target` input is **optional**. When omitted, the action uses the
+organization's default target — the one flagged `is_default: true` in
+`/style-agent/targets`. Configure that default in
+[console.markup.ai](https://console.markup.ai); most teams only need to set
+it once and never pass `target` in the workflow.
+
+To pin a specific non-default target, look up the available targets and pass
+either the `id` or the `display_name`:
+
 ```bash
 curl -H "Authorization: Bearer $MARKUP_AI_API_KEY" \
-  https://api.markup.ai/style-agent/targets | jq '.[] | {id, display_name}'
+  https://api.markup.ai/style-agent/targets | jq '.[] | {id, display_name, is_default}'
 ```
-
-Pass either the `id` or `display_name` to the `target` input.
 
 ## Strict mode
 

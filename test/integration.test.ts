@@ -162,12 +162,17 @@ describe("Integration", () => {
     );
   });
 
-  it("fails when the target input is missing", async () => {
+  it("falls back to the org's default target when target input is omitted", async () => {
     core.getInput.mockImplementation(
       mockInput({ markup_ai_api_key: "k", target: "", github_token: "gh-tok" }),
     );
     await run();
-    expect(core.setFailed).toHaveBeenCalledWith(expect.stringContaining("Required input 'target'"));
+    // Default target in the test fixture (`listStyleAgentTargets` mock) is
+    // tgt_1 (is_default: true). The action should resolve to it and run.
+    expect(runStyleAgent).toHaveBeenCalledWith(
+      "k",
+      expect.objectContaining({ target_id: "tgt_1" }),
+    );
   });
 
   it("resolves the target by display name", async () => {

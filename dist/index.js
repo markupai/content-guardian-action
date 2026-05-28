@@ -87691,7 +87691,9 @@ const ERROR_MESSAGES = {
 function getActionConfig() {
     const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
     const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
-    const target = getRequiredInput(INPUT_NAMES.TARGET, "TARGET");
+    // `target` is optional: when omitted, the action falls back to the org's
+    // default target (the one flagged `is_default: true` in /style-agent/targets).
+    const target = getOptionalInput(INPUT_NAMES.TARGET, "TARGET");
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
     const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
@@ -87711,6 +87713,10 @@ function getRequiredInput(inputName, envVarName) {
     }
     return value;
 }
+function getOptionalInput(inputName, envVarName) {
+    const value = getInput(inputName) || process.env[envVarName] || "";
+    return value.trim();
+}
 function getBooleanInput(inputName, defaultValue) {
     const value = getInput(inputName) || process.env[inputName.toUpperCase()];
     if (value === undefined || value === "") {
@@ -87725,13 +87731,11 @@ function validateConfig(config) {
     if (!config.githubToken) {
         warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
     }
-    if (!config.target || config.target.trim().length === 0) {
-        throw new Error("Input 'target' cannot be empty");
-    }
+    // `target` is optional — empty means "use the org's default target".
 }
 function logConfiguration(config) {
     info("🔧 Action Configuration:");
-    info(`  Target: ${config.target}`);
+    info(`  Target: ${config.target || "(org default)"}`);
     info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
     info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
     info(`  Commit Status: ${config.addCommitStatus ? "enabled" : "disabled"}`);
@@ -89276,13 +89280,21 @@ function createFileDiscoveryStrategy(context, githubToken) {
 }
 
 /**
- * Resolve the user-supplied target input (an id or a display_name)
- * against the org's enabled style-agent targets.
+ * Resolve the user-supplied target input against the org's enabled
+ * style-agent targets.
+ *
+ * Empty input → fall back to the target flagged `is_default: true` for the
+ * org. Non-empty input → match either the exact id or the case-insensitive
+ * display_name.
  */
 function resolveTarget(input, targets) {
     const trimmed = input.trim();
     if (!trimmed) {
-        throw new Error("Target input is empty.");
+        const defaultTarget = targets.find((t) => t.is_default);
+        if (defaultTarget)
+            return defaultTarget;
+        const available = targets.map((t) => `  - ${t.display_name} (id: ${t.id})`).join("\n");
+        throw new Error(`No target was specified and the organization has no default target. Available targets:\n${available || "  (none enabled)"}`);
     }
     const byId = targets.find((t) => t.id === trimmed);
     if (byId)

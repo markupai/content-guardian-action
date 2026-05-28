@@ -35,8 +35,17 @@ describe("resolveTarget", () => {
     expect(message).toMatch(/tgt_a/);
   });
 
-  it("throws when input is empty", () => {
-    expect(() => resolveTarget("   ", targets)).toThrow(/empty/);
+  it("falls back to the org's default target when input is empty", () => {
+    expect(resolveTarget("", targets).id).toBe("tgt_a");
+    expect(resolveTarget("   ", targets).id).toBe("tgt_a");
+  });
+
+  it("throws when input is empty and no default target exists", () => {
+    const noDefault: StyleTarget[] = [
+      { id: "tgt_a", display_name: "Marketing Voice", is_default: false, enabled: true },
+      { id: "tgt_b", display_name: "Legal Terms", is_default: false, enabled: true },
+    ];
+    expect(() => resolveTarget("", noDefault)).toThrow(/no default target/);
   });
 
   it("includes a helpful message when no targets are enabled", () => {

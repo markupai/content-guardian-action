@@ -14,8 +14,10 @@ inputs:
     required: true
   target:
     description: Style guide to analyze against. Accepts either a target ID
-      or the display name of an enabled target (case-insensitive).
-    required: true
+      or the display name of an enabled target (case-insensitive). When
+      omitted, the action uses the organization's default target (the one
+      flagged `is_default: true` in /style-agent/targets).
+    required: false
   github_token:
     description: GitHub token for API access (can also be provided via the GITHUB_TOKEN
       environment variable).

@@ -195,10 +195,10 @@ describe("runAction — edge cases", () => {
   });
 
   it("fails when a required input is missing", async () => {
-    mockCore.getInput.mockImplementation(defaultInputMock({ target: "" }));
+    mockCore.getInput.mockImplementation(defaultInputMock({ markup_ai_api_key: "" }));
     await runAction();
     expect(mockCore.setFailed).toHaveBeenCalledWith(
-      expect.stringContaining("Required input 'target'"),
+      expect.stringContaining("Required input 'markup_ai_api_key'"),
     );
   });
 });

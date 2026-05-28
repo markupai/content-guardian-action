@@ -1,14 +1,24 @@
 /**
- * Resolve the user-supplied target input (an id or a display_name)
- * against the org's enabled style-agent targets.
+ * Resolve the user-supplied target input against the org's enabled
+ * style-agent targets.
+ *
+ * Empty input → fall back to the target flagged `is_default: true` for the
+ * org. Non-empty input → match either the exact id or the case-insensitive
+ * display_name.
  */
 
 import type { StyleTarget } from "../types/index.js";
 
 export function resolveTarget(input: string, targets: StyleTarget[]): StyleTarget {
   const trimmed = input.trim();
+
   if (!trimmed) {
-    throw new Error("Target input is empty.");
+    const defaultTarget = targets.find((t) => t.is_default);
+    if (defaultTarget) return defaultTarget;
+    const available = targets.map((t) => `  - ${t.display_name} (id: ${t.id})`).join("\n");
+    throw new Error(
+      `No target was specified and the organization has no default target. Available targets:\n${available || "  (none enabled)"}`,
+    );
   }
 
   const byId = targets.find((t) => t.id === trimmed);

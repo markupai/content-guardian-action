@@ -24,7 +24,7 @@ function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
   return {
     apiToken: "token",
     githubToken: "ghtok",
-    target: "Marketing Voice",
+    target: "",
     addCommitStatus: true,
     addReviewComments: true,
     strictMode: false,
@@ -33,9 +33,15 @@ function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
 }
 
 describe("validateConfig", () => {
-  it("passes for a valid config", () => {
+  it("passes for a valid config (no target — will use org default)", () => {
     expect(() => {
       validateConfig(baseConfig());
+    }).not.toThrow();
+  });
+
+  it("passes when target is explicitly provided", () => {
+    expect(() => {
+      validateConfig(baseConfig({ target: "Main" }));
     }).not.toThrow();
   });
 
@@ -51,20 +57,20 @@ describe("validateConfig", () => {
     }).not.toThrow();
     expect(core.warning).toHaveBeenCalled();
   });
-
-  it("throws when target is empty", () => {
-    expect(() => {
-      validateConfig(baseConfig({ target: "  " }));
-    }).toThrow(/target/);
-  });
 });
 
 describe("logConfiguration", () => {
-  it("logs target and token status", () => {
+  it("logs an explicit target value when provided", () => {
     logConfiguration(baseConfig({ target: "Brand Voice" }));
     const messages = core.info.mock.calls.map(([m]) => m);
     expect(messages.some((m) => m.includes("Brand Voice"))).toBe(true);
     expect(messages.some((m) => m.includes("[PROVIDED]"))).toBe(true);
+  });
+
+  it("shows '(org default)' when target is empty", () => {
+    logConfiguration(baseConfig({ target: "" }));
+    const messages = core.info.mock.calls.map(([m]) => m);
+    expect(messages.some((m) => m.includes("(org default)"))).toBe(true);
   });
 });
 
@@ -113,9 +119,9 @@ describe("getActionConfig", () => {
     expect(() => getActionConfig()).toThrow(/Required input 'markup_ai_api_key'/);
   });
 
-  it("throws when target is missing", () => {
+  it("returns empty target when no target is provided (action will use org default)", () => {
     inputs({ markup_ai_api_key: "tok", github_token: "gh" });
-    expect(() => getActionConfig()).toThrow(/Required input 'target'/);
+    expect(getActionConfig().target).toBe("");
   });
 
   it("parses strict_mode and add_* as booleans", () => {
