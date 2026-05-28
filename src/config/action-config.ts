@@ -16,6 +16,7 @@ export function getActionConfig(): ActionConfig {
   const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
   const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
+  const dryRun = getBooleanInput(INPUT_NAMES.DRY_RUN, false);
 
   return {
     apiToken,
@@ -25,6 +26,7 @@ export function getActionConfig(): ActionConfig {
     addCommitStatus,
     addReviewComments,
     strictMode,
+    dryRun,
   };
 }
 
@@ -91,4 +93,5 @@ export function logConfiguration(config: ActionConfig): void {
   core.info(`  Commit Status: ${config.addCommitStatus ? "enabled" : "disabled"}`);
   core.info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
   core.info(`  Strict Mode: ${config.strictMode ? "on" : "off"}`);
+  core.info(`  Dry Run: ${config.dryRun ? "on (no GitHub writes)" : "off"}`);
 }

@@ -156,6 +156,13 @@ export interface ActionConfig {
   addCommitStatus: boolean;
   addReviewComments: boolean;
   strictMode: boolean;
+  /** When true, the action performs the full analysis (config fetch,
+   * target resolution, /run, polling) and produces the same outputs JSON,
+   * but skips every write to GitHub: no PR comments, no inline reviews,
+   * no commit status, no job summary. The rendered markdown is still
+   * emitted to the run log so the result is observable. Useful for
+   * self-testing the action without polluting a PR. */
+  dryRun: boolean;
 }
 
 export interface AnalysisOptions {

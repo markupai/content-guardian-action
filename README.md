@@ -142,6 +142,7 @@ Either inputs or env vars work; inputs take precedence when both are set.
 | `add_commit_status`   | Add commit status updates for push events                                                                                                                          | No       | `true`      |
 | `add_review_comments` | Add PR review comments for issues                                                                                                                                  | No       | `true`      |
 | `strict_mode`         | Fail the action if any file fails analysis                                                                                                                         | No       | `false`     |
+| `dry_run`             | Run the full analysis but skip every GitHub-side write (PR comments, inline reviews, commit status, job summary). Useful for self-testing without polluting a PR.  | No       | `false`     |
 
 ## Outputs
 
@@ -280,6 +281,31 @@ Behaviour:
 Typical use: drop a `paths: README.md` on the action's own self-test
 workflow so the build matrix exercises the wire path on every PR without
 spamming a 20-file analysis result.
+
+## Dry-run mode
+
+`dry_run: true` runs the full analysis pipeline (config fetch, target
+resolution, `/run`, polling, response parsing) and still populates
+`outputs.results` with the full per-file JSON, but **skips every write to
+GitHub**: no PR comment, no inline review comments, no commit status, no
+job summary. The rendered markdown that _would_ have been posted is logged
+to the run output so you can preview it.
+
+```yaml
+- uses: markupai/content-guardian-action@v2
+  with:
+    markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    dry_run: "true"
+```
+
+Typical uses:
+
+- Self-testing the action's CI on its own PRs without polluting the PR
+  with 30+ inline comments — the analysis still runs against the live
+  Markup AI API so the wire path is exercised.
+- Letting downstream steps key on `outputs.results` JSON without showing
+  anything to PR reviewers.
 
 ## Strict mode
 
