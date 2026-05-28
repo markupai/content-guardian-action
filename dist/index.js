@@ -88238,12 +88238,11 @@ function calculateScoreSummary(results) {
 /**
  * Markdown generation for PR comments and job summaries.
  *
- * Branches on `AnalysisOptions.numericScoringEnabled`:
- * - Numeric on: shows the overall quality score per file plus the per-goal
- *   breakdown if available.
- * - Numeric off: hides all scores. Shows severity counts and a risk label.
- *
- * In both modes the issue-count column is always present.
+ * Risk-based scoring is the primary view in all modes — every file row leads
+ * with a risk label and severity counts. When `AnalysisOptions.numericScoringEnabled`
+ * is true, the action layers an additional Quality column onto the table, an
+ * Overall Quality Score line into the summary, and a collapsible per-goal
+ * breakdown — none of which replaces the risk view.
  */
 function generateFileDisplayLink(filePath, context) {
     return "prNumber" in context
