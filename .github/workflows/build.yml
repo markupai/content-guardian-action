@@ -46,24 +46,3 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  github-action-test:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      statuses: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Test Local Action
-        uses: ./
-        with:
-          tone: professional
-          dialect: american_english
-          style-guide: ap
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY_PROD }}

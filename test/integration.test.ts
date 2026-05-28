@@ -1,13 +1,14 @@
 /**
- * Integration tests for the action
+ * Integration tests for the action — wires real action-runner against
+ * mocked Markup AI client + GitHub API.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as core from "./mocks/core.js";
 import type { AnalysisResult } from "../src/types/index.js";
 
-// Mock dependencies
 vi.mock("@actions/core", () => core);
+
 vi.mock("@actions/github", () => ({
   getOctokit: vi.fn(() => ({
     rest: {
@@ -15,531 +16,182 @@ vi.mock("@actions/github", () => ({
         getCommit: vi.fn(() =>
           Promise.resolve({
             data: {
-              sha: "abc123456789",
+              sha: "abc123def456",
               commit: {
                 message: "test commit",
-                author: {
-                  name: "Test User",
-                  date: "2024-01-15T10:30:00Z",
-                },
+                author: { name: "Octo", date: "2024-01-15T10:30:00Z" },
               },
               files: [
                 {
                   filename: "README.md",
                   status: "modified",
-                  additions: 5,
-                  deletions: 2,
-                  changes: 7,
-                  patch: "@@ -1,3 +1,5 @@\n-test\n+new test\n",
+                  additions: 1,
+                  deletions: 0,
+                  changes: 1,
                 },
                 {
                   filename: "docs.txt",
                   status: "modified",
-                  additions: 10,
-                  deletions: 3,
-                  changes: 13,
-                  patch: "@@ -1,3 +1,10 @@\n-old content\n+new content\n",
+                  additions: 2,
+                  deletions: 0,
+                  changes: 2,
                 },
               ],
             },
           }),
         ),
+        createCommitStatus: vi.fn().mockResolvedValue({}),
       },
     },
   })),
   context: {
-    repo: {
-      owner: "test-owner",
-      repo: "test-repo",
-    },
-    sha: "abc123456789",
+    repo: { owner: "test-owner", repo: "test-repo" },
+    sha: "abc123def456",
     eventName: "push",
+    ref: "refs/heads/main",
+    serverUrl: "https://github.com",
+    runId: 1,
+    payload: {},
   },
 }));
 
-vi.mock("@markupai/toolkit", async () => {
-  const originalModule = await vi.importActual("@markupai/toolkit");
-  return {
-    ...(originalModule as object),
-    styleCheck: vi.fn(() =>
-      Promise.resolve({
-        workflow: {
-          id: "test-workflow-123",
-          type: "checks",
-          api_version: "1.0.0",
-          generated_at: "2025-01-15T14:22:33Z",
-          status: "completed",
-          webhook_response: {
-            url: "https://api.example.com/webhook",
-            status_code: 200,
-          },
-        },
-        config: {
-          dialect: "american_english",
-          style_guide: { style_guide_type: "ap", style_guide_id: "sg-123" },
-          tone: "formal",
-        },
-        original: {
-          issues: [
-            {
-              original: "test text",
-              position: { start_index: 10 },
-              subcategory: "passive_voice",
-              category: "grammar",
-            },
-          ],
-          scores: {
-            quality: {
-              score: 85.2,
-              grammar: { score: 90.1, issues: 2 },
-              consistency: { score: 88.3, issues: 1 },
-              terminology: { score: 95, issues: 0 },
-            },
-            analysis: {
-              clarity: { score: 78.5 },
-              tone: { score: 82.3 },
-            },
-          },
-        },
-      }),
-    ),
-    styleSuggestions: vi.fn(() =>
-      Promise.resolve({
-        workflow: {
-          id: "test-workflow-123",
-          type: "suggestions",
-          api_version: "1.0.0",
-          generated_at: "2025-01-15T14:22:33Z",
-          status: "completed",
-          webhook_response: {
-            url: "https://api.example.com/webhook",
-            status_code: 200,
-          },
-        },
-        config: {
-          dialect: "american_english",
-          style_guide: { style_guide_type: "ap", style_guide_id: "sg-123" },
-          tone: "formal",
-        },
-        original: {
-          issues: [
-            {
-              original: "test text",
-              position: { start_index: 10 },
-              subcategory: "passive_voice",
-              category: "grammar",
-              suggestion: "Test text",
-            },
-          ],
-          scores: {
-            quality: {
-              score: 85.2,
-              grammar: { score: 90.1, issues: 2 },
-              consistency: { score: 88.3, issues: 1 },
-              terminology: { score: 95, issues: 0 },
-            },
-            analysis: {
-              clarity: { score: 78.5 },
-              tone: { score: 82.3 },
-            },
-          },
-        },
-      }),
-    ),
-    styleBatchCheckRequests: vi.fn(() => ({
-      progress: {
-        total: 1,
-        completed: 1,
-        failed: 0,
-        inProgress: 0,
-        pending: 0,
-        results: [
-          {
-            index: 0,
-            status: "completed",
-            result: {
-              workflow: {
-                id: "test-workflow-123",
-                type: "checks",
-                api_version: "1.0.0",
-                generated_at: "2025-01-15T14:22:33Z",
-                status: "completed",
-                webhook_response: {
-                  url: "https://api.example.com/webhook",
-                  status_code: 200,
-                },
-              },
-              config: {
-                dialect: "american_english",
-                style_guide: {
-                  style_guide_type: "ap",
-                  style_guide_id: "sg-123",
-                },
-                tone: "formal",
-              },
-              original: {
-                issues: [],
-                scores: {
-                  quality: {
-                    score: 85.2,
-                    grammar: { score: 90.1, issues: 2 },
-                    consistency: { score: 88.3, issues: 1 },
-                    terminology: { score: 95, issues: 0 },
-                  },
-                  analysis: {
-                    clarity: { score: 78.5 },
-                    tone: { score: 82.3 },
-                  },
-                },
-              },
-            },
-          },
-        ],
-        startTime: Date.now(),
-      },
-      promise: Promise.resolve({
-        total: 1,
-        completed: 1,
-        failed: 0,
-        inProgress: 0,
-        pending: 0,
-        results: [
-          {
-            index: 0,
-            status: "completed",
-            result: {
-              workflow: {
-                id: "test-workflow-123",
-                type: "checks",
-                api_version: "1.0.0",
-                generated_at: "2025-01-15T14:22:33Z",
-                status: "completed",
-                webhook_response: {
-                  url: "https://api.example.com/webhook",
-                  status_code: 200,
-                },
-              },
-              config: {
-                dialect: "american_english",
-                style_guide: {
-                  style_guide_type: "ap",
-                  style_guide_id: "sg-123",
-                },
-                tone: "formal",
-              },
-              original: {
-                issues: [],
-                scores: {
-                  quality: {
-                    score: 85.2,
-                    grammar: { score: 90.1, issues: 2 },
-                    consistency: { score: 88.3, issues: 1 },
-                    terminology: { score: 95, issues: 0 },
-                  },
-                  analysis: {
-                    clarity: { score: 78.5 },
-                    tone: { score: 82.3 },
-                  },
-                },
-              },
-            },
-          },
-        ],
-        startTime: Date.now(),
-      }),
-      cancel: vi.fn(),
-    })),
-    styleBatchOperation: vi.fn(() => ({
-      progress: {
-        total: 1,
-        completed: 1,
-        failed: 0,
-        inProgress: 0,
-        pending: 0,
-        results: [
-          {
-            index: 0,
-            status: "completed",
-            result: {
-              workflow: {
-                id: "test-workflow-123",
-                type: "suggestions",
-                api_version: "1.0.0",
-                generated_at: "2025-01-15T14:22:33Z",
-                status: "completed",
-                webhook_response: {
-                  url: "https://api.example.com/webhook",
-                  status_code: 200,
-                },
-              },
-              config: {
-                dialect: "american_english",
-                style_guide: {
-                  style_guide_type: "ap",
-                  style_guide_id: "sg-123",
-                },
-                tone: "formal",
-              },
-              original: {
-                issues: [],
-                scores: {
-                  quality: {
-                    score: 85.2,
-                    grammar: { score: 90.1, issues: 2 },
-                    consistency: { score: 88.3, issues: 1 },
-                    terminology: { score: 95, issues: 0 },
-                  },
-                  analysis: {
-                    clarity: { score: 78.5 },
-                    tone: { score: 82.3 },
-                  },
-                },
-              },
-            },
-          },
-        ],
-        startTime: Date.now(),
-      },
-      promise: Promise.resolve({
-        total: 1,
-        completed: 1,
-        failed: 0,
-        inProgress: 0,
-        pending: 0,
-        results: [
-          {
-            index: 0,
-            status: "completed",
-            result: {
-              workflow: {
-                id: "test-workflow-123",
-                type: "suggestions",
-                api_version: "1.0.0",
-                generated_at: "2025-01-15T14:22:33Z",
-                status: "completed",
-                webhook_response: {
-                  url: "https://api.example.com/webhook",
-                  status_code: 200,
-                },
-              },
-              config: {
-                dialect: "american_english",
-                style_guide: {
-                  style_guide_type: "ap",
-                  style_guide_id: "sg-123",
-                },
-                tone: "formal",
-              },
-              original: {
-                issues: [],
-                scores: {
-                  quality: {
-                    score: 85.2,
-                    grammar: { score: 90.1, issues: 2 },
-                    consistency: { score: 88.3, issues: 1 },
-                    terminology: { score: 95, issues: 0 },
-                  },
-                  analysis: {
-                    clarity: { score: 78.5 },
-                    tone: { score: 82.3 },
-                  },
-                },
-              },
-            },
-          },
-        ],
-        startTime: Date.now(),
-      }),
-      cancel: vi.fn(),
-    })),
-  };
-});
-
-// Mock fs/promises
 vi.mock("fs/promises", () => ({
-  readFile: vi.fn(() => Promise.resolve("Test content for analysis")),
+  readFile: vi.fn(() => Promise.resolve("Test content")),
+}));
+
+// Mock the Markup AI client at the source.
+const getStyleAgentConfig = vi.fn(() =>
+  Promise.resolve({
+    is_acrolinx_classic: false,
+    style_agent: "enabled" as const,
+    style_agent_numeric_scoring: true,
+  }),
+);
+const listStyleAgentTargets = vi.fn(() =>
+  Promise.resolve([
+    { id: "tgt_1", display_name: "Marketing Voice", is_default: true, enabled: true },
+  ]),
+);
+const runStyleAgent = vi.fn(() =>
+  Promise.resolve({ workflow_id: "agw_1", status: "running", started_at: "2026-01-01" }),
+);
+const pollUntilDone = vi.fn(() =>
+  Promise.resolve({
+    workflow_id: "agw_1",
+    status: "completed" as const,
+    started_at: "2026-01-01",
+    result: {
+      quality: { score: 87 },
+      issues: [
+        {
+          severity: "low" as const,
+          explanation: "x",
+          category: "grammar",
+          position: { start: 0, end: 4, text: "Test" },
+        },
+      ],
+    },
+  }),
+);
+const assertStyleAgentEnabled = vi.fn();
+
+vi.mock("../src/services/markup-api-client.js", () => ({
+  getStyleAgentConfig,
+  listStyleAgentTargets,
+  runStyleAgent,
+  pollUntilDone,
+  assertStyleAgentEnabled,
+  isFatalApiError: () => false,
+  MarkupApiError: class extends Error {},
 }));
 
 const { run } = await import("../src/main.js");
 
-describe("Integration Tests", () => {
-  beforeEach(() => {
-    // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation((name: string) => {
-      switch (name) {
-        case "markup_ai_api_key":
-          return "test-markup_ai_api_key";
-        case "dialect":
-          return "american_english";
-        case "tone":
-          return "formal";
-        case "style-guide":
-          return "ap";
-        case "github_token":
-          return "test-github-token";
-        default:
-          return "";
-      }
-    });
+function applyDefaultInputs() {
+  core.getInput.mockImplementation((name: string) => {
+    switch (name) {
+      case "markup_ai_api_key":
+        return "test-key";
+      case "github_token":
+        return "gh-tok";
+      case "target":
+        return "Marketing Voice";
+      default:
+        return "";
+    }
+  });
+}
 
-    // Mock process.env.GITHUB_TOKEN and GITHUB_REPOSITORY
-    process.env.GITHUB_TOKEN = "test-github-token";
-    process.env.GITHUB_REPOSITORY = "test-owner/test-repo";
+describe("Integration", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    applyDefaultInputs();
+    process.env.GITHUB_TOKEN = "gh-tok";
   });
 
   afterEach(() => {
-    // Only reset core mocks, not the module mocks
-    vi.clearAllMocks();
     delete process.env.GITHUB_TOKEN;
-    delete process.env.GITHUB_REPOSITORY;
+    delete process.env.MARKUP_AI_API_KEY;
+    delete process.env.TARGET;
   });
 
-  describe("Main Action Flow", () => {
-    it("should run complete workflow successfully", async () => {
-      await run();
+  it("runs the full happy-path push flow", async () => {
+    await run();
 
-      // Verify the outputs were set correctly
-      expect(core.setOutput).toHaveBeenCalledWith("event-type", "push");
-      expect(core.setOutput).toHaveBeenCalledWith("files-analyzed", "2");
-      expect(core.setOutput).toHaveBeenCalledWith("results", expect.any(String));
+    expect(core.setOutput).toHaveBeenCalledWith("event-type", "push");
+    expect(core.setOutput).toHaveBeenCalledWith("files-analyzed", "2");
 
-      // Verify the results contain the expected data
-      const resultsCall = core.setOutput.mock.calls.find((call) => call[0] === "results");
-      expect(resultsCall).toBeDefined();
-      if (!resultsCall) throw new Error("resultsCall not found");
-      const results = JSON.parse(resultsCall[1] as string) as AnalysisResult[];
-
-      expect(results).toHaveLength(2);
-      expect(results.some((r) => r.filePath === "README.md")).toBe(true);
-      expect(results.some((r) => r.filePath === "docs.txt")).toBe(true);
-      expect(results[0].result.quality.score).toBe(85.2);
-    });
-
-    it("should filter out deleted files from analysis", async () => {
-      // This test verifies that the filtering logic is in place
-      // The actual filtering behavior is tested in the unit tests
-      // Here we just verify the action runs successfully with the current mock
-      // The mock returns files with status "modified", so they should be analyzed
-      await run();
-
-      // Verify the outputs were set correctly
-      expect(core.setOutput).toHaveBeenCalledWith("event-type", "push");
-      expect(core.setOutput).toHaveBeenCalledWith("files-analyzed", "2");
-      expect(core.setOutput).toHaveBeenCalledWith("results", expect.any(String));
-
-      // Verify the results contain the expected data
-      const resultsCall = core.setOutput.mock.calls.find((call) => call[0] === "results");
-      expect(resultsCall).toBeDefined();
-      if (!resultsCall) throw new Error("resultsCall not found");
-      const results = JSON.parse(resultsCall[1] as string) as AnalysisResult[];
-
-      expect(results).toHaveLength(2);
-      expect(results.some((r) => r.filePath === "README.md")).toBe(true);
-      expect(results.some((r) => r.filePath === "docs.txt")).toBe(true);
-      expect(results[0].result.quality.score).toBe(85.2);
-    });
-
-    it("should handle missing token", async () => {
-      core.getInput.mockImplementation((name: string) => {
-        switch (name) {
-          case "markup_ai_api_key":
-            return "";
-          case "dialect":
-            return "american_english";
-          case "tone":
-            return "";
-          case "style-guide":
-            return "ap";
-          case "github_token":
-            return "test-github-token";
-          default:
-            return "";
-        }
-      });
-
-      await run();
-
-      expect(core.setFailed).toHaveBeenCalledWith(
-        "Required input 'markup_ai_api_key' or environment variable 'MARKUP_AI_API_KEY' is not provided",
-      );
-    });
-
-    it("should handle missing GitHub token", async () => {
-      core.getInput.mockImplementation((name: string) => {
-        switch (name) {
-          case "markup_ai_api_key":
-            return "test-markup_ai_api_key";
-          case "dialect":
-            return "american_english";
-          case "tone":
-            return "formal";
-          case "style-guide":
-            return "ap";
-          case "github_token":
-            return "";
-          default:
-            return "";
-        }
-      });
-
-      delete process.env.GITHUB_TOKEN;
-
-      await run();
-
-      expect(core.setFailed).toHaveBeenCalledWith(
-        "Required input 'github_token' or environment variable 'GITHUB_TOKEN' is not provided",
-      );
-    });
-
-    it("should handle custom analysis options", async () => {
-      core.getInput.mockImplementation((name: string) => {
-        switch (name) {
-          case "markup_ai_api_key":
-            return "test-markup_ai_api_key";
-          case "dialect":
-            return "british_english";
-          case "tone":
-            return "informal";
-          case "style-guide":
-            return "chicago";
-          case "github_token":
-            return "test-github-token";
-          default:
-            return "";
-        }
-      });
-
-      await run();
-
-      // Verify the action completed successfully with custom options
-      expect(core.setOutput).toHaveBeenCalledWith("event-type", "push");
-      expect(core.setOutput).toHaveBeenCalledWith("files-analyzed", "2");
-      expect(core.setOutput).toHaveBeenCalledWith("results", expect.any(String));
-    });
+    const resultsCall = core.setOutput.mock.calls.find(([k]) => k === "results");
+    expect(resultsCall).toBeDefined();
+    const results = JSON.parse((resultsCall as unknown as [string, string])[1]) as AnalysisResult[];
+    expect(results).toHaveLength(2);
+    expect(results[0].scores?.score).toBe(87);
   });
 
-  describe("Configuration Validation", () => {
-    it("should validate required inputs", async () => {
-      // Test with empty required inputs
-      core.getInput.mockReturnValue("");
+  it("fails when the API key input is missing", async () => {
+    core.getInput.mockImplementation((name: string) =>
+      name === "markup_ai_api_key"
+        ? ""
+        : name === "target"
+          ? "Marketing Voice"
+          : name === "github_token"
+            ? "gh-tok"
+            : "",
+    );
+    await run();
+    expect(core.setFailed).toHaveBeenCalledWith(
+      expect.stringContaining("Required input 'markup_ai_api_key'"),
+    );
+  });
 
-      await run();
+  it("fails when the target input is missing", async () => {
+    core.getInput.mockImplementation((name: string) =>
+      name === "target"
+        ? ""
+        : name === "markup_ai_api_key"
+          ? "k"
+          : name === "github_token"
+            ? "gh-tok"
+            : "",
+    );
+    await run();
+    expect(core.setFailed).toHaveBeenCalledWith(expect.stringContaining("Required input 'target'"));
+  });
 
-      expect(core.setFailed).toHaveBeenCalledWith(expect.stringContaining("Required input"));
-    });
+  it("resolves the target by display name", async () => {
+    await run();
+    expect(runStyleAgent).toHaveBeenCalledWith(
+      "test-key",
+      expect.objectContaining({ target_id: "tgt_1" }),
+    );
+  });
 
-    it("should use environment variables as fallback", async () => {
-      core.getInput.mockReturnValue("");
-      process.env.MARKUP_AI_API_KEY = "env-markup_ai_api_key";
-      process.env.GITHUB_TOKEN = "env-github-token";
-      process.env.DIALECT = "american_english";
-      process.env.STYLE_GUIDE = "ap";
-
-      await run();
-
-      // Should still work with environment variables
-      expect(core.setOutput).toHaveBeenCalledWith("event-type", "push");
-      expect(core.setOutput).toHaveBeenCalledWith("files-analyzed", "2");
-    });
+  it("falls back to env vars when inputs are empty", async () => {
+    core.getInput.mockReturnValue("");
+    process.env.MARKUP_AI_API_KEY = "env-key";
+    process.env.GITHUB_TOKEN = "env-gh";
+    process.env.TARGET = "Marketing Voice";
+    await run();
+    expect(core.setOutput).toHaveBeenCalledWith("event-type", "push");
   });
 });

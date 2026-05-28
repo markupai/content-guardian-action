@@ -2,9 +2,6 @@
  * Core type definitions for the GitHub Action
  */
 
-/**
- * Interface for commit information
- */
 export interface CommitInfo {
   sha: string;
   message: string;
@@ -13,9 +10,6 @@ export interface CommitInfo {
   changes: FileChange[];
 }
 
-/**
- * Interface for file changes
- */
 export interface FileChange {
   filename: string;
   status: string;
@@ -25,32 +19,120 @@ export interface FileChange {
   patch?: string;
 }
 
-import type { Issue, IssueWithSuggestion, StyleScores } from "@markupai/toolkit";
+/** Markup AI agent / workflow types */
 
-/**
- * Interface for analysis result
- */
-export interface AnalysisResult {
-  filePath: string;
-  result: StyleScores;
-  issues: AnalysisIssue[];
-  workflowId?: string;
-  timestamp: string;
+export type WorkflowStatus = "running" | "completed" | "failed" | "timed_out" | "cancelled";
+export type IssueSeverity = "high" | "medium" | "low";
+export type RiskLevel = "high" | "medium" | "low" | "none";
+export type StyleAgentMode = "enabled" | "enabled_terminology" | "disabled";
+
+export interface AgentRunRequest {
+  text: string;
+  document_name?: string;
+  document_ref?: string;
+  target_id?: string;
 }
 
-/**
- * Interface for analysis issues with file line context
- */
+export interface AgentRunResponse {
+  workflow_id: string;
+  request_id?: string | null;
+  status: WorkflowStatus;
+  document_ref?: string | null;
+  result?: StyleAgentResult | null;
+  started_at: string;
+  completed_at?: string | null;
+  duration_seconds?: number | null;
+}
+
+export interface StyleAgentResult {
+  issues?: StyleAgentIssue[];
+  quality?: StyleScores | null;
+  analysis?: StyleAnalysis | null;
+  warnings?: unknown[];
+}
+
+export interface StyleAgentIssue {
+  id?: string;
+  agent?: string;
+  confidence?: number;
+  severity: IssueSeverity;
+  explanation: string;
+  position?: { start: number; end: number; text: string };
+  category: string;
+  suggestion?: string | null;
+  suggestions?: string[];
+  guideline_name?: string;
+  context_surface?: string;
+  read_only?: boolean;
+}
+
+export interface StyleScores {
+  score: number;
+  status?: string;
+  scoresByGoal?: ScoreByGoal[];
+}
+
+export interface ScoreByGoal {
+  id: string;
+  displayName: string;
+  score: number;
+  count: number;
+}
+
+export interface StyleAnalysis {
+  targetId?: string;
+  targetDisplayName?: string;
+  contentProfileId?: string;
+  contentProfileDisplayName?: string;
+  words?: number;
+  sentences?: number;
+  clarityIndex?: number;
+  informalityIndex?: number;
+  livelinessIndex?: number;
+  fleschReadingEase?: number;
+}
+
+export interface OrganizationConfigResponse {
+  is_acrolinx_classic: boolean;
+  style_agent: StyleAgentMode;
+  style_agent_numeric_scoring: boolean;
+}
+
+export interface StyleTarget {
+  id: string;
+  display_name: string;
+  is_default: boolean;
+  enabled: boolean;
+}
+
+/** Per-file analysis result surfaced to the rest of the action */
+
 export interface AnalysisIssue {
-  issue: Issue | IssueWithSuggestion;
+  issue: StyleAgentIssue;
   line: number;
   column: number;
   lineText: string;
 }
 
-/**
- * Interface for event information
- */
+export interface IssueCounts {
+  total: number;
+  high: number;
+  medium: number;
+  low: number;
+}
+
+export interface AnalysisResult {
+  filePath: string;
+  workflowId: string;
+  status: WorkflowStatus;
+  documentRef?: string;
+  scores: StyleScores | null;
+  analysis: StyleAnalysis | null;
+  issues: AnalysisIssue[];
+  issueCounts: IssueCounts;
+  timestamp: string;
+}
+
 export interface EventInfo {
   eventType: string;
   description: string;
@@ -58,37 +140,22 @@ export interface EventInfo {
   additionalInfo?: Record<string, unknown>;
 }
 
-/**
- * Interface for file discovery strategy
- */
 export interface FileDiscoveryStrategy {
   getFilesToAnalyze(): Promise<string[]>;
   getEventInfo(): EventInfo;
 }
 
-/**
- * Configuration for the action
- */
 export interface ActionConfig {
   apiToken: string;
-  dialect: string;
-  tone?: string;
-  styleGuide: string;
   githubToken: string;
+  target: string;
   addCommitStatus: boolean;
   addReviewComments: boolean;
   strictMode: boolean;
 }
 
-/**
- * Analysis options
- */
 export interface AnalysisOptions {
-  dialect: string;
-  tone?: string;
-  styleGuide: string;
-  reviewComments?: boolean;
+  targetId: string;
+  targetDisplayName: string;
+  numericScoringEnabled: boolean;
 }
-
-// Re-export types from SDK
-export type { StyleAnalysisReq, Config } from "@markupai/toolkit";

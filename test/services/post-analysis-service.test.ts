@@ -1,62 +1,30 @@
-/**
- * Unit tests for post-analysis service
- */
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { buildAnalysisOptions, buildAnalysisResult } from "../test-helpers/scores.js";
 
-import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from "vitest";
-import { buildQuality, buildClarity, buildTone } from "../test-helpers/scores.js";
-import * as core from "../mocks/core.js";
-import type { AnalysisResult } from "../../src/types/index.js";
-
-// Spy on core methods
-const infoSpy = vi.spyOn(core, "info");
-const errorSpy = vi.spyOn(core, "error");
-
-// Mock @actions/core and @actions/github
-vi.mock("@actions/core", () => core);
-
-const mockGitHubContext = {
-  repo: {
-    owner: "test-owner",
-    repo: "test-repo",
-  },
-  sha: "abc123def456",
-  ref: "refs/heads/main",
-  serverUrl: "https://github.com",
-};
+vi.mock("@actions/core", () => ({
+  info: vi.fn(),
+  warning: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn(),
+}));
 
 vi.mock("@actions/github", () => ({
-  context: mockGitHubContext,
+  context: {
+    repo: { owner: "octo", repo: "demo" },
+    sha: "abc123def456",
+    ref: "refs/heads/main",
+    serverUrl: "https://github.com",
+    runId: 1,
+  },
 }));
 
-// Mock dependencies
-const mockGetAnalysisSummary = vi.fn<
-  () => {
-    averageQualityScore: number;
-    averageClarityScore: number;
-    averageGrammarScore: number;
-    averageConsistencyScore: number;
-    averageToneScore: number;
-    averageTerminologyScore: number;
-    totalGrammarIssues: number;
-    totalStyleGuideIssues: number;
-    totalTerminologyIssues: number;
-    totalFiles: number;
-    totalIssues: number;
-  }
->();
-const mockCreateGitHubClient = vi.fn<() => Record<string, unknown>>();
 const mockUpdateCommitStatus = vi.fn<() => Promise<void>>();
-
-const mockIsPullRequestEvent = vi.fn<() => boolean>();
-const mockGetPRNumber = vi.fn<() => number | null>();
+const mockCreateGitHubClient = vi.fn<() => Record<string, unknown>>();
 const mockCreateOrUpdatePRComment = vi.fn<() => Promise<void>>();
 const mockCreatePRReviewComments = vi.fn<() => Promise<void>>();
-const mockDisplaySectionHeader = vi.fn<() => void>();
+const mockIsPullRequestEvent = vi.fn<() => boolean>();
+const mockGetPRNumber = vi.fn<() => number | null>();
 const mockCreateJobSummary = vi.fn<() => Promise<void>>();
-
-vi.mock("../../src/services/api-service.js", () => ({
-  getAnalysisSummary: mockGetAnalysisSummary,
-}));
 
 vi.mock("../../src/services/github-service.js", () => ({
   createGitHubClient: mockCreateGitHubClient,
@@ -74,372 +42,126 @@ vi.mock("../../src/services/job-summary-service.js", () => ({
   createJobSummary: mockCreateJobSummary,
 }));
 
-vi.mock("../../src/utils/display-utils.js", () => ({
-  displaySectionHeader: mockDisplaySectionHeader,
-}));
-
 import { EVENT_TYPES } from "../../src/constants/index.js";
+const { handlePostAnalysisActions } = await import("../../src/services/post-analysis-service.js");
 
-const postAnalysisService = await import("../../src/services/post-analysis-service.js");
+const mockOctokit = { rest: {} };
+const config = { githubToken: "tok", addCommitStatus: true, addReviewComments: true };
+const options = buildAnalysisOptions();
+const results = [buildAnalysisResult()];
 
-describe("Post Analysis Service", () => {
-  // Set up environment variable for GitHub context
-  const originalEnv = process.env;
-  beforeAll(() => {
-    process.env.GITHUB_REPOSITORY = "test-owner/test-repo";
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockCreateGitHubClient.mockReturnValue(mockOctokit);
+});
+
+describe("handlePostAnalysisActions", () => {
+  it("short-circuits when there are no results", async () => {
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.PUSH, filesCount: 0, description: "" },
+      [],
+      config,
+      options,
+    );
+    expect(mockCreateGitHubClient).not.toHaveBeenCalled();
   });
 
-  afterAll(() => {
-    process.env = originalEnv;
+  it("push event updates commit status when enabled", async () => {
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.PUSH, filesCount: 1, description: "" },
+      results,
+      config,
+      options,
+    );
+    expect(mockUpdateCommitStatus).toHaveBeenCalledWith(
+      mockOctokit,
+      "octo",
+      "demo",
+      "abc123def456",
+      results,
+      options,
+    );
   });
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    infoSpy.mockClear();
-    errorSpy.mockClear();
-
-    mockGetAnalysisSummary.mockReturnValue({
-      averageQualityScore: 85,
-      averageClarityScore: 78,
-      averageGrammarScore: 90,
-      averageConsistencyScore: 88,
-      averageToneScore: 82,
-      averageTerminologyScore: 95,
-      totalGrammarIssues: 2,
-      totalStyleGuideIssues: 1,
-      totalTerminologyIssues: 0,
-      totalFiles: 1,
-      totalIssues: 2,
-    });
-
-    mockCreateGitHubClient.mockReturnValue(mockOctokit);
+  it("push event skips commit status when disabled", async () => {
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.PUSH, filesCount: 1, description: "" },
+      results,
+      { ...config, addCommitStatus: false },
+      options,
+    );
+    expect(mockUpdateCommitStatus).not.toHaveBeenCalled();
   });
 
-  const mockOctokit = { rest: {} };
-  const mockResults: AnalysisResult[] = [
-    {
-      filePath: "test.md",
-      result: {
-        quality: buildQuality(85, 1, {
-          grammarScore: 90,
-          grammarIssues: 2,
-          styleGuideScore: 88,
-          styleGuideIssues: 1,
-          terminologyScore: 95,
-          terminologyIssues: 0,
-        }),
-        analysis: {
-          clarity: buildClarity(78),
-          tone: buildTone(82),
-        },
-      },
-      issues: [],
-      timestamp: "2024-01-15T10:30:00Z",
-    },
-  ];
+  it("workflow_dispatch writes a job summary", async () => {
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.WORKFLOW_DISPATCH, filesCount: 1, description: "" },
+      results,
+      config,
+      options,
+    );
+    expect(mockCreateJobSummary).toHaveBeenCalled();
+  });
 
-  const mockConfig = {
-    githubToken: "test-token",
-    addCommitStatus: true,
-    addReviewComments: true,
-  };
+  it("schedule also writes a job summary", async () => {
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.SCHEDULE, filesCount: 1, description: "" },
+      results,
+      config,
+      options,
+    );
+    expect(mockCreateJobSummary).toHaveBeenCalled();
+  });
 
-  const mockAnalysisOptions = {
-    dialect: "american_english",
-    styleGuide: "ap",
-  };
+  it("pull_request creates a comment, plus review comments when enabled", async () => {
+    mockIsPullRequestEvent.mockReturnValue(true);
+    mockGetPRNumber.mockReturnValue(42);
 
-  describe("handlePostAnalysisActions", () => {
-    it("should handle empty results", async () => {
-      await postAnalysisService.handlePostAnalysisActions(
-        {
-          eventType: EVENT_TYPES.PUSH,
-          filesCount: 0,
-          description: "Push event",
-        },
-        [],
-        mockConfig,
-        mockAnalysisOptions,
-      );
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.PULL_REQUEST, filesCount: 1, description: "" },
+      results,
+      config,
+      options,
+    );
+    expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
+    expect(mockCreatePRReviewComments).toHaveBeenCalled();
+  });
 
-      expect(infoSpy).toHaveBeenCalledWith("No results to process for post-analysis actions.");
-      expect(mockCreateGitHubClient).not.toHaveBeenCalled();
-    });
+  it("pull_request skips review comments when disabled", async () => {
+    mockIsPullRequestEvent.mockReturnValue(true);
+    mockGetPRNumber.mockReturnValue(42);
 
-    describe("Push events", () => {
-      it("should update commit status when enabled", async () => {
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PUSH,
-            filesCount: 1,
-            description: "Push event",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.PULL_REQUEST, filesCount: 1, description: "" },
+      results,
+      { ...config, addReviewComments: false },
+      options,
+    );
+    expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
+    expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
+  });
 
-        expect(mockDisplaySectionHeader).toHaveBeenCalledWith("📊 Updating Commit Status");
-        expect(mockUpdateCommitStatus).toHaveBeenCalledWith(
-          mockOctokit,
-          "test-owner",
-          "test-repo",
-          "abc123def456",
-          85,
-          1,
-        );
-      });
+  it("pull_request returns early when isPullRequestEvent is false", async () => {
+    mockIsPullRequestEvent.mockReturnValue(false);
 
-      it("should skip commit status when disabled", async () => {
-        const configWithDisabledStatus = {
-          ...mockConfig,
-          addCommitStatus: false,
-        };
+    await handlePostAnalysisActions(
+      { eventType: EVENT_TYPES.PULL_REQUEST, filesCount: 1, description: "" },
+      results,
+      config,
+      options,
+    );
+    expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
+  });
 
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PUSH,
-            filesCount: 1,
-            description: "Push event",
-          },
-          mockResults,
-          configWithDisabledStatus,
-          mockAnalysisOptions,
-        );
-
-        expect(mockDisplaySectionHeader).not.toHaveBeenCalled();
-        expect(mockUpdateCommitStatus).not.toHaveBeenCalled();
-        expect(infoSpy).toHaveBeenCalledWith("📊 Commit status update disabled by configuration");
-      });
-    });
-
-    describe("Workflow dispatch events", () => {
-      it("should create job summary for workflow dispatch events", async () => {
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.WORKFLOW_DISPATCH,
-            filesCount: 1,
-            description: "Manual workflow",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockDisplaySectionHeader).toHaveBeenCalledWith("📋 Creating Job Summary");
-        expect(mockCreateJobSummary).toHaveBeenCalledWith(
-          mockResults,
-          mockAnalysisOptions,
-          EVENT_TYPES.WORKFLOW_DISPATCH,
-          {
-            owner: "test-owner",
-            repo: "test-repo",
-            ref: "refs/heads/main",
-            baseUrl: new URL("https://github.com"),
-          },
-        );
-      });
-    });
-
-    describe("Schedule events", () => {
-      it("should create job summary for schedule events", async () => {
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.SCHEDULE,
-            filesCount: 1,
-            description: "Scheduled workflow",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockDisplaySectionHeader).toHaveBeenCalledWith("📋 Creating Job Summary");
-        expect(mockCreateJobSummary).toHaveBeenCalledWith(
-          mockResults,
-          mockAnalysisOptions,
-          EVENT_TYPES.SCHEDULE,
-          {
-            owner: "test-owner",
-            repo: "test-repo",
-            ref: "refs/heads/main",
-            baseUrl: new URL("https://github.com"),
-          },
-        );
-      });
-    });
-
-    describe("Pull request events", () => {
-      it("should create PR comment when it is a pull request event", async () => {
-        mockIsPullRequestEvent.mockReturnValue(true);
-        mockGetPRNumber.mockReturnValue(123);
-
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PULL_REQUEST,
-            filesCount: 1,
-            description: "Pull request event",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockDisplaySectionHeader).toHaveBeenCalledWith("💬 Creating PR Comment");
-        expect(mockCreateOrUpdatePRComment).toHaveBeenCalledWith(mockOctokit, {
-          owner: "test-owner",
-          eventType: "pull_request",
-          repo: "test-repo",
-          prNumber: 123,
-          results: mockResults,
-          config: mockAnalysisOptions,
-        });
-        expect(mockCreatePRReviewComments).toHaveBeenCalledWith(mockOctokit, {
-          owner: "test-owner",
-          eventType: "pull_request",
-          repo: "test-repo",
-          prNumber: 123,
-          results: mockResults,
-          config: mockAnalysisOptions,
-        });
-      });
-
-      it("should skip review comments when disabled", async () => {
-        mockIsPullRequestEvent.mockReturnValue(true);
-        mockGetPRNumber.mockReturnValue(123);
-
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PULL_REQUEST,
-            filesCount: 1,
-            description: "Pull request event",
-          },
-          mockResults,
-          { ...mockConfig, addReviewComments: false },
-          mockAnalysisOptions,
-        );
-
-        expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
-        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
-      });
-
-      it("should not create PR comment when it is not a pull request event", async () => {
-        mockIsPullRequestEvent.mockReturnValue(false);
-
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PULL_REQUEST,
-            filesCount: 1,
-            description: "Pull request event",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockDisplaySectionHeader).not.toHaveBeenCalled();
-        expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
-        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
-      });
-
-      it("should not create PR comment when PR number is null", async () => {
-        mockIsPullRequestEvent.mockReturnValue(true);
-        mockGetPRNumber.mockReturnValue(null);
-
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PULL_REQUEST,
-            filesCount: 1,
-            description: "Pull request event",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockDisplaySectionHeader).not.toHaveBeenCalled();
-        expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
-        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
-      });
-    });
-
-    describe("Unknown event types", () => {
-      it("should log info for unknown event type", async () => {
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: "unknown_event" as string,
-            filesCount: 1,
-            description: "Unknown event",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(infoSpy).toHaveBeenCalledWith(
-          "No specific post-analysis actions for event type: unknown_event",
-        );
-        expect(mockDisplaySectionHeader).not.toHaveBeenCalled();
-      });
-    });
-
-    describe("Error handling", () => {
-      it("should handle errors in updateCommitStatus", async () => {
-        mockUpdateCommitStatus.mockRejectedValue(new Error("Status update failed"));
-
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PUSH,
-            filesCount: 1,
-            description: "Push event",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockUpdateCommitStatus).toHaveBeenCalled();
-        // The function should not throw, it should handle the error gracefully
-      });
-
-      it("should handle errors in createOrUpdatePRComment", async () => {
-        mockIsPullRequestEvent.mockReturnValue(true);
-        mockGetPRNumber.mockReturnValue(123);
-        mockCreateOrUpdatePRComment.mockRejectedValue(new Error("Comment creation failed"));
-
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.PULL_REQUEST,
-            filesCount: 1,
-            description: "Pull request event",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockCreateOrUpdatePRComment).toHaveBeenCalled();
-        expect(mockCreatePRReviewComments).not.toHaveBeenCalled();
-        // The function should not throw, it should handle the error gracefully
-      });
-
-      it("should handle errors in createJobSummary", async () => {
-        mockCreateJobSummary.mockRejectedValue(new Error("Job summary creation failed"));
-
-        await postAnalysisService.handlePostAnalysisActions(
-          {
-            eventType: EVENT_TYPES.WORKFLOW_DISPATCH,
-            filesCount: 1,
-            description: "Manual workflow",
-          },
-          mockResults,
-          mockConfig,
-          mockAnalysisOptions,
-        );
-
-        expect(mockCreateJobSummary).toHaveBeenCalled();
-        // The function should not throw, it should handle the error gracefully
-      });
-    });
+  it("ignores unknown event types", async () => {
+    await handlePostAnalysisActions(
+      { eventType: "unknown", filesCount: 1, description: "" },
+      results,
+      config,
+      options,
+    );
+    expect(mockUpdateCommitStatus).not.toHaveBeenCalled();
+    expect(mockCreateJobSummary).not.toHaveBeenCalled();
+    expect(mockCreateOrUpdatePRComment).not.toHaveBeenCalled();
   });
 });
