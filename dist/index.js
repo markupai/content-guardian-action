@@ -88266,44 +88266,6 @@ async function analyzeFiles(apiKey, files, options, readFileContent) {
 }
 
 /**
- * Common string utilities.
- */
-function truncateText(value, maxLength) {
-    if (value.length <= maxLength) {
-        return value;
-    }
-    return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
-}
-function wrapInlineCode(value) {
-    const matches = value.match(/`+/g);
-    const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
-    const fence = "`".repeat(maxLength + 1);
-    const needsPadding = value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
-    const wrappedValue = needsPadding ? ` ${value} ` : value;
-    return `${fence}${wrappedValue}${fence}`;
-}
-function capitalizeLabel(value) {
-    if (!value) {
-        return value;
-    }
-    return value.charAt(0).toUpperCase() + value.slice(1);
-}
-/**
- * Format an agent identifier from the API (snake_case, e.g. `style_agent`)
- * as a human-readable label (`Style Agent`). Returns the input unchanged if
- * it's empty or already formatted.
- */
-function formatAgentName(agent) {
-    if (!agent)
-        return agent;
-    return agent
-        .split(/[_\s]+/)
-        .filter((word) => word.length > 0)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(" ");
-}
-
-/**
  * Numeric-score helpers (active only when org-level numeric scoring is enabled).
  */
 const QUALITY_THRESHOLDS = {
@@ -88455,23 +88417,11 @@ ${rows.join("\n\n")}
 </details>
 `;
 }
-function uniqueAgentsAcrossResults(results) {
-    const seen = new Set();
-    for (const r of results) {
-        for (const { issue } of r.issues) {
-            if (issue.agent)
-                seen.add(formatAgentName(issue.agent));
-        }
-    }
-    return [...seen].sort((a, b) => a.localeCompare(b));
-}
-function generateFooter(results, options, eventType) {
-    const agents = uniqueAgentsAcrossResults(results);
-    const agentLine = agents.length > 0 ? `\n*Detected by: ${agents.join(", ")}*` : "";
+function generateFooter(options, eventType) {
     return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName}*${agentLine}
+*Target: ${options.targetDisplayName}*
 *Event: ${eventType}*`;
 }
 function generateAnalysisContent(results, options, header, eventType, context) {
@@ -88481,8 +88431,46 @@ ${generateResultsTable(results, options, context)}
 ${generatePerGoalDetails(results, options)}
 ${generateSummary(results, options)}
 
-${generateFooter(results, options, eventType)}
+${generateFooter(options, eventType)}
 `;
+}
+
+/**
+ * Common string utilities.
+ */
+function truncateText(value, maxLength) {
+    if (value.length <= maxLength) {
+        return value;
+    }
+    return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
+}
+function wrapInlineCode(value) {
+    const matches = value.match(/`+/g);
+    const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
+    const fence = "`".repeat(maxLength + 1);
+    const needsPadding = value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
+    const wrappedValue = needsPadding ? ` ${value} ` : value;
+    return `${fence}${wrappedValue}${fence}`;
+}
+function capitalizeLabel(value) {
+    if (!value) {
+        return value;
+    }
+    return value.charAt(0).toUpperCase() + value.slice(1);
+}
+/**
+ * Format an agent identifier from the API (snake_case, e.g. `style_agent`)
+ * as a human-readable label (`Style Agent`). Returns the input unchanged if
+ * it's empty or already formatted.
+ */
+function formatAgentName(agent) {
+    if (!agent)
+        return agent;
+    return agent
+        .split(/[_\s]+/)
+        .filter((word) => word.length > 0)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
 }
 
 /**
