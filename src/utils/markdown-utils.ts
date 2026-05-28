@@ -1,15 +1,25 @@
 /**
- * Markdown generation utility functions for analysis results
+ * Markdown generation for PR comments and job summaries.
+ *
+ * Branches on `AnalysisOptions.numericScoringEnabled`:
+ * - Numeric on: shows the overall quality score per file plus the per-goal
+ *   breakdown if available.
+ * - Numeric off: hides all scores. Shows severity counts and a risk label.
+ *
+ * In both modes the issue-count column is always present.
  */
 
 import { createHash } from "node:crypto";
-import { AnalysisResult, AnalysisOptions } from "../types/index.js";
+import { AnalysisResult, AnalysisOptions, IssueCounts } from "../types/index.js";
 import { getQualityEmoji, calculateScoreSummary } from "./score-utils.js";
-import { getToneValue } from "./string-utils.js";
+import {
+  aggregateCounts,
+  aggregateRisk,
+  classifyRisk,
+  RISK_EMOJI,
+  RISK_LABEL,
+} from "./issue-utils.js";
 
-/**
- * Base repository context with common fields
- */
 interface BaseRepositoryContext {
   owner: string;
   repo: string;
@@ -18,145 +28,111 @@ interface BaseRepositoryContext {
   runId?: number;
 }
 
-/**
- * Repository context for pull request events
- */
 export interface PRRepositoryContext extends BaseRepositoryContext {
   prNumber: number;
 }
 
-/**
- * Repository context for non-PR events (push, workflow_dispatch, etc.)
- */
 export type NonPRRepositoryContext = BaseRepositoryContext;
 
-/**
- * Union type for repository context
- */
 export type RepositoryContext = PRRepositoryContext | NonPRRepositoryContext;
 
-/**
- * Generate file display link based on repository context
- */
 function generateFileDisplayLink(filePath: string, context: RepositoryContext): string {
   return "prNumber" in context
-    ? // PR context - create diff link
-      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber.toString()}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
-    : // Non-PR context - create blob link
-      `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
+    ? `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber.toString()}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
+    : `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
 }
 
-/**
- * Generate markdown table for analysis results
- */
+function formatCounts(counts: IssueCounts): string {
+  return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
+}
+
 export function generateResultsTable(
   results: AnalysisResult[],
+  options: AnalysisOptions,
   context: RepositoryContext,
 ): string {
   if (results.length === 0) {
     return "No files were analyzed.";
   }
 
-  const hasToneScore = results.some(
-    (result) => typeof result.result.analysis.tone?.score === "number",
-  );
-  const tableHeader = hasToneScore
-    ? `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
-|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|`
-    : `| File | Quality | Grammar | Consistency | Terminology | Clarity | Issues |
-|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:------:|`;
-
-  const tableRows = results
-    .map((result) => {
-      const { filePath, result: scores } = result;
-      const qualityEmoji = getQualityEmoji(scores.quality.score);
-      const toneDisplay =
-        typeof scores.analysis.tone?.score === "number"
-          ? String(Math.round(scores.analysis.tone.score))
+  if (options.numericScoringEnabled) {
+    const header = `| File | Quality | Issues | Breakdown |
+|:-----|:-------:|:------:|:----------|`;
+    const rows = results.map((r) => {
+      const score = r.scores?.score;
+      const qualityCell =
+        typeof score === "number"
+          ? `${getQualityEmoji(score)} ${Math.round(score).toString()}`
           : "-";
-
-      // Create clickable file link using repository context
-      const fileDisplay = generateFileDisplayLink(filePath, context);
-
-      const issuesCount = result.issues.length;
-      return hasToneScore
-        ? `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} | ${issuesCount.toString()} |`
-        : `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${issuesCount.toString()} |`;
-    })
-    .join("\n");
-
-  return `${tableHeader}\n${tableRows}`;
-}
-
-/**
- * Generate summary section
- */
-export function generateSummary(results: AnalysisResult[]): string {
-  if (results.length === 0) {
-    return "";
+      return `| ${generateFileDisplayLink(r.filePath, context)} | ${qualityCell} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
+    });
+    return `${header}\n${rows.join("\n")}`;
   }
 
-  const summary = calculateScoreSummary(results);
-  const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
-  const hasToneScore = results.some(
-    (result) => typeof result.result.analysis.tone?.score === "number",
-  );
-  const toneRow = hasToneScore
-    ? `| Tone | ${Math.round(summary.averageToneScore).toString()} |`
-    : "";
+  const header = `| File | Risk | Issues | Breakdown |
+|:-----|:----:|:------:|:----------|`;
+  const rows = results.map((r) => {
+    const risk = classifyRisk(r.issueCounts);
+    return `| ${generateFileDisplayLink(r.filePath, context)} | ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
+  });
+  return `${header}\n${rows.join("\n")}`;
+}
 
-  return `
+export function generateSummary(results: AnalysisResult[], options: AnalysisOptions): string {
+  if (results.length === 0) return "";
+
+  const totals = aggregateCounts(results);
+
+  if (options.numericScoringEnabled) {
+    const summary = calculateScoreSummary(results);
+    const emoji = getQualityEmoji(summary.averageQualityScore);
+    return `
 ## 📊 Summary
 
-**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore).toString()}
+**Overall Quality Score:** ${emoji} ${Math.round(summary.averageQualityScore).toString()}
 
 **Files Analyzed:** ${summary.totalFiles.toString()}
 
-| Metric | Average Score |
-|:------|:-------------:|
-| Quality | ${Math.round(summary.averageQualityScore).toString()} |
-| Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
-| Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
-| Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
-| Clarity | ${Math.round(summary.averageClarityScore).toString()} |
-${toneRow}
+**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})
+`;
+  }
+
+  const risk = aggregateRisk(results);
+  return `
+## 📊 Summary
+
+**Overall Risk:** ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]}
+
+**Files Analyzed:** ${results.length.toString()}
+
+**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})
 `;
 }
 
-/**
- * Generate footer section with metadata
- */
-export function generateFooter(config: AnalysisOptions, eventType: string): string {
-  const toneValue = getToneValue(config.tone);
-  const toneSegment = toneValue ? ` Tone: ${toneValue} |` : "";
+export function generateFooter(options: AnalysisOptions, eventType: string): string {
+  const scoringMode = options.numericScoringEnabled
+    ? "Numeric scoring (0–100)"
+    : "Risk-based scoring";
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${toneSegment} Style Guide: ${config.styleGuide}*
+*Target: ${options.targetDisplayName} | Mode: ${scoringMode}*
 *Event: ${eventType}*`;
 }
 
-/**
- * Generate complete analysis content with customizable header
- */
 export function generateAnalysisContent(
   results: AnalysisResult[],
-  config: AnalysisOptions,
+  options: AnalysisOptions,
   header: string,
   eventType: string,
   context: RepositoryContext,
 ): string {
-  const table = generateResultsTable(results, context);
-  const summary = generateSummary(results);
-  const footer = generateFooter(config, eventType);
-
   return `${header}
 
-${table}
+${generateResultsTable(results, options, context)}
 
-${summary}
+${generateSummary(results, options)}
 
-${footer}
+${generateFooter(options, eventType)}
 `;
 }

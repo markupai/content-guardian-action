@@ -2,16 +2,6 @@
  * Common string utilities.
  */
 
-export const TONE_PLACEHOLDER = "None (keep tone unchanged)";
-
-export function getToneValue(value?: string): string | undefined {
-  const trimmed = value?.trim();
-  if (!trimmed || trimmed === TONE_PLACEHOLDER) {
-    return undefined;
-  }
-  return trimmed;
-}
-
 export function truncateText(value: string, maxLength: number): string {
   if (value.length <= maxLength) {
     return value;

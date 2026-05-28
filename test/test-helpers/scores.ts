@@ -1,66 +1,98 @@
-// Shared helpers for building score structures in tests to avoid duplication
+/**
+ * Shared fixture builders for AnalysisResult and related shapes.
+ */
 
-export function buildQuality(
-  score: number,
-  issues: number = 1,
-  overrides?: {
-    grammarScore?: number;
-    grammarIssues?: number;
-    styleGuideScore?: number;
-    styleGuideIssues?: number;
-    terminologyScore?: number;
-    terminologyIssues?: number;
-  },
-) {
-  const grammarScore = overrides?.grammarScore ?? score;
-  const styleGuideScore = overrides?.styleGuideScore ?? score;
-  const terminologyScore = overrides?.terminologyScore ?? score;
+import type {
+  AnalysisIssue,
+  AnalysisOptions,
+  AnalysisResult,
+  IssueCounts,
+  IssueSeverity,
+  StyleAgentIssue,
+  StyleAnalysis,
+  StyleScores,
+} from "../../src/types/index.js";
 
-  const grammarIssues = overrides?.grammarIssues ?? issues;
-  const styleGuideIssues = overrides?.styleGuideIssues ?? issues;
-  const terminologyIssues = overrides?.terminologyIssues ?? issues;
-
+export function buildIssue(overrides: Partial<StyleAgentIssue> = {}): StyleAgentIssue {
   return {
-    score,
-    grammar: { score: grammarScore, issues: grammarIssues },
-    consistency: { score: styleGuideScore, issues: styleGuideIssues },
-    terminology: { score: terminologyScore, issues: terminologyIssues },
+    id: "iss_test",
+    agent: "style_agent",
+    severity: "medium",
+    explanation: "Test explanation",
+    category: "grammar",
+    position: { start: 0, end: 4, text: "Test" },
+    suggestion: null,
+    suggestions: [],
+    guideline_name: "Test guideline",
+    context_surface: "Test sentence.",
+    read_only: false,
+    confidence: 1,
+    ...overrides,
   };
 }
 
-export function buildClarity(score: number) {
+export function buildAnalysisIssue(overrides: Partial<AnalysisIssue> = {}): AnalysisIssue {
   return {
-    score,
-    word_count: 100,
-    sentence_count: 10,
-    average_sentence_length: 10,
-    flesch_reading_ease: 10,
-    vocabulary_complexity: 10,
-    sentence_complexity: 10,
+    issue: buildIssue(),
+    line: 1,
+    column: 0,
+    lineText: "Test sentence.",
+    ...overrides,
   };
 }
 
-export function buildTone(score: number) {
+function countsFor(issues: AnalysisIssue[]): IssueCounts {
+  const counts: IssueCounts = { total: 0, high: 0, medium: 0, low: 0 };
+  for (const { issue } of issues) {
+    counts.total += 1;
+    counts[issue.severity] += 1;
+  }
+  return counts;
+}
+
+export function buildAnalysisResult(overrides: Partial<AnalysisResult> = {}): AnalysisResult {
+  const issues = overrides.issues ?? [];
   return {
-    score,
-    informality: 10,
-    liveliness: 10,
-    informality_alignment: 10,
-    liveliness_alignment: 10,
+    filePath: "README.md",
+    workflowId: "agw_test",
+    status: "completed",
+    documentRef: overrides.filePath ?? "README.md",
+    scores: null,
+    analysis: null,
+    issues,
+    issueCounts: overrides.issueCounts ?? countsFor(issues),
+    timestamp: "2024-01-01T00:00:00.000Z",
+    ...overrides,
   };
 }
 
-export function buildScores(
-  qualityScore: number,
-  clarityScore: number,
-  toneScore: number,
-  options?: Parameters<typeof buildQuality>[2],
-) {
+export function buildScores(overrides: Partial<StyleScores> = {}): StyleScores {
   return {
-    quality: buildQuality(qualityScore, options?.grammarIssues ?? 10, options),
-    analysis: {
-      clarity: buildClarity(clarityScore),
-      tone: buildTone(toneScore),
-    },
+    score: 85,
+    status: "good",
+    ...overrides,
   };
+}
+
+export function buildAnalysis(overrides: Partial<StyleAnalysis> = {}): StyleAnalysis {
+  return {
+    targetId: "tgt_test",
+    targetDisplayName: "Test Target",
+    words: 100,
+    sentences: 10,
+    ...overrides,
+  };
+}
+
+export function buildAnalysisOptions(overrides: Partial<AnalysisOptions> = {}): AnalysisOptions {
+  return {
+    targetId: "tgt_test",
+    targetDisplayName: "Test Target",
+    numericScoringEnabled: false,
+    ...overrides,
+  };
+}
+
+export function severities(...list: IssueSeverity[]): AnalysisIssue[] {
+  return list.map((severity) => buildAnalysisIssue({ issue: buildIssue({ severity }) }));
 }

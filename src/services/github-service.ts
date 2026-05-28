@@ -4,21 +4,22 @@
 
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import { CommitInfo, FileChange } from "../types/index.js";
+import {
+  AnalysisResult,
+  AnalysisOptions,
+  CommitInfo,
+  FileChange,
+  IssueCounts,
+} from "../types/index.js";
 import { withRetry, logError } from "../utils/error-utils.js";
 import { getQualityStatus } from "../utils/score-utils.js";
-import { isValidSHA, isValidQualityScore } from "../utils/type-guards.js";
+import { aggregateCounts, aggregateRisk, RISK_LABEL } from "../utils/issue-utils.js";
+import { isValidSHA } from "../utils/type-guards.js";
 
-/**
- * Create GitHub Octokit instance
- */
 export function createGitHubClient(token: string): ReturnType<typeof github.getOctokit> {
   return github.getOctokit(token);
 }
 
-/**
- * Get commit changes from GitHub API with retry logic
- */
 export async function getCommitChanges(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
@@ -28,37 +29,23 @@ export async function getCommitChanges(
   try {
     return await withRetry(
       async () => {
-        const response = await octokit.rest.repos.getCommit({
-          owner,
-          repo,
-          ref: sha,
-        });
-
+        const response = await octokit.rest.repos.getCommit({ owner, repo, ref: sha });
         const commit = response.data;
         const changes: FileChange[] =
-          commit.files?.map(
-            (file: {
-              filename: string;
-              status: string;
-              additions?: number;
-              deletions?: number;
-              changes?: number;
-              patch?: string;
-            }) => ({
-              filename: file.filename,
-              status: file.status,
-              additions: file.additions || 0,
-              deletions: file.deletions || 0,
-              changes: file.changes || 0,
-              patch: file.patch,
-            }),
-          ) || [];
+          commit.files?.map((file) => ({
+            filename: file.filename,
+            status: file.status,
+            additions: file.additions || 0,
+            deletions: file.deletions || 0,
+            changes: file.changes || 0,
+            patch: file.patch,
+          })) ?? [];
 
         return {
           sha: commit.sha,
           message: commit.commit.message,
-          author: commit.commit.author?.name || "Unknown",
-          date: commit.commit.author?.date || new Date().toISOString(),
+          author: commit.commit.author?.name ?? "Unknown",
+          date: commit.commit.author?.date ?? new Date().toISOString(),
           changes,
         };
       },
@@ -71,13 +58,6 @@ export async function getCommitChanges(
   }
 }
 
-/**
- * Get files changed in a pull request
- *
- * Uses pagination to fetch all files (up to GitHub's limit of 3000 files).
- * The GitHub API returns 30 files per page by default, but we use 100 per page
- * to reduce the number of API calls needed.
- */
 export async function getPullRequestFiles(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
@@ -88,14 +68,12 @@ export async function getPullRequestFiles(
     return await withRetry(
       async () => {
         core.info(`🔍 Fetching files for PR #${prNumber.toString()} in ${owner}/${repo}`);
-
         const files = await octokit.paginate(octokit.rest.pulls.listFiles, {
           owner,
           repo,
           pull_number: prNumber,
           per_page: 100,
         });
-
         core.info(`✅ Found ${files.length.toString()} files in PR`);
         return files.map((file) => file.filename);
       },
@@ -108,9 +86,6 @@ export async function getPullRequestFiles(
   }
 }
 
-/**
- * Get all files in repository tree
- */
 export async function getRepositoryFiles(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
@@ -133,7 +108,6 @@ export async function getRepositoryFiles(
             files.push(item.path);
           }
         }
-
         return files;
       },
       undefined,
@@ -145,100 +119,74 @@ export async function getRepositoryFiles(
   }
 }
 
-/**
- * Get repository information
- */
-export async function getRepositoryInfo(
-  octokit: ReturnType<typeof github.getOctokit>,
-  owner: string,
-  repo: string,
-): Promise<{
-  name: string;
-  fullName: string;
-  description: string | null;
-  language: string | null;
-} | null> {
-  try {
-    const response = await octokit.rest.repos.get({
-      owner,
-      repo,
-    });
+function riskToState(level: ReturnType<typeof aggregateRisk>): "success" | "failure" | "error" {
+  if (level === "high") return "error";
+  if (level === "medium") return "failure";
+  return "success";
+}
 
-    return {
-      name: response.data.name,
-      fullName: response.data.full_name,
-      description: response.data.description,
-      language: response.data.language,
-    };
-  } catch (error) {
-    core.error(`Failed to get repository info: ${String(error)}`);
-    return null;
-  }
+function formatCountsShort(counts: IssueCounts): string {
+  return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
 }
 
 /**
- * Update commit status with quality score
+ * Update the commit status. In numeric mode the description leads with the
+ * average quality score; in risk mode it leads with the worst-case risk label.
  */
 export async function updateCommitStatus(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
   repo: string,
   sha: string,
-  qualityScore: number,
-  filesAnalyzed: number,
+  results: AnalysisResult[],
+  options: AnalysisOptions,
 ): Promise<void> {
   try {
-    // Validate inputs
     if (!owner || !repo || !sha) {
       core.error("Invalid parameters for commit status update");
       return;
     }
-
-    // Validate SHA format using type guard
     if (!isValidSHA(sha)) {
       core.error(`Invalid SHA format: ${String(sha)}`);
       return;
     }
 
-    // Validate quality score using type guard
-    if (!isValidQualityScore(qualityScore)) {
-      core.error("Quality score must be between 0 and 100");
-      return;
+    const counts = aggregateCounts(results);
+    let state: "success" | "failure" | "error";
+    let description: string;
+
+    if (options.numericScoringEnabled) {
+      const scores = results
+        .map((r) => r.scores?.score)
+        .filter((s): s is number => typeof s === "number");
+      const avg =
+        scores.length === 0
+          ? 0
+          : Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
+      state = getQualityStatus(avg);
+      description = `Quality ${Math.round(avg).toString()} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
+    } else {
+      const risk = aggregateRisk(results);
+      state = riskToState(risk);
+      description = `Risk ${RISK_LABEL[risk]} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
     }
 
-    const status = getQualityStatus(qualityScore);
-    // const emoji = getQualityEmoji(qualityScore)
-
-    // Create a shorter description that fits within GitHub's 140 character limit
-    const description = `Quality: ${qualityScore.toString()} | Files: ${filesAnalyzed.toString()}`;
-
-    // Build target URL safely
     const serverUrl = github.context.serverUrl || "https://github.com";
     const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${github.context.runId.toString()}`;
 
-    core.info(`🔍 Creating commit status for ${owner}/${repo}@${sha}`);
-    core.info(`📊 Status: ${status}, Description: "${description}"`);
-    core.info(`🔗 Target URL: ${targetUrl}`);
-    core.info(`📝 Context: Markup AI`);
-
-    // Try with minimal parameters first
-    const statusData = {
+    core.info(`📊 Commit status: ${state} - ${description}`);
+    await octokit.rest.repos.createCommitStatus({
       owner,
       repo,
       sha,
-      state: status,
+      state,
       description,
+      target_url: targetUrl,
       context: "Markup AI",
-    };
-
-    core.info(`📋 Status data: ${JSON.stringify(statusData, null, 2)}`);
-
-    await octokit.rest.repos.createCommitStatus(statusData);
-
-    core.info(`✅ Updated commit status: ${status} - ${description}`);
+    });
+    core.info(`✅ Updated commit status: ${state} - ${description}`);
   } catch (error) {
     core.error(`Failed to update commit status: ${String(error)}`);
-    // Log more details about the error
     if (error && typeof error === "object" && "message" in error) {
       core.error(`Error message: ${String(error.message)}`);
     }

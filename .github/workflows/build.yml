@@ -61,9 +61,7 @@ jobs:
       - name: Test Local Action
         uses: ./
         with:
-          tone: professional
-          dialect: american_english
-          style-guide: ap
+          target: ${{ vars.MARKUP_AI_TARGET || 'Marketing Voice' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY_PROD }}

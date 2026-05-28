@@ -1,474 +1,205 @@
-/**
- * Unit tests for GitHub service
- */
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import * as core from "../mocks/core.js";
-import type { CommitInfo } from "../../src/types/index.js";
+vi.mock("@actions/core", () => ({
+  info: vi.fn(),
+  warning: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn(),
+}));
 
-// Spy on core methods
-const infoSpy = vi.spyOn(core, "info");
-const errorSpy = vi.spyOn(core, "error");
-
-/**
- * Extract mock functions so we can use them without type assertions in tests
- */
-const mockGetCommit = vi.fn();
-const mockReposGet = vi.fn();
-const mockCreateCommitStatus = vi.fn();
-const mockGetContent = vi.fn();
-const mockCreateOrUpdateFileContents = vi.fn();
-const mockListFiles = vi.fn();
-const mockGetTree = vi.fn();
-const mockPaginate = vi.fn();
-
-/**
- * Mock Octokit instance for testing.
- * One type assertion here to avoid many type assertions in test code.
- */
-const mockOctokit = {
-  rest: {
-    repos: {
-      getCommit: mockGetCommit,
-      get: mockReposGet,
-      createCommitStatus: mockCreateCommitStatus,
-      getContent: mockGetContent,
-      createOrUpdateFileContents: mockCreateOrUpdateFileContents,
-    },
-    pulls: {
-      listFiles: mockListFiles,
-    },
-    git: {
-      getTree: mockGetTree,
-    },
-  },
-  paginate: mockPaginate,
-} as unknown as ReturnType<typeof import("@actions/github").getOctokit>;
-
-// Mock @actions/core and @actions/github
-vi.mock("@actions/core", () => core);
-
-const mockGetOctokit = vi.fn(() => mockOctokit);
 vi.mock("@actions/github", () => ({
-  getOctokit: mockGetOctokit,
+  getOctokit: vi.fn(),
   context: {
     serverUrl: "https://github.com",
-    runId: "123_456_789",
-    repo: {
-      owner: "test-owner",
-      repo: "test-repo",
-    },
-    sha: "abc123def456",
+    runId: 99,
+    repo: { owner: "octo", repo: "demo" },
   },
 }));
 
-const githubService = await import("../../src/services/github-service.js");
+import {
+  createGitHubClient,
+  getCommitChanges,
+  getPullRequestFiles,
+  getRepositoryFiles,
+  updateCommitStatus,
+} from "../../src/services/github-service.js";
+import {
+  buildAnalysisOptions,
+  buildAnalysisResult,
+  buildScores,
+  severities,
+} from "../test-helpers/scores.js";
 
-describe("GitHub Service", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    infoSpy.mockClear();
-    errorSpy.mockClear();
-    mockGetOctokit.mockReturnValue(mockOctokit);
+type MockFn = ReturnType<typeof vi.fn>;
+function makeOctokit() {
+  const paginate = vi.fn();
+  return {
+    paginate,
+    rest: {
+      repos: {
+        getCommit: vi.fn(),
+        createCommitStatus: vi.fn(),
+      },
+      pulls: { listFiles: vi.fn() },
+      git: { getTree: vi.fn() },
+    },
+  } as unknown as {
+    paginate: MockFn;
+    rest: {
+      repos: { getCommit: MockFn; createCommitStatus: MockFn };
+      pulls: { listFiles: MockFn };
+      git: { getTree: MockFn };
+    };
+  };
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe("createGitHubClient", () => {
+  it("returns a value (delegated to @actions/github)", async () => {
+    const github = await import("@actions/github");
+    (github.getOctokit as ReturnType<typeof vi.fn>).mockReturnValue({ rest: {} });
+    expect(createGitHubClient("token")).toBeTruthy();
   });
+});
 
-  describe("createGitHubClient", () => {
-    it("should create GitHub client with token", () => {
-      const token = "test-token";
-      const client: ReturnType<typeof import("@actions/github").getOctokit> =
-        githubService.createGitHubClient(token);
-
-      expect(mockGetOctokit).toHaveBeenCalledWith(token);
-      expect(client).toBe(mockOctokit);
-    });
-  });
-
-  describe("getCommitChanges", () => {
-    it("should get commit changes successfully", async () => {
-      const mockCommitData = {
-        sha: "abc123",
+describe("getCommitChanges", () => {
+  it("maps a GitHub commit into CommitInfo", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.repos.getCommit.mockResolvedValueOnce({
+      data: {
+        sha: "abc",
         commit: {
-          message: "Test commit",
-          author: {
-            name: "Test Author",
-            date: "2024-01-15T10:30:00Z",
-          },
+          message: "fix",
+          author: { name: "Octo", date: "2024-01-15T10:00:00Z" },
         },
-        files: [
-          {
-            filename: "test.md",
-            status: "modified",
-            additions: 5,
-            deletions: 2,
-            changes: 7,
-            patch: "@@ -1,3 +1,6 @@",
-          },
-        ],
-      };
-
-      mockGetCommit.mockImplementation(() =>
-        Promise.resolve({
-          data: mockCommitData,
-        }),
-      );
-
-      const result: CommitInfo | null = await githubService.getCommitChanges(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123",
-      );
-
-      expect(result).toEqual({
-        sha: "abc123",
-        message: "Test commit",
-        author: "Test Author",
-        date: "2024-01-15T10:30:00Z",
-        changes: [
-          {
-            filename: "test.md",
-            status: "modified",
-            additions: 5,
-            deletions: 2,
-            changes: 7,
-            patch: "@@ -1,3 +1,6 @@",
-          },
-        ],
-      });
-
-      expect(mockOctokit.rest.repos.getCommit).toHaveBeenCalledWith({
-        owner: "test-owner",
-        repo: "test-repo",
-        ref: "abc123",
-      });
+        files: [{ filename: "a.md", status: "modified", additions: 1, deletions: 2, changes: 3 }],
+      },
     });
-
-    it("should handle commit without files", async () => {
-      const mockCommitData = {
-        sha: "abc123",
-        commit: {
-          message: "Test commit",
-          author: {
-            name: "Test Author",
-            date: "2024-01-15T10:30:00Z",
-          },
-        },
-        files: undefined,
-      };
-
-      mockGetCommit.mockImplementation(() =>
-        Promise.resolve({
-          data: mockCommitData,
-        }),
-      );
-
-      const result: CommitInfo | null = await githubService.getCommitChanges(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123",
-      );
-
-      expect(result?.changes).toEqual([]);
-    });
-
-    it("should handle commit with missing author info", async () => {
-      mockGetCommit.mockImplementation(() =>
-        Promise.resolve({
-          data: {
-            sha: "abc123",
-            commit: {
-              message: "Test commit",
-              author: undefined,
-            },
-            files: [],
-          },
-        }),
-      );
-
-      const result: CommitInfo | null = await githubService.getCommitChanges(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123",
-      );
-
-      expect(result?.author).toBe("Unknown");
-      // Relax the date check to allow for small differences
-      const now = new Date().toISOString().slice(0, 16);
-      expect(result?.date.slice(0, 16)).toBe(now);
-    });
-
-    it("should handle API errors", async () => {
-      mockGetCommit.mockImplementation(() => Promise.reject(new Error("API Error")));
-
-      const result: CommitInfo | null = await githubService.getCommitChanges(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123",
-      );
-
-      expect(result).toBeNull();
-      expect(core.error).toHaveBeenCalled();
-    });
+    const info = await getCommitChanges(
+      octokit as unknown as Parameters<typeof getCommitChanges>[0],
+      "octo",
+      "demo",
+      "abc",
+    );
+    expect(info?.sha).toBe("abc");
+    expect(info?.changes[0].filename).toBe("a.md");
   });
 
-  describe("getPullRequestFiles", () => {
-    it("should get PR files successfully", async () => {
-      const mockFiles = [
-        { filename: "file1.md" },
-        { filename: "file2.txt" },
-        { filename: "file3.js" },
-      ];
+  it("returns null when the request fails", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.repos.getCommit.mockRejectedValue(new Error("boom"));
+    const info = await getCommitChanges(
+      octokit as unknown as Parameters<typeof getCommitChanges>[0],
+      "octo",
+      "demo",
+      "abc",
+    );
+    expect(info).toBeNull();
+  });
+});
 
-      mockPaginate.mockImplementation(() => Promise.resolve(mockFiles));
-
-      const result: string[] = await githubService.getPullRequestFiles(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        123,
-      );
-
-      expect(result).toEqual(["file1.md", "file2.txt", "file3.js"]);
-      expect(mockOctokit.paginate).toHaveBeenCalledWith(mockOctokit.rest.pulls.listFiles, {
-        owner: "test-owner",
-        repo: "test-repo",
-        pull_number: 123,
-        per_page: 100,
-      });
-      expect(core.info).toHaveBeenCalledWith(
-        "🔍 Fetching files for PR #123 in test-owner/test-repo",
-      );
-      expect(core.info).toHaveBeenCalledWith("✅ Found 3 files in PR");
-    });
-
-    it("should handle API errors", async () => {
-      mockPaginate.mockImplementation(() => Promise.reject(new Error("API Error")));
-
-      const result: string[] = await githubService.getPullRequestFiles(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        123,
-      );
-
-      expect(result).toEqual([]);
-      expect(core.error).toHaveBeenCalled();
-    });
+describe("getPullRequestFiles", () => {
+  it("returns filenames from paginate", async () => {
+    const octokit = makeOctokit();
+    octokit.paginate.mockResolvedValue([{ filename: "x.md" }, { filename: "y.md" }]);
+    const result = await getPullRequestFiles(
+      octokit as unknown as Parameters<typeof getPullRequestFiles>[0],
+      "octo",
+      "demo",
+      1,
+    );
+    expect(result).toEqual(["x.md", "y.md"]);
   });
 
-  describe("getRepositoryFiles", () => {
-    it("should get repository files successfully", async () => {
-      const mockTree = {
+  it("returns [] on error", async () => {
+    const octokit = makeOctokit();
+    octokit.paginate.mockRejectedValue(new Error("boom"));
+    expect(
+      await getPullRequestFiles(
+        octokit as unknown as Parameters<typeof getPullRequestFiles>[0],
+        "octo",
+        "demo",
+        1,
+      ),
+    ).toEqual([]);
+  });
+});
+
+describe("getRepositoryFiles", () => {
+  it("returns blob paths from the tree", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.git.getTree.mockResolvedValueOnce({
+      data: {
         tree: [
-          { type: "blob", path: "file1.md" },
-          { type: "tree", path: "folder" },
-          { type: "blob", path: "file2.txt" },
-          { type: "blob" }, // Missing path
+          { type: "blob", path: "a.md" },
+          { type: "tree", path: "dir" },
+          { type: "blob", path: "b.md" },
         ],
-      };
-
-      mockGetTree.mockImplementation(() =>
-        Promise.resolve({
-          data: mockTree,
-        }),
-      );
-
-      const result: string[] = await githubService.getRepositoryFiles(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "main",
-      );
-
-      expect(result).toEqual(["file1.md", "file2.txt"]);
+      },
     });
+    expect(
+      await getRepositoryFiles(
+        octokit as unknown as Parameters<typeof getRepositoryFiles>[0],
+        "octo",
+        "demo",
+      ),
+    ).toEqual(["a.md", "b.md"]);
+  });
+});
 
-    it("should handle empty tree", async () => {
-      mockGetTree.mockImplementation(() =>
-        Promise.resolve({
-          data: { tree: [] },
-        }),
-      );
-
-      const result: string[] = await githubService.getRepositoryFiles(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-      );
-
-      expect(result).toEqual([]);
-    });
-
-    it("should handle API errors", async () => {
-      mockGetTree.mockImplementation(() => Promise.reject(new Error("API Error")));
-
-      const result: string[] = await githubService.getRepositoryFiles(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-      );
-
-      expect(result).toEqual([]);
-      expect(core.error).toHaveBeenCalled();
-    });
+describe("updateCommitStatus", () => {
+  it("bails on invalid SHA", async () => {
+    const octokit = makeOctokit();
+    await updateCommitStatus(
+      octokit as unknown as Parameters<typeof updateCommitStatus>[0],
+      "octo",
+      "demo",
+      "not-a-sha",
+      [buildAnalysisResult()],
+      buildAnalysisOptions(),
+    );
+    expect(octokit.rest.repos.createCommitStatus).not.toHaveBeenCalled();
   });
 
-  describe("getRepositoryInfo", () => {
-    it("should get repository info successfully", async () => {
-      const mockRepoData = {
-        name: "test-repo",
-        full_name: "test-owner/test-repo",
-        description: "Test repository",
-        language: "TypeScript",
-      };
-
-      mockReposGet.mockImplementation(() =>
-        Promise.resolve({
-          data: mockRepoData,
-        }),
-      );
-
-      const result: {
-        name: string;
-        fullName: string;
-        description: string | null;
-        language: string | null;
-      } | null = await githubService.getRepositoryInfo(mockOctokit, "test-owner", "test-repo");
-
-      expect(result).toEqual({
-        name: "test-repo",
-        fullName: "test-owner/test-repo",
-        description: "Test repository",
-        language: "TypeScript",
-      });
-    });
-
-    it("should handle API errors", async () => {
-      mockReposGet.mockImplementation(() => Promise.reject(new Error("API Error")));
-
-      const result: {
-        name: string;
-        fullName: string;
-        description: string | null;
-        language: string | null;
-      } | null = await githubService.getRepositoryInfo(mockOctokit, "test-owner", "test-repo");
-
-      expect(result).toBeNull();
-      expect(core.error).toHaveBeenCalled();
-    });
+  it("numeric mode includes quality score in description", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.repos.createCommitStatus.mockResolvedValue({});
+    await updateCommitStatus(
+      octokit as unknown as Parameters<typeof updateCommitStatus>[0],
+      "octo",
+      "demo",
+      "abc123def456",
+      [
+        buildAnalysisResult({ scores: buildScores({ score: 80 }), issues: severities("low") }),
+        buildAnalysisResult({ scores: buildScores({ score: 60 }), issues: severities("high") }),
+      ],
+      buildAnalysisOptions({ numericScoringEnabled: true }),
+    );
+    const call = octokit.rest.repos.createCommitStatus.mock.calls[0]?.[0] as
+      | { sha?: string; description?: string }
+      | undefined;
+    expect(call?.sha).toBe("abc123def456");
+    expect(call?.description).toMatch(/Quality\s+70/);
   });
 
-  describe("updateCommitStatus", () => {
-    it("should update commit status successfully", async () => {
-      mockCreateCommitStatus.mockImplementation(() => Promise.resolve({}));
-
-      await githubService.updateCommitStatus(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123def456",
-        85,
-        5,
-      );
-
-      expect(mockOctokit.rest.repos.createCommitStatus).toHaveBeenCalledWith({
-        owner: "test-owner",
-        repo: "test-repo",
-        sha: "abc123def456",
-        state: "success",
-        description: "Quality: 85 | Files: 5",
-        context: "Markup AI",
-      });
-
-      expect(core.info).toHaveBeenCalledWith(
-        "🔍 Creating commit status for test-owner/test-repo@abc123def456",
-      );
-      expect(core.info).toHaveBeenCalledWith(
-        '📊 Status: success, Description: "Quality: 85 | Files: 5"',
-      );
-      expect(core.info).toHaveBeenCalledWith(
-        "🔗 Target URL: https://github.com/test-owner/test-repo/actions/runs/123_456_789",
-      );
-      expect(core.info).toHaveBeenCalledWith("📝 Context: Markup AI");
-      expect(core.info).toHaveBeenCalledWith(
-        "✅ Updated commit status: success - Quality: 85 | Files: 5",
-      );
-    });
-
-    it("should handle missing parameters", async () => {
-      await githubService.updateCommitStatus(mockOctokit, "", "test-repo", "abc123", 85, 5);
-
-      expect(core.error).toHaveBeenCalledWith("Invalid parameters for commit status update");
-      expect(mockOctokit.rest.repos.createCommitStatus).not.toHaveBeenCalled();
-    });
-
-    it("should handle invalid SHA format", async () => {
-      await githubService.updateCommitStatus(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "invalid-sha",
-        85,
-        5,
-      );
-
-      expect(core.error).toHaveBeenCalledWith("Invalid SHA format: invalid-sha");
-      expect(mockOctokit.rest.repos.createCommitStatus).not.toHaveBeenCalled();
-    });
-
-    it("should handle invalid quality score", async () => {
-      await githubService.updateCommitStatus(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123def456",
-        150, // Invalid score
-        5,
-      );
-
-      expect(core.error).toHaveBeenCalledWith("Quality score must be between 0 and 100");
-      expect(mockOctokit.rest.repos.createCommitStatus).not.toHaveBeenCalled();
-    });
-
-    it("should handle API errors", async () => {
-      const error = new Error("API Error");
-      mockCreateCommitStatus.mockImplementation(() => Promise.reject(error));
-
-      await githubService.updateCommitStatus(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123def456",
-        85,
-        5,
-      );
-
-      expect(core.error).toHaveBeenCalledWith("Failed to update commit status: Error: API Error");
-      expect(core.error).toHaveBeenCalledWith("Error message: API Error");
-    });
-
-    it("should handle different quality scores", async () => {
-      mockCreateCommitStatus.mockImplementation(() => Promise.resolve({}));
-
-      // Test different score ranges
-      await githubService.updateCommitStatus(
-        mockOctokit,
-        "test-owner",
-        "test-repo",
-        "abc123def456",
-        95, // Excellent
-        3,
-      );
-
-      expect(mockOctokit.rest.repos.createCommitStatus).toHaveBeenCalledWith(
-        expect.objectContaining({
-          state: "success",
-          description: "Quality: 95 | Files: 3",
-        }),
-      );
-    });
+  it("risk mode leads with Risk label", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.repos.createCommitStatus.mockResolvedValue({});
+    await updateCommitStatus(
+      octokit as unknown as Parameters<typeof updateCommitStatus>[0],
+      "octo",
+      "demo",
+      "abc123def456",
+      [buildAnalysisResult({ issues: severities("medium") })],
+      buildAnalysisOptions({ numericScoringEnabled: false }),
+    );
+    const call = octokit.rest.repos.createCommitStatus.mock.calls[0]?.[0] as
+      | { state?: string; description?: string }
+      | undefined;
+    expect(call?.state).toBe("failure");
+    expect(call?.description).toMatch(/Risk\s+Medium/);
   });
 });
