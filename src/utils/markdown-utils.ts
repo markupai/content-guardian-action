@@ -11,6 +11,7 @@
 import { createHash } from "node:crypto";
 import { AnalysisResult, AnalysisOptions, IssueCounts } from "../types/index.js";
 import { MAX_INLINE_REVIEW_COMMENTS } from "../constants/index.js";
+import { formatAgentName } from "./string-utils.js";
 import { getQualityEmoji, calculateScoreSummary } from "./score-utils.js";
 import {
   aggregateCounts,
@@ -163,11 +164,27 @@ ${rows.join("\n\n")}
 `;
 }
 
-export function generateFooter(options: AnalysisOptions, eventType: string): string {
+function uniqueAgentsAcrossResults(results: AnalysisResult[]): string[] {
+  const seen = new Set<string>();
+  for (const r of results) {
+    for (const { issue } of r.issues) {
+      if (issue.agent) seen.add(formatAgentName(issue.agent));
+    }
+  }
+  return [...seen].sort((a, b) => a.localeCompare(b));
+}
+
+export function generateFooter(
+  results: AnalysisResult[],
+  options: AnalysisOptions,
+  eventType: string,
+): string {
+  const agents = uniqueAgentsAcrossResults(results);
+  const agentLine = agents.length > 0 ? `\n*Detected by: ${agents.join(", ")}*` : "";
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName}*
+*Target: ${options.targetDisplayName}*${agentLine}
 *Event: ${eventType}*`;
 }
 
@@ -184,6 +201,6 @@ ${generateResultsTable(results, options, context)}
 ${generatePerGoalDetails(results, options)}
 ${generateSummary(results, options)}
 
-${generateFooter(options, eventType)}
+${generateFooter(results, options, eventType)}
 `;
 }
