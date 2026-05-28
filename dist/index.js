@@ -88599,7 +88599,7 @@ async function listAllReviewComments(octokit, owner, repo, prNumber) {
         const current = [];
         const outdated = [];
         for (const c of comments) {
-            if (!c.body || !c.body.includes(REVIEW_MARKER))
+            if (!c.body.includes(REVIEW_MARKER))
                 continue;
             if (!c.path)
                 continue;
@@ -88799,11 +88799,11 @@ async function createPRReviewComments(octokit, data) {
     if (toCreate.length > 0) {
         const payload = context.payload;
         const commitId = payload.pull_request?.head?.sha;
-        if (!commitId) {
-            warning("Unable to determine PR head SHA for new review comments; skipping creates.");
+        if (commitId) {
+            await postReviewComments(octokit, owner, repo, prNumber, commitId, toCreate);
         }
         else {
-            await postReviewComments(octokit, owner, repo, prNumber, commitId, toCreate);
+            warning("Unable to determine PR head SHA for new review comments; skipping creates.");
         }
     }
     if (toUpdate.length > 0) {

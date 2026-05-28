@@ -256,7 +256,7 @@ async function listAllReviewComments(
     const current: ExistingReviewComment[] = [];
     const outdated: number[] = [];
     for (const c of comments) {
-      if (!c.body || !c.body.includes(REVIEW_MARKER)) continue;
+      if (!c.body.includes(REVIEW_MARKER)) continue;
       if (!c.path) continue;
       if (typeof c.line === "number") {
         current.push({ id: c.id, path: c.path, line: c.line, body: c.body });
@@ -496,10 +496,10 @@ export async function createPRReviewComments(
   if (toCreate.length > 0) {
     const payload = github.context.payload as { pull_request?: { head?: { sha?: string } } };
     const commitId = payload.pull_request?.head?.sha;
-    if (!commitId) {
-      core.warning("Unable to determine PR head SHA for new review comments; skipping creates.");
-    } else {
+    if (commitId) {
       await postReviewComments(octokit, owner, repo, prNumber, commitId, toCreate);
+    } else {
+      core.warning("Unable to determine PR head SHA for new review comments; skipping creates.");
     }
   }
 
