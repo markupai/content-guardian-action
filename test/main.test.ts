@@ -113,15 +113,12 @@ describe("main.ts", () => {
   });
 
   it("fails when API token is missing", async () => {
-    core.getInput.mockImplementation((name: string) =>
-      name === "markup_ai_api_key"
-        ? ""
-        : name === "target"
-          ? "Marketing Voice"
-          : name === "github_token"
-            ? "gh-tok"
-            : "",
-    );
+    const inputs: Record<string, string> = {
+      markup_ai_api_key: "",
+      target: "Marketing Voice",
+      github_token: "gh-tok",
+    };
+    core.getInput.mockImplementation((name: string) => inputs[name] ?? "");
     await run();
     expect(core.setFailed).toHaveBeenCalledWith(
       "Required input 'markup_ai_api_key' or environment variable 'MARKUP_AI_API_KEY' is not provided",

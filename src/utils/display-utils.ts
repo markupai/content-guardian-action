@@ -20,6 +20,36 @@ export function displayEventInfo(eventInfo: EventInfo): void {
   }
 }
 
+function logNumericScores(result: AnalysisResult): void {
+  if (!result.scores) return;
+  core.info(`📈 Quality Score: ${result.scores.score.toString()}`);
+  for (const goal of result.scores.scoresByGoal ?? []) {
+    core.info(`   • ${goal.displayName}: ${goal.score.toString()}`);
+  }
+}
+
+function logRiskLabel(result: AnalysisResult): void {
+  const risk = classifyRisk(result.issueCounts);
+  core.info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
+}
+
+function logIssueCounts(result: AnalysisResult): void {
+  const { total, high, medium, low } = result.issueCounts;
+  core.info(
+    `⚠️  Issues: ${total.toString()} (H:${high.toString()} M:${medium.toString()} L:${low.toString()})`,
+  );
+}
+
+function displaySingleResult(result: AnalysisResult, options: AnalysisOptions): void {
+  core.info(`\n📄 File: ${result.filePath}`);
+  if (options.numericScoringEnabled && result.scores) {
+    logNumericScores(result);
+  } else {
+    logRiskLabel(result);
+  }
+  logIssueCounts(result);
+}
+
 export function displayResults(results: AnalysisResult[], options: AnalysisOptions): void {
   if (results.length === 0) {
     core.info("📊 No analysis results to display.");
@@ -29,26 +59,8 @@ export function displayResults(results: AnalysisResult[], options: AnalysisOptio
   core.info("📊 Analysis Results:");
   core.info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
 
-  for (const [index, analysis] of results.entries()) {
-    const { filePath, issueCounts, scores } = analysis;
-    core.info(`\n📄 File: ${filePath}`);
-
-    if (options.numericScoringEnabled && scores) {
-      core.info(`📈 Quality Score: ${scores.score.toString()}`);
-      if (scores.scoresByGoal && scores.scoresByGoal.length > 0) {
-        for (const goal of scores.scoresByGoal) {
-          core.info(`   • ${goal.displayName}: ${goal.score.toString()}`);
-        }
-      }
-    } else {
-      const risk = classifyRisk(issueCounts);
-      core.info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
-    }
-
-    core.info(
-      `⚠️  Issues: ${issueCounts.total.toString()} (H:${issueCounts.high.toString()} M:${issueCounts.medium.toString()} L:${issueCounts.low.toString()})`,
-    );
-
+  for (const [index, result] of results.entries()) {
+    displaySingleResult(result, options);
     if (index < results.length - 1) {
       core.info("─".repeat(DISPLAY.SEPARATOR_LENGTH));
     }

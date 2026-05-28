@@ -120,21 +120,46 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function parseRetryAfter(error: MarkupApiError): number | undefined {
-  const body = error.body;
-  if (body && typeof body === "object") {
-    const obj = body as Record<string, unknown>;
-    const candidate =
-      typeof obj.retry_after === "number"
-        ? obj.retry_after
-        : typeof obj.retry_after_seconds === "number"
-          ? obj.retry_after_seconds
-          : undefined;
-    if (candidate !== undefined && Number.isFinite(candidate)) {
-      return candidate * 1000;
+function pickNumber(obj: Record<string, unknown>, ...keys: string[]): number | undefined {
+  for (const key of keys) {
+    const value = obj[key];
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
     }
   }
   return undefined;
+}
+
+function parseRetryAfter(error: MarkupApiError): number | undefined {
+  const body = error.body;
+  if (!body || typeof body !== "object") return undefined;
+  const seconds = pickNumber(body as Record<string, unknown>, "retry_after", "retry_after_seconds");
+  return seconds === undefined ? undefined : seconds * 1000;
+}
+
+const MAX_RATE_LIMIT_RETRIES = 2;
+
+function isRateLimit(error: unknown): error is MarkupApiError {
+  return error instanceof MarkupApiError && error.status === 429;
+}
+
+function isRetryableTransient(error: unknown): boolean {
+  if (error instanceof MarkupApiError) {
+    return error.status >= 500;
+  }
+  return error instanceof Error;
+}
+
+async function waitForRateLimit(
+  error: MarkupApiError,
+  attempt: number,
+  options: RequestOptions,
+): Promise<void> {
+  const backoff = parseRetryAfter(error) ?? DEFAULT_RATE_LIMIT_BACKOFF_MS * (attempt + 1);
+  core.warning(
+    `Rate limited on ${options.method} ${options.path}; waiting ${Math.round(backoff).toString()}ms before retry ${(attempt + 1).toString()}/${MAX_RATE_LIMIT_RETRIES.toString()}`,
+  );
+  await sleep(backoff);
 }
 
 /**
@@ -145,33 +170,19 @@ function parseRetryAfter(error: MarkupApiError): number | undefined {
  */
 async function requestWithRetry<T>(apiKey: string, options: RequestOptions): Promise<T> {
   let rateLimitAttempts = 0;
-  const maxRateLimitAttempts = 2;
 
   for (;;) {
     try {
       const result = await request<T>(apiKey, options);
       return result.body;
     } catch (error) {
-      if (error instanceof MarkupApiError && error.status === 429) {
-        if (rateLimitAttempts >= maxRateLimitAttempts) {
-          throw error;
-        }
-        const backoff =
-          parseRetryAfter(error) ?? DEFAULT_RATE_LIMIT_BACKOFF_MS * (rateLimitAttempts + 1);
-        core.warning(
-          `Rate limited on ${options.method} ${options.path}; waiting ${Math.round(backoff).toString()}ms before retry ${(rateLimitAttempts + 1).toString()}/${maxRateLimitAttempts.toString()}`,
-        );
-        await sleep(backoff);
+      if (isRateLimit(error)) {
+        if (rateLimitAttempts >= MAX_RATE_LIMIT_RETRIES) throw error;
+        await waitForRateLimit(error, rateLimitAttempts, options);
         rateLimitAttempts++;
         continue;
       }
-
-      const retryable =
-        (error instanceof MarkupApiError && error.status >= 500) ||
-        (!(error instanceof MarkupApiError) && error instanceof Error);
-      if (!retryable) {
-        throw error;
-      }
+      if (!isRetryableTransient(error)) throw error;
       core.warning(`Retrying ${options.method} ${options.path}: ${String(error)}`);
       const result = await request<T>(apiKey, options);
       return result.body;

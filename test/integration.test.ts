@@ -107,6 +107,10 @@ vi.mock("../src/services/markup-api-client.js", () => ({
 
 const { run } = await import("../src/main.js");
 
+function mockInput(map: Record<string, string>): (name: string) => string {
+  return (name: string) => map[name] ?? "";
+}
+
 function applyDefaultInputs() {
   core.getInput.mockImplementation((name: string) => {
     switch (name) {
@@ -149,14 +153,8 @@ describe("Integration", () => {
   });
 
   it("fails when the API key input is missing", async () => {
-    core.getInput.mockImplementation((name: string) =>
-      name === "markup_ai_api_key"
-        ? ""
-        : name === "target"
-          ? "Marketing Voice"
-          : name === "github_token"
-            ? "gh-tok"
-            : "",
+    core.getInput.mockImplementation(
+      mockInput({ markup_ai_api_key: "", target: "Marketing Voice", github_token: "gh-tok" }),
     );
     await run();
     expect(core.setFailed).toHaveBeenCalledWith(
@@ -165,14 +163,8 @@ describe("Integration", () => {
   });
 
   it("fails when the target input is missing", async () => {
-    core.getInput.mockImplementation((name: string) =>
-      name === "target"
-        ? ""
-        : name === "markup_ai_api_key"
-          ? "k"
-          : name === "github_token"
-            ? "gh-tok"
-            : "",
+    core.getInput.mockImplementation(
+      mockInput({ markup_ai_api_key: "k", target: "", github_token: "gh-tok" }),
     );
     await run();
     expect(core.setFailed).toHaveBeenCalledWith(expect.stringContaining("Required input 'target'"));

@@ -130,27 +130,27 @@ describe("createOrUpdatePRComment", () => {
   });
 });
 
-describe("createPRReviewComments", () => {
-  function resultWithIssue() {
-    return buildAnalysisResult({
-      filePath: "README.md",
-      issues: [
-        buildAnalysisIssue({
-          line: 3,
-          column: 0,
-          lineText: "This document have alot of issue.",
-          issue: buildIssue({
-            severity: "high",
-            category: "grammar",
-            guideline_name: "subject-verb agreement",
-            position: { start: 14, end: 18, text: "have" },
-            suggestion: "has",
-          }),
+function resultWithIssue() {
+  return buildAnalysisResult({
+    filePath: "README.md",
+    issues: [
+      buildAnalysisIssue({
+        line: 3,
+        column: 0,
+        lineText: "This document have alot of issue.",
+        issue: buildIssue({
+          severity: "high",
+          category: "grammar",
+          guideline_name: "subject-verb agreement",
+          position: { start: 14, end: 18, text: "have" },
+          suggestion: "has",
         }),
-      ],
-    });
-  }
+      }),
+    ],
+  });
+}
 
+describe("createPRReviewComments", () => {
   it("creates a review with one inline comment for the issue line", async () => {
     const octokit = makeOctokit();
     const { payload } = commentData(octokit, [resultWithIssue()]);

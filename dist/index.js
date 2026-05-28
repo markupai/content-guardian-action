@@ -87820,20 +87820,36 @@ const DEFAULT_RATE_LIMIT_BACKOFF_MS = 6_500;
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
-function parseRetryAfter(error) {
-    const body = error.body;
-    if (body && typeof body === "object") {
-        const obj = body;
-        const candidate = typeof obj.retry_after === "number"
-            ? obj.retry_after
-            : typeof obj.retry_after_seconds === "number"
-                ? obj.retry_after_seconds
-                : undefined;
-        if (candidate !== undefined && Number.isFinite(candidate)) {
-            return candidate * 1000;
+function pickNumber(obj, ...keys) {
+    for (const key of keys) {
+        const value = obj[key];
+        if (typeof value === "number" && Number.isFinite(value)) {
+            return value;
         }
     }
     return undefined;
+}
+function parseRetryAfter(error) {
+    const body = error.body;
+    if (!body || typeof body !== "object")
+        return undefined;
+    const seconds = pickNumber(body, "retry_after", "retry_after_seconds");
+    return seconds === undefined ? undefined : seconds * 1000;
+}
+const MAX_RATE_LIMIT_RETRIES = 2;
+function isRateLimit(error) {
+    return error instanceof MarkupApiError && error.status === 429;
+}
+function isRetryableTransient(error) {
+    if (error instanceof MarkupApiError) {
+        return error.status >= 500;
+    }
+    return error instanceof Error;
+}
+async function waitForRateLimit(error, attempt, options) {
+    const backoff = parseRetryAfter(error) ?? DEFAULT_RATE_LIMIT_BACKOFF_MS * (attempt + 1);
+    warning(`Rate limited on ${options.method} ${options.path}; waiting ${Math.round(backoff).toString()}ms before retry ${(attempt + 1).toString()}/${MAX_RATE_LIMIT_RETRIES.toString()}`);
+    await sleep(backoff);
 }
 /**
  * Wraps `request` with:
@@ -87843,28 +87859,21 @@ function parseRetryAfter(error) {
  */
 async function requestWithRetry(apiKey, options) {
     let rateLimitAttempts = 0;
-    const maxRateLimitAttempts = 2;
     for (;;) {
         try {
             const result = await request(apiKey, options);
             return result.body;
         }
         catch (error) {
-            if (error instanceof MarkupApiError && error.status === 429) {
-                if (rateLimitAttempts >= maxRateLimitAttempts) {
+            if (isRateLimit(error)) {
+                if (rateLimitAttempts >= MAX_RATE_LIMIT_RETRIES)
                     throw error;
-                }
-                const backoff = parseRetryAfter(error) ?? DEFAULT_RATE_LIMIT_BACKOFF_MS * (rateLimitAttempts + 1);
-                warning(`Rate limited on ${options.method} ${options.path}; waiting ${Math.round(backoff).toString()}ms before retry ${(rateLimitAttempts + 1).toString()}/${maxRateLimitAttempts.toString()}`);
-                await sleep(backoff);
+                await waitForRateLimit(error, rateLimitAttempts, options);
                 rateLimitAttempts++;
                 continue;
             }
-            const retryable = (error instanceof MarkupApiError && error.status >= 500) ||
-                (!(error instanceof MarkupApiError) && error instanceof Error);
-            if (!retryable) {
+            if (!isRetryableTransient(error))
                 throw error;
-            }
             warning(`Retrying ${options.method} ${options.path}: ${String(error)}`);
             const result = await request(apiKey, options);
             return result.body;
@@ -88898,6 +88907,32 @@ function displayEventInfo(eventInfo) {
         }
     }
 }
+function logNumericScores(result) {
+    if (!result.scores)
+        return;
+    info(`📈 Quality Score: ${result.scores.score.toString()}`);
+    for (const goal of result.scores.scoresByGoal ?? []) {
+        info(`   • ${goal.displayName}: ${goal.score.toString()}`);
+    }
+}
+function logRiskLabel(result) {
+    const risk = classifyRisk(result.issueCounts);
+    info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
+}
+function logIssueCounts(result) {
+    const { total, high, medium, low } = result.issueCounts;
+    info(`⚠️  Issues: ${total.toString()} (H:${high.toString()} M:${medium.toString()} L:${low.toString()})`);
+}
+function displaySingleResult(result, options) {
+    info(`\n📄 File: ${result.filePath}`);
+    if (options.numericScoringEnabled && result.scores) {
+        logNumericScores(result);
+    }
+    else {
+        logRiskLabel(result);
+    }
+    logIssueCounts(result);
+}
 function displayResults(results, options) {
     if (results.length === 0) {
         info("📊 No analysis results to display.");
@@ -88905,22 +88940,8 @@ function displayResults(results, options) {
     }
     info("📊 Analysis Results:");
     info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
-    for (const [index, analysis] of results.entries()) {
-        const { filePath, issueCounts, scores } = analysis;
-        info(`\n📄 File: ${filePath}`);
-        if (options.numericScoringEnabled && scores) {
-            info(`📈 Quality Score: ${scores.score.toString()}`);
-            if (scores.scoresByGoal && scores.scoresByGoal.length > 0) {
-                for (const goal of scores.scoresByGoal) {
-                    info(`   • ${goal.displayName}: ${goal.score.toString()}`);
-                }
-            }
-        }
-        else {
-            const risk = classifyRisk(issueCounts);
-            info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
-        }
-        info(`⚠️  Issues: ${issueCounts.total.toString()} (H:${issueCounts.high.toString()} M:${issueCounts.medium.toString()} L:${issueCounts.low.toString()})`);
+    for (const [index, result] of results.entries()) {
+        displaySingleResult(result, options);
         if (index < results.length - 1) {
             info("─".repeat(DISPLAY.SEPARATOR_LENGTH));
         }

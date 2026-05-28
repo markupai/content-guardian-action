@@ -118,7 +118,7 @@ describe("analyzeFiles", () => {
     const readFileContent = vi.fn((p: string) => Promise.resolve<string | null>(`content of ${p}`));
     const files = ["a.md", "b.md", "c.md"];
     const results = await analyzeFiles("k", files, options, readFileContent);
-    expect(results.map((r) => r.filePath).sort()).toEqual(files);
+    expect(results.map((r) => r.filePath).sort((a, b) => a.localeCompare(b))).toEqual(files);
     expect(mocks.runStyleAgent).toHaveBeenCalledTimes(3);
   });
 

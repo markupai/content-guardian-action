@@ -68,11 +68,11 @@ describe("logConfiguration", () => {
   });
 });
 
-describe("getActionConfig", () => {
-  function inputs(map: Record<string, string>) {
-    core.getInput.mockImplementation((name: string) => map[name] ?? "");
-  }
+function inputs(map: Record<string, string>) {
+  core.getInput.mockImplementation((name: string) => map[name] ?? "");
+}
 
+describe("getActionConfig", () => {
   it("reads inputs and returns a complete config", () => {
     inputs({
       markup_ai_api_key: "tok",
