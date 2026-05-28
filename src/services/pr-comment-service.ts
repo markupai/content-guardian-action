@@ -219,12 +219,22 @@ export function reconcileReviewComments(
   return { toCreate, toUpdate, toDelete };
 }
 
+interface ListedReviewComments {
+  /** Tagged comments still anchored to a line in the current diff. */
+  current: ExistingReviewComment[];
+  /** Tagged comments GitHub has marked outdated (line: null) because their
+   * anchor line was mutated. These never re-anchor on their own, so we
+   * always delete them — the next analysis will create fresh anchored
+   * comments where issues actually persist. */
+  outdated: number[];
+}
+
 async function listAllReviewComments(
   octokit: ReturnType<typeof github.getOctokit>,
   owner: string,
   repo: string,
   prNumber: number,
-): Promise<ExistingReviewComment[]> {
+): Promise<ListedReviewComments> {
   try {
     const comments =
       typeof octokit.paginate === "function"
@@ -243,16 +253,21 @@ async function listAllReviewComments(
             })
           ).data;
 
-    const ours: ExistingReviewComment[] = [];
+    const current: ExistingReviewComment[] = [];
+    const outdated: number[] = [];
     for (const c of comments) {
       if (!c.body || !c.body.includes(REVIEW_MARKER)) continue;
-      if (!c.path || typeof c.line !== "number") continue;
-      ours.push({ id: c.id, path: c.path, line: c.line, body: c.body });
+      if (!c.path) continue;
+      if (typeof c.line === "number") {
+        current.push({ id: c.id, path: c.path, line: c.line, body: c.body });
+      } else {
+        outdated.push(c.id);
+      }
     }
-    return ours;
+    return { current, outdated };
   } catch (error) {
     core.warning(`Failed to load existing review comments: ${String(error)}`);
-    return [];
+    return { current: [], outdated: [] };
   }
 }
 
@@ -462,16 +477,20 @@ export async function createPRReviewComments(
 ): Promise<void> {
   const { owner, repo, prNumber, results } = data;
   const desired = buildReviewComments(results);
-  const existing = await listAllReviewComments(octokit, owner, repo, prNumber);
-  const { toCreate, toUpdate, toDelete } = reconcileReviewComments(existing, desired);
+  const { current, outdated } = await listAllReviewComments(octokit, owner, repo, prNumber);
+  const { toCreate, toUpdate, toDelete } = reconcileReviewComments(current, desired);
+  // Outdated comments (GitHub `line: null`) are always removed — once GitHub
+  // detaches a review comment from the diff it never re-attaches, and the
+  // new analysis is authoritative on whether the underlying issue persists.
+  const allDeletes = [...toDelete, ...outdated];
 
-  if (toCreate.length === 0 && toUpdate.length === 0 && toDelete.length === 0) {
+  if (toCreate.length === 0 && toUpdate.length === 0 && allDeletes.length === 0) {
     core.info("No review-comment changes needed; current state matches existing comments.");
     return;
   }
 
   core.info(
-    `Reconciling review comments: ${toCreate.length.toString()} new, ${toUpdate.length.toString()} updated, ${toDelete.length.toString()} deleted (existing: ${existing.length.toString()}, desired: ${desired.length.toString()}).`,
+    `Reconciling review comments: ${toCreate.length.toString()} new, ${toUpdate.length.toString()} updated, ${allDeletes.length.toString()} deleted (current: ${current.length.toString()}, outdated: ${outdated.length.toString()}, desired: ${desired.length.toString()}).`,
   );
 
   if (toCreate.length > 0) {
@@ -489,10 +508,10 @@ export async function createPRReviewComments(
     core.info(`✅ Updated ${updated.toString()}/${toUpdate.length.toString()} review comments`);
   }
 
-  if (toDelete.length > 0) {
-    const deleted = await applyDeletes(octokit, owner, repo, toDelete);
+  if (allDeletes.length > 0) {
+    const deleted = await applyDeletes(octokit, owner, repo, allDeletes);
     core.info(
-      `✅ Deleted ${deleted.toString()}/${toDelete.length.toString()} stale review comments`,
+      `✅ Deleted ${deleted.toString()}/${allDeletes.length.toString()} stale review comments`,
     );
   }
 }

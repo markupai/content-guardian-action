@@ -88596,19 +88596,25 @@ async function listAllReviewComments(octokit, owner, repo, prNumber) {
                 pull_number: prNumber,
                 per_page: 100,
             })).data;
-        const ours = [];
+        const current = [];
+        const outdated = [];
         for (const c of comments) {
             if (!c.body || !c.body.includes(REVIEW_MARKER))
                 continue;
-            if (!c.path || typeof c.line !== "number")
+            if (!c.path)
                 continue;
-            ours.push({ id: c.id, path: c.path, line: c.line, body: c.body });
+            if (typeof c.line === "number") {
+                current.push({ id: c.id, path: c.path, line: c.line, body: c.body });
+            }
+            else {
+                outdated.push(c.id);
+            }
         }
-        return ours;
+        return { current, outdated };
     }
     catch (error) {
         warning(`Failed to load existing review comments: ${String(error)}`);
-        return [];
+        return { current: [], outdated: [] };
     }
 }
 async function findExistingComment(octokit, owner, repo, prNumber) {
@@ -88779,13 +88785,17 @@ async function applyDeletes(octokit, owner, repo, ids) {
 async function createPRReviewComments(octokit, data) {
     const { owner, repo, prNumber, results } = data;
     const desired = buildReviewComments(results);
-    const existing = await listAllReviewComments(octokit, owner, repo, prNumber);
-    const { toCreate, toUpdate, toDelete } = reconcileReviewComments(existing, desired);
-    if (toCreate.length === 0 && toUpdate.length === 0 && toDelete.length === 0) {
+    const { current, outdated } = await listAllReviewComments(octokit, owner, repo, prNumber);
+    const { toCreate, toUpdate, toDelete } = reconcileReviewComments(current, desired);
+    // Outdated comments (GitHub `line: null`) are always removed — once GitHub
+    // detaches a review comment from the diff it never re-attaches, and the
+    // new analysis is authoritative on whether the underlying issue persists.
+    const allDeletes = [...toDelete, ...outdated];
+    if (toCreate.length === 0 && toUpdate.length === 0 && allDeletes.length === 0) {
         info("No review-comment changes needed; current state matches existing comments.");
         return;
     }
-    info(`Reconciling review comments: ${toCreate.length.toString()} new, ${toUpdate.length.toString()} updated, ${toDelete.length.toString()} deleted (existing: ${existing.length.toString()}, desired: ${desired.length.toString()}).`);
+    info(`Reconciling review comments: ${toCreate.length.toString()} new, ${toUpdate.length.toString()} updated, ${allDeletes.length.toString()} deleted (current: ${current.length.toString()}, outdated: ${outdated.length.toString()}, desired: ${desired.length.toString()}).`);
     if (toCreate.length > 0) {
         const payload = context.payload;
         const commitId = payload.pull_request?.head?.sha;
@@ -88800,9 +88810,9 @@ async function createPRReviewComments(octokit, data) {
         const updated = await applyUpdates(octokit, owner, repo, toUpdate);
         info(`✅ Updated ${updated.toString()}/${toUpdate.length.toString()} review comments`);
     }
-    if (toDelete.length > 0) {
-        const deleted = await applyDeletes(octokit, owner, repo, toDelete);
-        info(`✅ Deleted ${deleted.toString()}/${toDelete.length.toString()} stale review comments`);
+    if (allDeletes.length > 0) {
+        const deleted = await applyDeletes(octokit, owner, repo, allDeletes);
+        info(`✅ Deleted ${deleted.toString()}/${allDeletes.length.toString()} stale review comments`);
     }
 }
 function isPullRequestEvent() {

@@ -286,6 +286,63 @@ describe("createPRReviewComments — integration", () => {
     expect(octokit.rest.pulls.updateReviewComment).not.toHaveBeenCalled();
   });
 
+  it("deletes outdated tagged comments (line: null) unconditionally", async () => {
+    const octokit = makeOctokit();
+    // GitHub returns line: null when the comment's anchor line was mutated
+    // by a later push. We can't re-anchor it; new analysis is authoritative.
+    octokit.rest.pulls.listReviewComments.mockResolvedValueOnce({
+      data: [
+        {
+          id: 555,
+          path: "README.md",
+          line: null,
+          body: `${REVIEW_MARKER}\nstale outdated body`,
+        },
+      ],
+    });
+    const { payload } = commentData(octokit, [buildAnalysisResult({ filePath: "README.md" })]);
+    await createPRReviewComments(
+      octokit as unknown as Parameters<typeof createPRReviewComments>[0],
+      payload,
+    );
+    expect(octokit.rest.pulls.deleteReviewComment).toHaveBeenCalledWith(
+      expect.objectContaining({ comment_id: 555 }),
+    );
+    expect(octokit.rest.pulls.createReview).not.toHaveBeenCalled();
+    expect(octokit.rest.pulls.updateReviewComment).not.toHaveBeenCalled();
+  });
+
+  it("deletes outdated comments alongside reconcile-driven deletes in a single run", async () => {
+    const octokit = makeOctokit();
+    octokit.rest.pulls.listReviewComments.mockResolvedValueOnce({
+      data: [
+        // Anchored, not in the new desired set → reconcile picks for delete.
+        {
+          id: 10,
+          path: "README.md",
+          line: 99,
+          body: `${REVIEW_MARKER}\nstale anchored`,
+        },
+        // Outdated → unconditional delete.
+        {
+          id: 20,
+          path: "README.md",
+          line: null,
+          body: `${REVIEW_MARKER}\nstale outdated`,
+        },
+      ],
+    });
+    const { payload } = commentData(octokit, [buildAnalysisResult({ filePath: "README.md" })]);
+    await createPRReviewComments(
+      octokit as unknown as Parameters<typeof createPRReviewComments>[0],
+      payload,
+    );
+    const deletedIds = octokit.rest.pulls.deleteReviewComment.mock.calls
+      .map(([args]) => (args as { comment_id: number }).comment_id)
+      .sort((a, b) => a - b);
+    expect(deletedIds).toEqual([10, 20]);
+  });
+
   it("updates a tagged comment in place when only the body changed", async () => {
     const octokit = makeOctokit();
     octokit.rest.pulls.listReviewComments.mockResolvedValueOnce({
