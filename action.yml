@@ -1,52 +1,55 @@
 name: Markup AI Content Guardian
-description: GitHub Action that automates content quality checks to ensure consistent brand
-  alignment and proactive content governance.
+description: GitHub Action that automates content quality checks via the Markup AI
+  style agent, with risk-based or numeric scoring on every push, PR, and scheduled run.
 author: Markup AI
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: shield
   color: black
 
-# Define your inputs here.
 inputs:
   markup_ai_api_key:
-    description: API key for style checking (can also be provided via MARKUP_AI_API_KEY
-      environment variable)
+    description: Markup AI API key (can also be provided via the MARKUP_AI_API_KEY
+      environment variable).
     required: true
-  dialect:
-    description: Language dialect for analysis (e.g., american_english, british_english)
-    required: true
-  tone:
-    description: Tone for analysis (e.g., formal, informal, academic)
+  target:
+    description: "Style guide to analyze against. Accepts either a target ID
+      or the display name of an enabled target (case-insensitive). When
+      omitted, the action uses the organization's default target (the one
+      flagged `is_default: true` in /style-agent/targets)."
     required: false
-  style-guide:
-    description: Style guide for analysis (e.g., ap, chicago, apa)
-    required: true
+  paths:
+    description: "Optional whitelist of repo-relative paths to analyze. When
+      set, the discovered file list is intersected with this whitelist; only
+      matching files are sent to the style agent. Accepts comma- or
+      newline-separated values, e.g. `README.md` or a multi-line YAML block
+      listing several paths. Empty means analyze every discovered file
+      (default)."
+    required: false
   github_token:
-    description: GitHub token for API access (uses GITHUB_TOKEN by default)
+    description: GitHub token for API access (can also be provided via the GITHUB_TOKEN
+      environment variable).
     required: true
   add_commit_status:
-    description: Add commit status updates (default is true)
+    description: Add commit status updates for push events (default true).
     required: false
     default: "true"
   add_review_comments:
-    description: Add PR review comments for issues (default is true)
+    description: Add PR review comments for issues (default true).
     required: false
     default: "true"
   strict_mode:
-    description: Fail the action if any file analysis fails (default is false)
+    description: Fail the action if any file fails analysis (default false).
     required: false
     default: "false"
 
-# Define your outputs here.
 outputs:
   event-type:
-    description: Type of GitHub event that triggered the action
+    description: GitHub event type that triggered the action.
   files-analyzed:
-    description: Number of files analyzed
+    description: Number of files analyzed.
   results:
-    description: JSON string containing analysis results
+    description: JSON string containing analysis results.
 
 runs:
   using: node24

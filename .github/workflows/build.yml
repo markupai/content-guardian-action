@@ -47,6 +47,10 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+  # End-to-end test of the action against itself. Scoped via the `paths`
+  # input to README.md so it touches one file at most per run — keeps PR
+  # noise low while still exercising the real wire path against the live
+  # Markup AI API.
   github-action-test:
     runs-on: ubuntu-latest
     permissions:
@@ -61,9 +65,7 @@ jobs:
       - name: Test Local Action
         uses: ./
         with:
-          tone: professional
-          dialect: american_english
-          style-guide: ap
+          paths: README.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY_PROD }}

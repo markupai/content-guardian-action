@@ -1,70 +1,99 @@
+/**
+ * Style-agent analysis orchestration.
+ *
+ * For each file: read content, POST `/agents/<style_agent>/run`, poll the
+ * workflow until terminal, and map the response into our `AnalysisResult`
+ * shape. Files are processed with a concurrency cap to avoid hammering the API.
+ */
+
 import * as core from "@actions/core";
 import {
-  styleCheck,
-  styleBatchCheckRequests,
-  styleBatchOperation,
-  styleSuggestions,
-  Config,
-  StyleAnalysisReq,
-} from "@markupai/toolkit";
-import { AnalysisResult, AnalysisOptions } from "../types/index.js";
+  isFatalApiError,
+  MarkupApiError,
+  pollUntilDone,
+  runStyleAgent,
+} from "./markup-api-client.js";
+import {
+  AnalysisIssue,
+  AnalysisOptions,
+  AnalysisResult,
+  AgentRunResponse,
+  StyleAgentIssue,
+} from "../types/index.js";
 import { getFileBasename, getLineContextAtIndex } from "../utils/file-utils.js";
-import { calculateScoreSummary, ScoreSummary } from "../utils/score-utils.js";
-import { processFileReading } from "../utils/batch-utils.js";
-import { checkForRequestEndingError, isRequestEndingError } from "../utils/error-utils.js";
+import { computeIssueCounts } from "../utils/issue-utils.js";
+import { processWithConcurrency } from "../utils/batch-utils.js";
+import { MAX_CONCURRENT_FILES } from "../constants/index.js";
 
-export function createConfig(apiToken: string): Config {
+function buildAnalysisIssues(
+  content: string,
+  issues: StyleAgentIssue[] | undefined,
+): AnalysisIssue[] {
+  if (!issues || issues.length === 0) return [];
+  return issues.map((issue) => {
+    const startIndex = issue.position?.start;
+    if (typeof startIndex !== "number") {
+      // No position → can't anchor an inline review comment. Surface with
+      // line/column 0 so downstream code skips it for inline comments (which
+      // require line > 0) but still counts it in summary totals.
+      return { issue, line: 0, column: 0, lineText: "" };
+    }
+    const { line, column, lineText } = getLineContextAtIndex(content, startIndex);
+    return { issue, line, column, lineText };
+  });
+}
+
+function toAnalysisResult(
+  filePath: string,
+  content: string,
+  response: AgentRunResponse,
+): AnalysisResult {
+  const issues = buildAnalysisIssues(content, response.result?.issues);
   return {
-    apiKey: apiToken,
-    headers: { "x-integration-id": "markupai-content-guardian-action" },
+    filePath,
+    workflowId: response.workflow_id,
+    status: response.status,
+    documentRef: response.document_ref ?? undefined,
+    scores: response.result?.quality ?? null,
+    analysis: response.result?.analysis ?? null,
+    issues,
+    issueCounts: computeIssueCounts(issues),
+    timestamp: new Date().toISOString(),
   };
 }
 
 /**
- * Run style check on a single file
- * Throws an error if the error is an auth or server issue.
+ * Run the style agent against a single file's content. Returns `null` on
+ * non-fatal failure (timeout, per-file workflow failure). Throws on fatal
+ * errors (401/403/5xx) so the caller can abort the whole run.
  */
 export async function analyzeFile(
+  apiKey: string,
   filePath: string,
   content: string,
   options: AnalysisOptions,
-  config: Config,
 ): Promise<AnalysisResult | null> {
   try {
-    core.info(`🔍 Running check on: ${filePath}`);
-
-    const request: StyleAnalysisReq = {
-      content,
-      dialect: options.dialect,
-      style_guide: options.styleGuide,
-      documentNameWithExtension: getFileBasename(filePath),
-      ...(options.tone ? { tone: options.tone } : {}),
-    };
-
-    const result = options.reviewComments
-      ? await styleSuggestions(request, config)
-      : await styleCheck(request, config);
-
-    const issues = result.original.issues.map((issue) => {
-      const context = getLineContextAtIndex(content, issue.position.start_index);
-      return {
-        issue,
-        line: context.line,
-        column: context.column,
-        lineText: context.lineText,
-      };
+    core.info(`🔍 Submitting ${filePath}`);
+    const submission = await runStyleAgent(apiKey, {
+      text: content,
+      document_name: getFileBasename(filePath),
+      document_ref: filePath,
+      target_id: options.targetId,
     });
 
-    return {
-      filePath,
-      result: result.original.scores,
-      issues,
-      workflowId: result.workflow.id,
-      timestamp: new Date().toISOString(),
-    };
+    core.info(`⏳ Polling workflow ${submission.workflow_id} for ${filePath}`);
+    const finalState = await pollUntilDone(apiKey, submission.workflow_id);
+
+    if (finalState.status !== "completed") {
+      core.error(`Workflow for ${filePath} ended with status: ${finalState.status}`);
+      return null;
+    }
+
+    return toAnalysisResult(filePath, content, finalState);
   } catch (error) {
-    core.error(`Failed to run check on ${filePath}: ${String(error)}`);
-    if (isRequestEndingError(error as Error)) {
+    core.error(`Failed to analyze ${filePath}: ${String(error)}`);
+    if (error instanceof MarkupApiError && isFatalApiError(error)) {
       throw error;
     }
     return null;
@@ -72,174 +101,61 @@ export async function analyzeFile(
 }
 
 /**
- * Run analysis on multiple files using batch processing. Throws an error if the error is an auth or server issue.
- */
-export async function analyzeFilesBatch(
-  files: string[],
-  options: AnalysisOptions,
-  config: Config,
-  readFileContent: (filePath: string) => Promise<string | null>,
-): Promise<AnalysisResult[]> {
-  if (files.length === 0) {
-    return [];
-  }
-
-  core.info(`🚀 Starting batch analysis of ${files.length.toString()} files`);
-
-  // Read all file contents first using optimized batch processing
-  const fileContents = await processFileReading(files, readFileContent);
-
-  if (fileContents.length === 0) {
-    core.warning("No valid file contents found for analysis");
-    return [];
-  }
-
-  // Create batch requests
-  const requests: StyleAnalysisReq[] = fileContents.map(({ filePath, content }) => ({
-    content,
-    dialect: options.dialect,
-    style_guide: options.styleGuide,
-    documentNameWithExtension: getFileBasename(filePath),
-    ...(options.tone ? { tone: options.tone } : {}),
-  }));
-
-  // Configure batch options with sensible defaults
-  const batchOptions = {
-    maxConcurrent: 100, // Limit concurrency to avoid overwhelming the API
-    retryAttempts: 2,
-    retryDelay: 1_000,
-    timeout: 300_000, // 5 minutes
-  };
-
-  try {
-    // Start batch processing
-    const batchResponse = options.reviewComments
-      ? styleBatchOperation(requests, config, "suggestions", batchOptions)
-      : styleBatchCheckRequests(requests, config, batchOptions);
-
-    // Monitor progress
-    const progressInterval = setInterval(() => {
-      const progress = batchResponse.progress;
-      const completed = progress.completed;
-      const failed = progress.failed;
-      const total = progress.total;
-
-      const { found } = checkForRequestEndingError(failed, progress.results);
-      if (found) {
-        batchResponse.cancel();
-      }
-
-      if (completed > 0 || failed > 0) {
-        core.info(
-          `📊 Batch progress: ${completed.toString()}/${total.toString()} completed, ${failed.toString()} failed`,
-        );
-      }
-    }, 2_000); // Update every 2 seconds
-
-    // Wait for completion
-    const finalProgress = await batchResponse.promise;
-
-    // Clear progress monitoring
-    clearInterval(progressInterval);
-
-    const { found, error } = checkForRequestEndingError(
-      finalProgress.failed,
-      finalProgress.results,
-    );
-    if (found) {
-      throw error instanceof Error ? error : new Error(String(error));
-    }
-
-    // Process results
-    const results: AnalysisResult[] = [];
-    for (const [index, batchResult] of finalProgress.results.entries()) {
-      if (batchResult.status === "completed" && batchResult.result) {
-        const content = fileContents[index].content;
-        const issues = batchResult.result.original.issues.map((issue) => {
-          const context = getLineContextAtIndex(content, issue.position.start_index);
-          return {
-            issue,
-            line: context.line,
-            column: context.column,
-            lineText: context.lineText,
-          };
-        });
-        const workflowId = batchResult.workflowId || batchResult.result.workflow.id;
-
-        results.push({
-          filePath: fileContents[index].filePath,
-          result: batchResult.result.original.scores,
-          issues,
-          workflowId,
-          timestamp: new Date().toISOString(),
-        });
-      } else if (batchResult.status === "failed") {
-        core.error(
-          `Failed to analyze ${fileContents[index].filePath}: ${
-            batchResult.error?.message || "Unknown error"
-          }`,
-        );
-      }
-    }
-
-    core.info(
-      `✅ Batch analysis completed: ${results.length.toString()}/${fileContents.length.toString()} files processed successfully`,
-    );
-    return results;
-  } catch (error) {
-    core.error(`Batch analysis failed: ${String(error)}`);
-    if (isRequestEndingError(error as Error)) {
-      throw error;
-    }
-    return [];
-  }
-}
-
-/**
- * Run analysis on multiple files
+ * Analyze multiple files concurrently. Fatal API errors (401/403/5xx)
+ * short-circuit the whole run: the first fatal error is captured, queued
+ * tasks bail without making more API calls, and the error is rethrown so
+ * the action surfaces it as a top-level failure. Per-file non-fatal failures
+ * are logged and dropped from the result list.
  *
- * Uses batch processing for multiple files and sequential processing for small batches. Throws an error if the error is an auth or server issue.
+ * Note: `processWithConcurrency` uses `Promise.allSettled` internally, which
+ * would swallow a raw `throw` from the processor. We catch the throw here,
+ * set a shared abort flag, and let `processWithConcurrency` settle — then
+ * rethrow once.
  */
 export async function analyzeFiles(
+  apiKey: string,
   files: string[],
   options: AnalysisOptions,
-  config: Config,
   readFileContent: (filePath: string) => Promise<string | null>,
 ): Promise<AnalysisResult[]> {
-  // For small batches, use sequential processing
-  if (files.length <= 3) {
-    const results: AnalysisResult[] = [];
+  if (files.length === 0) return [];
 
-    // Process files sequentially to avoid overwhelming the API
-    for (const filePath of files) {
+  core.info(
+    `🚀 Analyzing ${files.length.toString()} file(s) with up to ${MAX_CONCURRENT_FILES.toString()} in flight`,
+  );
+
+  let fatalError: unknown = null;
+
+  const results = await processWithConcurrency(
+    files,
+    async (filePath) => {
+      // Already aborted by a peer task → skip without doing any work.
+      if (fatalError) return null;
       const content = await readFileContent(filePath);
-      if (content) {
-        const result = await analyzeFile(filePath, content, options, config);
-        if (result) {
-          results.push(result);
+      if (content === null) return null;
+      try {
+        return await analyzeFile(apiKey, filePath, content, options);
+      } catch (error) {
+        if (isFatalApiError(error)) {
+          // First fatal error wins; later ones are silently ignored.
+          fatalError ??= error;
         }
+        return null;
       }
-    }
+    },
+    MAX_CONCURRENT_FILES,
+  );
 
-    return results;
+  if (fatalError !== null) {
+    if (fatalError instanceof Error) throw fatalError;
+    let detail = "(unstringifiable error)";
+    try {
+      detail = JSON.stringify(fatalError);
+    } catch {
+      // Keep fallback. Circular refs / BigInt values can throw here.
+    }
+    throw new Error(`Fatal API error: ${detail}`);
   }
 
-  // For larger batches, use batch processing
-  return analyzeFilesBatch(files, options, config, readFileContent);
-}
-
-/**
- * Get analysis summary statistics
- */
-export function getAnalysisSummary(results: AnalysisResult[]): ScoreSummary {
-  const summary = calculateScoreSummary(results);
-  return {
-    totalFiles: summary.totalFiles,
-    averageQualityScore: summary.averageQualityScore,
-    averageClarityScore: summary.averageClarityScore,
-    averageToneScore: summary.averageToneScore,
-    averageGrammarScore: summary.averageGrammarScore,
-    averageConsistencyScore: summary.averageConsistencyScore,
-    averageTerminologyScore: summary.averageTerminologyScore,
-  };
+  return results.filter((r): r is AnalysisResult => r !== null);
 }

@@ -2186,11 +2186,11 @@ function requireDiagnostics$2 () {
 	return diagnostics$2;
 }
 
-var request$6;
+var request$7;
 var hasRequiredRequest$5;
 
 function requireRequest$5 () {
-	if (hasRequiredRequest$5) return request$6;
+	if (hasRequiredRequest$5) return request$7;
 	hasRequiredRequest$5 = 1;
 
 	const {
@@ -2585,8 +2585,8 @@ function requireRequest$5 () {
 	  }
 	}
 
-	request$6 = Request;
-	return request$6;
+	request$7 = Request;
+	return request$7;
 }
 
 var dispatcher$2;
@@ -17892,11 +17892,11 @@ function requireDispatcherWeakref$2 () {
 
 /* globals AbortController */
 
-var request$5;
+var request$6;
 var hasRequiredRequest$4;
 
 function requireRequest$4 () {
-	if (hasRequiredRequest$4) return request$5;
+	if (hasRequiredRequest$4) return request$6;
 	hasRequiredRequest$4 = 1;
 
 	const { extractBody, mixinBody, cloneBody, bodyUnusable } = requireBody$2();
@@ -18931,8 +18931,8 @@ function requireRequest$4 () {
 	  }
 	]);
 
-	request$5 = { Request, makeRequest, fromInnerRequest, cloneRequest };
-	return request$5;
+	request$6 = { Request, makeRequest, fromInnerRequest, cloneRequest };
+	return request$6;
 }
 
 var fetch_1$2;
@@ -30157,11 +30157,11 @@ function requireDiagnostics$1 () {
 	return diagnostics$1;
 }
 
-var request$4;
+var request$5;
 var hasRequiredRequest$3;
 
 function requireRequest$3 () {
-	if (hasRequiredRequest$3) return request$4;
+	if (hasRequiredRequest$3) return request$5;
 	hasRequiredRequest$3 = 1;
 
 	const {
@@ -30556,8 +30556,8 @@ function requireRequest$3 () {
 	  }
 	}
 
-	request$4 = Request;
-	return request$4;
+	request$5 = Request;
+	return request$5;
 }
 
 var dispatcher$1;
@@ -45863,11 +45863,11 @@ function requireDispatcherWeakref$1 () {
 
 /* globals AbortController */
 
-var request$3;
+var request$4;
 var hasRequiredRequest$2;
 
 function requireRequest$2 () {
-	if (hasRequiredRequest$2) return request$3;
+	if (hasRequiredRequest$2) return request$4;
 	hasRequiredRequest$2 = 1;
 
 	const { extractBody, mixinBody, cloneBody, bodyUnusable } = requireBody$1();
@@ -46902,8 +46902,8 @@ function requireRequest$2 () {
 	  }
 	]);
 
-	request$3 = { Request, makeRequest, fromInnerRequest, cloneRequest };
-	return request$3;
+	request$4 = { Request, makeRequest, fromInnerRequest, cloneRequest };
+	return request$4;
 }
 
 var fetch_1$1;
@@ -58210,11 +58210,11 @@ function requireDiagnostics () {
 	return diagnostics;
 }
 
-var request$2;
+var request$3;
 var hasRequiredRequest$1;
 
 function requireRequest$1 () {
-	if (hasRequiredRequest$1) return request$2;
+	if (hasRequiredRequest$1) return request$3;
 	hasRequiredRequest$1 = 1;
 
 	const {
@@ -58609,8 +58609,8 @@ function requireRequest$1 () {
 	  }
 	}
 
-	request$2 = Request;
-	return request$2;
+	request$3 = Request;
+	return request$3;
 }
 
 var dispatcher;
@@ -73916,11 +73916,11 @@ function requireDispatcherWeakref () {
 
 /* globals AbortController */
 
-var request$1;
+var request$2;
 var hasRequiredRequest;
 
 function requireRequest () {
-	if (hasRequiredRequest) return request$1;
+	if (hasRequiredRequest) return request$2;
 	hasRequiredRequest = 1;
 
 	const { extractBody, mixinBody, cloneBody, bodyUnusable } = requireBody();
@@ -74955,8 +74955,8 @@ function requireRequest () {
 	  }
 	]);
 
-	request$1 = { Request, makeRequest, fromInnerRequest, cloneRequest };
-	return request$1;
+	request$2 = { Request, makeRequest, fromInnerRequest, cloneRequest };
+	return request$2;
 }
 
 var fetch_1;
@@ -84731,7 +84731,7 @@ function withDefaults$1(oldEndpoint, newDefaults) {
 }
 
 // pkg/dist-src/index.js
-var request = withDefaults$1(endpoint, defaults_default);
+var request$1 = withDefaults$1(endpoint, defaults_default);
 /* v8 ignore next -- @preserve */
 /* v8 ignore else -- @preserve */
 
@@ -84838,7 +84838,7 @@ function withDefaults(request2, newDefaults) {
 }
 
 // pkg/dist-src/index.js
-withDefaults(request, {
+withDefaults(request$1, {
   headers: {
     "user-agent": `octokit-graphql.js/${VERSION$3} ${getUserAgent()}`
   },
@@ -84970,7 +84970,7 @@ class Octokit {
   constructor(options = {}) {
     const hook = new Hook.Collection();
     const requestDefaults = {
-      baseUrl: request.endpoint.DEFAULTS.baseUrl,
+      baseUrl: request$1.endpoint.DEFAULTS.baseUrl,
       headers: {},
       request: Object.assign({}, options.request, {
         // @ts-ignore internal usage only, no need to type
@@ -84991,7 +84991,7 @@ class Octokit {
     if (options.timeZone) {
       requestDefaults.headers["time-zone"] = options.timeZone;
     }
-    this.request = request.defaults(requestDefaults);
+    this.request = request$1.defaults(requestDefaults);
     this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
     this.log = createLogger(options.log);
     this.hook = hook;
@@ -87628,38 +87628,6 @@ function getOctokit(token, options, ...additionalPlugins) {
 }
 
 /**
- * Common string utilities.
- */
-const TONE_PLACEHOLDER = "None (keep tone unchanged)";
-function getToneValue(value) {
-    const trimmed = value?.trim();
-    if (!trimmed || trimmed === TONE_PLACEHOLDER) {
-        return undefined;
-    }
-    return trimmed;
-}
-function truncateText(value, maxLength) {
-    if (value.length <= maxLength) {
-        return value;
-    }
-    return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
-}
-function wrapInlineCode(value) {
-    const matches = value.match(/`+/g);
-    const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
-    const fence = "`".repeat(maxLength + 1);
-    const needsPadding = value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
-    const wrappedValue = needsPadding ? ` ${value} ` : value;
-    return `${fence}${wrappedValue}${fence}`;
-}
-function capitalizeLabel(value) {
-    if (!value) {
-        return value;
-    }
-    return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-/**
  * Application constants and configuration
  */
 const SUPPORTED_EXTENSIONS = [
@@ -87674,97 +87642,93 @@ const SUPPORTED_EXTENSIONS = [
     ".txt",
     ".xml",
 ];
-/**
- * Input names for GitHub Actions
- */
+const API_BASE_URL = "https://api.markup.ai/";
+const INTEGRATION_ID = "markupai-content-guardian-action";
+/** Style agent ID — stable platform identifier, not customer-scoped. */
+const STYLE_AGENT_ID = "ag_vYCPHsSQnnJj";
+/** Workflow polling */
+const POLL_INTERVAL_MS = 2_000;
+const POLL_TIMEOUT_MS = 300_000;
+/** Files analyzed concurrently. Kept low because the style agent's `/run`
+ * endpoint is rate limited (10 RPM by default). */
+const MAX_CONCURRENT_FILES = 3;
+/** Hard cap on the number of inline review comments the action will post on
+ * one PR run. Above this, the PR summary surfaces a "N more" indicator. */
+const MAX_INLINE_REVIEW_COMMENTS = 50;
 const INPUT_NAMES = {
     MARKUP_AI_API_KEY: "markup_ai_api_key",
-    DIALECT: "dialect",
-    TONE: "tone",
-    STYLE_GUIDE: "style-guide",
+    TARGET: "target",
     GITHUB_TOKEN: "github_token",
     ADD_COMMIT_STATUS: "add_commit_status",
     ADD_REVIEW_COMMENTS: "add_review_comments",
     STRICT_MODE: "strict_mode",
+    PATHS: "paths",
 };
-/**
- * Environment variable names
- */
 const ENV_VARS = {
     MARKUP_AI_API_KEY: "MARKUP_AI_API_KEY",
     GITHUB_TOKEN: "GITHUB_TOKEN",
 };
-/**
- * Output names for GitHub Actions
- */
 const OUTPUT_NAMES = {
     EVENT_TYPE: "event-type",
     FILES_ANALYZED: "files-analyzed",
     RESULTS: "results",
 };
-/**
- * Event types supported by the action
- */
 const EVENT_TYPES = {
     PUSH: "push",
     PULL_REQUEST: "pull_request",
     WORKFLOW_DISPATCH: "workflow_dispatch",
     SCHEDULE: "schedule",
 };
-/**
- * Display constants
- */
 const DISPLAY = {
     MAX_FILES_TO_SHOW: 10,
     SEPARATOR_LENGTH: 50,
 };
-/**
- * Error messages
- */
 const ERROR_MESSAGES = {
-    API_TOKEN_REQUIRED: "API token is required",
-    GITHUB_TOKEN_WARNING: "GitHub token not provided. Cannot fetch commit information."};
+    STYLE_AGENT_DISABLED: "Style Agent is not enabled for your organization. Contact Markup AI support to enable it.",
+};
 
 /**
  * Action configuration and input validation
  */
-/**
- * Get and validate action configuration from inputs
- */
 function getActionConfig() {
     const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
     const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
-    const dialect = getRequiredInput(INPUT_NAMES.DIALECT, "DIALECT");
-    const tone = getOptionalInput(INPUT_NAMES.TONE);
-    const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
+    // `target` is optional: when omitted, the action falls back to the org's
+    // default target (the one flagged `is_default: true` in /style-agent/targets).
+    const target = getOptionalInput(INPUT_NAMES.TARGET, "TARGET");
+    const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
     const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
     return {
         apiToken,
         githubToken,
-        dialect,
-        tone,
-        styleGuide,
+        target,
+        paths,
         addCommitStatus,
         addReviewComments,
         strictMode,
     };
 }
 /**
- * Get analysis options from configuration
+ * Parse the `paths` input into a list of repo-relative paths. Accepts both
+ * comma- and newline-separated input so the YAML can be written either as
+ * `paths: README.md, docs/intro.md` or as a multi-line block:
+ *
+ *   paths: |
+ *     README.md
+ *     docs/intro.md
+ *
+ * Empty entries (blank lines, leading/trailing commas) are dropped.
  */
-function getAnalysisOptions(config) {
-    return {
-        dialect: config.dialect,
-        tone: config.tone,
-        styleGuide: config.styleGuide,
-        reviewComments: config.addReviewComments,
-    };
+function parsePaths(raw) {
+    if (!raw)
+        return [];
+    return raw
+        .split(/[\n,]+/)
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0);
 }
-/**
- * Get a required input value with fallback to environment variable
- */
 function getRequiredInput(inputName, envVarName) {
     const value = getInput(inputName) || process.env[envVarName];
     if (!value) {
@@ -87772,16 +87736,10 @@ function getRequiredInput(inputName, envVarName) {
     }
     return value;
 }
-/**
- * Get an optional input value with fallback to environment variable and default
- */
-function getOptionalInput(inputName) {
-    const value = getInput(inputName) || process.env[inputName.toUpperCase()];
-    return value === undefined || value === "" ? undefined : value;
+function getOptionalInput(inputName, envVarName) {
+    const value = getInput(inputName) || process.env[envVarName] || "";
+    return value.trim();
 }
-/**
- * Get a boolean input value with fallback to environment variable and default
- */
 function getBooleanInput(inputName, defaultValue) {
     const value = getInput(inputName) || process.env[inputName.toUpperCase()];
     if (value === undefined || value === "") {
@@ -87790,4067 +87748,247 @@ function getBooleanInput(inputName, defaultValue) {
     return value.toLowerCase() === "true";
 }
 /**
- * Validate configuration
+ * No-op kept for API symmetry with `getActionConfig` / `logConfiguration`.
+ * All validation happens at input-read time inside `getActionConfig`
+ * (`getRequiredInput` throws for missing api token / github token); `target`
+ * is optional. The runner still calls this so future invariants have a
+ * natural home.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function validateConfig(config) {
-    if (!config.apiToken) {
-        throw new Error(ERROR_MESSAGES.API_TOKEN_REQUIRED);
-    }
-    if (!config.githubToken) {
-        warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
-    }
-    // Validate required analysis options
-    validateAnalysisOption("dialect", config.dialect);
-    validateAnalysisOption("style_guide", config.styleGuide);
+    // intentionally empty
 }
-/**
- * Validate individual analysis option
- */
-function validateAnalysisOption(name, value) {
-    if (!value || value.trim().length === 0) {
-        throw new Error(`Analysis option '${name}' cannot be empty`);
-    }
-}
-/**
- * Log configuration (without sensitive data)
- */
 function logConfiguration(config) {
-    const toneDisplay = getToneValue(config.tone) ?? "";
     info("🔧 Action Configuration:");
-    info(`  Dialect: ${config.dialect}`);
-    info(`  Tone: ${toneDisplay}`);
-    info(`  Style Guide: ${config.styleGuide}`);
+    info(`  Target: ${config.target || "(org default)"}`);
     info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
     info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
+    info(`  Paths Filter: ${config.paths.length > 0 ? config.paths.join(", ") : "(none)"}`);
+    info(`  Commit Status: ${config.addCommitStatus ? "enabled" : "disabled"}`);
     info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
+    info(`  Strict Mode: ${config.strictMode ? "on" : "off"}`);
 }
 
-var j = /* @__PURE__ */ ((t) => (t.Check = "check", t.Suggestions = "suggestions", t.Rewrite = "rewrite", t))(j || {});
-const X = (t, o, e) => JSON.stringify(t, o, e);
-function q(t, o) {
-  return JSON.parse(t, o);
-}
-class w extends Error {
-  constructor({ message: o, statusCode: e, body: r, rawResponse: i }) {
-    super(Ue({ message: o, statusCode: e, body: r })), Object.setPrototypeOf(this, w.prototype), this.statusCode = e, this.body = r, this.rawResponse = i;
-  }
-}
-function Ue({ message: t, statusCode: o, body: e }) {
-  let r = [];
-  return t != null && r.push(t), o != null && r.push(`Status code: ${o.toString()}`), e != null && r.push(`Body: ${X(e, void 0, 2)}`), r.join(`
-`);
-}
-class v extends Error {
-  constructor(o) {
-    super(o), Object.setPrototypeOf(this, v.prototype);
-  }
-}
-class g extends w {
-  constructor(o, e) {
-    super({
-      message: "UnauthorizedError",
-      statusCode: 401,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, g.prototype);
-  }
-}
-class R extends w {
-  constructor(o, e) {
-    super({
-      message: "ForbiddenError",
-      statusCode: 403,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, R.prototype);
-  }
-}
-class S extends w {
-  constructor(o, e) {
-    super({
-      message: "UnprocessableEntityError",
-      statusCode: 422,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, S.prototype);
-  }
-}
-class _ extends w {
-  constructor(o, e) {
-    super({
-      message: "InternalServerError",
-      statusCode: 500,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, _.prototype);
-  }
-}
-class V extends w {
-  constructor(o, e) {
-    super({
-      message: "ConflictError",
-      statusCode: 409,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, V.prototype);
-  }
-}
-class N extends w {
-  constructor(o, e) {
-    super({
-      message: "ContentTooLargeError",
-      statusCode: 413,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, N.prototype);
-  }
-}
-class M extends w {
-  constructor(o, e) {
-    super({
-      message: "NotFoundError",
-      statusCode: 404,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, M.prototype);
-  }
-}
-class D extends w {
-  constructor(o, e) {
-    super({
-      message: "TooManyRequestsError",
-      statusCode: 429,
-      body: o,
-      rawResponse: e
-    }), Object.setPrototypeOf(this, D.prototype);
-  }
-}
-var Le = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
+/**
+ * Direct client for the Markup AI agentic API.
+ *
+ * Replaces `@markupai/toolkit`. Calls `https://api.markup.ai/` via `fetch`,
+ * runs the style agent (workflow id ag_vYCPHsSQnnJj) and polls workflow
+ * status until terminal.
+ */
+class MarkupApiError extends Error {
+    status;
+    requestId;
+    body;
+    retryAfterSeconds;
+    constructor(message, status, requestId, body, 
+    /** Parsed `Retry-After` HTTP header value, in seconds, when present. */
+    retryAfterSeconds) {
+        super(message);
+        this.status = status;
+        this.requestId = requestId;
+        this.body = body;
+        this.retryAfterSeconds = retryAfterSeconds;
+        this.name = "MarkupApiError";
     }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-const $e = {
-  get: (t, o) => Le(void 0, void 0, void 0, function* () {
-    return typeof t == "function" ? t(o) : t;
-  })
-}, Be = {
-  arrayFormat: "indices",
-  encode: true
-};
-function ae(t, o) {
-  if (t === void 0 || t === null)
-    return "";
-  const e = String(t);
-  return o ? encodeURIComponent(e) : e;
 }
-function ee(t, o = "", e) {
-  const r = [];
-  for (const [i, a] of Object.entries(t)) {
-    const d = o ? `${o}[${i}]` : i;
-    if (a !== void 0)
-      if (Array.isArray(a)) {
-        if (a.length === 0)
-          continue;
-        for (let l = 0; l < a.length; l++) {
-          const n = a[l];
-          if (n !== void 0)
-            if (typeof n == "object" && !Array.isArray(n) && n !== null) {
-              const c = e.arrayFormat === "indices" ? `${d}[${l}]` : d;
-              r.push(...ee(n, c, e));
-            } else {
-              const c = e.arrayFormat === "indices" ? `${d}[${l}]` : d, s = e.encode ? encodeURIComponent(c) : c;
-              r.push(`${s}=${ae(n, e.encode)}`);
+function buildUrl(path, query) {
+    const url = new URL(path.replace(/^\//, ""), API_BASE_URL);
+    if (query) {
+        for (const [key, value] of Object.entries(query)) {
+            if (value !== undefined) {
+                url.searchParams.set(key, String(value));
             }
         }
-      } else if (typeof a == "object" && a !== null) {
-        if (Object.keys(a).length === 0)
-          continue;
-        r.push(...ee(a, d, e));
-      } else {
-        const l = e.encode ? encodeURIComponent(d) : d;
-        r.push(`${l}=${ae(a, e.encode)}`);
-      }
-  }
-  return r;
+    }
+    return url.toString();
 }
-function Fe(t, o) {
-  return t == null || typeof t != "object" ? "" : ee(t, "", Object.assign(Object.assign({}, Be), o)).join("&");
+function extractMessage(body, fallback) {
+    if (body && typeof body === "object") {
+        const obj = body;
+        const detail = typeof obj.detail === "string" ? obj.detail : undefined;
+        const message = typeof obj.message === "string" ? obj.message : undefined;
+        const errorField = typeof obj.error === "string" ? obj.error : undefined;
+        const requestId = typeof obj.request_id === "string" ? obj.request_id : undefined;
+        return { message: detail ?? message ?? errorField ?? fallback, requestId };
+    }
+    return { message: fallback };
 }
-function Ne(t, o) {
-  const e = Fe(o, { arrayFormat: "repeat" });
-  return e ? `${t}?${e}` : t;
-}
-function ze(t) {
-  const o = {
-    get bodyUsed() {
-      return t.bodyUsed;
-    },
-    stream: () => t.body,
-    arrayBuffer: t.arrayBuffer.bind(t),
-    blob: t.blob.bind(t)
-  };
-  return "bytes" in t && typeof t.bytes == "function" && (o.bytes = t.bytes.bind(t)), o;
-}
-function De(t) {
-  return t.body != null;
-}
-var Ge = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-function he(t, o) {
-  return Ge(this, void 0, void 0, function* () {
-    if (!De(t))
-      return;
-    switch (o) {
-      case "binary-response":
-        return ze(t);
-      case "blob":
-        return yield t.blob();
-      case "arrayBuffer":
-        return yield t.arrayBuffer();
-      case "sse":
-        return t.body;
-      case "streaming":
-        return t.body;
-      case "text":
-        return yield t.text();
-    }
-    const e = yield t.text();
-    if (e.length > 0)
-      try {
-        return q(e);
-      } catch {
-        return {
-          ok: false,
-          error: {
-            reason: "non-json",
-            statusCode: t.status,
-            rawBody: e
-          }
-        };
-      }
-  });
-}
-var We = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-function He(t) {
-  return We(this, void 0, void 0, function* () {
-    var o, e, r;
-    let i = (o = t.headers.get("Content-Type")) === null || o === void 0 ? void 0 : o.toLowerCase();
-    if (i == null || i.length === 0)
-      return he(t);
-    switch (i.indexOf(";") !== -1 && (i = (r = (e = i.split(";")[0]) === null || e === void 0 ? void 0 : e.trim()) !== null && r !== void 0 ? r : ""), i) {
-      case "application/hal+json":
-      case "application/json":
-      case "application/ld+json":
-      case "application/problem+json":
-      case "application/vnd.api+json":
-      case "text/json":
-        const a = yield t.text();
-        return a.length > 0 ? q(a) : void 0;
-      default:
-        if (i.startsWith("application/vnd.") && i.endsWith("+json")) {
-          const d = yield t.text();
-          return d.length > 0 ? q(d) : void 0;
-        }
-        return yield t.text();
-    }
-  });
-}
-var Ve = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-function Ke() {
-  return Ve(this, void 0, void 0, function* () {
-    return fetch;
-  });
-}
-var Xe = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, o || [])).next());
-  });
-};
-function Ye(t) {
-  return Xe(this, arguments, void 0, function* ({ body: o, type: e }) {
-    return e.includes("json") ? X(o) : o;
-  });
-}
-const Je = "timeout";
-function Ze(t) {
-  const o = new AbortController(), e = setTimeout(() => o.abort(Je), t);
-  return { signal: o.signal, abortId: e };
-}
-function Qe(...t) {
-  const o = t.length === 1 && Array.isArray(t[0]) ? t[0] : t, e = new AbortController();
-  for (const r of o) {
-    if (r.aborted) {
-      e.abort(r?.reason);
-      break;
-    }
-    r.addEventListener("abort", () => e.abort(r?.reason), {
-      signal: e.signal
-    });
-  }
-  return e.signal;
-}
-var Oe = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-const qe = (t, o, e, r, i, a, d, l, n) => Oe(void 0, void 0, void 0, function* () {
-  const c = [];
-  let s;
-  if (a != null) {
-    const { signal: y, abortId: A } = Ze(a);
-    s = A, c.push(y);
-  }
-  d != null && c.push(d);
-  let u = Qe(c);
-  const f = yield t(o, {
-    method: e,
-    headers: r,
-    body: i,
-    signal: u,
-    credentials: l ? "include" : void 0,
-    // @ts-ignore
-    duplex: n
-  });
-  return s != null && clearTimeout(s), f;
-});
-let K;
-typeof globalThis.Headers < "u" ? K = globalThis.Headers : K = class fe {
-  constructor(o) {
-    if (this.headers = /* @__PURE__ */ new Map(), o)
-      if (o instanceof fe)
-        o.forEach((e, r) => this.append(r, e));
-      else if (Array.isArray(o))
-        for (const [e, r] of o)
-          if (typeof e == "string" && typeof r == "string")
-            this.append(e, r);
-          else
-            throw new TypeError("Each header entry must be a [string, string] tuple");
-      else
-        for (const [e, r] of Object.entries(o))
-          if (typeof r == "string")
-            this.append(e, r);
-          else
-            throw new TypeError("Header values must be strings");
-  }
-  append(o, e) {
-    const r = o.toLowerCase(), i = this.headers.get(r) || [];
-    this.headers.set(r, [...i, e]);
-  }
-  delete(o) {
-    const e = o.toLowerCase();
-    this.headers.delete(e);
-  }
-  get(o) {
-    const e = o.toLowerCase(), r = this.headers.get(e);
-    return r ? r.join(", ") : null;
-  }
-  has(o) {
-    const e = o.toLowerCase();
-    return this.headers.has(e);
-  }
-  set(o, e) {
-    const r = o.toLowerCase();
-    this.headers.set(r, [e]);
-  }
-  forEach(o, e) {
-    const r = e ? o.bind(e) : o;
-    this.headers.forEach((i, a) => r(i.join(", "), a, this));
-  }
-  getSetCookie() {
-    return this.headers.get("set-cookie") || [];
-  }
-  *entries() {
-    for (const [o, e] of this.headers.entries())
-      yield [o, e.join(", ")];
-  }
-  *keys() {
-    yield* this.headers.keys();
-  }
-  *values() {
-    for (const o of this.headers.values())
-      yield o.join(", ");
-  }
-  [Symbol.iterator]() {
-    return this.entries();
-  }
-};
-const de = {
-  headers: new K(),
-  redirected: false,
-  status: 499,
-  statusText: "Client Closed Request",
-  type: "error",
-  url: ""
-}, le = {
-  headers: new K(),
-  redirected: false,
-  status: 0,
-  statusText: "Unknown Error",
-  type: "error",
-  url: ""
-};
-function ce(t) {
-  return {
-    headers: t.headers,
-    redirected: t.redirected,
-    status: t.status,
-    statusText: t.statusText,
-    type: t.type,
-    url: t.url
-  };
-}
-var eo = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, o || [])).next());
-  });
-};
-const oo = 1e3, W = 6e4, to = 2, ye = 0.2;
-function ro(t) {
-  const o = 1 + Math.random() * ye;
-  return t * o;
-}
-function no(t) {
-  const o = 1 + (Math.random() - 0.5) * ye;
-  return t * o;
-}
-function so(t, o) {
-  const e = t.headers.get("Retry-After");
-  if (e) {
-    const i = parseInt(e, 10);
-    if (!isNaN(i) && i > 0)
-      return Math.min(i * 1e3, W);
-    const a = new Date(e);
-    if (!isNaN(a.getTime())) {
-      const d = a.getTime() - Date.now();
-      if (d > 0)
-        return Math.min(Math.max(d, 0), W);
-    }
-  }
-  const r = t.headers.get("X-RateLimit-Reset");
-  if (r) {
-    const i = parseInt(r, 10);
-    if (!isNaN(i)) {
-      const a = i * 1e3 - Date.now();
-      if (a > 0)
-        return ro(Math.min(a, W));
-    }
-  }
-  return no(Math.min(oo * Math.pow(2, o), W));
-}
-function io(t) {
-  return eo(this, arguments, void 0, function* (o, e = to) {
-    let r = yield o();
-    for (let i = 0; i < e && ([408, 429].includes(r.status) || r.status >= 500); ++i) {
-      const a = so(r, i);
-      yield new Promise((d) => setTimeout(d, a)), r = yield o();
-    }
-    return r;
-  });
-}
-var oe = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-function ao(t) {
-  return oe(this, void 0, void 0, function* () {
-    var o;
-    const e = {};
-    if (t.body !== void 0 && t.contentType != null && (e["Content-Type"] = t.contentType), t.headers == null)
-      return e;
-    for (const [r, i] of Object.entries(t.headers)) {
-      const a = yield $e.get(i, { endpointMetadata: (o = t.endpointMetadata) !== null && o !== void 0 ? o : {} });
-      if (typeof a == "string") {
-        e[r] = a;
-        continue;
-      }
-      a != null && (e[r] = `${a}`);
-    }
-    return e;
-  });
-}
-function lo(t) {
-  return oe(this, void 0, void 0, function* () {
-    const o = Ne(t.url, t.queryParameters), e = yield Ye({
-      body: t.body,
-      type: t.requestType === "json" ? "json" : "other"
-    }), r = yield Ke();
-    try {
-      const i = yield io(() => oe(this, void 0, void 0, function* () {
-        return qe(r, o, t.method, yield ao(t), e, t.timeoutMs, t.abortSignal, t.withCredentials, t.duplex);
-      }), t.maxRetries);
-      return i.status >= 200 && i.status < 400 ? {
-        ok: !0,
-        body: yield he(i, t.responseType),
-        headers: i.headers,
-        rawResponse: ce(i)
-      } : {
-        ok: !1,
-        error: {
-          reason: "status-code",
-          statusCode: i.status,
-          body: yield He(i)
-        },
-        rawResponse: ce(i)
-      };
-    } catch (i) {
-      return t.abortSignal != null && t.abortSignal.aborted ? {
-        ok: false,
-        error: {
-          reason: "unknown",
-          errorMessage: "The user aborted a request"
-        },
-        rawResponse: de
-      } : i instanceof Error && i.name === "AbortError" ? {
-        ok: false,
-        error: {
-          reason: "timeout"
-        },
-        rawResponse: de
-      } : i instanceof Error ? {
-        ok: false,
-        error: {
-          reason: "unknown",
-          errorMessage: i.message
-        },
-        rawResponse: le
-      } : {
-        ok: false,
-        error: {
-          reason: "unknown",
-          errorMessage: X(i)
-        },
-        rawResponse: le
-      };
-    }
-  });
-}
-const T = lo;
-var co = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-class m extends Promise {
-  constructor(o) {
-    super((e) => {
-      e(void 0);
-    }), this.innerPromise = o;
-  }
-  /**
-   * Creates an `HttpResponsePromise` from a function that returns a promise.
-   *
-   * @param fn - A function that returns a promise resolving to a `WithRawResponse` object.
-   * @param args - Arguments to pass to the function.
-   * @returns An `HttpResponsePromise` instance.
-   */
-  static fromFunction(o, ...e) {
-    return new m(o(...e));
-  }
-  /**
-   * Creates a function that returns an `HttpResponsePromise` from a function that returns a promise.
-   *
-   * @param fn - A function that returns a promise resolving to a `WithRawResponse` object.
-   * @returns A function that returns an `HttpResponsePromise` instance.
-   */
-  static interceptFunction(o) {
-    return (...e) => m.fromPromise(o(...e));
-  }
-  /**
-   * Creates an `HttpResponsePromise` from an existing promise.
-   *
-   * @param promise - A promise resolving to a `WithRawResponse` object.
-   * @returns An `HttpResponsePromise` instance.
-   */
-  static fromPromise(o) {
-    return new m(o);
-  }
-  /**
-   * Creates an `HttpResponsePromise` from an executor function.
-   *
-   * @param executor - A function that takes resolve and reject callbacks to create a promise.
-   * @returns An `HttpResponsePromise` instance.
-   */
-  static fromExecutor(o) {
-    const e = new Promise(o);
-    return new m(e);
-  }
-  /**
-   * Creates an `HttpResponsePromise` from a resolved result.
-   *
-   * @param result - A `WithRawResponse` object to resolve immediately.
-   * @returns An `HttpResponsePromise` instance.
-   */
-  static fromResult(o) {
-    const e = Promise.resolve(o);
-    return new m(e);
-  }
-  unwrap() {
-    return this.unwrappedPromise || (this.unwrappedPromise = this.innerPromise.then(({ data: o }) => o)), this.unwrappedPromise;
-  }
-  /** @inheritdoc */
-  then(o, e) {
-    return this.unwrap().then(o, e);
-  }
-  /** @inheritdoc */
-  catch(o) {
-    return this.unwrap().catch(o);
-  }
-  /** @inheritdoc */
-  finally(o) {
-    return this.unwrap().finally(o);
-  }
-  /**
-   * Retrieves the data and raw response.
-   *
-   * @returns A promise resolving to a `WithRawResponse` object.
-   */
-  withRawResponse() {
-    return co(this, void 0, void 0, function* () {
-      return yield this.innerPromise;
-    });
-  }
-}
-var uo = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-const h = {
-  get: (t) => uo(void 0, void 0, void 0, function* () {
-    return typeof t == "function" ? t() : t;
-  })
-}, te = wo();
-function wo() {
-  var t, o, e, r, i;
-  return typeof window < "u" && typeof window.document < "u" ? {
-    type: "browser",
-    version: window.navigator.userAgent
-  } : typeof globalThis < "u" && ((t = globalThis?.navigator) === null || t === void 0 ? void 0 : t.userAgent) === "Cloudflare-Workers" ? {
-    type: "workerd"
-  } : typeof EdgeRuntime == "string" ? {
-    type: "edge-runtime"
-  } : typeof self == "object" && typeof self?.importScripts == "function" && (((o = self.constructor) === null || o === void 0 ? void 0 : o.name) === "DedicatedWorkerGlobalScope" || ((e = self.constructor) === null || e === void 0 ? void 0 : e.name) === "ServiceWorkerGlobalScope" || ((r = self.constructor) === null || r === void 0 ? void 0 : r.name) === "SharedWorkerGlobalScope") ? {
-    type: "web-worker"
-  } : typeof Deno < "u" && typeof Deno.version < "u" && typeof Deno.version.deno < "u" ? {
-    type: "deno",
-    version: Deno.version.deno
-  } : typeof Bun < "u" && typeof Bun.version < "u" ? {
-    type: "bun",
-    version: Bun.version
-  } : typeof process < "u" && "version" in process && !!process.version && "versions" in process && !!(!((i = process.versions) === null || i === void 0) && i.node) ? {
-    type: "node",
-    version: process.versions.node,
-    parsedVersion: Number(process.versions.node.split(".")[0])
-  } : typeof navigator < "u" && navigator?.product === "ReactNative" ? {
-    type: "react-native"
-  } : {
-    type: "unknown"
-  };
-}
-function E(t, ...o) {
-  if (!t)
-    return "";
-  if (o.length === 0)
-    return t;
-  if (t.includes("://")) {
-    let e;
-    try {
-      e = new URL(t);
-    } catch {
-      return ue(t, ...o);
-    }
-    const r = o[o.length - 1], i = r && r.endsWith("/");
-    for (const a of o) {
-      const d = pe(a);
-      d && (e.pathname = me(e.pathname, d));
-    }
-    return i && !e.pathname.endsWith("/") && (e.pathname += "/"), e.toString();
-  }
-  return ue(t, ...o);
-}
-function ue(t, ...o) {
-  if (o.length === 0)
-    return t;
-  let e = t;
-  const r = o[o.length - 1], i = r && r.endsWith("/");
-  for (const a of o) {
-    const d = pe(a);
-    d && (e = me(e, d));
-  }
-  return i && !e.endsWith("/") && (e += "/"), e;
-}
-function me(t, o) {
-  return t.endsWith("/") ? t + o : t + "/" + o;
-}
-function pe(t) {
-  if (!t)
-    return t;
-  let o = 0, e = t.length;
-  return t.startsWith("/") && (o = 1), t.endsWith("/") && (e = t.length - 1), o === 0 && e === t.length ? t : t.slice(o, e);
-}
-var z = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-}, ho = function(t) {
-  if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-  var o = t[Symbol.asyncIterator], e;
-  return o ? o.call(t) : (t = typeof __values == "function" ? __values(t) : t[Symbol.iterator](), e = {}, r("next"), r("throw"), r("return"), e[Symbol.asyncIterator] = function() {
-    return this;
-  }, e);
-  function r(a) {
-    e[a] = t[a] && function(d) {
-      return new Promise(function(l, n) {
-        d = t[a](d), i(l, n, d.done, d.value);
-      });
+async function request(apiKey, options) {
+    const url = buildUrl(options.path, options.query);
+    const headers = {
+        Authorization: `Bearer ${apiKey}`,
+        "x-integration-id": INTEGRATION_ID,
+        Accept: "application/json",
     };
-  }
-  function i(a, d, l, n) {
-    Promise.resolve(n).then(function(c) {
-      a({ value: c, done: l });
-    }, d);
-  }
-};
-function fo(t) {
-  return typeof t == "object" && t != null && "name" in t;
-}
-function yo(t) {
-  return typeof t == "object" && t != null && "path" in t;
-}
-function mo(t) {
-  return typeof t == "object" && t != null && ("read" in t || "pipe" in t);
-}
-function ve(t) {
-  return typeof t == "object" && t != null && "getReader" in t;
-}
-function po(t) {
-  return typeof Buffer < "u" && Buffer.isBuffer && Buffer.isBuffer(t);
-}
-function vo(t) {
-  return ArrayBuffer.isView(t);
-}
-function go(t) {
-  const o = t.lastIndexOf("/"), e = t.lastIndexOf("\\"), r = Math.max(o, e);
-  return r >= 0 ? t.substring(r + 1) : t;
-}
-function Ro(t) {
-  return z(this, void 0, void 0, function* () {
-    var o, e, r, i, a, d, l;
-    if (te.type === "node") {
-      const { Readable: n } = yield import('./__vite-browser-external-DYxpcVy9-DPe7r1om.js');
-      if (t instanceof n) {
-        const c = [];
+    if (options.body !== undefined) {
+        headers["Content-Type"] = "application/json";
+    }
+    const response = await fetch(url, {
+        method: options.method,
+        headers,
+        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    });
+    const text = await response.text();
+    let parsed = undefined;
+    if (text.length > 0) {
         try {
-          for (o = !0, e = ho(t); r = yield e.next(), i = r.done, !i; o = !0) {
-            l = r.value, o = !1;
-            const s = l;
-            c.push(Buffer.isBuffer(s) ? s : Buffer.from(s));
-          }
-        } catch (s) {
-          a = { error: s };
-        } finally {
-          try {
-            !o && !i && (d = e.return) && (yield d.call(e));
-          } finally {
-            if (a) throw a.error;
-          }
+            parsed = JSON.parse(text);
         }
-        return Buffer.concat(c);
-      }
-    }
-    if (ve(t)) {
-      const n = t.getReader(), c = [];
-      try {
-        for (; ; ) {
-          const { done: y, value: A } = yield n.read();
-          if (y)
-            break;
-          c.push(A);
+        catch {
+            parsed = text;
         }
-      } finally {
-        n.releaseLock();
-      }
-      const s = c.reduce((y, A) => y + A.length, 0), u = new Uint8Array(s);
-      let f = 0;
-      for (const y of c)
-        u.set(y, f), f += y.length;
-      return Buffer.from(u);
     }
-    throw new Error("Unsupported stream type: " + typeof t + ". Expected Node.js Readable stream or Web ReadableStream.");
-  });
-}
-function G() {
-  return z(this, void 0, void 0, function* () {
-    return new _o();
-  });
-}
-class _o {
-  constructor() {
-    this.fd = new FormData();
-  }
-  setup() {
-    return z(this, void 0, void 0, function* () {
-    });
-  }
-  append(o, e) {
-    this.fd.append(o, String(e));
-  }
-  getFileName(o, e) {
-    if (e != null)
-      return e;
-    if (fo(o))
-      return o.name;
-    if (yo(o) && o.path)
-      return go(o.path.toString());
-  }
-  convertToBlob(o) {
-    return z(this, void 0, void 0, function* () {
-      if (mo(o) || ve(o)) {
-        const e = yield Ro(o);
-        return new Blob([e]);
-      }
-      return o instanceof Blob ? o : po(o) ? new Blob([o]) : o instanceof ArrayBuffer ? new Blob([o]) : vo(o) ? new Blob([o]) : typeof o == "string" ? new Blob([o]) : typeof o == "object" && o !== null ? new Blob([X(o)], { type: "application/json" }) : new Blob([String(o)]);
-    });
-  }
-  appendFile(o, e, r) {
-    return z(this, void 0, void 0, function* () {
-      r = this.getFileName(e, r);
-      const i = yield this.convertToBlob(e);
-      r ? this.fd.append(o, i, r) : this.fd.append(o, i);
-    });
-  }
-  getRequest() {
-    return {
-      body: this.fd,
-      headers: {},
-      duplex: "half"
-    };
-  }
-}
-function b(...t) {
-  const o = {};
-  for (const [e, r] of t.filter((i) => i != null).flatMap((i) => Object.entries(i)))
-    r != null ? o[e] = r : e in o && delete o[e];
-  return o;
-}
-function C(...t) {
-  const o = {};
-  for (const [e, r] of t.filter((i) => i != null).flatMap((i) => Object.entries(i)))
-    r != null && (o[e] = r);
-  return o;
-}
-const k = {
-  Default: "https://api.markup.ai"
-};
-var L = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
+    // Capture Retry-After on every response — it's almost always set on 429,
+    // sometimes on 503, and occasionally on 2xx (advisory). Threaded through
+    // both the error path and the success path so waitForRateLimit can honor it.
+    const retryAfterHeader = response.headers.get("retry-after");
+    const retryAfterRaw = retryAfterHeader === null ? NaN : Number(retryAfterHeader);
+    const retryAfterSeconds = Number.isFinite(retryAfterRaw) ? retryAfterRaw : undefined;
+    if (!response.ok) {
+        const { message, requestId } = extractMessage(parsed, `${options.method} ${options.path} failed with ${response.status.toString()}`);
+        throw new MarkupApiError(message, response.status, requestId, parsed, retryAfterSeconds);
     }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
+    return { body: parsed, retryAfterSeconds };
+}
+const DEFAULT_RATE_LIMIT_BACKOFF_MS = 6_500;
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+function pickNumber(obj, ...keys) {
+    for (const key of keys) {
+        const value = obj[key];
+        if (typeof value === "number" && Number.isFinite(value)) {
+            return value;
+        }
     }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
+    return undefined;
+}
+function parseRetryAfter(error) {
+    // HTTP Retry-After header (in seconds) takes priority over body fields.
+    if (typeof error.retryAfterSeconds === "number") {
+        return error.retryAfterSeconds * 1000;
     }
-    c((r = r.apply(t, o || [])).next());
-  });
-};
-class bo {
-  constructor(o) {
-    this._options = o;
-  }
-  /**
-   * Retrieve all style guides associated with your organization.
-   *
-   * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleGuides.listStyleGuides()
-   */
-  listStyleGuides(o) {
-    return m.fromPromise(this.__listStyleGuides(o));
-  }
-  __listStyleGuides(o) {
-    return L(this, void 0, void 0, function* () {
-      var e, r, i, a;
-      let d = b((e = this._options) === null || e === void 0 ? void 0 : e.headers, C({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
-      const l = yield ((r = this._options.fetcher) !== null && r !== void 0 ? r : T)({
-        url: E((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/style-guides"),
+    const body = error.body;
+    if (!body || typeof body !== "object")
+        return undefined;
+    const seconds = pickNumber(body, "retry_after", "retry_after_seconds");
+    return seconds === undefined ? undefined : seconds * 1000;
+}
+const MAX_RATE_LIMIT_RETRIES = 2;
+const MAX_TRANSIENT_RETRIES = 1;
+function isRateLimit(error) {
+    return error instanceof MarkupApiError && error.status === 429;
+}
+function isRetryableTransient(error) {
+    if (error instanceof MarkupApiError) {
+        return error.status >= 500;
+    }
+    return error instanceof Error;
+}
+async function waitForRateLimit(error, attempt, options) {
+    const backoff = parseRetryAfter(error) ?? DEFAULT_RATE_LIMIT_BACKOFF_MS * (attempt + 1);
+    warning(`Rate limited on ${options.method} ${options.path}; waiting ${Math.round(backoff).toString()}ms before retry ${(attempt + 1).toString()}/${MAX_RATE_LIMIT_RETRIES.toString()}`);
+    await sleep(backoff);
+}
+/**
+ * Wraps `request` with:
+ * - up to MAX_TRANSIENT_RETRIES retries on 5xx / network errors
+ * - up to MAX_RATE_LIMIT_RETRIES retries on 429 (rate limit) with backoff
+ *   honoring the `Retry-After` header (and `retry_after` body fields as a
+ *   fallback)
+ *
+ * Both retries flow through the same loop so a transient → 429 (or vice
+ * versa) cascade is handled correctly — a retry that itself throws is caught
+ * by the next iteration's try block.
+ */
+async function requestWithRetry(apiKey, options) {
+    let rateLimitAttempts = 0;
+    let transientAttempts = 0;
+    for (;;) {
+        try {
+            const result = await request(apiKey, options);
+            return result.body;
+        }
+        catch (error) {
+            if (isRateLimit(error)) {
+                if (rateLimitAttempts >= MAX_RATE_LIMIT_RETRIES)
+                    throw error;
+                await waitForRateLimit(error, rateLimitAttempts, options);
+                rateLimitAttempts++;
+                continue;
+            }
+            if (isRetryableTransient(error)) {
+                if (transientAttempts >= MAX_TRANSIENT_RETRIES)
+                    throw error;
+                warning(`Retrying ${options.method} ${options.path}: ${String(error)}`);
+                transientAttempts++;
+                continue;
+            }
+            throw error;
+        }
+    }
+}
+async function getStyleAgentConfig(apiKey) {
+    return requestWithRetry(apiKey, {
         method: "GET",
-        headers: d,
-        queryParameters: o?.queryParams,
-        timeoutMs: o?.timeoutInSeconds != null ? o.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: o?.maxRetries,
-        abortSignal: o?.abortSignal
-      });
-      if (l.ok)
-        return { data: l.body, rawResponse: l.rawResponse };
-      if (l.error.reason === "status-code")
-        switch (l.error.statusCode) {
-          case 401:
-            throw new g(l.error.body, l.rawResponse);
-          case 403:
-            throw new R(l.error.body, l.rawResponse);
-          case 422:
-            throw new S(l.error.body, l.rawResponse);
-          case 500:
-            throw new _(l.error.body, l.rawResponse);
-          default:
-            throw new w({
-              statusCode: l.error.statusCode,
-              body: l.error.body,
-              rawResponse: l.rawResponse
-            });
-        }
-      switch (l.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: l.error.statusCode,
-            body: l.error.rawBody,
-            rawResponse: l.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/style-guides.");
-        case "unknown":
-          throw new w({
-            message: l.error.errorMessage,
-            rawResponse: l.rawResponse
-          });
-      }
+        path: "style-agent/config",
     });
-  }
-  /**
-   * Create a new style guide that can be used in checks, suggestions, and rewrites.
-   *
-   * @param {MarkupAI.StyleGuideRequestBody} request
-   * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.ConflictError}
-   * @throws {@link MarkupAI.ContentTooLargeError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     import { createReadStream } from "fs";
-   *     await client.styleGuides.createStyleGuide({
-   *         file_upload: fs.createReadStream("/path/to/your/file"),
-   *         name: "name"
-   *     })
-   */
-  createStyleGuide(o, e) {
-    return m.fromPromise(this.__createStyleGuide(o, e));
-  }
-  __createStyleGuide(o, e) {
-    return L(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      const l = yield G();
-      if (yield l.appendFile("file_upload", o.file_upload), l.append("name", o.name), o.base_style_guide != null && l.append("base_style_guide", o.base_style_guide), o.terminology_domain_ids != null)
-        for (const u of o.terminology_domain_ids)
-          l.append("terminology_domain_ids", u);
-      const n = yield l.getRequest();
-      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style-guides"),
+}
+function assertStyleAgentEnabled(config) {
+    if (config.style_agent !== "enabled" && config.style_agent !== "enabled_terminology") {
+        throw new Error(ERROR_MESSAGES.STYLE_AGENT_DISABLED);
+    }
+}
+async function listStyleAgentTargets(apiKey) {
+    const targets = await requestWithRetry(apiKey, {
+        method: "GET",
+        path: "style-agent/targets",
+    });
+    if (!Array.isArray(targets)) {
+        return [];
+    }
+    return targets.filter((t) => t.enabled);
+}
+async function runStyleAgent(apiKey, body) {
+    return requestWithRetry(apiKey, {
         method: "POST",
-        headers: c,
-        queryParameters: e?.queryParams,
-        requestType: "file",
-        duplex: n.duplex,
-        body: n.body,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 409:
-            throw new V(s.error.body, s.rawResponse);
-          case 413:
-            throw new N(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
-        }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/style-guides.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
+        path: `agents/${STYLE_AGENT_ID}/run`,
+        query: { wait: false },
+        body,
     });
-  }
-  /**
-   * Retrieve a specific style guide by ID, including its metadata such as `name` and `status`.
-   *
-   * @param {string} styleGuideId - The ID of the style guide.
-   * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.NotFoundError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleGuides.getStyleGuide("style_guide_id")
-   */
-  getStyleGuide(o, e) {
-    return m.fromPromise(this.__getStyleGuide(o, e));
-  }
-  __getStyleGuide(o, e) {
-    return L(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
+}
+async function getWorkflowStatus(apiKey, workflowId) {
+    return requestWithRetry(apiKey, {
         method: "GET",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 404:
-            throw new M(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/style-guides/{style_guide_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
+        path: `agents/workflows/${encodeURIComponent(workflowId)}`,
     });
-  }
-  /**
-   * Delete a style guide by ID.
-   *
-   * @param {string} styleGuideId - The ID of the style guide.
-   * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.NotFoundError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleGuides.deleteStyleGuide("style_guide_id")
-   */
-  deleteStyleGuide(o, e) {
-    return m.fromPromise(this.__deleteStyleGuide(o, e));
-  }
-  __deleteStyleGuide(o, e) {
-    return L(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style-guides/${encodeURIComponent(o)}`),
-        method: "DELETE",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: void 0, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 404:
-            throw new M(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling DELETE /v1/style-guides/{style_guide_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Update the name and/or terminology domain IDs of an existing style guide.
-   *
-   * @param {string} styleGuideId - The ID of the style guide.
-   * @param {MarkupAI.BodyStyleGuidesUpdateStyleGuide} request
-   * @param {StyleGuides.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.NotFoundError}
-   * @throws {@link MarkupAI.ConflictError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleGuides.updateStyleGuide("style_guide_id")
-   */
-  updateStyleGuide(o, e = {}, r) {
-    return m.fromPromise(this.__updateStyleGuide(o, e, r));
-  }
-  __updateStyleGuide(o) {
-    return L(this, arguments, void 0, function* (e, r = {}, i) {
-      var a, d, l, n;
-      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
-        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/style-guides/${encodeURIComponent(e)}`),
-        method: "PATCH",
-        headers: c,
-        contentType: "application/json",
-        queryParameters: i?.queryParams,
-        requestType: "json",
-        body: r,
-        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: i?.maxRetries,
-        abortSignal: i?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 404:
-            throw new M(s.error.body, s.rawResponse);
-          case 409:
-            throw new V(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
-        }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling PATCH /v1/style-guides/{style_guide_id}.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
-    });
-  }
-  _getAuthorizationHeader() {
-    return L(this, void 0, void 0, function* () {
-      return `Bearer ${yield h.get(this._options.token)}`;
-    });
-  }
 }
-var J = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-class So {
-  constructor(o) {
-    this._options = o;
-  }
-  /**
-   * Analyze text for grammar, style, and clarity issues.
-   *
-   * @param {MarkupAI.StyleCheckRequestBody} request
-   * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.ContentTooLargeError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.TooManyRequestsError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     import { createReadStream } from "fs";
-   *     await client.styleChecks.createStyleCheck({
-   *         file_upload: fs.createReadStream("/path/to/your/file"),
-   *         dialect: "american_english",
-   *         style_guide: "style_guide"
-   *     })
-   */
-  createStyleCheck(o, e) {
-    return m.fromPromise(this.__createStyleCheck(o, e));
-  }
-  __createStyleCheck(o, e) {
-    return J(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      const l = yield G();
-      l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
-      const n = yield l.getRequest();
-      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/checks"),
-        method: "POST",
-        headers: c,
-        queryParameters: e?.queryParams,
-        requestType: "file",
-        duplex: n.duplex,
-        body: n.body,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 413:
-            throw new N(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 429:
-            throw new D(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
+const TERMINAL_STATUSES = new Set([
+    "completed",
+    "failed",
+    "timed_out",
+    "cancelled",
+]);
+async function pollUntilDone(apiKey, workflowId, { intervalMs = POLL_INTERVAL_MS, timeoutMs = POLL_TIMEOUT_MS } = {}) {
+    const deadline = Date.now() + timeoutMs;
+    for (;;) {
+        const status = await getWorkflowStatus(apiKey, workflowId);
+        if (TERMINAL_STATUSES.has(status.status)) {
+            return status;
         }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/style/checks.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Retrieve style check results.
-   *
-   * @param {string} workflowId
-   * @param {StyleChecks.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.NotFoundError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleChecks.getStyleCheck("workflow_id")
-   */
-  getStyleCheck(o, e) {
-    return m.fromPromise(this.__getStyleCheck(o, e));
-  }
-  __getStyleCheck(o, e) {
-    return J(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/checks/${encodeURIComponent(o)}`),
-        method: "GET",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 404:
-            throw new M(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
+        const remaining = deadline - Date.now();
+        if (remaining <= 0) {
+            throw new Error(`Workflow ${workflowId} polling timed out after ${timeoutMs.toString()}ms`);
         }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/style/checks/{workflow_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  _getAuthorizationHeader() {
-    return J(this, void 0, void 0, function* () {
-      return `Bearer ${yield h.get(this._options.token)}`;
-    });
-  }
-}
-var Z = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-class To {
-  constructor(o) {
-    this._options = o;
-  }
-  /**
-   * Get suggested corrections for text.
-   *
-   * @param {MarkupAI.StyleSuggestionRequestBody} request
-   * @param {StyleSuggestions.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.ContentTooLargeError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.TooManyRequestsError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     import { createReadStream } from "fs";
-   *     await client.styleSuggestions.createStyleSuggestion({
-   *         file_upload: fs.createReadStream("/path/to/your/file"),
-   *         dialect: "american_english",
-   *         style_guide: "style_guide"
-   *     })
-   */
-  createStyleSuggestion(o, e) {
-    return m.fromPromise(this.__createStyleSuggestion(o, e));
-  }
-  __createStyleSuggestion(o, e) {
-    return Z(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      const l = yield G();
-      l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
-      const n = yield l.getRequest();
-      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/suggestions"),
-        method: "POST",
-        headers: c,
-        queryParameters: e?.queryParams,
-        requestType: "file",
-        duplex: n.duplex,
-        body: n.body,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 413:
-            throw new N(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 429:
-            throw new D(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
-        }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/style/suggestions.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Retrieve suggestion results.
-   *
-   * @param {string} workflowId
-   * @param {StyleSuggestions.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.NotFoundError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleSuggestions.getStyleSuggestion("workflow_id")
-   */
-  getStyleSuggestion(o, e) {
-    return m.fromPromise(this.__getStyleSuggestion(o, e));
-  }
-  __getStyleSuggestion(o, e) {
-    return Z(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/suggestions/${encodeURIComponent(o)}`),
-        method: "GET",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 404:
-            throw new M(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/style/suggestions/{workflow_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  _getAuthorizationHeader() {
-    return Z(this, void 0, void 0, function* () {
-      return `Bearer ${yield h.get(this._options.token)}`;
-    });
-  }
-}
-var Q = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, [])).next());
-  });
-};
-class Eo {
-  constructor(o) {
-    this._options = o;
-  }
-  /**
-   * Rewrite text with style corrections applied.
-   *
-   * @param {MarkupAI.StyleRewriteRequestBody} request
-   * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.ContentTooLargeError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.TooManyRequestsError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     import { createReadStream } from "fs";
-   *     await client.styleRewrites.createStyleRewrite({
-   *         file_upload: fs.createReadStream("/path/to/your/file"),
-   *         dialect: "american_english",
-   *         style_guide: "style_guide"
-   *     })
-   */
-  createStyleRewrite(o, e) {
-    return m.fromPromise(this.__createStyleRewrite(o, e));
-  }
-  __createStyleRewrite(o, e) {
-    return Q(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      const l = yield G();
-      l.append("dialect", o.dialect), o.tone != null && l.append("tone", o.tone), l.append("style_guide", o.style_guide), o.webhook_url != null && l.append("webhook_url", o.webhook_url), yield l.appendFile("file_upload", o.file_upload);
-      const n = yield l.getRequest();
-      let c = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, n.headers)), e?.headers);
-      const s = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/style/rewrites"),
-        method: "POST",
-        headers: c,
-        queryParameters: e?.queryParams,
-        requestType: "file",
-        duplex: n.duplex,
-        body: n.body,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 413:
-            throw new N(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 429:
-            throw new D(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
-        }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/style/rewrites.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Retrieve rewrite results.
-   *
-   * @param {string} workflowId
-   * @param {StyleRewrites.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.NotFoundError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.styleRewrites.getStyleRewrite("workflow_id")
-   */
-  getStyleRewrite(o, e) {
-    return m.fromPromise(this.__getStyleRewrite(o, e));
-  }
-  __getStyleRewrite(o, e) {
-    return Q(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/style/rewrites/${encodeURIComponent(o)}`),
-        method: "GET",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 404:
-            throw new M(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/style/rewrites/{workflow_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  _getAuthorizationHeader() {
-    return Q(this, void 0, void 0, function* () {
-      return `Bearer ${yield h.get(this._options.token)}`;
-    });
-  }
-}
-var x = function(t, o, e, r) {
-  function i(a) {
-    return a instanceof e ? a : new e(function(d) {
-      d(a);
-    });
-  }
-  return new (e || (e = Promise))(function(a, d) {
-    function l(s) {
-      try {
-        c(r.next(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function n(s) {
-      try {
-        c(r.throw(s));
-      } catch (u) {
-        d(u);
-      }
-    }
-    function c(s) {
-      s.done ? a(s.value) : i(s.value).then(l, n);
-    }
-    c((r = r.apply(t, o || [])).next());
-  });
-};
-class Co {
-  constructor(o) {
-    this._options = o;
-  }
-  /**
-   * Exports all term sets, terms and domains to CSV. The exported CSV follows the same format as the CSV import.
-   *
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.exportTerminology()
-   */
-  exportTerminology(o) {
-    return m.fromPromise(this.__exportTerminology(o));
-  }
-  __exportTerminology(o) {
-    return x(this, void 0, void 0, function* () {
-      var e, r, i, a;
-      let d = b((e = this._options) === null || e === void 0 ? void 0 : e.headers, C({ Authorization: yield this._getAuthorizationHeader() }), o?.headers);
-      const l = yield ((r = this._options.fetcher) !== null && r !== void 0 ? r : T)({
-        url: E((a = (i = yield h.get(this._options.baseUrl)) !== null && i !== void 0 ? i : yield h.get(this._options.environment)) !== null && a !== void 0 ? a : k.Default, "v1/terminology"),
-        method: "GET",
-        headers: d,
-        queryParameters: o?.queryParams,
-        timeoutMs: o?.timeoutInSeconds != null ? o.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: o?.maxRetries,
-        abortSignal: o?.abortSignal
-      });
-      if (l.ok)
-        return { data: l.body, rawResponse: l.rawResponse };
-      if (l.error.reason === "status-code")
-        switch (l.error.statusCode) {
-          case 401:
-            throw new g(l.error.body, l.rawResponse);
-          case 403:
-            throw new R(l.error.body, l.rawResponse);
-          case 500:
-            throw new _(l.error.body, l.rawResponse);
-          default:
-            throw new w({
-              statusCode: l.error.statusCode,
-              body: l.error.body,
-              rawResponse: l.rawResponse
-            });
-        }
-      switch (l.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: l.error.statusCode,
-            body: l.error.rawBody,
-            rawResponse: l.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/terminology.");
-        case "unknown":
-          throw new w({
-            message: l.error.errorMessage,
-            rawResponse: l.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Uploads a CSV or ACTIF XML file and imports terminology.
-   *
-   * **CSV Format Requirements:**
-   * - CSV must include columns: Prohibited, Preferred, Context-Dependent, Instructions, Domains
-   * - The first row must contain the column headers in the exact same order as shown above
-   * - Multiple values within a single cell should be separated by semicolons with a space (e.g., term1; term2; term3)
-   * - Empty cells are allowed
-   * - The CSV import format is the same as the CSV export format.
-   *
-   * @param {MarkupAI.BodyTerminologyImportTerminology} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     import { createReadStream } from "fs";
-   *     await client.terminology.importTerminology({
-   *         file: fs.createReadStream("/path/to/your/file"),
-   *         delete_existing: true
-   *     })
-   */
-  importTerminology(o, e) {
-    return m.fromPromise(this.__importTerminology(o, e));
-  }
-  __importTerminology(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      const l = {};
-      o.delete_existing != null && (l.delete_existing = o.delete_existing.toString());
-      const n = yield G();
-      yield n.appendFile("file", o.file);
-      const c = yield n.getRequest();
-      let s = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C(Object.assign({ Authorization: yield this._getAuthorizationHeader() }, c.headers)), e?.headers);
-      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology"),
-        method: "POST",
-        headers: s,
-        queryParameters: Object.assign(Object.assign({}, l), e?.queryParams),
-        requestType: "file",
-        duplex: c.duplex,
-        body: c.body,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (u.ok)
-        return { data: u.body, rawResponse: u.rawResponse };
-      if (u.error.reason === "status-code")
-        switch (u.error.statusCode) {
-          case 401:
-            throw new g(u.error.body, u.rawResponse);
-          case 403:
-            throw new R(u.error.body, u.rawResponse);
-          case 422:
-            throw new S(u.error.body, u.rawResponse);
-          case 500:
-            throw new _(u.error.body, u.rawResponse);
-          default:
-            throw new w({
-              statusCode: u.error.statusCode,
-              body: u.error.body,
-              rawResponse: u.rawResponse
-            });
-        }
-      switch (u.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: u.error.statusCode,
-            body: u.error.rawBody,
-            rawResponse: u.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/terminology.");
-        case "unknown":
-          throw new w({
-            message: u.error.errorMessage,
-            rawResponse: u.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Searches the text for relevant terminology and returns matched term sets.
-   *
-   * Term sets are matched if any word sequence (up to 5 words) in the text is similar to one of the terms of the term set.
-   * The similarity measure used is a trigram similarity of 0.5 or higher between the word sequence and the term.
-   *
-   * @param {MarkupAI.TerminologySearchTerminologyRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.searchTerminology({
-   *         query: "query"
-   *     })
-   */
-  searchTerminology(o, e) {
-    return m.fromPromise(this.__searchTerminology(o, e));
-  }
-  __searchTerminology(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      const { query: l, domain_ids: n } = o, c = {};
-      c.query = l, n != null && (Array.isArray(n) ? c.domain_ids = n.map((f) => f) : c.domain_ids = n);
-      let s = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const u = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/search"),
-        method: "GET",
-        headers: s,
-        queryParameters: Object.assign(Object.assign({}, c), e?.queryParams),
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (u.ok)
-        return { data: u.body, rawResponse: u.rawResponse };
-      if (u.error.reason === "status-code")
-        switch (u.error.statusCode) {
-          case 401:
-            throw new g(u.error.body, u.rawResponse);
-          case 403:
-            throw new R(u.error.body, u.rawResponse);
-          case 422:
-            throw new S(u.error.body, u.rawResponse);
-          case 500:
-            throw new _(u.error.body, u.rawResponse);
-          default:
-            throw new w({
-              statusCode: u.error.statusCode,
-              body: u.error.body,
-              rawResponse: u.rawResponse
-            });
-        }
-      switch (u.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: u.error.statusCode,
-            body: u.error.rawBody,
-            rawResponse: u.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/terminology/search.");
-        case "unknown":
-          throw new w({
-            message: u.error.errorMessage,
-            rawResponse: u.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Get a pageable list of term sets with all their associated terms and domains.
-   *
-   * The search filter searches the term set instructions and term text fields.
-   *
-   * @param {MarkupAI.TerminologyListTermSetsRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.listTermSets({
-   *         page: 1,
-   *         page_size: 1,
-   *         search_term: "search_term"
-   *     })
-   */
-  listTermSets(o = {}, e) {
-    return m.fromPromise(this.__listTermSets(o, e));
-  }
-  __listTermSets() {
-    return x(this, arguments, void 0, function* (o = {}, e) {
-      var r, i, a, d;
-      const { page: l, page_size: n, search_term: c, domain_ids: s } = o, u = {};
-      l != null && (u.page = l.toString()), n != null && (u.page_size = n.toString()), c != null && (u.search_term = c), s != null && (Array.isArray(s) ? u.domain_ids = s.map((A) => A) : u.domain_ids = s);
-      let f = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const y = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
-        method: "GET",
-        headers: f,
-        queryParameters: Object.assign(Object.assign({}, u), e?.queryParams),
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (y.ok)
-        return { data: y.body, rawResponse: y.rawResponse };
-      if (y.error.reason === "status-code")
-        switch (y.error.statusCode) {
-          case 401:
-            throw new g(y.error.body, y.rawResponse);
-          case 403:
-            throw new R(y.error.body, y.rawResponse);
-          case 422:
-            throw new S(y.error.body, y.rawResponse);
-          case 500:
-            throw new _(y.error.body, y.rawResponse);
-          default:
-            throw new w({
-              statusCode: y.error.statusCode,
-              body: y.error.body,
-              rawResponse: y.rawResponse
-            });
-        }
-      switch (y.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: y.error.statusCode,
-            body: y.error.rawBody,
-            rawResponse: y.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/terminology/term-sets.");
-        case "unknown":
-          throw new w({
-            message: y.error.errorMessage,
-            rawResponse: y.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Create a new term set. Terms and domains are linked to term sets.
-   * The term set instructions text will be used to determine whether a term should be flagged in the text and what the term replacement should be.
-   *
-   * @param {MarkupAI.TermSetCreateRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.createTermSet({
-   *         instructions: "instructions"
-   *     })
-   */
-  createTermSet(o, e) {
-    return m.fromPromise(this.__createTermSet(o, e));
-  }
-  __createTermSet(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/term-sets"),
-        method: "POST",
-        headers: l,
-        contentType: "application/json",
-        queryParameters: e?.queryParams,
-        requestType: "json",
-        body: o,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/terminology/term-sets.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} termSetId - UUID of the term set
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.getTermSet("term_set_id")
-   */
-  getTermSet(o, e) {
-    return m.fromPromise(this.__getTermSet(o, e));
-  }
-  __getTermSet(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
-        method: "GET",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/terminology/term-sets/{term_set_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} termSetId - UUID of the term set
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.deleteTermSet("term_set_id")
-   */
-  deleteTermSet(o, e) {
-    return m.fromPromise(this.__deleteTermSet(o, e));
-  }
-  __deleteTermSet(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}`),
-        method: "DELETE",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: void 0, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling DELETE /v1/terminology/term-sets/{term_set_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} termSetId - UUID of the term set
-   * @param {MarkupAI.TermSetUpdateRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.updateTermSet("term_set_id")
-   */
-  updateTermSet(o, e = {}, r) {
-    return m.fromPromise(this.__updateTermSet(o, e, r));
-  }
-  __updateTermSet(o) {
-    return x(this, arguments, void 0, function* (e, r = {}, i) {
-      var a, d, l, n;
-      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
-        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(e)}`),
-        method: "PATCH",
-        headers: c,
-        contentType: "application/json",
-        queryParameters: i?.queryParams,
-        requestType: "json",
-        body: r,
-        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: i?.maxRetries,
-        abortSignal: i?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
-        }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling PATCH /v1/terminology/term-sets/{term_set_id}.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * Create terms that should be matched in the text. The term types are:
-   *
-   * * **preferred**: this is the preferred term for the associated term set
-   * * **prohibited**: this term should not be used to talk about the term set
-   * * **context_dependent**: this term is correct in certain cases, but incorrect in others, the instructions field of the term set should explain when the term is correct and when it is incorrect
-   *
-   * @param {string} termSetId - UUID of the term set
-   * @param {MarkupAI.TermCreateRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.createTerm("term_set_id", {
-   *         term: "term",
-   *         type: "preferred"
-   *     })
-   */
-  createTerm(o, e, r) {
-    return m.fromPromise(this.__createTerm(o, e, r));
-  }
-  __createTerm(o, e, r) {
-    return x(this, void 0, void 0, function* () {
-      var i, a, d, l;
-      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), r?.headers);
-      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : T)({
-        url: E((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms`),
-        method: "POST",
-        headers: n,
-        contentType: "application/json",
-        queryParameters: r?.queryParams,
-        requestType: "json",
-        body: e,
-        timeoutMs: r?.timeoutInSeconds != null ? r.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: r?.maxRetries,
-        abortSignal: r?.abortSignal
-      });
-      if (c.ok)
-        return { data: c.body, rawResponse: c.rawResponse };
-      if (c.error.reason === "status-code")
-        switch (c.error.statusCode) {
-          case 401:
-            throw new g(c.error.body, c.rawResponse);
-          case 403:
-            throw new R(c.error.body, c.rawResponse);
-          case 422:
-            throw new S(c.error.body, c.rawResponse);
-          case 500:
-            throw new _(c.error.body, c.rawResponse);
-          default:
-            throw new w({
-              statusCode: c.error.statusCode,
-              body: c.error.body,
-              rawResponse: c.rawResponse
-            });
-        }
-      switch (c.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: c.error.statusCode,
-            body: c.error.rawBody,
-            rawResponse: c.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/terminology/term-sets/{term_set_id}/terms.");
-        case "unknown":
-          throw new w({
-            message: c.error.errorMessage,
-            rawResponse: c.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} termSetId - UUID of the term set
-   * @param {string} termId - UUID of the term
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.getTerm("term_set_id", "term_id")
-   */
-  getTerm(o, e, r) {
-    return m.fromPromise(this.__getTerm(o, e, r));
-  }
-  __getTerm(o, e, r) {
-    return x(this, void 0, void 0, function* () {
-      var i, a, d, l;
-      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), r?.headers);
-      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : T)({
-        url: E((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
-        method: "GET",
-        headers: n,
-        queryParameters: r?.queryParams,
-        timeoutMs: r?.timeoutInSeconds != null ? r.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: r?.maxRetries,
-        abortSignal: r?.abortSignal
-      });
-      if (c.ok)
-        return { data: c.body, rawResponse: c.rawResponse };
-      if (c.error.reason === "status-code")
-        switch (c.error.statusCode) {
-          case 401:
-            throw new g(c.error.body, c.rawResponse);
-          case 403:
-            throw new R(c.error.body, c.rawResponse);
-          case 422:
-            throw new S(c.error.body, c.rawResponse);
-          case 500:
-            throw new _(c.error.body, c.rawResponse);
-          default:
-            throw new w({
-              statusCode: c.error.statusCode,
-              body: c.error.body,
-              rawResponse: c.rawResponse
-            });
-        }
-      switch (c.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: c.error.statusCode,
-            body: c.error.rawBody,
-            rawResponse: c.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/terminology/term-sets/{term_set_id}/terms/{term_id}.");
-        case "unknown":
-          throw new w({
-            message: c.error.errorMessage,
-            rawResponse: c.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} termSetId - UUID of the term set
-   * @param {string} termId - UUID of the term
-   * @param {MarkupAI.TermUpdateRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.updateTerm("term_set_id", "term_id", {
-   *         term: "term",
-   *         type: "preferred"
-   *     })
-   */
-  updateTerm(o, e, r, i) {
-    return m.fromPromise(this.__updateTerm(o, e, r, i));
-  }
-  __updateTerm(o, e, r, i) {
-    return x(this, void 0, void 0, function* () {
-      var a, d, l, n;
-      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
-        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
-        method: "PUT",
-        headers: c,
-        contentType: "application/json",
-        queryParameters: i?.queryParams,
-        requestType: "json",
-        body: r,
-        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: i?.maxRetries,
-        abortSignal: i?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
-        }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling PUT /v1/terminology/term-sets/{term_set_id}/terms/{term_id}.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} termSetId - UUID of the term set
-   * @param {string} termId - UUID of the term
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.deleteTerm("term_set_id", "term_id")
-   */
-  deleteTerm(o, e, r) {
-    return m.fromPromise(this.__deleteTerm(o, e, r));
-  }
-  __deleteTerm(o, e, r) {
-    return x(this, void 0, void 0, function* () {
-      var i, a, d, l;
-      let n = b((i = this._options) === null || i === void 0 ? void 0 : i.headers, C({ Authorization: yield this._getAuthorizationHeader() }), r?.headers);
-      const c = yield ((a = this._options.fetcher) !== null && a !== void 0 ? a : T)({
-        url: E((l = (d = yield h.get(this._options.baseUrl)) !== null && d !== void 0 ? d : yield h.get(this._options.environment)) !== null && l !== void 0 ? l : k.Default, `v1/terminology/term-sets/${encodeURIComponent(o)}/terms/${encodeURIComponent(e)}`),
-        method: "DELETE",
-        headers: n,
-        queryParameters: r?.queryParams,
-        timeoutMs: r?.timeoutInSeconds != null ? r.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: r?.maxRetries,
-        abortSignal: r?.abortSignal
-      });
-      if (c.ok)
-        return { data: void 0, rawResponse: c.rawResponse };
-      if (c.error.reason === "status-code")
-        switch (c.error.statusCode) {
-          case 401:
-            throw new g(c.error.body, c.rawResponse);
-          case 403:
-            throw new R(c.error.body, c.rawResponse);
-          case 422:
-            throw new S(c.error.body, c.rawResponse);
-          case 500:
-            throw new _(c.error.body, c.rawResponse);
-          default:
-            throw new w({
-              statusCode: c.error.statusCode,
-              body: c.error.body,
-              rawResponse: c.rawResponse
-            });
-        }
-      switch (c.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: c.error.statusCode,
-            body: c.error.rawBody,
-            rawResponse: c.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling DELETE /v1/terminology/term-sets/{term_set_id}/terms/{term_id}.");
-        case "unknown":
-          throw new w({
-            message: c.error.errorMessage,
-            rawResponse: c.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {MarkupAI.TerminologyListDomainsRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.listDomains({
-   *         page: 1,
-   *         page_size: 1,
-   *         search: "search"
-   *     })
-   */
-  listDomains(o = {}, e) {
-    return m.fromPromise(this.__listDomains(o, e));
-  }
-  __listDomains() {
-    return x(this, arguments, void 0, function* (o = {}, e) {
-      var r, i, a, d;
-      const { page: l, page_size: n, search: c } = o, s = {};
-      l != null && (s.page = l.toString()), n != null && (s.page_size = n.toString()), c != null && (s.search = c);
-      let u = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const f = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
-        method: "GET",
-        headers: u,
-        queryParameters: Object.assign(Object.assign({}, s), e?.queryParams),
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (f.ok)
-        return { data: f.body, rawResponse: f.rawResponse };
-      if (f.error.reason === "status-code")
-        switch (f.error.statusCode) {
-          case 401:
-            throw new g(f.error.body, f.rawResponse);
-          case 403:
-            throw new R(f.error.body, f.rawResponse);
-          case 422:
-            throw new S(f.error.body, f.rawResponse);
-          case 500:
-            throw new _(f.error.body, f.rawResponse);
-          default:
-            throw new w({
-              statusCode: f.error.statusCode,
-              body: f.error.body,
-              rawResponse: f.rawResponse
-            });
-        }
-      switch (f.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: f.error.statusCode,
-            body: f.error.rawBody,
-            rawResponse: f.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/terminology/domains.");
-        case "unknown":
-          throw new w({
-            message: f.error.errorMessage,
-            rawResponse: f.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {MarkupAI.DomainCreateRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.createDomain({
-   *         name: "name"
-   *     })
-   */
-  createDomain(o, e) {
-    return m.fromPromise(this.__createDomain(o, e));
-  }
-  __createDomain(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, "v1/terminology/domains"),
-        method: "POST",
-        headers: l,
-        contentType: "application/json",
-        queryParameters: e?.queryParams,
-        requestType: "json",
-        body: o,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling POST /v1/terminology/domains.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} domainId - UUID of the domain
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.getDomain("domain_id")
-   */
-  getDomain(o, e) {
-    return m.fromPromise(this.__getDomain(o, e));
-  }
-  __getDomain(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
-        method: "GET",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: n.body, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling GET /v1/terminology/domains/{domain_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} domainId - UUID of the domain
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.deleteDomain("domain_id")
-   */
-  deleteDomain(o, e) {
-    return m.fromPromise(this.__deleteDomain(o, e));
-  }
-  __deleteDomain(o, e) {
-    return x(this, void 0, void 0, function* () {
-      var r, i, a, d;
-      let l = b((r = this._options) === null || r === void 0 ? void 0 : r.headers, C({ Authorization: yield this._getAuthorizationHeader() }), e?.headers);
-      const n = yield ((i = this._options.fetcher) !== null && i !== void 0 ? i : T)({
-        url: E((d = (a = yield h.get(this._options.baseUrl)) !== null && a !== void 0 ? a : yield h.get(this._options.environment)) !== null && d !== void 0 ? d : k.Default, `v1/terminology/domains/${encodeURIComponent(o)}`),
-        method: "DELETE",
-        headers: l,
-        queryParameters: e?.queryParams,
-        timeoutMs: e?.timeoutInSeconds != null ? e.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: e?.maxRetries,
-        abortSignal: e?.abortSignal
-      });
-      if (n.ok)
-        return { data: void 0, rawResponse: n.rawResponse };
-      if (n.error.reason === "status-code")
-        switch (n.error.statusCode) {
-          case 401:
-            throw new g(n.error.body, n.rawResponse);
-          case 403:
-            throw new R(n.error.body, n.rawResponse);
-          case 422:
-            throw new S(n.error.body, n.rawResponse);
-          case 500:
-            throw new _(n.error.body, n.rawResponse);
-          default:
-            throw new w({
-              statusCode: n.error.statusCode,
-              body: n.error.body,
-              rawResponse: n.rawResponse
-            });
-        }
-      switch (n.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: n.error.statusCode,
-            body: n.error.rawBody,
-            rawResponse: n.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling DELETE /v1/terminology/domains/{domain_id}.");
-        case "unknown":
-          throw new w({
-            message: n.error.errorMessage,
-            rawResponse: n.rawResponse
-          });
-      }
-    });
-  }
-  /**
-   * @param {string} domainId - UUID of the domain
-   * @param {MarkupAI.DomainUpdateRequest} request
-   * @param {Terminology.RequestOptions} requestOptions - Request-specific configuration.
-   *
-   * @throws {@link MarkupAI.UnauthorizedError}
-   * @throws {@link MarkupAI.ForbiddenError}
-   * @throws {@link MarkupAI.UnprocessableEntityError}
-   * @throws {@link MarkupAI.InternalServerError}
-   *
-   * @example
-   *     await client.terminology.updateDomain("domain_id")
-   */
-  updateDomain(o, e = {}, r) {
-    return m.fromPromise(this.__updateDomain(o, e, r));
-  }
-  __updateDomain(o) {
-    return x(this, arguments, void 0, function* (e, r = {}, i) {
-      var a, d, l, n;
-      let c = b((a = this._options) === null || a === void 0 ? void 0 : a.headers, C({ Authorization: yield this._getAuthorizationHeader() }), i?.headers);
-      const s = yield ((d = this._options.fetcher) !== null && d !== void 0 ? d : T)({
-        url: E((n = (l = yield h.get(this._options.baseUrl)) !== null && l !== void 0 ? l : yield h.get(this._options.environment)) !== null && n !== void 0 ? n : k.Default, `v1/terminology/domains/${encodeURIComponent(e)}`),
-        method: "PATCH",
-        headers: c,
-        contentType: "application/json",
-        queryParameters: i?.queryParams,
-        requestType: "json",
-        body: r,
-        timeoutMs: i?.timeoutInSeconds != null ? i.timeoutInSeconds * 1e3 : 6e4,
-        maxRetries: i?.maxRetries,
-        abortSignal: i?.abortSignal
-      });
-      if (s.ok)
-        return { data: s.body, rawResponse: s.rawResponse };
-      if (s.error.reason === "status-code")
-        switch (s.error.statusCode) {
-          case 401:
-            throw new g(s.error.body, s.rawResponse);
-          case 403:
-            throw new R(s.error.body, s.rawResponse);
-          case 422:
-            throw new S(s.error.body, s.rawResponse);
-          case 500:
-            throw new _(s.error.body, s.rawResponse);
-          default:
-            throw new w({
-              statusCode: s.error.statusCode,
-              body: s.error.body,
-              rawResponse: s.rawResponse
-            });
-        }
-      switch (s.error.reason) {
-        case "non-json":
-          throw new w({
-            statusCode: s.error.statusCode,
-            body: s.error.rawBody,
-            rawResponse: s.rawResponse
-          });
-        case "timeout":
-          throw new v("Timeout exceeded when calling PATCH /v1/terminology/domains/{domain_id}.");
-        case "unknown":
-          throw new w({
-            message: s.error.errorMessage,
-            rawResponse: s.rawResponse
-          });
-      }
-    });
-  }
-  _getAuthorizationHeader() {
-    return x(this, void 0, void 0, function* () {
-      return `Bearer ${yield h.get(this._options.token)}`;
-    });
-  }
-}
-class ko {
-  constructor(o) {
-    this._options = Object.assign(Object.assign({}, o), { headers: b({
-      "X-Fern-Language": "JavaScript",
-      "X-Fern-SDK-Name": "@markupai/api",
-      "X-Fern-SDK-Version": "1.5.0",
-      "User-Agent": "@markupai/api/1.5.0",
-      "X-Fern-Runtime": te.type,
-      "X-Fern-Runtime-Version": te.version
-    }, o?.headers) });
-  }
-  get styleGuides() {
-    var o;
-    return (o = this._styleGuides) !== null && o !== void 0 ? o : this._styleGuides = new bo(this._options);
-  }
-  get styleChecks() {
-    var o;
-    return (o = this._styleChecks) !== null && o !== void 0 ? o : this._styleChecks = new So(this._options);
-  }
-  get styleSuggestions() {
-    var o;
-    return (o = this._styleSuggestions) !== null && o !== void 0 ? o : this._styleSuggestions = new To(this._options);
-  }
-  get styleRewrites() {
-    var o;
-    return (o = this._styleRewrites) !== null && o !== void 0 ? o : this._styleRewrites = new Eo(this._options);
-  }
-  get terminology() {
-    var o;
-    return (o = this._terminology) !== null && o !== void 0 ? o : this._terminology = new Co(this._options);
-  }
-}
-var B = /* @__PURE__ */ ((t) => (t.Queued = "queued", t.Running = "running", t.Completed = "completed", t.Failed = "failed", t.NotFound = "not_found", t))(B || {}), H = /* @__PURE__ */ ((t) => (t.Stage = "stage", t.Dev = "dev", t.Prod = "prod", t))(H || {}), ge = /* @__PURE__ */ ((t) => (t.Environment = "environment", t.Url = "url", t))(ge || {});
-var F = /* @__PURE__ */ ((t) => (t.VALIDATION_ERROR = "VALIDATION_ERROR", t.UNKNOWN_ERROR = "UNKNOWN_ERROR", t.WORKFLOW_NOT_FOUND = "workflowNotFound", t.UNAUTHORIZED_ERROR = "UNAUTHORIZED_ERROR", t.PAYLOAD_TOO_LARGE_ERROR = "PAYLOAD_TOO_LARGE_ERROR", t.INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR", t.NETWORK_ERROR = "NETWORK_ERROR", t.TIMEOUT_ERROR = "TIMEOUT_ERROR", t.WORKFLOW_FAILED = "WORKFLOW_FAILED", t.UNEXPECTED_STATUS = "UNEXPECTED_STATUS", t.POLLING_ERROR = "POLLING_ERROR", t.RATE_LIMIT_ERROR = "RATE_LIMIT_ERROR", t))(F || {});
-class p extends Error {
-  statusCode;
-  // Optional - only present for API errors
-  type;
-  rawErrorData;
-  constructor(o, e, r, i = {}, a) {
-    super(o, a === void 0 ? void 0 : { cause: a }), this.name = "ApiError", this.statusCode = r, this.type = e, this.rawErrorData = a instanceof Error ? { ...i, originalError: a } : i, Object.setPrototypeOf(this, p.prototype);
-  }
-  /**
-   * Creates an ApiError from an API response
-   * Uses status code-based error type detection for better maintainability
-   */
-  static fromResponse(o, e) {
-    switch (o) {
-      case 400:
-        return this.handle400Error(e, o);
-      case 401:
-        return this.handle401Error(e, o);
-      case 404:
-        return this.handle404Error(e, o);
-      case 413:
-        return this.handle413Error(e, o);
-      case 422:
-        return this.handle422Error(e, o);
-      case 429:
-        return this.handle429Error(e, o);
-      case 500:
-        return this.handle500Error(e, o);
-      default:
-        return this.handleUnknownError(e, o);
-    }
-  }
-  /**
-   * Handle 400 Bad Request errors
-   */
-  static handle400Error(o, e) {
-    const r = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = r || i || `Bad Request (${String(e)})`;
-    return new p(a, "UNKNOWN_ERROR", e, o);
-  }
-  /**
-   * Handle 401 Unauthorized errors
-   */
-  static handle401Error(o, e) {
-    if (this.isApiErrorResponse(o)) {
-      const { error: a } = o, d = a.description || a.message;
-      return new p(d, "UNAUTHORIZED_ERROR", e, o);
-    }
-    if (this.isDirectApiErrorResponse(o)) {
-      const a = o.description || o.message;
-      return new p(a, "UNAUTHORIZED_ERROR", e, o);
-    }
-    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Unauthorized (${String(e)})`;
-    return new p(i, "UNAUTHORIZED_ERROR", e, o);
-  }
-  /**
-   * Handle 404 Not Found errors
-   */
-  static handle404Error(o, e) {
-    if (this.isApiErrorResponse(o)) {
-      const { error: a } = o, d = a.description || a.message, l = a.code;
-      return new p(d, l, e, o);
-    }
-    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Not Found (${String(e)})`;
-    return new p(i, "workflowNotFound", e, o);
-  }
-  /**
-   * Handle 413 Payload Too Large errors
-   */
-  static handle413Error(o, e) {
-    if (this.isPayloadTooLargeErrorResponse(o)) {
-      const { summary: a, value: d } = o, l = a || d.detail || `Payload Too Large (${String(e)})`;
-      return new p(l, "PAYLOAD_TOO_LARGE_ERROR", e, o);
-    }
-    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Payload Too Large (${String(e)})`;
-    return new p(i, "PAYLOAD_TOO_LARGE_ERROR", e, o);
-  }
-  /**
-   * Handle 429 Too Many Requests (rate limit) errors
-   */
-  static handle429Error(o, e) {
-    const r = o, a = (typeof r.detail == "string" ? r.detail : void 0) || `Rate limit exceeded (${String(e)})`;
-    return new p(a, "RATE_LIMIT_ERROR", e, o);
-  }
-  /**
-   * Handle 422 Validation errors
-   */
-  static handle422Error(o, e) {
-    if (this.isValidationErrorResponse422(o)) {
-      const { errors: a } = o, l = `Validation failed: ${a.map((n) => n.msg).join("; ")}`;
-      return new p(l, "VALIDATION_ERROR", e, o);
-    }
-    if (this.isValidationErrorResponse(o)) {
-      const { detail: a } = o, l = `Validation failed: ${a.map((n) => n.msg).join("; ")}`;
-      return new p(l, "VALIDATION_ERROR", e, o);
-    }
-    const i = (typeof o.detail == "string" ? o.detail : void 0) || `Validation Error (${String(e)})`;
-    return new p(i, "VALIDATION_ERROR", e, o);
-  }
-  /**
-   * Handle 500 Internal Server errors
-   */
-  static handle500Error(o, e) {
-    const r = typeof o.message == "string" ? o.message : void 0, i = typeof o.detail == "string" ? o.detail : void 0, a = r || i || `Internal Server Error (${String(e)})`;
-    return new p(a, "INTERNAL_SERVER_ERROR", e, o);
-  }
-  /**
-   * Handle unknown status codes
-   */
-  static handleUnknownError(o, e) {
-    const r = typeof o.message == "string" && o.message || typeof o.detail == "string" && o.detail || `HTTP error! status: ${String(e)}`;
-    return new p(r, "UNKNOWN_ERROR", e, o);
-  }
-  /**
-   * Creates an ApiError for non-API errors (network, timeout, etc.)
-   */
-  static fromError(o, e) {
-    return new p(o.message, e, void 0, { originalError: o }, o);
-  }
-  /**
-   * Check if the error data matches the API error format (for 401 errors)
-   */
-  static isApiErrorResponse(o) {
-    if ("error" in o && typeof o.error == "object" && o.error !== null) {
-      const e = o.error;
-      return "code" in e && "message" in e && typeof e.code == "string" && typeof e.message == "string";
-    }
-    return false;
-  }
-  /**
-   * Check if the error data matches the direct API error format (code, message, description at root level)
-   */
-  static isDirectApiErrorResponse(o) {
-    return "code" in o && "message" in o && typeof o.code == "string" && typeof o.message == "string";
-  }
-  /**
-   * Check if the error data matches the validation error format (legacy)
-   */
-  static isValidationErrorResponse(o) {
-    return !("detail" in o) || !Array.isArray(o.detail) || o.detail.length === 0 ? false : o.detail.every((e) => {
-      if (typeof e != "object" || e === null) return false;
-      const r = e;
-      return "loc" in r && "msg" in r && "type" in r && Array.isArray(r.loc) && typeof r.msg == "string" && typeof r.type == "string";
-    });
-  }
-  /**
-   * Check if the error data matches the new 422 validation error format
-   */
-  static isValidationErrorResponse422(o) {
-    return !("detail" in o) || !("status" in o) || !("request_id" in o) || !("errors" in o) || !Array.isArray(o.errors) || o.errors.length === 0 ? false : o.errors.every((e) => {
-      if (typeof e != "object" || e === null) return false;
-      const r = e;
-      return "loc" in r && "msg" in r && "type" in r && Array.isArray(r.loc) && typeof r.msg == "string" && typeof r.type == "string";
-    });
-  }
-  /**
-   * Check if the error data matches the 413 payload too large error format
-   */
-  static isPayloadTooLargeErrorResponse(o) {
-    if (!("summary" in o) || !("value" in o) || typeof o.value != "object" || o.value === null)
-      return false;
-    const e = o.value;
-    return "detail" in e && "status" in e && "request_id" in e;
-  }
-  /**
-   * Check if this is an API error (has status code)
-   */
-  get isApiError() {
-    return this.statusCode !== void 0;
-  }
-  /**
-   * Check if this is a validation error
-   */
-  get isValidationError() {
-    return this.type === "VALIDATION_ERROR" || this.statusCode === 422;
-  }
-  /**
-   * Check if this is a not found error
-   */
-  get isNotFoundError() {
-    return this.statusCode === 404 || this.type === "workflowNotFound";
-  }
-  /**
-   * Check if this is an unauthorized error
-   */
-  get isUnauthorizedError() {
-    return this.statusCode === 401 || this.type === "UNAUTHORIZED_ERROR";
-  }
-  /**
-   * Check if this is a payload too large error
-   */
-  get isPayloadTooLargeError() {
-    return this.statusCode === 413 || this.type === "PAYLOAD_TOO_LARGE_ERROR";
-  }
-  /**
-   * Check if this is an internal server error
-   */
-  get isInternalServerError() {
-    return this.statusCode === 500 || this.type === "INTERNAL_SERVER_ERROR";
-  }
-  /**
-   * Check if this is a network error
-   */
-  get isNetworkError() {
-    return this.type === "NETWORK_ERROR";
-  }
-  /**
-   * Check if this is a timeout error
-   */
-  get isTimeoutError() {
-    return this.type === "TIMEOUT_ERROR";
-  }
-  /**
-   * Check if this is a workflow failure error
-   */
-  get isWorkflowFailed() {
-    return this.type === "WORKFLOW_FAILED";
-  }
-  /**
-   * Get validation errors in a structured format (only for validation errors)
-   */
-  getValidationErrors() {
-    if (!this.isValidationError)
-      return {};
-    if (Array.isArray(this.rawErrorData.errors)) {
-      const o = {};
-      for (const e of this.rawErrorData.errors) {
-        const r = e.loc.join("."), i = o[r];
-        i ? i.push(e.msg) : o[r] = [e.msg];
-      }
-      return o;
-    }
-    if (Array.isArray(this.rawErrorData.detail)) {
-      const o = {};
-      for (const e of this.rawErrorData.detail) {
-        const r = e.loc.join("."), i = o[r];
-        i ? i.push(e.msg) : o[r] = [e.msg];
-      }
-      return o;
-    }
-    return {};
-  }
-}
-const O = "https://api.markup.ai", xo = "https://api.stg.markup.ai", Po = "https://api.dev.markup.ai";
-function re(t) {
-  if (t.platform)
-    if (t.platform.type === ge.Environment)
-      switch (t.platform.value) {
-        case H.Stage:
-          return xo;
-        case H.Dev:
-          return Po;
-        case H.Prod:
-          return O;
-        default:
-          return O;
-      }
-    else
-      return t.platform.value;
-  return O;
-}
-function I(t) {
-  const o = re(t), e = new ko({
-    token: t.apiKey,
-    baseUrl: o,
-    ...t.headers ? { headers: t.headers } : {}
-  });
-  return Mo(e, t);
-}
-async function jo(t, o, e) {
-  const r = o.rateLimit?.maxRetries ?? 5, i = o.rateLimit?.initialDelayMs ?? 1e3, a = o.rateLimit?.maxDelayMs ?? 16e3, d = o.rateLimit?.jitter ?? true;
-  let l = 0;
-  for (; ; )
-    try {
-      return await t();
-    } catch (n) {
-      const c = n;
-      if (!((c.statusCode ?? c.status) === 429))
-        throw n;
-      if (l >= r) {
-        if ("statusCode" in c) {
-          const P = c.body ?? {
-            detail: "Rate limit exceeded"
-          }, U = p.fromResponse(429, P);
-          throw new p(
-            U.message,
-            U.type,
-            U.statusCode,
-            U.rawErrorData,
-            n
-          );
-        }
-        throw new p(
-          "Rate limit exceeded",
-          F.RATE_LIMIT_ERROR,
-          429,
-          {},
-          n
-        );
-      }
-      let f;
-      const y = c.headers, A = y?.["Retry-After"] ?? y?.["retry-after"] ?? y?.retry_after;
-      if (A !== void 0) {
-        const P = typeof A == "string" ? Number.parseFloat(A) : A;
-        !Number.isNaN(P) && Number.isFinite(P) && (f = Math.max(0, Math.floor(P * 1e3)));
-      }
-      if (!f && y && (y["X-RateLimit-Reset"] || y["x-ratelimit-reset"])) {
-        const P = y["X-RateLimit-Reset"] ?? y["x-ratelimit-reset"], U = typeof P == "string" ? Number.parseInt(P, 10) : P;
-        if (!Number.isNaN(U)) {
-          const ie = U * 1e3 - Date.now();
-          Number.isFinite(ie) && (f = Math.max(0, ie));
-        }
-      }
-      if (f === void 0) {
-        const P = Math.min(a, i * Math.pow(2, l));
-        f = d ? Math.floor(P / 2 + Math.random() * (P / 2)) : P;
-      }
-      typeof process < "u" && process.env.NODE_ENV !== "test" && console.warn(
-        `[RateLimit] ${e ?? "operation"} attempt ${String(l + 1)} hit 429. Retrying in ${String(f)} ms...`
-      ), await new Promise((P) => setTimeout(P, f)), l += 1;
-      continue;
+        await new Promise((resolve) => setTimeout(resolve, Math.min(intervalMs, remaining)));
     }
 }
-function Mo(t, o, e = "client") {
-  const r = /* @__PURE__ */ new WeakMap(), i = (a, d) => {
-    const l = r.get(a);
-    if (l) return l;
-    const n = new Proxy(a, {
-      get: (c, s, u) => {
-        const f = Reflect.get(c, s, u);
-        if (typeof f == "function") {
-          const y = `${d}.${String(s)}`, A = f;
-          return (...P) => jo(() => A.apply(c, P), o, y);
-        }
-        return typeof f == "object" && f !== null ? i(f, `${d}.${String(s)}`) : f;
-      }
-    });
-    return r.set(a, n), n;
-  };
-  return i(t, e);
-}
-function Re() {
-  return !!(typeof process > "u" ? void 0 : process)?.versions?.node;
-}
-function we(t) {
-  switch (t.split(".").pop()?.toLowerCase()) {
-    case "dita":
-      return "application/dita+xml";
-    case "htm":
-    case "html":
-      return "text/html";
-    case "markdown":
-    case "md":
-    case "mdown":
-    case "mdx":
-    case "mkd":
-      return "text/markdown";
-    case "pdf":
-      return "application/pdf";
-    case "txt":
-      return "text/plain";
-    default:
-      return "application/octet-stream";
-  }
-}
-function Lo(t) {
-  return typeof Buffer < "u" ? Buffer.isBuffer(t) : false;
-}
-async function _e(t, o) {
-  if (typeof t.content == "string") {
-    const e = we(o), r = No(e, t.content);
-    return { parts: [t.content], type: r, filename: o };
-  }
-  if (typeof File < "u" && typeof t.content != "string" && "file" in t.content && t.content.file instanceof File) {
-    const e = t.content, r = await e.file.arrayBuffer(), i = e.mimeType || e.file.type || "application/octet-stream";
-    return {
-      parts: [r],
-      type: i,
-      filename: e.file.name,
-      file: e.file
-    };
-  }
-  if (typeof t.content != "string" && "buffer" in t.content && Lo(t.content.buffer)) {
-    const e = t.content, r = e.mimeType || we(e.documentNameWithExtension || o);
-    return { parts: [e.buffer.buffer.slice(
-      e.buffer.byteOffset,
-      e.buffer.byteOffset + e.buffer.byteLength
-    )], type: r, filename: o };
-  }
-  throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
-}
-class $o extends Blob {
-  name;
-  lastModified;
-  constructor(o, e, r = {}) {
-    super(o, r), this.name = e, this.lastModified = r.lastModified || Date.now();
-  }
-}
-async function Bo(t) {
-  const o = Ee(t), { parts: e, type: r } = await _e(t, o);
-  return new $o(e, o, { type: r });
-}
-async function Fo(t) {
-  const o = Ee(t);
-  if (typeof File < "u" && typeof t.content != "string" && "file" in t.content && t.content.file instanceof File)
-    return t.content.file;
-  const { parts: e, type: r } = await _e(t, o);
-  return new File(e, o, { type: r });
-}
-async function Y(t) {
-  return Re() ? Bo(t) : Fo(t);
-}
-function be(t) {
-  const o = t.trimStart().slice(0, 256).toLowerCase();
-  return o.startsWith("<!doctype html") || o.startsWith("<html") ? true : /<(head|body|title|div|span|p|h1|h2|h3|h4|h5|h6)\b/.test(o);
-}
-function Se(t) {
-  const o = t.trimStart().slice(0, 512).toLowerCase(), e = "topic|concept|task|reference|map|bookmap|glossentry|subjectScheme";
-  return new RegExp(String.raw`<!DOCTYPE\s+(?:${e})\b.*\/.*\/DITA`, "is").test(o) || new RegExp(String.raw`<!DOCTYPE\s+(?:${e})\b.*?["'][^"']*\.dtd["']`, "is").test(o) || new RegExp(String.raw`^(?:\s*<\?xml[^>]*\?>)?\s*<(?:${e})\b`, "is").test(o) ? true : /\bclass="[^"]*\btopic\/topic\b/i.test(o);
-}
-function Te(t) {
-  const o = t.trimStart().slice(0, 512);
-  return !!(/^---\n[\s\S]*?\n---\n/.test(o) || /^#{1,6}\s+.+/m.test(o) || /^(?:\s*[-*+]\s+\S|\s*\d+\.\s+\S)/m.test(o) || /\[[^\]]+\]\([^)]+\)/.test(o) || /!\[[^\]]*\]\([^)]+\)/.test(o) || /```[\s\S]*?```/.test(o));
-}
-function No(t, o) {
-  return t === "application/octet-stream" ? Te(o) ? "text/markdown" : Se(o) ? "application/dita+xml" : be(o) ? "text/html" : "text/plain" : t;
-}
-function Ee(t) {
-  if ("content" in t && typeof t.content == "string") {
-    const o = t;
-    return o.documentNameWithExtension ? o.documentNameWithExtension : Se(o.content) ? "unknown.dita" : be(o.content) ? "unknown.html" : Te(o.content) ? "unknown.md" : "unknown.txt";
-  }
-  if (!t.content)
-    throw new Error("Invalid content type. Expected string, FileDescriptor, or BufferDescriptor.");
-  return "content" in t && typeof t.content == "object" && "buffer" in t.content ? t.content.documentNameWithExtension : "content" in t && typeof t.content == "object" && "file" in t.content ? t.content.file.name : "unknown.txt";
-}
-const Ce = 3e5;
-async function ne(t, o, e) {
-  const r = Date.now(), i = I(e), a = await Y(o);
-  let d;
-  try {
-    switch (t) {
-      case j.Check:
-        d = await i.styleChecks.createStyleCheck({
-          file_upload: a,
-          dialect: o.dialect,
-          style_guide: o.style_guide,
-          webhook_url: o.webhook_url,
-          ...o.tone ? { tone: o.tone } : {}
-        });
-        break;
-      case j.Suggestions:
-        d = await i.styleSuggestions.createStyleSuggestion({
-          file_upload: a,
-          dialect: o.dialect,
-          style_guide: o.style_guide,
-          webhook_url: o.webhook_url,
-          ...o.tone ? { tone: o.tone } : {}
-        });
-        break;
-      case j.Rewrite:
-        d = await i.styleRewrites.createStyleRewrite({
-          file_upload: a,
-          dialect: o.dialect,
-          style_guide: o.style_guide,
-          webhook_url: o.webhook_url,
-          ...o.tone ? { tone: o.tone } : {}
-        });
-        break;
+function isFatalApiError(error) {
+    if (!(error instanceof MarkupApiError)) {
+        return false;
     }
-  } catch (n) {
-    throw n instanceof w ? p.fromResponse(n.statusCode || 0, n.body) : new Error(`Failed to submit style analysis: ${String(n)}`);
-  }
-  if (!d.workflow_id)
-    throw new Error(`No workflow_id received from initial ${t} request`);
-  const l = await Do(
-    d.workflow_id,
-    e,
-    t,
-    r
-  );
-  if (l.workflow.status === B.Completed)
-    return l;
-  throw new Error(`${t} failed with status: ${l.workflow.status}`);
-}
-class zo {
-  constructor(o, e, r, i, a) {
-    this.requests = o, this.config = e, this.styleFunction = r, this.options = i, this.onProgressUpdate = a, this.startTime = Date.now(), this.initializeResults();
-  }
-  inProgress = /* @__PURE__ */ new Set();
-  results = [];
-  cancelled = false;
-  resolvePromise;
-  rejectPromise;
-  startTime;
-  estimatedCompletionTime;
-  initializeResults() {
-    this.results = this.requests.map((o, e) => ({
-      index: e,
-      request: o,
-      status: "pending"
-    }));
-  }
-  getProgress() {
-    const o = this.results.filter((a) => a.status === "completed").length, e = this.results.filter((a) => a.status === "failed").length, r = this.results.filter((a) => a.status === "in-progress").length, i = this.results.filter((a) => a.status === "pending").length;
-    return {
-      total: this.requests.length,
-      completed: o,
-      failed: e,
-      inProgress: r,
-      pending: i,
-      results: [...this.results],
-      startTime: Date.now()
-    };
-  }
-  updateProgress() {
-    this.onProgressUpdate && this.onProgressUpdate(this.getProgress());
-  }
-  async processRequest(o, e) {
-    if (!this.cancelled)
-      try {
-        this.results[o] = {
-          ...this.results[o],
-          status: "in-progress",
-          startTime: Date.now()
-        }, this.updateProgress();
-        const r = await this.executeWithRetry(e);
-        r === void 0 ? this.results[o] = {
-          ...this.results[o],
-          status: "failed",
-          error: new Error("Batch operation returned undefined result"),
-          endTime: Date.now()
-        } : this.results[o] = {
-          ...this.results[o],
-          status: "completed",
-          result: r,
-          endTime: Date.now()
-        };
-      } catch (r) {
-        this.results[o] = {
-          ...this.results[o],
-          status: "failed",
-          error: r instanceof Error ? r : new Error(String(r)),
-          endTime: Date.now()
-        };
-      } finally {
-        this.inProgress.delete(o), this.updateProgress(), this.processNext();
-      }
-  }
-  async executeWithRetry(o) {
-    let e;
-    for (let r = 0; r <= this.options.retryAttempts; r++)
-      try {
-        return await this.styleFunction(o, {
-          ...this.config,
-          timeoutMillis: this.options.timeoutMillis
-        });
-      } catch (i) {
-        if (e = i instanceof Error ? i : new Error(String(i)), this.shouldNotRetry(e))
-          throw e;
-        r < this.options.retryAttempts && await this.delay(this.options.retryDelay * Math.pow(2, r));
-      }
-    throw e ?? new Error("Unknown error occurred during retry");
-  }
-  shouldNotRetry(o) {
-    return !!([
-      "authentication",
-      "authorization",
-      "validation",
-      "invalid",
-      "unauthorized",
-      "forbidden",
-      "rate limit"
-    ].some((r) => o.message.toLowerCase().includes(r)) || o instanceof p && o.type === F.RATE_LIMIT_ERROR);
-  }
-  delay(o) {
-    return new Promise((e) => setTimeout(e, o));
-  }
-  processNext() {
-    if (this.cancelled) return;
-    const o = this.results.find((e) => e.status === "pending");
-    if (!o) {
-      this.inProgress.size === 0 && this.resolvePromise?.(this.getProgress());
-      return;
-    }
-    this.inProgress.size >= this.options.maxConcurrent || (this.inProgress.add(o.index), this.processRequest(o.index, o.request));
-  }
-  start() {
-    return new Promise((o, e) => {
-      this.resolvePromise = o, this.rejectPromise = e;
-      const r = Math.min(this.options.maxConcurrent, this.requests.length);
-      for (let i = 0; i < r; i++)
-        this.inProgress.add(i), this.processRequest(i, this.requests[i]);
-    });
-  }
-  cancel() {
-    this.cancelled = true, this.rejectPromise?.(new Error("Batch operation cancelled"));
-  }
-}
-function se(t, o, e, r = {}) {
-  if (t.length === 0)
-    throw new Error("Requests array cannot be empty");
-  if (t.length > 1e3)
-    throw new Error("Maximum 1000 requests allowed per batch");
-  const a = {
-    ...{
-      maxConcurrent: 100,
-      retryAttempts: 2,
-      retryDelay: 1e3,
-      timeoutMillis: Ce
-    },
-    ...r
-  };
-  if (a.maxConcurrent < 1 || a.maxConcurrent > 100)
-    throw new Error("maxConcurrent must be between 1 and 100");
-  if (a.retryAttempts < 0 || a.retryAttempts > 5)
-    throw new Error("retryAttempts must be between 0 and 5");
-  const d = new zo(t, o, e, a), l = d.start();
-  return {
-    progress: {
-      get total() {
-        return t.length;
-      },
-      get completed() {
-        return d.results.filter((c) => c.status === "completed").length;
-      },
-      get failed() {
-        return d.results.filter((c) => c.status === "failed").length;
-      },
-      get inProgress() {
-        return d.results.filter((c) => c.status === "in-progress").length;
-      },
-      get pending() {
-        return d.results.filter((c) => c.status === "pending").length;
-      },
-      get results() {
-        return [...d.results];
-      },
-      get startTime() {
-        return d.startTime;
-      },
-      get estimatedCompletionTime() {
-        return d.estimatedCompletionTime;
-      }
-    },
-    promise: l,
-    cancel: () => {
-      d.cancel();
-    }
-  };
-}
-async function Do(t, o, e, r = Date.now()) {
-  let i = 0;
-  const a = 2e3, d = o.timeoutMillis ?? Ce, l = Math.floor(d / a), n = async () => {
-    const c = Date.now() - r;
-    if (c > d)
-      throw new p(
-        `Workflow timed out after ${String(c)}ms`,
-        F.TIMEOUT_ERROR
-      );
-    try {
-      const s = I(o);
-      let u;
-      switch (e) {
-        case j.Check:
-          u = await s.styleChecks.getStyleCheck(
-            t
-          );
-          break;
-        case j.Suggestions:
-          u = await s.styleSuggestions.getStyleSuggestion(
-            t
-          );
-          break;
-        case j.Rewrite:
-          u = await s.styleRewrites.getStyleRewrite(
-            t
-          );
-          break;
-      }
-      const f = u.workflow.status;
-      if (f === B.Failed)
-        throw new p(
-          `Workflow failed with status: ${B.Failed}`,
-          F.WORKFLOW_FAILED
-        );
-      return f === B.Completed ? u : (i++, await new Promise((y) => setTimeout(y, a)), await n());
-    } catch (s) {
-      throw s instanceof w ? p.fromResponse(s.statusCode || 0, s.body) : (console.error(
-        `Unknown polling error (attempt ${String(i + 1)}/${String(l)}):`,
-        s
-      ), p.fromError(
-        s instanceof Error ? s : new Error("Unknown error occurred"),
-        F.POLLING_ERROR
-      ));
-    }
-  };
-  return n();
-}
-async function Go(t, o) {
-  return ne(
-    j.Check,
-    t,
-    o
-  );
-}
-async function Wo(t, o) {
-  return ne(
-    j.Suggestions,
-    t,
-    o
-  );
-}
-async function Ho(t, o) {
-  return ne(
-    j.Rewrite,
-    t,
-    o
-  );
-}
-function Vo(t, o, e = {}) {
-  return se(t, o, Go, e);
-}
-function Ko(t, o, e = {}) {
-  return se(t, o, Wo, e);
-}
-function Xo(t, o, e = {}) {
-  return se(t, o, Ho, e);
-}
-function it(t, o, e, r = {}) {
-  switch (e) {
-    case "check":
-      return Vo(t, o, r);
-    case "suggestions":
-      return Ko(t, o, r);
-    case "rewrite":
-      return Xo(t, o, r);
-    default:
-      throw new Error(`Invalid operation type: ${String(e)}`);
-  }
+    return error.status === 401 || error.status === 403 || error.status >= 500;
 }
 
 /**
@@ -91922,84 +88060,53 @@ function getLineContextAtIndex(content, index) {
 }
 
 /**
- * Centralized score calculation and quality evaluation utilities
+ * Risk-mode issue aggregation utilities.
+ *
+ * When numeric scoring is disabled, the API returns no scores — so we roll up
+ * issue severities into counts and derive an overall risk level from them.
  */
-/**
- * Quality score thresholds
- */
-const QUALITY_THRESHOLDS = {
-    EXCELLENT: 80,
-    GOOD: 60};
-/**
- * Quality emoji mapping
- */
-const QUALITY_EMOJIS = {
-    EXCELLENT: "🟢",
-    GOOD: "🟡",
-    POOR: "🔴",
-};
-/**
- * Get quality status based on score
- */
-function getQualityStatus(score) {
-    if (score >= QUALITY_THRESHOLDS.EXCELLENT)
-        return "success";
-    if (score >= QUALITY_THRESHOLDS.GOOD)
-        return "failure";
-    return "error";
-}
-/**
- * Get quality emoji based on score
- */
-function getQualityEmoji(score) {
-    if (score >= QUALITY_THRESHOLDS.EXCELLENT)
-        return QUALITY_EMOJIS.EXCELLENT;
-    if (score >= QUALITY_THRESHOLDS.GOOD)
-        return QUALITY_EMOJIS.GOOD;
-    return QUALITY_EMOJIS.POOR;
-}
-/**
- * Calculate average score from an array of scores
- */
-function calculateAverageScore(scores) {
-    if (scores.length === 0)
-        return 0;
-    const sum = scores.reduce((acc, score) => acc + score, 0);
-    return Math.round((sum / scores.length) * 100) / 100;
-}
-/**
- * Calculate comprehensive score summary from analysis results
- */
-function calculateScoreSummary(results) {
-    if (results.length === 0) {
-        return {
-            totalFiles: 0,
-            averageQualityScore: 0,
-            averageClarityScore: 0,
-            averageToneScore: 0,
-            averageGrammarScore: 0,
-            averageConsistencyScore: 0,
-            averageTerminologyScore: 0,
-        };
+function computeIssueCounts(issues) {
+    const counts = { total: 0, high: 0, medium: 0, low: 0 };
+    for (const { issue } of issues) {
+        counts.total += 1;
+        counts[issue.severity] += 1;
     }
-    const qualityScores = results.map((r) => r.result.quality.score);
-    const clarityScores = results.map((r) => r.result.analysis.clarity.score);
-    const toneScores = results
-        .map((r) => r.result.analysis.tone?.score)
-        .filter((score) => typeof score === "number");
-    const grammarScores = results.map((r) => r.result.quality.grammar.score);
-    const consistencyScores = results.map((r) => r.result.quality.consistency.score);
-    const terminologyScores = results.map((r) => r.result.quality.terminology.score);
-    return {
-        totalFiles: results.length,
-        averageQualityScore: calculateAverageScore(qualityScores),
-        averageClarityScore: calculateAverageScore(clarityScores),
-        averageToneScore: calculateAverageScore(toneScores),
-        averageGrammarScore: calculateAverageScore(grammarScores),
-        averageConsistencyScore: calculateAverageScore(consistencyScores),
-        averageTerminologyScore: calculateAverageScore(terminologyScores),
-    };
+    return counts;
 }
+function classifyRisk(counts) {
+    if (counts.high > 0)
+        return "high";
+    if (counts.medium > 0)
+        return "medium";
+    if (counts.low > 0)
+        return "low";
+    return "none";
+}
+function aggregateCounts(results) {
+    const totals = { total: 0, high: 0, medium: 0, low: 0 };
+    for (const r of results) {
+        totals.total += r.issueCounts.total;
+        totals.high += r.issueCounts.high;
+        totals.medium += r.issueCounts.medium;
+        totals.low += r.issueCounts.low;
+    }
+    return totals;
+}
+function aggregateRisk(results) {
+    return classifyRisk(aggregateCounts(results));
+}
+const RISK_EMOJI = {
+    high: "🔴",
+    medium: "🟡",
+    low: "🟢",
+    none: "✅",
+};
+const RISK_LABEL = {
+    high: "High",
+    medium: "Medium",
+    low: "Low",
+    none: "No issues",
+};
 
 /**
  * Batch processing utilities for optimized operations
@@ -92008,67 +88115,405 @@ function calculateScoreSummary(results) {
  * Default batch configuration
  */
 const DEFAULT_BATCH_CONFIG = {
-    maxConcurrent: 100,
-    batchSize: 50,
-    delayBetweenBatches: 1_000,
-};
+    maxConcurrent: 100};
 /**
- * Process items in batches with concurrency control
+ * Process items with concurrency limit
  */
-async function processBatch(items, processor, config = DEFAULT_BATCH_CONFIG) {
+async function processWithConcurrency(items, processor, maxConcurrent = DEFAULT_BATCH_CONFIG.maxConcurrent) {
     if (items.length === 0) {
         return [];
     }
     const results = [];
-    const batches = chunkArray(items, config.batchSize);
-    info(`🚀 Processing ${items.length.toString()} items in ${batches.length.toString()} batches`);
-    for (let i = 0; i < batches.length; i++) {
-        const batch = batches[i];
-        info(`📦 Processing batch ${(i + 1).toString()}/${batches.length.toString()} (${batch.length.toString()} items)`);
-        const batchResults = await Promise.allSettled(batch.map((item) => processor(item)));
-        // Process results
-        for (const [index, result] of batchResults.entries()) {
-            if (result.status === "fulfilled") {
-                results.push(result.value);
-            }
-            else {
-                error(`Failed to process item ${(i * config.batchSize + index).toString()}: ${String(result.reason)}`);
-            }
+    const semaphore = new Semaphore(maxConcurrent);
+    info(`🚀 Processing ${items.length.toString()} items with max concurrency of ${maxConcurrent.toString()}`);
+    const promises = items.map(async (item, index) => {
+        await semaphore.acquire();
+        try {
+            const result = await processor(item);
+            results[index] = result;
+            return result;
         }
-        // Add delay between batches to avoid overwhelming APIs
-        if (i < batches.length - 1 && config.delayBetweenBatches > 0) {
-            await new Promise((resolve) => setTimeout(resolve, config.delayBetweenBatches));
+        finally {
+            semaphore.release();
         }
-    }
-    info(`✅ Batch processing completed: ${results.length.toString()}/${items.length.toString()} items processed successfully`);
-    return results;
+    });
+    await Promise.allSettled(promises);
+    const successfulResults = results.filter((result) => result !== undefined);
+    info(`✅ Concurrency processing completed: ${successfulResults.length.toString()}/${items.length.toString()} items processed successfully`);
+    return successfulResults;
 }
 /**
- * Split array into chunks
+ * Simple semaphore implementation for concurrency control
  */
-function chunkArray(array, chunkSize) {
-    const chunks = [];
-    for (let i = 0; i < array.length; i += chunkSize) {
-        chunks.push(array.slice(i, i + chunkSize));
+class Semaphore {
+    permits;
+    waiting = [];
+    constructor(permits) {
+        this.permits = permits;
     }
-    return chunks;
-}
-/**
- * Process file reading in optimized batches
- */
-async function processFileReading(filePaths, readFileContent, config = DEFAULT_BATCH_CONFIG) {
-    const fileContents = await processBatch(filePaths, async (filePath) => {
-        const content = await readFileContent(filePath);
-        return content ? { filePath, content } : null;
-    }, config);
-    return fileContents.filter((item) => item !== null);
+    async acquire() {
+        if (this.permits > 0) {
+            this.permits--;
+            return;
+        }
+        return new Promise((resolve) => {
+            this.waiting.push(resolve);
+        });
+    }
+    release() {
+        this.permits++;
+        if (this.waiting.length > 0) {
+            const next = this.waiting.shift();
+            if (next) {
+                this.permits--;
+                next();
+            }
+        }
+    }
 }
 
 /**
- * Centralized error handling and retry utilities
+ * Style-agent analysis orchestration.
+ *
+ * For each file: read content, POST `/agents/<style_agent>/run`, poll the
+ * workflow until terminal, and map the response into our `AnalysisResult`
+ * shape. Files are processed with a concurrency cap to avoid hammering the API.
  */
+function buildAnalysisIssues(content, issues) {
+    if (!issues || issues.length === 0)
+        return [];
+    return issues.map((issue) => {
+        const startIndex = issue.position?.start;
+        if (typeof startIndex !== "number") {
+            // No position → can't anchor an inline review comment. Surface with
+            // line/column 0 so downstream code skips it for inline comments (which
+            // require line > 0) but still counts it in summary totals.
+            return { issue, line: 0, column: 0, lineText: "" };
+        }
+        const { line, column, lineText } = getLineContextAtIndex(content, startIndex);
+        return { issue, line, column, lineText };
+    });
+}
+function toAnalysisResult(filePath, content, response) {
+    const issues = buildAnalysisIssues(content, response.result?.issues);
+    return {
+        filePath,
+        workflowId: response.workflow_id,
+        status: response.status,
+        documentRef: response.document_ref ?? undefined,
+        scores: response.result?.quality ?? null,
+        analysis: response.result?.analysis ?? null,
+        issues,
+        issueCounts: computeIssueCounts(issues),
+        timestamp: new Date().toISOString(),
+    };
+}
 /**
- * Default retry configuration
+ * Run the style agent against a single file's content. Returns `null` on
+ * non-fatal failure (timeout, per-file workflow failure). Throws on fatal
+ * errors (401/403/5xx) so the caller can abort the whole run.
+ */
+async function analyzeFile(apiKey, filePath, content, options) {
+    try {
+        info(`🔍 Submitting ${filePath}`);
+        const submission = await runStyleAgent(apiKey, {
+            text: content,
+            document_name: getFileBasename(filePath),
+            document_ref: filePath,
+            target_id: options.targetId,
+        });
+        info(`⏳ Polling workflow ${submission.workflow_id} for ${filePath}`);
+        const finalState = await pollUntilDone(apiKey, submission.workflow_id);
+        if (finalState.status !== "completed") {
+            error(`Workflow for ${filePath} ended with status: ${finalState.status}`);
+            return null;
+        }
+        return toAnalysisResult(filePath, content, finalState);
+    }
+    catch (error$1) {
+        error(`Failed to analyze ${filePath}: ${String(error$1)}`);
+        if (error$1 instanceof MarkupApiError && isFatalApiError(error$1)) {
+            throw error$1;
+        }
+        return null;
+    }
+}
+/**
+ * Analyze multiple files concurrently. Fatal API errors (401/403/5xx)
+ * short-circuit the whole run: the first fatal error is captured, queued
+ * tasks bail without making more API calls, and the error is rethrown so
+ * the action surfaces it as a top-level failure. Per-file non-fatal failures
+ * are logged and dropped from the result list.
+ *
+ * Note: `processWithConcurrency` uses `Promise.allSettled` internally, which
+ * would swallow a raw `throw` from the processor. We catch the throw here,
+ * set a shared abort flag, and let `processWithConcurrency` settle — then
+ * rethrow once.
+ */
+async function analyzeFiles(apiKey, files, options, readFileContent) {
+    if (files.length === 0)
+        return [];
+    info(`🚀 Analyzing ${files.length.toString()} file(s) with up to ${MAX_CONCURRENT_FILES.toString()} in flight`);
+    let fatalError = null;
+    const results = await processWithConcurrency(files, async (filePath) => {
+        // Already aborted by a peer task → skip without doing any work.
+        if (fatalError)
+            return null;
+        const content = await readFileContent(filePath);
+        if (content === null)
+            return null;
+        try {
+            return await analyzeFile(apiKey, filePath, content, options);
+        }
+        catch (error) {
+            if (isFatalApiError(error)) {
+                // First fatal error wins; later ones are silently ignored.
+                fatalError ??= error;
+            }
+            return null;
+        }
+    }, MAX_CONCURRENT_FILES);
+    if (fatalError !== null) {
+        if (fatalError instanceof Error)
+            throw fatalError;
+        let detail = "(unstringifiable error)";
+        try {
+            detail = JSON.stringify(fatalError);
+        }
+        catch {
+            // Keep fallback. Circular refs / BigInt values can throw here.
+        }
+        throw new Error(`Fatal API error: ${detail}`);
+    }
+    return results.filter((r) => r !== null);
+}
+
+/**
+ * Common string utilities.
+ */
+function truncateText(value, maxLength) {
+    if (value.length <= maxLength) {
+        return value;
+    }
+    return `${value.slice(0, Math.max(0, maxLength - 3))}...`;
+}
+function wrapInlineCode(value) {
+    const matches = value.match(/`+/g);
+    const maxLength = matches ? Math.max(...matches.map((match) => match.length)) : 0;
+    const fence = "`".repeat(maxLength + 1);
+    const needsPadding = value.startsWith(" ") || value.endsWith(" ") || value.startsWith("`") || value.endsWith("`");
+    const wrappedValue = needsPadding ? ` ${value} ` : value;
+    return `${fence}${wrappedValue}${fence}`;
+}
+function capitalizeLabel(value) {
+    if (!value) {
+        return value;
+    }
+    return value.charAt(0).toUpperCase() + value.slice(1);
+}
+/**
+ * Format an agent identifier from the API (snake_case, e.g. `style_agent`)
+ * as a human-readable label (`Style Agent`). Returns the input unchanged if
+ * it's empty or already formatted.
+ */
+function formatAgentName(agent) {
+    if (!agent)
+        return agent;
+    return agent
+        .split(/[_\s]+/)
+        .filter((word) => word.length > 0)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(" ");
+}
+
+/**
+ * Numeric-score helpers (active only when org-level numeric scoring is enabled).
+ */
+const QUALITY_THRESHOLDS = {
+    EXCELLENT: 80,
+    GOOD: 60};
+const QUALITY_EMOJIS = {
+    EXCELLENT: "🟢",
+    GOOD: "🟡",
+    POOR: "🔴",
+};
+function getQualityEmoji(score) {
+    if (score >= QUALITY_THRESHOLDS.EXCELLENT)
+        return QUALITY_EMOJIS.EXCELLENT;
+    if (score >= QUALITY_THRESHOLDS.GOOD)
+        return QUALITY_EMOJIS.GOOD;
+    return QUALITY_EMOJIS.POOR;
+}
+function calculateAverageScore(scores) {
+    if (scores.length === 0)
+        return 0;
+    const sum = scores.reduce((acc, score) => acc + score, 0);
+    return Math.round((sum / scores.length) * 100) / 100;
+}
+function calculateScoreSummary(results) {
+    const qualityScores = results
+        .map((r) => r.scores?.score)
+        .filter((s) => typeof s === "number");
+    return {
+        totalFiles: results.length,
+        averageQualityScore: calculateAverageScore(qualityScores),
+        filesWithScores: qualityScores.length,
+    };
+}
+
+/**
+ * Markdown generation for PR comments and job summaries.
+ *
+ * Risk-based scoring is the primary view in all modes — every file row leads
+ * with a risk label and severity counts. When `AnalysisOptions.numericScoringEnabled`
+ * is true, the action layers an additional Quality column onto the table, an
+ * Overall Quality Score line into the summary, and a collapsible per-goal
+ * breakdown — none of which replaces the risk view.
+ */
+function generateFileDisplayLink(filePath, context) {
+    return "prNumber" in context
+        ? `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber.toString()}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
+        : `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
+}
+function formatCounts(counts) {
+    return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
+}
+function generateResultsTable(results, options, context) {
+    if (results.length === 0) {
+        return "No files were analyzed.";
+    }
+    // Risk is always the primary view. When the org has numeric scoring enabled,
+    // we append an additional Quality column rather than replacing risk.
+    const showQuality = options.numericScoringEnabled;
+    const header = showQuality
+        ? `| File | Risk | Issues | Breakdown | Quality |
+|:-----|:----:|:------:|:----------|:-------:|`
+        : `| File | Risk | Issues | Breakdown |
+|:-----|:----:|:------:|:----------|`;
+    const rows = results.map((r) => {
+        const risk = classifyRisk(r.issueCounts);
+        const base = `| ${generateFileDisplayLink(r.filePath, context)} | ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]} | ${r.issueCounts.total.toString()} | ${formatCounts(r.issueCounts)} |`;
+        if (!showQuality)
+            return base;
+        const score = r.scores?.score;
+        const qualityCell = typeof score === "number" ? `${getQualityEmoji(score)} ${Math.round(score).toString()}` : "-";
+        return `${base} ${qualityCell} |`;
+    });
+    return `${header}\n${rows.join("\n")}`;
+}
+/** Unique `path:line` pairs across all anchored issues — i.e., the upper
+ * bound on the number of inline review comments the action could post on
+ * this run. Issues without a position (line ≤ 0) are excluded since they
+ * can't be anchored. */
+function countAnchoredIssueLines(results) {
+    const seen = new Set();
+    for (const r of results) {
+        for (const i of r.issues) {
+            if (i.line > 0)
+                seen.add(`${r.filePath}:${i.line.toString()}`);
+        }
+    }
+    return seen.size;
+}
+function generateSummary(results, options) {
+    if (results.length === 0)
+        return "";
+    const totals = aggregateCounts(results);
+    const risk = aggregateRisk(results);
+    const riskLine = `**Overall Risk:** ${RISK_EMOJI[risk]} ${RISK_LABEL[risk]}`;
+    let qualityLine = "";
+    if (options.numericScoringEnabled) {
+        const summary = calculateScoreSummary(results);
+        if (summary.filesWithScores > 0) {
+            const emoji = getQualityEmoji(summary.averageQualityScore);
+            qualityLine = `\n\n**Overall Quality Score:** ${emoji} ${Math.round(summary.averageQualityScore).toString()}`;
+        }
+    }
+    // Inline-review truncation note: when the number of flaggable line groups
+    // exceeds MAX_INLINE_REVIEW_COMMENTS, the action can only post the first
+    // N as inline comments. Surface the overflow here so reviewers know to
+    // check the full `outputs.results` JSON.
+    const anchored = countAnchoredIssueLines(results);
+    const truncationLine = anchored > MAX_INLINE_REVIEW_COMMENTS
+        ? `\n\n_Inline reviews are capped at ${MAX_INLINE_REVIEW_COMMENTS.toString()}; ${(anchored - MAX_INLINE_REVIEW_COMMENTS).toString()} additional flagged line(s) are not shown inline — see \`outputs.results\` for the full set._`
+        : "";
+    return `
+## 📊 Summary
+
+${riskLine}${qualityLine}
+
+**Files Analyzed:** ${results.length.toString()}
+
+**Total Issues:** ${totals.total.toString()} (${formatCounts(totals)})${truncationLine}
+`;
+}
+/**
+ * Per-goal score breakdown, rendered inside a `<details>` block so the
+ * summary table stays compact. Only emitted in numeric mode and only when at
+ * least one file has `scoresByGoal` data; otherwise returns an empty string
+ * so the caller can interpolate it unconditionally.
+ */
+function generatePerGoalDetails(results, options) {
+    if (!options.numericScoringEnabled)
+        return "";
+    const rows = results
+        .map((r) => {
+        const goals = r.scores?.scoresByGoal ?? [];
+        if (goals.length === 0)
+            return null;
+        const parts = goals
+            .map((g) => `${g.displayName} ${Math.round(g.score).toString()}`)
+            .join(" · ");
+        return `**${r.filePath}** — ${parts}`;
+    })
+        .filter((line) => line !== null);
+    if (rows.length === 0)
+        return "";
+    return `
+<details>
+<summary>Per-goal breakdown</summary>
+
+${rows.join("\n\n")}
+
+</details>
+`;
+}
+function uniqueAgentsAcrossResults(results) {
+    const seen = new Set();
+    for (const r of results) {
+        for (const { issue } of r.issues) {
+            if (issue.agent)
+                seen.add(formatAgentName(issue.agent));
+        }
+    }
+    return [...seen].sort((a, b) => a.localeCompare(b));
+}
+function generateFooter(results, options, eventType) {
+    const agents = uniqueAgentsAcrossResults(results);
+    const agentLine = agents.length > 0 ? `\n*Agents run: ${agents.join(", ")}*` : "";
+    return `
+---
+*Analysis performed on ${new Date().toLocaleString()}*
+*Target: ${options.targetDisplayName}*${agentLine}
+*Event: ${eventType}*`;
+}
+function generateAnalysisContent(results, options, header, eventType, context) {
+    return `${header}
+
+${generateResultsTable(results, options, context)}
+${generatePerGoalDetails(results, options)}
+${generateSummary(results, options)}
+
+${generateFooter(results, options, eventType)}
+`;
+}
+
+/**
+ * Error handling and retry utilities.
+ *
+ * Note: Markup AI API errors are surfaced as `MarkupApiError` from
+ * `services/markup-api-client.ts`. The helpers here cover GitHub-side errors
+ * and generic retry/backoff.
  */
 const DEFAULT_RETRY_CONFIG = {
     maxRetries: 3,
@@ -92076,9 +88521,6 @@ const DEFAULT_RETRY_CONFIG = {
     maxDelay: 10_000,
     backoffMultiplier: 2,
 };
-/**
- * Error types for better error handling
- */
 class GitHubAPIError extends Error {
     status;
     code;
@@ -92089,22 +88531,13 @@ class GitHubAPIError extends Error {
         this.name = "GitHubAPIError";
     }
 }
-/**
- * Utility function for delay with exponential backoff
- */
 function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
-/**
- * Calculate delay with exponential backoff
- */
 function calculateBackoffDelay(attempt, config) {
-    const delay = config.baseDelay * Math.pow(config.backoffMultiplier, attempt - 1);
-    return Math.min(delay, config.maxDelay);
+    const value = config.baseDelay * Math.pow(config.backoffMultiplier, attempt - 1);
+    return Math.min(value, config.maxDelay);
 }
-/**
- * Generic retry function with exponential backoff
- */
 async function withRetry(operation, config = DEFAULT_RETRY_CONFIG, operationName = "Operation") {
     let lastError = null;
     for (let attempt = 1; attempt <= config.maxRetries; attempt++) {
@@ -92122,25 +88555,18 @@ async function withRetry(operation, config = DEFAULT_RETRY_CONFIG, operationName
             await delay(backoffDelay);
         }
     }
-    // This should never be reached, but TypeScript requires it
-    throw lastError || new Error(`${operationName} failed`);
+    throw lastError ?? new Error(`${operationName} failed`);
 }
-/**
- * Handle GitHub API errors with proper typing
- */
 function handleGitHubError(error, context) {
     if (error instanceof GitHubAPIError) {
         return error;
     }
     if (error && typeof error === "object" && "status" in error) {
         const githubError = error;
-        return new GitHubAPIError(`${context}: ${githubError.message || "Unknown GitHub API error"}`, githubError.status);
+        return new GitHubAPIError(`${context}: ${githubError.message ?? "Unknown GitHub API error"}`, githubError.status);
     }
     return new GitHubAPIError(`${context}: ${error instanceof Error ? error.message : String(error)}`);
 }
-/**
- * Log error with context
- */
 function logError(error$1, context) {
     if (error$1 instanceof Error) {
         error(`${context}: ${error$1.message}`);
@@ -92152,404 +88578,119 @@ function logError(error$1, context) {
         error(`${context}: ${String(error$1)}`);
     }
 }
-const isRequestEndingError = (error) => {
-    if (!error)
-        return false;
-    const apiError = error;
-    const typeIsEnding = [F.UNAUTHORIZED_ERROR, F.INTERNAL_SERVER_ERROR].includes(apiError.type);
-    const statusCodeIsEnding = typeof apiError.statusCode === "number" &&
-        (apiError.statusCode === 401 || apiError.statusCode >= 500);
-    return typeIsEnding || statusCodeIsEnding;
-};
-const checkForRequestEndingError = (failed, results) => {
-    if (failed > 0) {
-        for (const result of results) {
-            if (result.status === "failed" && isRequestEndingError(result.error)) {
-                return {
-                    found: true,
-                    error: result.error,
-                };
-            }
-        }
-    }
-    return {
-        found: false,
-        error: null,
-    };
-};
-
-function createConfig(apiToken) {
-    return {
-        apiKey: apiToken,
-        headers: { "x-integration-id": "markupai-content-guardian-action" },
-    };
-}
-/**
- * Run style check on a single file
- * Throws an error if the error is an auth or server issue.
- */
-async function analyzeFile(filePath, content, options, config) {
-    try {
-        info(`🔍 Running check on: ${filePath}`);
-        const request = {
-            content,
-            dialect: options.dialect,
-            style_guide: options.styleGuide,
-            documentNameWithExtension: getFileBasename(filePath),
-            ...(options.tone ? { tone: options.tone } : {}),
-        };
-        const result = options.reviewComments
-            ? await Wo(request, config)
-            : await Go(request, config);
-        const issues = result.original.issues.map((issue) => {
-            const context = getLineContextAtIndex(content, issue.position.start_index);
-            return {
-                issue,
-                line: context.line,
-                column: context.column,
-                lineText: context.lineText,
-            };
-        });
-        return {
-            filePath,
-            result: result.original.scores,
-            issues,
-            workflowId: result.workflow.id,
-            timestamp: new Date().toISOString(),
-        };
-    }
-    catch (error$1) {
-        error(`Failed to run check on ${filePath}: ${String(error$1)}`);
-        if (isRequestEndingError(error$1)) {
-            throw error$1;
-        }
-        return null;
-    }
-}
-/**
- * Run analysis on multiple files using batch processing. Throws an error if the error is an auth or server issue.
- */
-async function analyzeFilesBatch(files, options, config, readFileContent) {
-    if (files.length === 0) {
-        return [];
-    }
-    info(`🚀 Starting batch analysis of ${files.length.toString()} files`);
-    // Read all file contents first using optimized batch processing
-    const fileContents = await processFileReading(files, readFileContent);
-    if (fileContents.length === 0) {
-        warning("No valid file contents found for analysis");
-        return [];
-    }
-    // Create batch requests
-    const requests = fileContents.map(({ filePath, content }) => ({
-        content,
-        dialect: options.dialect,
-        style_guide: options.styleGuide,
-        documentNameWithExtension: getFileBasename(filePath),
-        ...(options.tone ? { tone: options.tone } : {}),
-    }));
-    // Configure batch options with sensible defaults
-    const batchOptions = {
-        maxConcurrent: 100, // Limit concurrency to avoid overwhelming the API
-        retryAttempts: 2,
-        retryDelay: 1_000,
-        timeout: 300_000, // 5 minutes
-    };
-    try {
-        // Start batch processing
-        const batchResponse = options.reviewComments
-            ? it(requests, config, "suggestions", batchOptions)
-            : Vo(requests, config, batchOptions);
-        // Monitor progress
-        const progressInterval = setInterval(() => {
-            const progress = batchResponse.progress;
-            const completed = progress.completed;
-            const failed = progress.failed;
-            const total = progress.total;
-            const { found } = checkForRequestEndingError(failed, progress.results);
-            if (found) {
-                batchResponse.cancel();
-            }
-            if (completed > 0 || failed > 0) {
-                info(`📊 Batch progress: ${completed.toString()}/${total.toString()} completed, ${failed.toString()} failed`);
-            }
-        }, 2_000); // Update every 2 seconds
-        // Wait for completion
-        const finalProgress = await batchResponse.promise;
-        // Clear progress monitoring
-        clearInterval(progressInterval);
-        const { found, error: error$1 } = checkForRequestEndingError(finalProgress.failed, finalProgress.results);
-        if (found) {
-            throw error$1 instanceof Error ? error$1 : new Error(String(error$1));
-        }
-        // Process results
-        const results = [];
-        for (const [index, batchResult] of finalProgress.results.entries()) {
-            if (batchResult.status === "completed" && batchResult.result) {
-                const content = fileContents[index].content;
-                const issues = batchResult.result.original.issues.map((issue) => {
-                    const context = getLineContextAtIndex(content, issue.position.start_index);
-                    return {
-                        issue,
-                        line: context.line,
-                        column: context.column,
-                        lineText: context.lineText,
-                    };
-                });
-                const workflowId = batchResult.workflowId || batchResult.result.workflow.id;
-                results.push({
-                    filePath: fileContents[index].filePath,
-                    result: batchResult.result.original.scores,
-                    issues,
-                    workflowId,
-                    timestamp: new Date().toISOString(),
-                });
-            }
-            else if (batchResult.status === "failed") {
-                error(`Failed to analyze ${fileContents[index].filePath}: ${batchResult.error?.message || "Unknown error"}`);
-            }
-        }
-        info(`✅ Batch analysis completed: ${results.length.toString()}/${fileContents.length.toString()} files processed successfully`);
-        return results;
-    }
-    catch (error$1) {
-        error(`Batch analysis failed: ${String(error$1)}`);
-        if (isRequestEndingError(error$1)) {
-            throw error$1;
-        }
-        return [];
-    }
-}
-/**
- * Run analysis on multiple files
- *
- * Uses batch processing for multiple files and sequential processing for small batches. Throws an error if the error is an auth or server issue.
- */
-async function analyzeFiles(files, options, config, readFileContent) {
-    // For small batches, use sequential processing
-    if (files.length <= 3) {
-        const results = [];
-        // Process files sequentially to avoid overwhelming the API
-        for (const filePath of files) {
-            const content = await readFileContent(filePath);
-            if (content) {
-                const result = await analyzeFile(filePath, content, options, config);
-                if (result) {
-                    results.push(result);
-                }
-            }
-        }
-        return results;
-    }
-    // For larger batches, use batch processing
-    return analyzeFilesBatch(files, options, config, readFileContent);
-}
-/**
- * Get analysis summary statistics
- */
-function getAnalysisSummary(results) {
-    const summary = calculateScoreSummary(results);
-    return {
-        totalFiles: summary.totalFiles,
-        averageQualityScore: summary.averageQualityScore,
-        averageClarityScore: summary.averageClarityScore,
-        averageToneScore: summary.averageToneScore,
-        averageGrammarScore: summary.averageGrammarScore,
-        averageConsistencyScore: summary.averageConsistencyScore,
-        averageTerminologyScore: summary.averageTerminologyScore,
-    };
-}
-
-/**
- * Markdown generation utility functions for analysis results
- */
-/**
- * Generate file display link based on repository context
- */
-function generateFileDisplayLink(filePath, context) {
-    return "prNumber" in context
-        ? // PR context - create diff link
-            `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/pull/${context.prNumber.toString()}/files#diff-${createHash("sha256").update(filePath).digest("hex")})`
-        : // Non-PR context - create blob link
-            `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
-}
-/**
- * Generate markdown table for analysis results
- */
-function generateResultsTable(results, context) {
-    if (results.length === 0) {
-        return "No files were analyzed.";
-    }
-    const hasToneScore = results.some((result) => typeof result.result.analysis.tone?.score === "number");
-    const tableHeader = hasToneScore
-        ? `| File | Quality | Grammar | Consistency | Terminology | Clarity | Tone | Issues |
-|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:----:|:------:|`
-        : `| File | Quality | Grammar | Consistency | Terminology | Clarity | Issues |
-|:-----|:-------:|:-------:|:-----------:|:-----------:|:-------:|:------:|`;
-    const tableRows = results
-        .map((result) => {
-        const { filePath, result: scores } = result;
-        const qualityEmoji = getQualityEmoji(scores.quality.score);
-        const toneDisplay = typeof scores.analysis.tone?.score === "number"
-            ? String(Math.round(scores.analysis.tone.score))
-            : "-";
-        // Create clickable file link using repository context
-        const fileDisplay = generateFileDisplayLink(filePath, context);
-        const issuesCount = result.issues.length;
-        return hasToneScore
-            ? `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${toneDisplay} | ${issuesCount.toString()} |`
-            : `| ${fileDisplay} | ${qualityEmoji} ${Math.round(scores.quality.score).toString()} | ${Math.round(scores.quality.grammar.score).toString()} | ${Math.round(scores.quality.consistency.score).toString()} | ${Math.round(scores.quality.terminology.score).toString()} | ${Math.round(scores.analysis.clarity.score).toString()} | ${issuesCount.toString()} |`;
-    })
-        .join("\n");
-    return `${tableHeader}\n${tableRows}`;
-}
-/**
- * Generate summary section
- */
-function generateSummary(results) {
-    if (results.length === 0) {
-        return "";
-    }
-    const summary = calculateScoreSummary(results);
-    const overallQualityEmoji = getQualityEmoji(summary.averageQualityScore);
-    const hasToneScore = results.some((result) => typeof result.result.analysis.tone?.score === "number");
-    const toneRow = hasToneScore
-        ? `| Tone | ${Math.round(summary.averageToneScore).toString()} |`
-        : "";
-    return `
-## 📊 Summary
-
-**Overall Quality Score:** ${overallQualityEmoji} ${Math.round(summary.averageQualityScore).toString()}
-
-**Files Analyzed:** ${summary.totalFiles.toString()}
-
-| Metric | Average Score |
-|:------|:-------------:|
-| Quality | ${Math.round(summary.averageQualityScore).toString()} |
-| Grammar | ${Math.round(summary.averageGrammarScore).toString()} |
-| Consistency | ${Math.round(summary.averageConsistencyScore).toString()} |
-| Terminology | ${Math.round(summary.averageTerminologyScore).toString()} |
-| Clarity | ${Math.round(summary.averageClarityScore).toString()} |
-${toneRow}
-`;
-}
-/**
- * Generate footer section with metadata
- */
-function generateFooter(config, eventType) {
-    const toneValue = getToneValue(config.tone);
-    const toneSegment = toneValue ? ` Tone: ${toneValue} |` : "";
-    return `
----
-*Analysis performed on ${new Date().toLocaleString()}*
-*Quality Score Legend: 🟢 80+ | 🟡 60-79 | 🔴 0-59*
-*Configuration: Dialect: ${config.dialect} |${toneSegment} Style Guide: ${config.styleGuide}*
-*Event: ${eventType}*`;
-}
-/**
- * Generate complete analysis content with customizable header
- */
-function generateAnalysisContent(results, config, header, eventType, context) {
-    const table = generateResultsTable(results, context);
-    const summary = generateSummary(results);
-    const footer = generateFooter(config, eventType);
-    return `${header}
-
-${table}
-
-${summary}
-
-${footer}
-`;
-}
 
 /**
  * PR Comment service for managing comments on pull requests
- */
-/**
- * Maximum number of review comments to post in a single run.
  *
- * This is set to 50 to avoid overwhelming the pull request with too many
- * inline comments while staying well under GitHub's soft limits and
- * abuse detection thresholds for review comment creation.
- */
-const MAX_REVIEW_COMMENTS = 50;
-/**
- * Maximum number of issues grouped into a single review comment.
+ * Both the summary issue comment and the inline review comments are tagged
+ * with a hidden HTML marker (rendered invisibly in GitHub's markdown). On
+ * each run we reconcile our existing tagged comments against the freshly
+ * computed set:
  *
- * A small value (5) keeps each comment readable and scannable in the
- * GitHub UI, instead of packing a large number of issues into one place.
+ *  - new (path, line) → create
+ *  - same (path, line), different body → update in place
+ *  - existing (path, line) not in the new set → delete (the issue was fixed
+ *    or the affected line was removed from the diff)
+ *
+ * The marker is the deduplication / ownership boundary; comments without it
+ * are treated as foreign and left untouched, except as a back-compat fallback
+ * for the very first run after this code lands (see findExistingComment).
  */
 const MAX_ISSUES_PER_COMMENT = 5;
-/**
- * Maximum length (in characters) of the original text excerpt shown
- * in an inline suggestion.
- *
- * Limiting this to 160 characters ensures suggestions remain concise
- * and fit comfortably within GitHub's diff and comment UI without
- * creating excessively large payloads.
- */
 const MAX_ORIGINAL_LENGTH = 160;
-/**
- * Generate complete comment body
- */
-function generateCommentBody(results, config, eventType, context) {
-    const header = `## 🔍 Markup AI Analysis Results
+/** Hidden HTML markers used to identify comments owned by this action. */
+const SUMMARY_MARKER = "<!-- markup-ai-action:summary -->";
+const REVIEW_MARKER = "<!-- markup-ai-action:review -->";
+/** Back-compat: comments created before markers were introduced are still
+ * findable via a substring match on the rendered header text. Used only
+ * once per PR, then replaced with a properly-marked body. */
+const LEGACY_SUMMARY_HEADER = "Markup AI Analysis Results";
+function lineKey(path, line) {
+    return `${path}:${line.toString()}`;
+}
+function generateCommentBody(results, options, eventType, context) {
+    const header = `${SUMMARY_MARKER}
+## 🔍 Markup AI Analysis Results
 
 This comment was automatically generated by the Markup AI GitHub Action for **${eventType}** event.`;
-    return generateAnalysisContent(results, config, header, eventType, context);
+    return generateAnalysisContent(results, options, header, eventType, context);
+}
+function pickSuggestion(issue) {
+    if (issue.suggestion && issue.suggestion.length > 0)
+        return issue.suggestion;
+    if (issue.suggestions && issue.suggestions.length > 0)
+        return issue.suggestions[0];
+    return null;
 }
 function applyInlineSuggestion(issue, lineText, column) {
-    if (!("suggestion" in issue) || !issue.suggestion) {
+    const suggestion = pickSuggestion(issue);
+    const original = issue.position?.text ?? issue.context_surface ?? "";
+    if (!suggestion || !original || !lineText)
         return null;
+    const columnIndex = Math.min(Math.max(column, 0), lineText.length);
+    const after = lineText.slice(columnIndex);
+    if (after.startsWith(original)) {
+        return `${lineText.slice(0, columnIndex)}${suggestion}${after.slice(original.length)}`;
     }
-    const original = issue.original;
-    const suggestion = issue.suggestion;
-    if (lineText) {
-        const columnIndex = Math.min(Math.max(column, 0), lineText.length);
-        const after = lineText.slice(columnIndex);
-        if (after.startsWith(original)) {
-            return `${lineText.slice(0, columnIndex)}${suggestion}${after.slice(original.length)}`;
-        }
-        const fallbackIndex = lineText.indexOf(original);
-        if (fallbackIndex >= 0) {
-            return `${lineText.slice(0, fallbackIndex)}${suggestion}${lineText.slice(fallbackIndex + original.length)}`;
-        }
+    const fallbackIndex = lineText.indexOf(original);
+    if (fallbackIndex >= 0) {
+        return `${lineText.slice(0, fallbackIndex)}${suggestion}${lineText.slice(fallbackIndex + original.length)}`;
     }
     return null;
 }
+function uniqueAgents(issues) {
+    const seen = new Set();
+    for (const { issue } of issues) {
+        if (issue.agent)
+            seen.add(formatAgentName(issue.agent));
+    }
+    return [...seen].sort((a, b) => a.localeCompare(b));
+}
 function buildReviewCommentBody(issues) {
-    const issueLines = issues.slice(0, MAX_ISSUES_PER_COMMENT).map(({ issue, lineText, column }) => {
+    const agents = uniqueAgents(issues);
+    const multiAgent = agents.length > 1;
+    const lines = issues.slice(0, MAX_ISSUES_PER_COMMENT).map(({ issue, lineText, column }) => {
         const category = capitalizeLabel(issue.category);
-        const subcategory = capitalizeLabel(issue.subcategory);
-        const original = truncateText(issue.original, MAX_ORIGINAL_LENGTH);
-        const inlineSuggestion = applyInlineSuggestion(issue, lineText, column);
-        let suggestion = "";
-        if (inlineSuggestion) {
-            const explanation = "explanation" in issue && issue.explanation ? `\n*Explanation: ${issue.explanation}*` : "";
-            suggestion = `${explanation}\n\`\`\`suggestion\n${inlineSuggestion}\n\`\`\``;
+        const guideline = issue.guideline_name ? capitalizeLabel(issue.guideline_name) : "";
+        const heading = guideline ? `${category} / ${guideline}` : category;
+        const original = truncateText(issue.position?.text ?? issue.context_surface ?? "", MAX_ORIGINAL_LENGTH);
+        const suggestion = pickSuggestion(issue);
+        const explanationLine = issue.explanation ? `\n*Explanation: ${issue.explanation}*` : "";
+        const inline = applyInlineSuggestion(issue, lineText, column);
+        let suggestionBlock = "";
+        if (inline) {
+            suggestionBlock = `${explanationLine}\n\`\`\`suggestion\n${inline}\n\`\`\``;
         }
-        else if ("suggestion" in issue && issue.suggestion) {
-            const explanation = "explanation" in issue && issue.explanation ? `\n*Explanation: ${issue.explanation}*` : "";
-            suggestion = `${explanation}\nSuggestion: ${wrapInlineCode(truncateText(issue.suggestion, MAX_ORIGINAL_LENGTH))}`;
+        else if (suggestion) {
+            suggestionBlock = `${explanationLine}\nSuggestion: ${wrapInlineCode(truncateText(suggestion, MAX_ORIGINAL_LENGTH))}`;
+        }
+        else if (issue.explanation) {
+            suggestionBlock = explanationLine;
         }
         const severity = ` (Severity: ${capitalizeLabel(issue.severity)})`;
-        return `- **${category} / ${subcategory}${severity}**: ${wrapInlineCode(original)}${suggestion}`;
+        // Per-issue agent prefix kicks in only when this comment groups issues
+        // from more than one agent. With a single agent, the header line already
+        // identifies it — no need to repeat it on every bullet.
+        const agentPrefix = multiAgent && issue.agent ? `[${formatAgentName(issue.agent)}] ` : "";
+        return `- **${agentPrefix}${heading}${severity}**: ${wrapInlineCode(original || "(no excerpt)")}${suggestionBlock}`;
     });
-    const moreCount = issues.length - issueLines.length;
+    const moreCount = issues.length - lines.length;
     if (moreCount > 0) {
-        issueLines.push(`- _${moreCount.toString()} more issue(s) on this line_`);
+        lines.push(`- _${moreCount.toString()} more issue(s) on this line_`);
     }
-    return `**Markup AI** detected issues:\n${issueLines.join("\n")}`;
+    // Header attribution: when all issues here come from one agent, name it
+    // ("Markup AI / Style Agent"); when mixed, list them; when none are tagged,
+    // fall back to the original phrasing.
+    const headerSuffix = agents.length === 0 ? "" : ` / ${agents.join(" + ")}`;
+    return `${REVIEW_MARKER}\n**Markup AI${headerSuffix}** detected issues:\n${lines.join("\n")}`;
 }
 function buildReviewComments(results) {
     const grouped = new Map();
     for (const result of results) {
         for (const issue of result.issues) {
-            if (!issue.line || issue.line <= 0) {
+            if (!issue.line || issue.line <= 0)
                 continue;
-            }
-            const key = `${result.filePath}:${issue.line.toString()}`;
+            const key = lineKey(result.filePath, issue.line);
             const existing = grouped.get(key);
             if (existing) {
                 existing.issues.push(issue);
@@ -92561,9 +88702,8 @@ function buildReviewComments(results) {
     }
     const comments = [];
     for (const { path, line, issues } of grouped.values()) {
-        if (comments.length >= MAX_REVIEW_COMMENTS) {
+        if (comments.length >= MAX_INLINE_REVIEW_COMMENTS)
             break;
-        }
         comments.push({
             path,
             line,
@@ -92573,26 +88713,43 @@ function buildReviewComments(results) {
     }
     return comments;
 }
-function filterExistingReviewComments(reviewComments, existingKeys) {
-    const filtered = [];
-    for (const comment of reviewComments) {
-        const key = `${comment.path}:${comment.line.toString()}:${comment.body}`;
-        if (existingKeys.has(key)) {
-            info(`Skipping existing review comment for ${comment.path}:${comment.line.toString()}`);
-            continue;
-        }
-        filtered.push(comment);
-    }
-    return filtered;
-}
 /**
- * Load existing PR review comments and return a lookup set.
+ * Pure function: given the existing tagged review comments and the desired
+ * comments for this run, partition into the three API actions.
  *
- * Note: when `octokit.paginate` is unavailable, the fallback only fetches the
- * first page (up to 100 comments). In that case, review comments beyond the
- * first page are not checked for duplicates.
+ * - toCreate: desired (path,line) with no existing match
+ * - toUpdate: same (path,line) but body differs
+ * - toDelete: existing (path,line) with no desired match
+ *
+ * Identical bodies at the same (path,line) are intentionally omitted (no-op).
  */
-async function getExistingReviewCommentKeys(octokit, owner, repo, prNumber) {
+function reconcileReviewComments(existing, desired) {
+    const existingByKey = new Map();
+    for (const e of existing)
+        existingByKey.set(lineKey(e.path, e.line), e);
+    const desiredByKey = new Map();
+    for (const d of desired)
+        desiredByKey.set(lineKey(d.path, d.line), d);
+    const toCreate = [];
+    const toUpdate = [];
+    const toDelete = [];
+    for (const [key, d] of desiredByKey) {
+        const e = existingByKey.get(key);
+        if (!e) {
+            toCreate.push(d);
+        }
+        else if (e.body !== d.body) {
+            toUpdate.push({ id: e.id, body: d.body });
+        }
+    }
+    for (const [key, e] of existingByKey) {
+        if (!desiredByKey.has(key)) {
+            toDelete.push(e.id);
+        }
+    }
+    return { toCreate, toUpdate, toDelete };
+}
+async function listAllReviewComments(octokit, owner, repo, prNumber) {
     try {
         const comments = typeof octokit.paginate === "function"
             ? await octokit.paginate(octokit.rest.pulls.listReviewComments, {
@@ -92607,57 +88764,65 @@ async function getExistingReviewCommentKeys(octokit, owner, repo, prNumber) {
                 pull_number: prNumber,
                 per_page: 100,
             })).data;
-        const keys = new Set();
-        for (const comment of comments) {
-            if (comment.path && typeof comment.line === "number") {
-                const resolved = comment.resolved;
-                if (resolved === true) {
-                    continue;
-                }
-                keys.add(`${comment.path}:${comment.line.toString()}:${comment.body}`);
+        const current = [];
+        const outdated = [];
+        for (const c of comments) {
+            if (!c.body.includes(REVIEW_MARKER))
+                continue;
+            if (!c.path)
+                continue;
+            if (typeof c.line === "number") {
+                current.push({ id: c.id, path: c.path, line: c.line, body: c.body });
+            }
+            else {
+                outdated.push(c.id);
             }
         }
-        return keys;
+        return { current, outdated };
     }
     catch (error) {
         warning(`Failed to load existing review comments: ${String(error)}`);
-        return new Set();
+        return { current: [], outdated: [] };
     }
 }
-/**
- * Find existing  comment on PR
- */
 async function findExistingComment(octokit, owner, repo, prNumber) {
     try {
-        const response = await octokit.rest.issues.listComments({
-            owner,
-            repo,
-            issue_number: prNumber,
-        });
-        const comment = response.data.find((comment) => comment.body?.includes("Markup AI Analysis Results"));
-        return comment?.id || null;
+        const comments = typeof octokit.paginate === "function"
+            ? await octokit.paginate(octokit.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: prNumber,
+                per_page: 100,
+            })
+            : (await octokit.rest.issues.listComments({
+                owner,
+                repo,
+                issue_number: prNumber,
+                per_page: 100,
+            })).data;
+        // Prefer the explicit marker; fall back to the legacy header substring so
+        // PRs that received a comment before this change still get updated in place
+        // instead of duplicated.
+        const markerMatch = comments.find((c) => c.body?.includes(SUMMARY_MARKER));
+        if (markerMatch)
+            return markerMatch.id;
+        const legacyMatch = comments.find((c) => c.body?.includes(LEGACY_SUMMARY_HEADER));
+        return legacyMatch?.id ?? null;
     }
     catch (error) {
         warning(`Failed to find existing comment: ${String(error)}`);
         return null;
     }
 }
-/**
- * Create or update PR comment with analysis results
- */
-async function createOrUpdatePRComment(octokit, commentData) {
-    const { owner, repo, prNumber, results, config } = commentData;
+async function createOrUpdatePRComment(octokit, data) {
+    const { owner, repo, prNumber, results, options } = data;
     try {
-        // Check if we have permission to comment on PRs
         try {
-            await octokit.rest.repos.get({
-                owner,
-                repo,
-            });
+            await octokit.rest.repos.get({ owner, repo });
         }
         catch (error$1) {
-            const githubError = error$1;
-            if (githubError.status === 403) {
+            const ghError = error$1;
+            if (ghError.status === 403) {
                 error('❌ Permission denied: Cannot access repository. Make sure the GitHub token has "pull-requests: write" permission.');
                 return;
             }
@@ -92671,65 +88836,44 @@ async function createOrUpdatePRComment(octokit, commentData) {
             baseUrl: new URL(context.serverUrl),
             runId: context.runId,
         };
-        const commentBody = generateCommentBody(results, config, commentData.eventType, context$1);
+        const body = generateCommentBody(results, options, data.eventType, context$1);
         const existingCommentId = await findExistingComment(octokit, owner, repo, prNumber);
         if (existingCommentId) {
-            // Update existing comment
             await octokit.rest.issues.updateComment({
                 owner,
                 repo,
                 comment_id: existingCommentId,
-                body: commentBody,
+                body,
             });
             info(`✅ Updated existing comment on PR #${prNumber.toString()}`);
         }
         else {
-            // Create new comment
             await octokit.rest.issues.createComment({
                 owner,
                 repo,
                 issue_number: prNumber,
-                body: commentBody,
+                body,
             });
             info(`✅ Created new comment on PR #${prNumber.toString()}`);
         }
     }
     catch (error$1) {
-        const githubError = handleGitHubError(error$1, "Create/update PR comment");
-        if (githubError.status === 403) {
+        const ghError = handleGitHubError(error$1, "Create/update PR comment");
+        if (ghError.status === 403) {
             error("❌ Permission denied: Cannot create or update comments on pull requests.");
             error('Please ensure the GitHub token has "pull-requests: write" permission.');
         }
-        else if (githubError.status === 404) {
+        else if (ghError.status === 404) {
             error("❌ Pull request not found. Make sure the PR exists and is accessible.");
         }
         else {
-            logError(githubError, "Failed to create/update PR comment");
+            logError(ghError, "Failed to create/update PR comment");
         }
     }
 }
-/**
- * Create PR review comments for issues found in analysis results
- */
-async function createPRReviewComments(octokit, commentData) {
-    const { owner, repo, prNumber, results } = commentData;
-    const reviewComments = buildReviewComments(results);
-    if (reviewComments.length === 0) {
-        info("No review comments to create.");
+async function postReviewComments(octokit, owner, repo, prNumber, commitId, comments) {
+    if (comments.length === 0)
         return;
-    }
-    const existingKeys = await getExistingReviewCommentKeys(octokit, owner, repo, prNumber);
-    const filteredComments = filterExistingReviewComments(reviewComments, existingKeys);
-    if (filteredComments.length === 0) {
-        info("No new review comments to create: all detected issues already have unresolved review comments.");
-        return;
-    }
-    const payload = context.payload;
-    const commitId = payload.pull_request?.head?.sha;
-    if (!commitId) {
-        warning("Unable to determine PR head SHA for review comments.");
-        return;
-    }
     try {
         await octokit.rest.pulls.createReview({
             owner,
@@ -92737,50 +88881,111 @@ async function createPRReviewComments(octokit, commentData) {
             pull_number: prNumber,
             commit_id: commitId,
             event: "COMMENT",
-            comments: filteredComments,
+            comments,
         });
-        info(`✅ Created PR review with ${filteredComments.length.toString()} comments`);
+        info(`✅ Created PR review with ${comments.length.toString()} comments`);
     }
     catch (error$1) {
-        const githubError = handleGitHubError(error$1, "Create PR review comments");
-        if (githubError.status === 422) {
-            warning("Some review comments could not be placed in the PR diff. Retrying individually.");
-            for (const comment of filteredComments) {
-                try {
-                    await octokit.rest.pulls.createReviewComment({
-                        owner,
-                        repo,
-                        pull_number: prNumber,
-                        commit_id: commitId,
-                        path: comment.path,
-                        line: comment.line,
-                        side: comment.side,
-                        body: comment.body,
-                    });
-                }
-                catch (commentError) {
-                    warning(`Failed to create review comment for ${comment.path}:${comment.line.toString()}: ${String(commentError)}`);
-                }
-            }
-            return;
-        }
-        if (githubError.status === 403) {
+        const ghError = handleGitHubError(error$1, "Create PR review comments");
+        if (ghError.status === 403) {
             error("❌ Permission denied: Cannot create PR review comments.");
             error('Please ensure the GitHub token has "pull-requests: write" permission.');
             return;
         }
-        logError(githubError, "Failed to create PR review comments");
+        warning(`Bulk review creation failed (${ghError.status?.toString() ?? "unknown"}). Posting comments individually.`);
+        let posted = 0;
+        for (const comment of comments) {
+            try {
+                await octokit.rest.pulls.createReviewComment({
+                    owner,
+                    repo,
+                    pull_number: prNumber,
+                    commit_id: commitId,
+                    path: comment.path,
+                    line: comment.line,
+                    side: comment.side,
+                    body: comment.body,
+                });
+                posted++;
+            }
+            catch (commentError) {
+                warning(`Failed to create review comment for ${comment.path}:${comment.line.toString()}: ${String(commentError)}`);
+            }
+        }
+        info(`✅ Posted ${posted.toString()}/${comments.length.toString()} review comments individually`);
     }
 }
-/**
- * Check if current event is a pull request
- */
+async function applyUpdates(octokit, owner, repo, updates) {
+    let updated = 0;
+    for (const { id, body } of updates) {
+        try {
+            await octokit.rest.pulls.updateReviewComment({
+                owner,
+                repo,
+                comment_id: id,
+                body,
+            });
+            updated++;
+        }
+        catch (error) {
+            warning(`Failed to update review comment ${id.toString()}: ${String(error)}`);
+        }
+    }
+    return updated;
+}
+async function applyDeletes(octokit, owner, repo, ids) {
+    let deleted = 0;
+    for (const id of ids) {
+        try {
+            await octokit.rest.pulls.deleteReviewComment({
+                owner,
+                repo,
+                comment_id: id,
+            });
+            deleted++;
+        }
+        catch (error) {
+            warning(`Failed to delete review comment ${id.toString()}: ${String(error)}`);
+        }
+    }
+    return deleted;
+}
+async function createPRReviewComments(octokit, data) {
+    const { owner, repo, prNumber, results } = data;
+    const desired = buildReviewComments(results);
+    const { current, outdated } = await listAllReviewComments(octokit, owner, repo, prNumber);
+    const { toCreate, toUpdate, toDelete } = reconcileReviewComments(current, desired);
+    // Outdated comments (GitHub `line: null`) are always removed — once GitHub
+    // detaches a review comment from the diff it never re-attaches, and the
+    // new analysis is authoritative on whether the underlying issue persists.
+    const allDeletes = [...toDelete, ...outdated];
+    if (toCreate.length === 0 && toUpdate.length === 0 && allDeletes.length === 0) {
+        info("No review-comment changes needed; current state matches existing comments.");
+        return;
+    }
+    info(`Reconciling review comments: ${toCreate.length.toString()} new, ${toUpdate.length.toString()} updated, ${allDeletes.length.toString()} deleted (current: ${current.length.toString()}, outdated: ${outdated.length.toString()}, desired: ${desired.length.toString()}).`);
+    if (toCreate.length > 0) {
+        const payload = context.payload;
+        const commitId = payload.pull_request?.head?.sha;
+        if (commitId) {
+            await postReviewComments(octokit, owner, repo, prNumber, commitId, toCreate);
+        }
+        else {
+            warning("Unable to determine PR head SHA for new review comments; skipping creates.");
+        }
+    }
+    if (toUpdate.length > 0) {
+        const updated = await applyUpdates(octokit, owner, repo, toUpdate);
+        info(`✅ Updated ${updated.toString()}/${toUpdate.length.toString()} review comments`);
+    }
+    if (allDeletes.length > 0) {
+        const deleted = await applyDeletes(octokit, owner, repo, allDeletes);
+        info(`✅ Deleted ${deleted.toString()}/${allDeletes.length.toString()} stale review comments`);
+    }
+}
 function isPullRequestEvent() {
     return context.eventName === "pull_request";
 }
-/**
- * Get PR number from context
- */
 function getPRNumber() {
     if (context.eventName === "pull_request") {
         return context.issue.number;
@@ -92798,12 +89003,6 @@ function isString(value) {
     return typeof value === "string";
 }
 /**
- * Type guard for checking if a value is a number
- */
-function isNumber(value) {
-    return typeof value === "number" && !Number.isNaN(value);
-}
-/**
  * Type guard for checking if a value is a valid SHA
  */
 function isValidSHA(value) {
@@ -92812,35 +89011,17 @@ function isValidSHA(value) {
     // SHA-1 is 40 characters, short SHA is 7+ characters
     return /^[a-fA-F0-9]{7,40}$/.test(value);
 }
-/**
- * Type guard for checking if a value is a valid quality score
- */
-function isValidQualityScore(value) {
-    if (!isNumber(value))
-        return false;
-    return value >= 0 && value <= 100;
-}
 
 /**
  * GitHub service for handling API operations
  */
-/**
- * Create GitHub Octokit instance
- */
 function createGitHubClient(token) {
     return getOctokit(token);
 }
-/**
- * Get commit changes from GitHub API with retry logic
- */
 async function getCommitChanges(octokit, owner, repo, sha) {
     try {
         return await withRetry(async () => {
-            const response = await octokit.rest.repos.getCommit({
-                owner,
-                repo,
-                ref: sha,
-            });
+            const response = await octokit.rest.repos.getCommit({ owner, repo, ref: sha });
             const commit = response.data;
             const changes = commit.files?.map((file) => ({
                 filename: file.filename,
@@ -92849,12 +89030,12 @@ async function getCommitChanges(octokit, owner, repo, sha) {
                 deletions: file.deletions || 0,
                 changes: file.changes || 0,
                 patch: file.patch,
-            })) || [];
+            })) ?? [];
             return {
                 sha: commit.sha,
                 message: commit.commit.message,
-                author: commit.commit.author?.name || "Unknown",
-                date: commit.commit.author?.date || new Date().toISOString(),
+                author: commit.commit.author?.name ?? "Unknown",
+                date: commit.commit.author?.date ?? new Date().toISOString(),
                 changes,
             };
         }, undefined, `Get commit changes for ${owner}/${repo}@${sha}`);
@@ -92864,13 +89045,6 @@ async function getCommitChanges(octokit, owner, repo, sha) {
         return null;
     }
 }
-/**
- * Get files changed in a pull request
- *
- * Uses pagination to fetch all files (up to GitHub's limit of 3000 files).
- * The GitHub API returns 30 files per page by default, but we use 100 per page
- * to reduce the number of API calls needed.
- */
 async function getPullRequestFiles(octokit, owner, repo, prNumber) {
     try {
         return await withRetry(async () => {
@@ -92890,9 +89064,6 @@ async function getPullRequestFiles(octokit, owner, repo, prNumber) {
         return [];
     }
 }
-/**
- * Get all files in repository tree
- */
 async function getRepositoryFiles(octokit, owner, repo, ref = "main") {
     try {
         return await withRetry(async () => {
@@ -92916,53 +89087,60 @@ async function getRepositoryFiles(octokit, owner, repo, ref = "main") {
         return [];
     }
 }
+function riskToState(level) {
+    if (level === "high")
+        return "error";
+    if (level === "medium")
+        return "failure";
+    return "success";
+}
+function formatCountsShort(counts) {
+    return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
+}
 /**
- * Update commit status with quality score
+ * Update the commit status. In numeric mode the description leads with the
+ * average quality score; in risk mode it leads with the worst-case risk label.
  */
-async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, filesAnalyzed) {
+async function updateCommitStatus(octokit, owner, repo, sha, results, options) {
     try {
-        // Validate inputs
         if (!owner || !repo || !sha) {
             error("Invalid parameters for commit status update");
             return;
         }
-        // Validate SHA format using type guard
         if (!isValidSHA(sha)) {
             error(`Invalid SHA format: ${String(sha)}`);
             return;
         }
-        // Validate quality score using type guard
-        if (!isValidQualityScore(qualityScore)) {
-            error("Quality score must be between 0 and 100");
-            return;
+        const counts = aggregateCounts(results);
+        const risk = aggregateRisk(results);
+        const state = riskToState(risk);
+        let qualitySegment = "";
+        if (options.numericScoringEnabled) {
+            const scores = results
+                .map((r) => r.scores?.score)
+                .filter((s) => typeof s === "number");
+            if (scores.length > 0) {
+                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                qualitySegment = ` | Quality ${Math.round(avg).toString()}`;
+            }
         }
-        const status = getQualityStatus(qualityScore);
-        // const emoji = getQualityEmoji(qualityScore)
-        // Create a shorter description that fits within GitHub's 140 character limit
-        const description = `Quality: ${qualityScore.toString()} | Files: ${filesAnalyzed.toString()}`;
-        // Build target URL safely
+        const description = `Risk ${RISK_LABEL[risk]}${qualitySegment} | Files ${results.length.toString()} | Issues ${counts.total.toString()} (${formatCountsShort(counts)})`;
         const serverUrl = context.serverUrl || "https://github.com";
         const targetUrl = `${serverUrl}/${owner}/${repo}/actions/runs/${context.runId.toString()}`;
-        info(`🔍 Creating commit status for ${owner}/${repo}@${sha}`);
-        info(`📊 Status: ${status}, Description: "${description}"`);
-        info(`🔗 Target URL: ${targetUrl}`);
-        info(`📝 Context: Markup AI`);
-        // Try with minimal parameters first
-        const statusData = {
+        info(`📊 Commit status: ${state} - ${description}`);
+        await octokit.rest.repos.createCommitStatus({
             owner,
             repo,
             sha,
-            state: status,
+            state,
             description,
+            target_url: targetUrl,
             context: "Markup AI",
-        };
-        info(`📋 Status data: ${JSON.stringify(statusData, null, 2)}`);
-        await octokit.rest.repos.createCommitStatus(statusData);
-        info(`✅ Updated commit status: ${status} - ${description}`);
+        });
+        info(`✅ Updated commit status: ${state} - ${description}`);
     }
     catch (error$1) {
         error(`Failed to update commit status: ${String(error$1)}`);
-        // Log more details about the error
         if (error$1 && typeof error$1 === "object" && "message" in error$1) {
             error(`Error message: ${String(error$1.message)}`);
         }
@@ -92972,19 +89150,13 @@ async function updateCommitStatus(octokit, owner, repo, sha, qualityScore, files
 /**
  * Job Summary service for generating GitHub Actions Job Summaries
  */
-/**
- * Generate complete job summary
- */
-function generateJobSummary(results, config, eventType, context) {
+function generateJobSummary(results, options, eventType, context) {
     const header = `# 🔍 Markup AI Analysis Results
 
 This summary was automatically generated by the Markup AI GitHub Action for **${eventType}** event.`;
-    return generateAnalysisContent(results, config, header, eventType, context);
+    return generateAnalysisContent(results, options, header, eventType, context);
 }
-/**
- * Create and write job summary to GitHub Actions
- */
-async function createJobSummary(results, config, eventType, context) {
+async function createJobSummary(results, options, eventType, context) {
     try {
         if (results.length === 0) {
             await summary
@@ -92993,7 +89165,7 @@ async function createJobSummary(results, config, eventType, context) {
                 .write();
             return;
         }
-        const summaryContent = generateJobSummary(results, config, eventType, context);
+        const summaryContent = generateJobSummary(results, options, eventType, context);
         await summary.addRaw(summaryContent).write();
         info("✅ Job summary created successfully");
     }
@@ -93003,10 +89175,7 @@ async function createJobSummary(results, config, eventType, context) {
 }
 
 /**
- * Display and logging utility functions
- */
-/**
- * Display event information in a formatted way
+ * Console-log formatting for the action run.
  */
 function displayEventInfo(eventInfo) {
     info(`📋 Event Type: ${eventInfo.eventType}`);
@@ -93019,35 +89188,45 @@ function displayEventInfo(eventInfo) {
         }
     }
 }
-/**
- * Display analysis results in a formatted way
- */
-function displayResults(results) {
+function logRiskLabel(result) {
+    const risk = classifyRisk(result.issueCounts);
+    info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
+}
+function logNumericScores(result) {
+    if (!result.scores)
+        return;
+    info(`📈 Quality Score: ${result.scores.score.toString()}`);
+    for (const goal of result.scores.scoresByGoal ?? []) {
+        info(`   • ${goal.displayName}: ${goal.score.toString()}`);
+    }
+}
+function logIssueCounts(result) {
+    const { total, high, medium, low } = result.issueCounts;
+    info(`⚠️  Issues: ${total.toString()} (H:${high.toString()} M:${medium.toString()} L:${low.toString()})`);
+}
+function displaySingleResult(result, options) {
+    info(`\n📄 File: ${result.filePath}`);
+    // Risk is primary; numeric quality is layered on when available.
+    logRiskLabel(result);
+    if (options.numericScoringEnabled && result.scores) {
+        logNumericScores(result);
+    }
+    logIssueCounts(result);
+}
+function displayResults(results, options) {
     if (results.length === 0) {
         info("📊 No analysis results to display.");
         return;
     }
     info("📊 Analysis Results:");
     info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
-    for (const [index, analysis] of results.entries()) {
-        const { filePath, result } = analysis;
-        info(`\n📄 File: ${filePath}`);
-        info(`📈 Quality Score: ${result.quality.score.toString()}`);
-        info(`📝 Clarity Score: ${result.analysis.clarity.score.toString()}`);
-        info(`🔤 Grammar Score: ${result.quality.grammar.score.toString()}`);
-        info(`📋 Consistency Score: ${result.quality.consistency.score.toString()}`);
-        info(`🎭 Tone Score: ${typeof result.analysis.tone?.score === "number"
-            ? result.analysis.tone.score.toString()
-            : "-"}`);
-        info(`📚 Terminology Score: ${result.quality.terminology.score.toString()}`);
+    for (const [index, result] of results.entries()) {
+        displaySingleResult(result, options);
         if (index < results.length - 1) {
             info("─".repeat(DISPLAY.SEPARATOR_LENGTH));
         }
     }
 }
-/**
- * Display files being analyzed
- */
 function displayFilesToAnalyze(files) {
     if (files.length === 0) {
         info("No files found to analyze.");
@@ -93061,9 +89240,6 @@ function displayFilesToAnalyze(files) {
         info(`  ... and ${(files.length - DISPLAY.MAX_FILES_TO_SHOW).toString()} more files`);
     }
 }
-/**
- * Display section header
- */
 function displaySectionHeader(title) {
     info(`\n${title}`);
     info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
@@ -93072,26 +89248,20 @@ function displaySectionHeader(title) {
 /**
  * Post-analysis service for handling actions after analysis
  */
-/**
- * Handle push event: update commit status if enabled
- */
-async function handlePushEvent(octokit, owner, repo, summary, results, addCommitStatus) {
+async function handlePushEvent(octokit, owner, repo, results, options, addCommitStatus) {
     if (!addCommitStatus) {
         info("📊 Commit status update disabled by configuration");
         return;
     }
     displaySectionHeader("📊 Updating Commit Status");
     try {
-        await updateCommitStatus(octokit, owner, repo, context.sha, summary.averageQualityScore, results.length);
+        await updateCommitStatus(octokit, owner, repo, context.sha, results, options);
     }
     catch (error$1) {
         error(`Failed to update commit status: ${String(error$1)}`);
     }
 }
-/**
- * Handle workflow dispatch or schedule event: create job summary
- */
-async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysisOptions, eventType) {
+async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, options, eventType) {
     displaySectionHeader("📋 Creating Job Summary");
     try {
         const context$1 = {
@@ -93101,23 +89271,18 @@ async function handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysis
             baseUrl: new URL(context.serverUrl),
             runId: context.runId,
         };
-        await createJobSummary(results, analysisOptions, eventType, context$1);
+        await createJobSummary(results, options, eventType, context$1);
     }
     catch (error$1) {
         error(`Failed to create job summary: ${String(error$1)}`);
     }
 }
-/**
- * Handle pull request event: create or update PR comment
- */
-async function handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, addReviewComments, eventType) {
-    if (!isPullRequestEvent()) {
+async function handlePullRequestEvent(octokit, owner, repo, results, options, addReviewComments, eventType) {
+    if (!isPullRequestEvent())
         return;
-    }
     const prNumber = getPRNumber();
-    if (!prNumber) {
+    if (!prNumber)
         return;
-    }
     displaySectionHeader("💬 Creating PR Comment");
     try {
         await createOrUpdatePRComment(octokit, {
@@ -93125,7 +89290,7 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
             repo,
             prNumber,
             results,
-            config: analysisOptions,
+            options,
             eventType,
         });
         if (addReviewComments) {
@@ -93134,7 +89299,7 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
                 repo,
                 prNumber,
                 results,
-                config: analysisOptions,
+                options,
                 eventType,
             });
         }
@@ -93146,28 +89311,24 @@ async function handlePullRequestEvent(octokit, owner, repo, results, analysisOpt
         error(`Failed to create PR comment: ${String(error$1)}`);
     }
 }
-/**
- * Handle post-analysis actions based on event type
- */
-async function handlePostAnalysisActions(eventInfo, results, config, analysisOptions) {
+async function handlePostAnalysisActions(eventInfo, results, config, options) {
     if (results.length === 0) {
         info("No results to process for post-analysis actions.");
         return;
     }
-    const summary = getAnalysisSummary(results);
     const octokit = createGitHubClient(config.githubToken);
     const { owner, repo } = context.repo;
     const ref = context.ref;
     switch (eventInfo.eventType) {
         case EVENT_TYPES.PUSH:
-            await handlePushEvent(octokit, owner, repo, summary, results, config.addCommitStatus);
+            await handlePushEvent(octokit, owner, repo, results, options, config.addCommitStatus);
             break;
         case EVENT_TYPES.WORKFLOW_DISPATCH:
         case EVENT_TYPES.SCHEDULE:
-            await handleWorkflowOrScheduleEvent(owner, repo, ref, results, analysisOptions, eventInfo.eventType);
+            await handleWorkflowOrScheduleEvent(owner, repo, ref, results, options, eventInfo.eventType);
             break;
         case EVENT_TYPES.PULL_REQUEST:
-            await handlePullRequestEvent(octokit, owner, repo, results, analysisOptions, config.addReviewComments, eventInfo.eventType);
+            await handlePullRequestEvent(octokit, owner, repo, results, options, config.addReviewComments, eventInfo.eventType);
             break;
         default:
             info(`No specific post-analysis actions for event type: ${eventInfo.eventType}`);
@@ -93268,30 +89429,41 @@ function createFileDiscoveryStrategy(context, githubToken) {
 }
 
 /**
- * Main action runner that orchestrates the workflow
+ * Resolve the user-supplied target input against the org's enabled
+ * style-agent targets.
+ *
+ * Empty input → fall back to the target flagged `is_default: true` for the
+ * org. Non-empty input → match either the exact id or the case-insensitive
+ * display_name.
  */
+function resolveTarget(input, targets) {
+    const trimmed = input.trim();
+    if (!trimmed) {
+        const defaultTarget = targets.find((t) => t.is_default);
+        if (defaultTarget)
+            return defaultTarget;
+        const available = targets.map((t) => `  - ${t.display_name} (id: ${t.id})`).join("\n");
+        throw new Error(`No target was specified and the organization has no default target. Available targets:\n${available || "  (none enabled)"}`);
+    }
+    const byId = targets.find((t) => t.id === trimmed);
+    if (byId)
+        return byId;
+    const lower = trimmed.toLowerCase();
+    const byName = targets.find((t) => t.display_name.toLowerCase() === lower);
+    if (byName)
+        return byName;
+    const available = targets.map((t) => `  - ${t.display_name} (id: ${t.id})`).join("\n");
+    throw new Error(`No enabled target matches "${trimmed}". Available targets:\n${available || "  (none enabled)"}`);
+}
+
 /**
- * Set GitHub Action outputs
+ * Main action runner that orchestrates the workflow
  */
 function setOutputs(eventInfo, results) {
     setOutput(OUTPUT_NAMES.EVENT_TYPE, eventInfo.eventType);
     setOutput(OUTPUT_NAMES.FILES_ANALYZED, results.length.toString());
     setOutput(OUTPUT_NAMES.RESULTS, JSON.stringify(results));
 }
-/**
- * Display analysis summary
- */
-function displaySummary(results) {
-    const summary = getAnalysisSummary(results);
-    displaySectionHeader("📊 Analysis Summary");
-    info(`📄 Total Files Analyzed: ${summary.totalFiles.toString()}`);
-    info(`📈 Average Quality Score: ${summary.averageQualityScore.toString()}`);
-    info(`📝 Average Clarity Score: ${summary.averageClarityScore.toString()}`);
-    info(`🎭 Average Tone Score: ${summary.averageToneScore.toString()}`);
-}
-/**
- * Handle errors gracefully
- */
 function handleError(error) {
     logError(error, "Action execution failed");
     if (error instanceof Error) {
@@ -93301,53 +89473,61 @@ function handleError(error) {
         setFailed(`An unexpected error occurred: ${String(error)}`);
     }
 }
-/**
- * Run the complete action workflow
- */
 async function runAction() {
     try {
-        // Load and validate configuration
         const config = getActionConfig();
-        const apiConfig = createConfig(config.apiToken);
         validateConfig(config);
         logConfiguration(config);
-        // Initialize file discovery strategy
+        // Fetch org config + targets, resolve user input.
+        displaySectionHeader("🔌 Connecting to Markup AI");
+        const orgConfig = await getStyleAgentConfig(config.apiToken);
+        assertStyleAgentEnabled(orgConfig);
+        info(`  Style Agent: ${orgConfig.style_agent} | Numeric Scoring: ${orgConfig.style_agent_numeric_scoring ? "on" : "off"}`);
+        const targets = await listStyleAgentTargets(config.apiToken);
+        const target = resolveTarget(config.target, targets);
+        info(`  Target: ${target.display_name} (id: ${target.id})`);
+        const analysisOptions = {
+            targetId: target.id,
+            targetDisplayName: target.display_name,
+            numericScoringEnabled: orgConfig.style_agent_numeric_scoring,
+        };
+        // File discovery
         displaySectionHeader("🔍 Initializing File Discovery");
         const strategy = createFileDiscoveryStrategy(context, config.githubToken);
         const eventInfo = strategy.getEventInfo();
-        // Display event information
         displaySectionHeader("📋 Event Analysis");
         displayEventInfo(eventInfo);
-        // Discover files to analyze
         displaySectionHeader("🔍 Discovering Files");
         const allFiles = await strategy.getFilesToAnalyze();
         const supportedFiles = filterSupportedFiles(allFiles);
-        // Update event info with actual file count
-        eventInfo.filesCount = supportedFiles.length;
         info(`📊 Found ${supportedFiles.length.toString()} supported files out of ${allFiles.length.toString()} total files`);
-        if (supportedFiles.length === 0) {
+        // Apply the user-supplied `paths` whitelist last so it intersects with
+        // whatever the event-specific strategy surfaced. Empty array = no
+        // filtering.
+        const filteredFiles = config.paths.length === 0
+            ? supportedFiles
+            : supportedFiles.filter((f) => config.paths.includes(f));
+        if (config.paths.length > 0) {
+            info(`📌 Paths filter active (${config.paths.length.toString()} pattern(s)); ${filteredFiles.length.toString()}/${supportedFiles.length.toString()} files match`);
+        }
+        eventInfo.filesCount = filteredFiles.length;
+        if (filteredFiles.length === 0) {
             info("No supported files found to analyze.");
             setOutputs(eventInfo, []);
             return;
         }
-        // Display files being analyzed
-        displayFilesToAnalyze(supportedFiles);
+        displayFilesToAnalyze(filteredFiles);
+        // Analyze
         displaySectionHeader("🔍 Running Analysis");
-        const analysisOptions = getAnalysisOptions(config);
-        const results = await analyzeFiles(supportedFiles, analysisOptions, apiConfig, readFileContent);
+        const results = await analyzeFiles(config.apiToken, filteredFiles, analysisOptions, readFileContent);
         if (results.length === 0) {
             setFailed("Failed to analyze supported files.");
             return;
         }
-        // Display results
-        displayResults(results);
-        // Set outputs
+        displayResults(results, analysisOptions);
         setOutputs(eventInfo, results);
-        // Display summary
-        displaySummary(results);
-        // Handle post-analysis actions based on event type
         await handlePostAnalysisActions(eventInfo, results, config, analysisOptions);
-        if (config.strictMode && results.length !== supportedFiles.length) {
+        if (config.strictMode && results.length !== filteredFiles.length) {
             setFailed("Some files were not analyzed.");
             return;
         }

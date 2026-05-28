@@ -1,14 +1,12 @@
 /**
- * Display and logging utility functions
+ * Console-log formatting for the action run.
  */
 
 import * as core from "@actions/core";
-import { AnalysisResult, EventInfo } from "../types/index.js";
+import { AnalysisOptions, AnalysisResult, EventInfo } from "../types/index.js";
 import { DISPLAY } from "../constants/index.js";
+import { classifyRisk, RISK_EMOJI, RISK_LABEL } from "./issue-utils.js";
 
-/**
- * Display event information in a formatted way
- */
 export function displayEventInfo(eventInfo: EventInfo): void {
   core.info(`📋 Event Type: ${eventInfo.eventType}`);
   core.info(`📄 Description: ${eventInfo.description}`);
@@ -22,10 +20,37 @@ export function displayEventInfo(eventInfo: EventInfo): void {
   }
 }
 
-/**
- * Display analysis results in a formatted way
- */
-export function displayResults(results: AnalysisResult[]): void {
+function logRiskLabel(result: AnalysisResult): void {
+  const risk = classifyRisk(result.issueCounts);
+  core.info(`${RISK_EMOJI[risk]} Risk: ${RISK_LABEL[risk]}`);
+}
+
+function logNumericScores(result: AnalysisResult): void {
+  if (!result.scores) return;
+  core.info(`📈 Quality Score: ${result.scores.score.toString()}`);
+  for (const goal of result.scores.scoresByGoal ?? []) {
+    core.info(`   • ${goal.displayName}: ${goal.score.toString()}`);
+  }
+}
+
+function logIssueCounts(result: AnalysisResult): void {
+  const { total, high, medium, low } = result.issueCounts;
+  core.info(
+    `⚠️  Issues: ${total.toString()} (H:${high.toString()} M:${medium.toString()} L:${low.toString()})`,
+  );
+}
+
+function displaySingleResult(result: AnalysisResult, options: AnalysisOptions): void {
+  core.info(`\n📄 File: ${result.filePath}`);
+  // Risk is primary; numeric quality is layered on when available.
+  logRiskLabel(result);
+  if (options.numericScoringEnabled && result.scores) {
+    logNumericScores(result);
+  }
+  logIssueCounts(result);
+}
+
+export function displayResults(results: AnalysisResult[], options: AnalysisOptions): void {
   if (results.length === 0) {
     core.info("📊 No analysis results to display.");
     return;
@@ -34,31 +59,14 @@ export function displayResults(results: AnalysisResult[]): void {
   core.info("📊 Analysis Results:");
   core.info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
 
-  for (const [index, analysis] of results.entries()) {
-    const { filePath, result } = analysis;
-    core.info(`\n📄 File: ${filePath}`);
-    core.info(`📈 Quality Score: ${result.quality.score.toString()}`);
-    core.info(`📝 Clarity Score: ${result.analysis.clarity.score.toString()}`);
-    core.info(`🔤 Grammar Score: ${result.quality.grammar.score.toString()}`);
-    core.info(`📋 Consistency Score: ${result.quality.consistency.score.toString()}`);
-    core.info(
-      `🎭 Tone Score: ${
-        typeof result.analysis.tone?.score === "number"
-          ? result.analysis.tone.score.toString()
-          : "-"
-      }`,
-    );
-    core.info(`📚 Terminology Score: ${result.quality.terminology.score.toString()}`);
-
+  for (const [index, result] of results.entries()) {
+    displaySingleResult(result, options);
     if (index < results.length - 1) {
       core.info("─".repeat(DISPLAY.SEPARATOR_LENGTH));
     }
   }
 }
 
-/**
- * Display files being analyzed
- */
 export function displayFilesToAnalyze(files: string[]): void {
   if (files.length === 0) {
     core.info("No files found to analyze.");
@@ -75,17 +83,11 @@ export function displayFilesToAnalyze(files: string[]): void {
   }
 }
 
-/**
- * Display section header
- */
 export function displaySectionHeader(title: string): void {
   core.info(`\n${title}`);
   core.info("=".repeat(DISPLAY.SEPARATOR_LENGTH));
 }
 
-/**
- * Display subsection header
- */
 export function displaySubsectionHeader(title: string): void {
   core.info(`\n${title}`);
   core.info("─".repeat(DISPLAY.SEPARATOR_LENGTH));

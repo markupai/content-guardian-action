@@ -2,16 +2,6 @@
  * Common string utilities.
  */
 
-export const TONE_PLACEHOLDER = "None (keep tone unchanged)";
-
-export function getToneValue(value?: string): string | undefined {
-  const trimmed = value?.trim();
-  if (!trimmed || trimmed === TONE_PLACEHOLDER) {
-    return undefined;
-  }
-  return trimmed;
-}
-
 export function truncateText(value: string, maxLength: number): string {
   if (value.length <= maxLength) {
     return value;
@@ -34,4 +24,18 @@ export function capitalizeLabel(value: string): string {
     return value;
   }
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+/**
+ * Format an agent identifier from the API (snake_case, e.g. `style_agent`)
+ * as a human-readable label (`Style Agent`). Returns the input unchanged if
+ * it's empty or already formatted.
+ */
+export function formatAgentName(agent: string): string {
+  if (!agent) return agent;
+  return agent
+    .split(/[_\s]+/)
+    .filter((word) => word.length > 0)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
 }

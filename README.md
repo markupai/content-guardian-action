@@ -4,22 +4,49 @@
 [![Coverage](https://github.com/markupai/content-guardian-action/blob/main/badges/coverage.svg)](https://github.com/markupai/content-guardian-action)
 
 A GitHub Action that analyzes commit changes and runs style checks on modified
-files. Automatically adapts to different GitHub events and provides detailed
-quality analysis with commit status updates and PR comments.
+files via the Markup AI style agent. Automatically adapts to push, pull request,
+manual, and scheduled events.
+
+## What's new in v2
+
+- **Direct agentic API** — no longer uses `@markupai/toolkit`; talks to
+  `https://api.markup.ai` directly.
+- **Single optional `target` input** — replaces v1's `dialect` / `tone` /
+  `style-guide` combo. Omit it to use the organization's default target
+  (the one flagged `is_default: true`); pass a target ID or display name
+  to pin a specific one. Look them up at
+  [console.markup.ai](https://console.markup.ai).
+- **Risk-based scoring is the primary view, always.** Every PR comment, commit
+  status, and job summary leads with a risk label and severity counts.
+- **Numeric scoring is layered on, never replacing risk.** If your org has
+  `style_agent_numeric_scoring` enabled, the action appends a Quality column
+  to the table, an Overall Quality Score line to the summary, and a
+  collapsible per-goal breakdown (Clarity / Grammar / Tone / Consistency / …).
+- **PR comments are reconciled on every run.** The summary comment updates in
+  place; inline review comments at fixed-issue lines are deleted automatically
+  on the next run (see [Comment lifecycle](#pull-request-on-pull_request)).
+
+Migrating from v1: drop `dialect`, `tone`, and `style-guide`. The new
+`target` input is optional — set your org's default target in
+[console.markup.ai](https://console.markup.ai) and you don't need to pass
+anything; otherwise pass `target: <id or display name>`.
 
 ## Features
 
-- 🔍 **Smart File Discovery**: Automatically detects files to analyze based on
-  GitHub event type
-- 📝 **Event-Based Analysis**: Optimized behavior for push, pull request,
+- 🔍 **Smart file discovery**: Detects files to analyze based on the GitHub event
+- 📝 **Event-based analysis**: Optimized behavior for push, pull request,
   manual, and scheduled events
-- 📊 **Quality Scoring**: Detailed quality, clarity, grammar, and optional tone
-  metrics
-- 🏷️ **Visual Feedback**: Commit status updates
-- 🔄 **Batch Processing**: Efficient analysis of multiple files
-- 📋 **Rich Outputs**: JSON results and detailed reporting
+- 📊 **Risk-based scoring (always) + optional numeric layer**: Severity counts
+  (high/medium/low) and an overall risk label in every output; per-file 0–100
+  quality scores and per-goal breakdown appended when your org has numeric
+  scoring enabled
+- 🏷️ **Self-managing PR comments**: A single summary comment is updated in
+  place; inline review comments are created, updated, or deleted to match the
+  current analysis — no accumulation of stale comments
+- 📋 **Rich outputs**: Full JSON of every analysis result (issues, scores when
+  available, workflow IDs) for downstream consumers
 
-## Supported File Types
+## Supported file types
 
 - **DITA**: `.dita`, `.xml`
 - **HTML**: `.htm`, `.html`
@@ -28,7 +55,7 @@ quality analysis with commit status updates and PR comments.
 
 ## Usage
 
-### Basic Usage
+### Basic usage
 
 ```yaml
 permissions:
@@ -38,19 +65,30 @@ permissions:
 
 name: Analyze with Markup AI
 on: [push, pull_request]
+
+# Recommended: cancel the previous in-flight run when a new commit lands on the
+# same PR. The action reconciles its inline review comments against the latest
+# analysis (creating, updating, and deleting tagged comments as needed); two
+# overlapping runs can race on that reconciliation if both read the same
+# starting state.
+concurrency:
+  group: markup-ai-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - name: Run Analysis
-        uses: markupai/content-guardian-action@v1
+        uses: markupai/content-guardian-action@v2
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # `target` omitted → uses the organization's default target.
 ```
 
-### Advanced Configuration
+### Advanced configuration
 
 ```yaml
 permissions:
@@ -66,99 +104,44 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Run Analysis
-        uses: markupai/content-guardian-action@v1
+        uses: markupai/content-guardian-action@v2
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dialect: "british_english"
-          style-guide: "chicago"
-          # tone is optional
-          tone: "academic"
+          target: ${{ secrets.MARKUP_AI_TARGET_ID }} # optional — accepts ID or display name; omit to use the org's default
           add_commit_status: "true"
           add_review_comments: "true"
-          strict_mode: "false" # Continue even if some files fail to analyze
+          strict_mode: "false"
 ```
 
-## Required Tokens
+## Required tokens
 
-The action requires two tokens to function properly. You can provide them either
-as action inputs or environment variables:
-
-### API Token
+### API token
 
 - **Required**: Yes
 - **Input name**: `markup_ai_api_key`
 - **Environment variable**: `MARKUP_AI_API_KEY`
-- **Purpose**: Authenticates with API for style checking
-- **Get your API key**: Sign up at [console.markup.ai](https://console.markup.ai) to get your API key
+- **Get one**: Sign up at [console.markup.ai](https://console.markup.ai)
 
-### GitHub Token
+### GitHub token
 
 - **Required**: Yes
 - **Input name**: `github_token`
 - **Environment variable**: `GITHUB_TOKEN`
-- **Purpose**: Authenticates with GitHub API for repository access
 
-### Providing Tokens
-
-**Option 1: As Action Inputs (Recommended)**
-
-```yaml
-permissions:
-  contents: read
-  pull-requests: write
-  statuses: write
-
-- name: Run Analysis
-  uses: markupai/content-guardian-action@v1
-  with:
-    markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-**Option 2: As Environment Variables**
-
-```yaml
-permissions:
-  contents: read
-  pull-requests: write
-  statuses: write
-
-- name: Run Analysis
-  uses: markupai/content-guardian-action@v1
-  env:
-    MARKUP_AI_API_KEY: ${{ secrets.MARKUP_AI_API_KEY }}
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
-
-**Option 3: Mixed (Input takes precedence)**
-
-```yaml
-permissions:
-  contents: read
-  pull-requests: write
-  statuses: write
-
-- name: Run Analysis
-  uses: markupai/content-guardian-action@v1
-  with:
-    markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
+Either inputs or env vars work; inputs take precedence when both are set.
 
 ## Inputs
 
-| Input                 | Description                                                                                                       | Required | Default |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- | -------- | ------- |
-| `markup_ai_api_key`   | API token for style checking. Can also be provided via `MARKUP_AI_API_KEY` environment variable                   | Yes      | -       |
-| `github_token`        | GitHub token for API access. Can also be provided via `GITHUB_TOKEN` environment variable                         | Yes      | -       |
-| `dialect`             | Language dialect for analysis (for example, `american_english`, `british_english`)                                | Yes      | -       |
-| `style-guide`         | Style guide for analysis (for example, `ap`, `chicago`, `microsoft`, or a custom style guide ID like `sg-123456`) | Yes      | -       |
-| `tone`                | Tone for analysis (for example, `formal`, `informal`, `academic`, or none to keep the tone unchanged)             | No       | -       |
-| `add_commit_status`   | Whether to add commit status updates                                                                              | No       | `true`  |
-| `add_review_comments` | Whether to add PR review comments for issues                                                                      | No       | `true`  |
-| `strict_mode`         | Fail the action if any file analysis fails (default is false)                                                     | No       | `false` |
+| Input                 | Description                                                                                                                                                        | Required | Default     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ----------- |
+| `markup_ai_api_key`   | Markup AI API key (or `MARKUP_AI_API_KEY` env var)                                                                                                                 | Yes      | -           |
+| `github_token`        | GitHub token (or `GITHUB_TOKEN` env var)                                                                                                                           | Yes      | -           |
+| `target`              | Style guide / target — target ID or display_name (case-insensitive). Omit to use the org's default target.                                                         | No       | org default |
+| `paths`               | Comma- or newline-separated repo-relative paths. When set, intersects with the discovered files; only matches are analyzed. Empty = analyze everything discovered. | No       | (none)      |
+| `add_commit_status`   | Add commit status updates for push events                                                                                                                          | No       | `true`      |
+| `add_review_comments` | Add PR review comments for issues                                                                                                                                  | No       | `true`      |
+| `strict_mode`         | Fail the action if any file fails analysis                                                                                                                         | No       | `false`     |
 
 ## Outputs
 
@@ -168,363 +151,192 @@ permissions:
 | `files-analyzed` | Number of files analyzed                       |
 | `results`        | JSON string containing analysis results        |
 
-## Event Types and Behavior
+## Event types
 
-The action automatically adapts its behavior based on the GitHub event type:
+### Push (`on: [push]`)
 
-### Push Events (`on: [push]`)
+Analyzes files modified in the push. Updates the commit status on the pushed
+SHA with the overall risk label (and, if numeric scoring is enabled for the
+org, the average quality score appended after it). The commit status state
+itself — `success` / `failure` / `error` — is always derived from the risk
+level so PR checks behave consistently regardless of scoring mode.
 
-- **Scope**: Analyzes only files modified in the push
-- **Features**: Commit status updates with quality score
-- **Use Case**: Quick analysis of direct commits
+### Pull request (`on: [pull_request]`)
 
-### Pull Request Events (`on: [pull_request]`)
+Analyzes files changed in the PR. Posts a single PR comment with the results
+table and inline review comments for each flagged line.
 
-- **Scope**: Analyzes files changed in the PR
-- **Features**: Detailed PR comments with analysis results and inline suggestions
-- **Use Case**: Pre-merge quality checks
+**Comment lifecycle.** On every run the action:
 
-### Manual Workflows (`on: [workflow_dispatch]`)
+1. Updates its existing summary comment in place (one comment per PR, never duplicated).
+2. Reconciles the set of inline review comments against the current analysis — new findings are posted, changed bodies are updated in place, and comments whose underlying issue is gone are **deleted**. The PR stays in sync with the latest state.
 
-- **Scope**: Analyzes all supported files in the repository
-- **Features**: Comprehensive repository-wide analysis
-- **Use Case**: Manual quality checks and monitoring
+The action only touches comments it owns; both the summary and review comments are tagged with a hidden HTML marker (`<!-- markup-ai-action:summary -->` / `<!-- markup-ai-action:review -->`). Comments from other tools or humans are never modified.
 
-### Scheduled Workflows (`on: [schedule]`)
+If two pushes hit the PR within seconds of each other, the two runs can race on the reconciliation. Use the `concurrency` block shown in the [Basic usage](#basic-usage) example to serialize runs per PR.
 
-- **Scope**: Analyzes all supported files in the repository
-- **Features**: Periodic quality monitoring
-- **Use Case**: Automated quality checks
+### Manual (`on: [workflow_dispatch]`) and scheduled (`on: [schedule]`)
 
-## Examples
+Analyzes every supported file in the repository at the current ref. Writes the
+results to the workflow's job summary.
 
-### Basic Push Analysis
+## Scoring: risk-based (always) + optional numeric
 
-```yaml
-permissions:
-  contents: read
-  pull-requests: write
-  statuses: write
+The action queries `GET /style-agent/config` once per run to check whether
+your org has `style_agent_numeric_scoring` enabled.
 
-name: Push Analysis
-on: [push]
-jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Analyze Changes
-        uses: markupai/content-guardian-action@v1
-        with:
-          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+**Risk-based scoring is always shown** — it doesn't depend on the org flag:
+
+- Each file gets a risk label derived from the worst severity issue on it:
+  `🔴 High` if any high-severity issue is present, else `🟡 Medium` if any
+  medium, else `🟢 Low`, else `✅ No issues`.
+- The PR summary leads with `Overall Risk` (the worst level across files) and
+  shows total issue counts broken down by severity (`H:_ M:_ L:_`).
+- The commit status posted to the head SHA leads with `Risk <level>` and its
+  `state` is `error` for `High`, `failure` for `Medium`, otherwise `success`.
+
+**Numeric scoring is layered on additively** when the org enables it. The
+per-file Quality column, the Overall Quality Score line, and the per-goal
+`<details>` block all appear _alongside_ the risk view — never as a
+replacement. Example PR-comment table in numeric mode:
+
+```
+| File             | Risk    | Issues | Breakdown      | Quality |
+|:-----------------|:-------:|:------:|:---------------|:-------:|
+| README.md        | 🟡 Medium | 8    | H:1 M:4 L:3   | 🟡 74   |
+| docs/api.md      | 🔴 High   | 15   | H:7 M:5 L:3   | 🔴 52   |
 ```
 
-### Pull Request Quality Gate
+…with a collapsible per-goal section under the table:
 
-```yaml
-permissions:
-  contents: read
-  pull-requests: write
-  statuses: write
+```
+<details>
+<summary>Per-goal breakdown</summary>
 
-name: PR Quality Check
-on: [pull_request]
-jobs:
-  quality-gate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Quality Analysis
-        id: analysis
-        uses: markupai/content-guardian-action@v1
-        with:
-          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          dialect: "american_english"
-          style-guide: "ap"
-          # tone is optional
-          tone: "formal"
-          strict_mode: "true" # Fail the PR if any file analysis fails
+**README.md** — Clarity 78 · Grammar 91 · Tone 62 · Consistency 65
+**docs/api.md** — Clarity 60 · Grammar 55 · Tone 50 · Consistency 40
 
-      - name: Check Quality Score
-        run: |
-          results='${{ steps.analysis.outputs.results }}'
-          # Add your quality threshold logic here to enforce a quality gate
+</details>
 ```
 
-### Scheduled Repository Analysis
+Commit status format:
 
-```yaml
-name: Daily Quality Check
-on:
-  schedule:
-    - cron: "0 2 * * *" # Daily at 2 AM
-  workflow_dispatch: # Manual trigger
+- Numeric off: `Risk Medium | Files 4 | Issues 12 (H:1 M:5 L:6)`
+- Numeric on: `Risk Medium | Quality 74 | Files 4 | Issues 12 (H:1 M:5 L:6)`
 
-jobs:
-  quality-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Full Repository Analysis
-        uses: markupai/content-guardian-action@v1
-        with:
-          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+The full per-file structure (issues, scores when available, workflow IDs) is
+always available in the `outputs.results` JSON for downstream consumers,
+regardless of which view is rendered.
+
+## Finding your `target` value
+
+The `target` input is **optional**. When omitted, the action uses the
+organization's default target — the one flagged `is_default: true` in
+`/style-agent/targets`. Configure that default in
+[console.markup.ai](https://console.markup.ai); most teams only need to set
+it once and never pass `target` in the workflow.
+
+To pin a specific non-default target, look up the available targets and pass
+either the `id` or the `display_name`:
+
+```bash
+curl -H "Authorization: Bearer $MARKUP_AI_API_KEY" \
+  https://api.markup.ai/style-agent/targets | jq '.[] | {id, display_name, is_default}'
 ```
 
-### Using Custom Style Guide
+## Narrowing analysis with `paths`
+
+By default, the action analyzes every supported file the event surfaces (every
+file modified in the push, every file changed in the PR, or every supported
+file in the repo for `workflow_dispatch` / `schedule`). When you want a
+narrower scope, set the `paths` input:
 
 ```yaml
-permissions:
-  contents: read
-  pull-requests: write
-  statuses: write
-
-name: Analysis with Custom Style Guide
-on: [push, pull_request]
-jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Run Analysis
-        uses: markupai/content-guardian-action@v1
-        with:
-          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          dialect: "american_english"
-          style-guide: "sg-123456" # Your custom style guide ID from console.markup.ai
-          tone: "formal"
-```
-
-### Using Outputs
-
-```yaml
-name: Analysis with Outputs
-on: [push]
-jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Run Analysis
-        id: markup-ai-github-action
-        uses: markupai/content-guardian-action@v1
-        with:
-          markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Display Results
-        run: |
-          echo "Event: ${{ steps.markup-ai-github-action.outputs.event-type }}"
-          echo "Files: ${{ steps.markup-ai-github-action.outputs.files-analyzed }}"
-          echo "Results: ${{ steps.markup-ai-github-action.outputs.results }}"
-```
-
-## Analysis Configuration
-
-### Strict Mode
-
-The `strict_mode` parameter controls how the action behaves when file analysis
-fails:
-
-- **`false` (default)**: The action continues even if some files fail to
-  analyze. Only successfully analyzed files are reported.
-- **`true`**: The action fails if any file analysis fails, ensuring all files
-  must be successfully analyzed.
-
-**Use Cases:**
-
-- **Quality Gates**: Use `strict_mode: true` in pull request workflows to ensure
-  all files pass analysis before merging
-- **Monitoring**: Use `strict_mode: false` for monitoring workflows where
-  partial analysis is acceptable
-
-**Example:**
-
-```yaml
-- name: Analysis Quality Check
-  uses: markupai/content-guardian-action@v1
+- uses: markupai/content-guardian-action@v2
   with:
-    markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    dialect: "american_english"
-    style-guide: "ap"
-    strict_mode: "true" # Fail if any file analysis fails
+    paths: README.md
 ```
 
-### Dialects
+Or multiple files:
 
-- `american_english` - American English
-- `british_oxford` - British English
-- `canadian_english` - Canadian English
-
-### Tone (optional)
-
-- `formal` - Formal writing style
-- `informal` - Informal writing style
-- `academic` - Academic writing style
-
-### Style Guides
-
-You can use either built-in style guides or connect to a custom style guide:
-
-**Built-in Style Guides:**
-
-- `ap` - Associated Press Style Guide
-- `chicago` - Chicago Manual of Style
-- `microsoft` - Microsoft Writing Style Guide
-
-**Custom Style Guides:**
-
-- You can use a custom style guide by providing your style guide ID (e.g., `sg-123456`)
-- To create and manage custom style guides, visit [console.markup.ai](https://console.markup.ai)
-- Custom style guides allow you to enforce your organization's specific writing standards and brand guidelines
-
-## Quality Scoring
-
-The action provides comprehensive quality metrics:
-
-- **Quality Score**: Overall content quality assessment (0-100)
-- **Clarity Score**: Readability and comprehension metrics
-- **Grammar Score**: Grammar and syntax quality
-- **Consistency Score**: Style guide compliance
-- **Tone Score**: Tone appropriateness when tone is specified
-- **Terminology Score**: Terminology consistency
-
-### Quality Thresholds
-
-- 🟢 **80+**: Excellent quality
-- 🟡 **60-79**: Good quality with room for improvement
-- 🔴 **0-59**: Needs significant improvement
-
-## Visual Feedback
-
-### Commit Status Updates (Push Events)
-
-For push events, the action automatically updates commit status with:
-
-- Quality score indicator
-- Number of files analyzed
-- Direct link to workflow run
-
-### Pull Request Comments
-
-For pull request events, the action creates detailed comments with:
-
-- Per-file quality scores and summary
-- Detailed metrics table
-- Configuration used
-- PR review comments with issues and inline suggestions (when enabled)
-
-## Example Output
-
+```yaml
+- uses: markupai/content-guardian-action@v2
+  with:
+    paths: |
+      README.md
+      docs/intro.md
+      CONTRIBUTING.md
 ```
 
-🔍 Running analysis on modified files... 📄 File: README.md 📈 Quality Score:
-85.2 📝 Clarity Score: 78.5 🔤 Grammar Issues: 2 📋 Consistency Issues: 1 🎭
-Tone Score: 82.3 📚 Terminology Issues: 0
+Behaviour:
 
-⚠️ Issues Found:
+- Empty / not set → no filtering (current default behaviour).
+- Set → the discovered file list is intersected with the whitelist before any
+  files are sent to the style agent. If none of the discovered files match,
+  the run short-circuits with `files-analyzed=0`.
+- Paths are matched exactly (after both sides are normalized to repo-relative
+  posix paths). No globs today; pass each file you want to gate on.
 
-1. passive_voice Original: "This document describes" Category: style_guide
-   Position: 45
-2. complex_sentence Original: "This document describes the new feature that was
-   implemented" Category: sentence_structure Position: 67
+Typical use: drop a `paths: README.md` on the action's own self-test
+workflow so the build matrix exercises the wire path on every PR without
+spamming a 20-file analysis result.
 
-```
+## Strict mode
 
-## Error Handling
+- **`false` (default)**: Continue even if some files fail to analyze. Successful
+  files are reported.
+- **`true`**: Fail the action with the message "Some files were not analyzed" if
+  any file fails — use this for hard PR quality gates.
 
-The action gracefully handles various scenarios:
-
-- **Missing API Key**: Fails with clear error message
-- **Missing GitHub token**: Shows warning and continues
-- **API rate limits**: Logs error and continues execution
-- **Invalid commit data**: Skips problematic commits
-- **File read errors**: Logs warning and skips files
-- **Network issues**: Provides clear error messages
-- **Analysis failures**: Behavior depends on `strict_mode` setting:
-- **`strict_mode: false`**: Continues with successfully analyzed files
-- **`strict_mode: true`**: Fails the action if any file analysis fails
-
-### Strict Mode Error Behavior
-
-When `strict_mode: true` is enabled, the action will fail with the message "Some
-files were not analyzed" if:
-
-- Any file fails to be analyzed by the API
-- Network issues prevent file analysis
-- API errors occur during analysis
-- File content cannot be read or processed
-
-This ensures that quality gates are enforced and no files are missed during
-analysis.
-
-## Security
-
-- **API Token**: Store API token as GitHub secret
-- **Token Validation**: Action validates required tokens
-- **Secure Handling**: Tokens handled securely and not logged
-
-## Local Development
+## Local development
 
 ### Prerequisites
 
-- Node.js 24+
-- API Key (get one at [console.markup.ai](https://console.markup.ai))
+- Node.js 24+ (see `.node-version`)
+- A Markup AI API key
 
 ### Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/markupai/content-guardian-action.git
-cd `markup-ai-github-action`
-
-# Install dependencies
+cd content-guardian-action
 npm install
+```
 
-# Set up environment variables
-export MARKUP_AI_API_KEY=your-api-key
-export GITHUB_TOKEN=your-github-token
+### Run locally with @github/local-action
 
-# Run locally
+```bash
+cp .env.example .env
+# edit .env: set INPUT_MARKUP_AI_API_KEY, INPUT_GITHUB_TOKEN, INPUT_TARGET
 npm run local-action
 ```
 
-### Testing
+### Tests, lint, type-check, bundle
 
 ```bash
-# Run tests
-npm test
-
-# Run with coverage
-npm run test:coverage
-
-# Format code
-npm run format:fix
-
-# Lint code
-npm run lint:fix
+npm test              # vitest run
+npm run test:coverage # + v8 coverage report
+npm run lint:check    # eslint (strict-type-checked)
+npm run type-check    # tsc --noEmit
+npm run bundle        # format:fix + rollup → dist/index.js
+npm run all           # lint + coverage + bundle (full CI gate)
 ```
+
+**Important:** `dist/index.js` is committed and required by the action. The
+`check-dist.yml` workflow fails any PR whose `dist/` is stale — so after a source
+change run `npm run bundle` and commit the result.
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass (`npm test`)
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
+2. Branch off `main` (`git checkout -b feature/xyz`)
+3. Make your changes, add tests, and run `npm run all`
+4. Commit the regenerated `dist/`
+5. Open a PR
 
 ## License
 
-This project is licensed under the Apache-2.0 License - see the
-[LICENSE](LICENSE) file for details.
+Apache-2.0 — see [LICENSE](LICENSE).
 
 ## Support
 

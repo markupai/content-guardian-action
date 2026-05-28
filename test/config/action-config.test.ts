@@ -1,299 +1,160 @@
-/**
- * Unit tests for action configuration functions
- */
-
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as core from "../mocks/core.js";
-import type { ActionConfig, AnalysisOptions } from "../../src/types/index.js";
+import type { ActionConfig } from "../../src/types/index.js";
 
-// Mock dependencies
 vi.mock("@actions/core", () => core);
 
-const { getActionConfig, getAnalysisOptions, validateConfig, logConfiguration } =
+const { getActionConfig, validateConfig, logConfiguration } =
   await import("../../src/config/action-config.js");
 
-describe("Action Config", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+beforeEach(() => {
+  vi.clearAllMocks();
+  delete process.env.MARKUP_AI_API_KEY;
+  delete process.env.GITHUB_TOKEN;
+  delete process.env.TARGET;
+});
 
-    // Reset environment variables
-    delete process.env.MARKUP_AI_API_KEY;
-    delete process.env.GITHUB_TOKEN;
-    delete process.env.GITHUB_REPOSITORY;
+afterEach(() => {
+  delete process.env.MARKUP_AI_API_KEY;
+  delete process.env.GITHUB_TOKEN;
+  delete process.env.TARGET;
+});
+
+function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
+  return {
+    apiToken: "token",
+    githubToken: "ghtok",
+    target: "",
+    paths: [],
+    addCommitStatus: true,
+    addReviewComments: true,
+    strictMode: false,
+    ...overrides,
+  };
+}
+
+describe("validateConfig", () => {
+  // `validateConfig` is intentionally a no-op now — input-time validation in
+  // `getActionConfig` (via `getRequiredInput`) covers everything that was
+  // previously asserted here. Kept as an extension point for future
+  // invariants.
+  it("does not throw for any valid-shape ActionConfig", () => {
+    expect(() => {
+      validateConfig(baseConfig());
+    }).not.toThrow();
+    expect(() => {
+      validateConfig(baseConfig({ target: "Main" }));
+    }).not.toThrow();
+    expect(() => {
+      validateConfig(baseConfig({ apiToken: "" }));
+    }).not.toThrow();
+    expect(() => {
+      validateConfig(baseConfig({ githubToken: "" }));
+    }).not.toThrow();
+  });
+});
+
+describe("logConfiguration", () => {
+  it("logs an explicit target value when provided", () => {
+    logConfiguration(baseConfig({ target: "Brand Voice" }));
+    const messages = core.info.mock.calls.map(([m]) => m);
+    expect(messages.some((m) => m.includes("Brand Voice"))).toBe(true);
+    expect(messages.some((m) => m.includes("[PROVIDED]"))).toBe(true);
   });
 
-  afterEach(() => {
-    delete process.env.MARKUP_AI_API_KEY;
-    delete process.env.GITHUB_TOKEN;
-    delete process.env.GITHUB_REPOSITORY;
+  it("shows '(org default)' when target is empty", () => {
+    logConfiguration(baseConfig({ target: "" }));
+    const messages = core.info.mock.calls.map(([m]) => m);
+    expect(messages.some((m) => m.includes("(org default)"))).toBe(true);
   });
+});
 
-  describe("getAnalysisOptions", () => {
-    it("should return analysis options with provided values", () => {
-      const config: ActionConfig = {
-        dialect: "british_english",
-        tone: "informal",
-        styleGuide: "chicago",
-        apiToken: "token",
-        githubToken: "github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
+function inputs(map: Record<string, string>) {
+  core.getInput.mockImplementation((name: string) => map[name] ?? "");
+}
 
-      const options: AnalysisOptions = getAnalysisOptions(config);
-
-      expect(options).toEqual({
-        dialect: "british_english",
-        tone: "informal",
-        styleGuide: "chicago",
-        reviewComments: true,
-      });
+describe("getActionConfig", () => {
+  it("reads inputs and returns a complete config", () => {
+    inputs({
+      markup_ai_api_key: "tok",
+      github_token: "gh",
+      target: "Marketing Voice",
     });
-
-    it("should return analysis options as provided in config", () => {
-      const config: ActionConfig = {
-        dialect: "",
-        tone: undefined as unknown as string,
-        styleGuide: "",
-        apiToken: "token",
-        githubToken: "github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      const options: AnalysisOptions = getAnalysisOptions(config);
-
-      expect(options).toEqual({
-        dialect: "",
-        tone: undefined,
-        styleGuide: "",
-        reviewComments: true,
-      });
-    });
-  });
-
-  describe("validateConfig", () => {
-    it("should not throw error for valid config", () => {
-      const config: ActionConfig = {
-        dialect: "american_english",
-        tone: "formal",
-        styleGuide: "ap",
-        apiToken: "valid-token",
-        githubToken: "valid-github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      expect(() => {
-        validateConfig(config);
-      }).not.toThrow();
-    });
-
-    it("should throw error for missing token", () => {
-      const config: ActionConfig = {
-        dialect: "american_english",
-        tone: "formal",
-        styleGuide: "ap",
-        apiToken: "",
-        githubToken: "valid-github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      expect(() => {
-        validateConfig(config);
-      }).toThrow("API token is required");
-    });
-
-    it("should warn for missing GitHub token", () => {
-      const config: ActionConfig = {
-        dialect: "american_english",
-        tone: "formal",
-        styleGuide: "ap",
-        apiToken: "valid-token",
-        githubToken: "",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      expect(() => {
-        validateConfig(config);
-      }).not.toThrow();
-      expect(core.warning).toHaveBeenCalled();
-    });
-
-    it("should throw error for empty dialect", () => {
-      const config: ActionConfig = {
-        dialect: "",
-        tone: "formal",
-        styleGuide: "ap",
-        apiToken: "valid-token",
-        githubToken: "valid-github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      expect(() => {
-        validateConfig(config);
-      }).toThrow("Analysis option 'dialect' cannot be empty");
-    });
-
-    // tone is optional now
-
-    it("should throw error for empty style guide", () => {
-      const config: ActionConfig = {
-        dialect: "american_english",
-        tone: "formal",
-        styleGuide: "",
-        apiToken: "valid-token",
-        githubToken: "valid-github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      expect(() => {
-        validateConfig(config);
-      }).toThrow("Analysis option 'style_guide' cannot be empty");
+    expect(getActionConfig()).toEqual({
+      apiToken: "tok",
+      githubToken: "gh",
+      target: "Marketing Voice",
+      paths: [],
+      addCommitStatus: true,
+      addReviewComments: true,
+      strictMode: false,
     });
   });
 
-  describe("logConfiguration", () => {
-    it("should log configuration correctly", () => {
-      const config: ActionConfig = {
-        dialect: "british_english",
-        tone: "informal",
-        styleGuide: "chicago",
-        apiToken: "token123",
-        githubToken: "github-token123",
-        addCommitStatus: true,
-        addReviewComments: false,
-        strictMode: false,
-      };
-
-      logConfiguration(config);
-
-      expect(core.info).toHaveBeenCalledWith("🔧 Action Configuration:");
-      expect(core.info).toHaveBeenCalledWith("  Dialect: british_english");
-      expect(core.info).toHaveBeenCalledWith("  Tone: informal");
-      expect(core.info).toHaveBeenCalledWith("  Style Guide: chicago");
-      expect(core.info).toHaveBeenCalledWith("  API Token: [PROVIDED]");
-      expect(core.info).toHaveBeenCalledWith("  GitHub Token: [PROVIDED]");
-      expect(core.info).toHaveBeenCalledWith("  Review Comments: disabled");
+  it("parses comma-separated paths input", () => {
+    inputs({
+      markup_ai_api_key: "tok",
+      github_token: "gh",
+      paths: "README.md, docs/intro.md , ",
     });
-
-    it("should suppress placeholder tone", () => {
-      const config: ActionConfig = {
-        dialect: "american_english",
-        tone: "None (keep tone unchanged)",
-        styleGuide: "ap",
-        apiToken: "token123",
-        githubToken: "github-token123",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      logConfiguration(config);
-
-      expect(core.info).toHaveBeenCalledWith("  Tone: ");
-    });
-
-    it("should log empty values when not provided", () => {
-      const config: ActionConfig = {
-        dialect: "",
-        tone: undefined as unknown as string,
-        styleGuide: "",
-        apiToken: "token123",
-        githubToken: "github-token123",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      };
-
-      logConfiguration(config);
-
-      expect(core.info).toHaveBeenCalledWith("  Dialect: ");
-      expect(core.info).toHaveBeenCalledWith("  Tone: ");
-      expect(core.info).toHaveBeenCalledWith("  Style Guide: ");
-    });
+    expect(getActionConfig().paths).toEqual(["README.md", "docs/intro.md"]);
   });
 
-  describe("getActionConfig", () => {
-    it("should return complete config from inputs", () => {
-      core.getInput
-        .mockReturnValueOnce("markup_ai_api_key") // markup_ai_api_key
-        .mockReturnValueOnce("github-token") // github_token
-        .mockReturnValueOnce("british_english") // dialect
-        .mockReturnValueOnce("informal") // tone
-        .mockReturnValueOnce("chicago"); // style-guide
-
-      const config: ActionConfig = getActionConfig();
-
-      expect(config).toEqual({
-        dialect: "british_english",
-        tone: "informal",
-        styleGuide: "chicago",
-        apiToken: "markup_ai_api_key",
-        githubToken: "github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      });
+  it("parses newline-separated paths input", () => {
+    inputs({
+      markup_ai_api_key: "tok",
+      github_token: "gh",
+      paths: "README.md\ndocs/intro.md\n\n",
     });
+    expect(getActionConfig().paths).toEqual(["README.md", "docs/intro.md"]);
+  });
 
-    it("should return config with environment variables when inputs are empty", () => {
-      core.getInput.mockReturnValue("");
-      process.env.MARKUP_AI_API_KEY = "env-markup-ai-api-key";
-      process.env.GITHUB_TOKEN = "env-github-token";
-      process.env.DIALECT = "american_english";
-      process.env.STYLE_GUIDE = "ap";
+  it("returns empty paths array when no paths input is given", () => {
+    inputs({ markup_ai_api_key: "tok", github_token: "gh" });
+    expect(getActionConfig().paths).toEqual([]);
+  });
 
-      const config: ActionConfig = getActionConfig();
+  it("falls back to env vars when inputs are empty", () => {
+    core.getInput.mockReturnValue("");
+    process.env.MARKUP_AI_API_KEY = "env-tok";
+    process.env.GITHUB_TOKEN = "env-gh";
+    process.env.TARGET = "Brand Voice";
+    expect(getActionConfig().apiToken).toBe("env-tok");
+    expect(getActionConfig().target).toBe("Brand Voice");
+  });
 
-      expect(config).toEqual({
-        dialect: "american_english",
-        tone: undefined,
-        styleGuide: "ap",
-        apiToken: "env-markup-ai-api-key",
-        githubToken: "env-github-token",
-        addCommitStatus: true,
-        addReviewComments: true,
-        strictMode: false,
-      });
+  it("inputs take precedence over env vars", () => {
+    inputs({
+      markup_ai_api_key: "input-tok",
+      github_token: "input-gh",
+      target: "Input Target",
     });
+    process.env.MARKUP_AI_API_KEY = "env-tok";
+    expect(getActionConfig().apiToken).toBe("input-tok");
+  });
 
-    it("should prioritize inputs over environment variables", () => {
-      core.getInput
-        .mockReturnValueOnce("input-markup-ai-api-key") // markup_ai_api_key
-        .mockReturnValueOnce("input-github-token") // github_token
-        .mockReturnValueOnce("british_english") // dialect
-        .mockReturnValueOnce("informal") // tone
-        .mockReturnValueOnce("chicago"); // style-guide
+  it("throws when api key is missing", () => {
+    core.getInput.mockReturnValue("");
+    expect(() => getActionConfig()).toThrow(/Required input 'markup_ai_api_key'/);
+  });
 
-      process.env.MARKUP_AI_API_KEY = "env-markup-ai-api-key";
-      process.env.GITHUB_TOKEN = "env-github-token";
+  it("returns empty target when no target is provided (action will use org default)", () => {
+    inputs({ markup_ai_api_key: "tok", github_token: "gh" });
+    expect(getActionConfig().target).toBe("");
+  });
 
-      const config: ActionConfig = getActionConfig();
-
-      expect(config.apiToken).toBe("input-markup-ai-api-key");
-      expect(config.githubToken).toBe("input-github-token");
+  it("parses strict_mode and add_* as booleans", () => {
+    inputs({
+      markup_ai_api_key: "tok",
+      github_token: "gh",
+      target: "Brand Voice",
+      strict_mode: "true",
+      add_commit_status: "false",
+      add_review_comments: "false",
     });
-
-    // defaults removed for dialect/style-guide; tone optional with no default
-
-    it("should throw error when required tokens are missing", () => {
-      core.getInput.mockReturnValue("");
-
-      expect(() => getActionConfig()).toThrow(
-        "Required input 'markup_ai_api_key' or environment variable 'MARKUP_AI_API_KEY' is not provided",
-      );
-    });
+    const cfg = getActionConfig();
+    expect(cfg.strictMode).toBe(true);
+    expect(cfg.addCommitStatus).toBe(false);
+    expect(cfg.addReviewComments).toBe(false);
   });
 });

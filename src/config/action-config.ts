@@ -3,31 +3,25 @@
  */
 
 import * as core from "@actions/core";
-import { ActionConfig, AnalysisOptions } from "../types/index.js";
-import { getToneValue } from "../utils/string-utils.js";
-import { INPUT_NAMES, ENV_VARS, ERROR_MESSAGES } from "../constants/index.js";
+import { ActionConfig } from "../types/index.js";
+import { INPUT_NAMES, ENV_VARS } from "../constants/index.js";
 
-/**
- * Get and validate action configuration from inputs
- */
 export function getActionConfig(): ActionConfig {
   const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
   const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
-
-  const dialect = getRequiredInput(INPUT_NAMES.DIALECT, "DIALECT");
-  const tone = getOptionalInput(INPUT_NAMES.TONE);
-  const styleGuide = getRequiredInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
+  // `target` is optional: when omitted, the action falls back to the org's
+  // default target (the one flagged `is_default: true` in /style-agent/targets).
+  const target = getOptionalInput(INPUT_NAMES.TARGET, "TARGET");
+  const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
   const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
-
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
   const addReviewComments = getBooleanInput(INPUT_NAMES.ADD_REVIEW_COMMENTS, true);
 
   return {
     apiToken,
     githubToken,
-    dialect,
-    tone,
-    styleGuide,
+    target,
+    paths,
     addCommitStatus,
     addReviewComments,
     strictMode,
@@ -35,89 +29,66 @@ export function getActionConfig(): ActionConfig {
 }
 
 /**
- * Get analysis options from configuration
+ * Parse the `paths` input into a list of repo-relative paths. Accepts both
+ * comma- and newline-separated input so the YAML can be written either as
+ * `paths: README.md, docs/intro.md` or as a multi-line block:
+ *
+ *   paths: |
+ *     README.md
+ *     docs/intro.md
+ *
+ * Empty entries (blank lines, leading/trailing commas) are dropped.
  */
-export function getAnalysisOptions(config: ActionConfig): AnalysisOptions {
-  return {
-    dialect: config.dialect,
-    tone: config.tone,
-    styleGuide: config.styleGuide,
-    reviewComments: config.addReviewComments,
-  };
+function parsePaths(raw: string): string[] {
+  if (!raw) return [];
+  return raw
+    .split(/[\n,]+/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
 }
 
-/**
- * Get a required input value with fallback to environment variable
- */
 function getRequiredInput(inputName: string, envVarName: string): string {
   const value = core.getInput(inputName) || process.env[envVarName];
-
   if (!value) {
     throw new Error(
       `Required input '${inputName}' or environment variable '${envVarName}' is not provided`,
     );
   }
-
   return value;
 }
 
-/**
- * Get an optional input value with fallback to environment variable and default
- */
-function getOptionalInput(inputName: string): string | undefined {
-  const value = core.getInput(inputName) || process.env[inputName.toUpperCase()];
-  return value === undefined || value === "" ? undefined : value;
+function getOptionalInput(inputName: string, envVarName: string): string {
+  const value = core.getInput(inputName) || process.env[envVarName] || "";
+  return value.trim();
 }
 
-/**
- * Get a boolean input value with fallback to environment variable and default
- */
 function getBooleanInput(inputName: string, defaultValue: boolean): boolean {
   const value = core.getInput(inputName) || process.env[inputName.toUpperCase()];
-
   if (value === undefined || value === "") {
     return defaultValue;
   }
-
   return value.toLowerCase() === "true";
 }
 
 /**
- * Validate configuration
+ * No-op kept for API symmetry with `getActionConfig` / `logConfiguration`.
+ * All validation happens at input-read time inside `getActionConfig`
+ * (`getRequiredInput` throws for missing api token / github token); `target`
+ * is optional. The runner still calls this so future invariants have a
+ * natural home.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function validateConfig(config: ActionConfig): void {
-  if (!config.apiToken) {
-    throw new Error(ERROR_MESSAGES.API_TOKEN_REQUIRED);
-  }
-
-  if (!config.githubToken) {
-    core.warning(ERROR_MESSAGES.GITHUB_TOKEN_WARNING);
-  }
-
-  // Validate required analysis options
-  validateAnalysisOption("dialect", config.dialect);
-  validateAnalysisOption("style_guide", config.styleGuide);
+  // intentionally empty
 }
 
-/**
- * Validate individual analysis option
- */
-function validateAnalysisOption(name: string, value: string): void {
-  if (!value || value.trim().length === 0) {
-    throw new Error(`Analysis option '${name}' cannot be empty`);
-  }
-}
-
-/**
- * Log configuration (without sensitive data)
- */
 export function logConfiguration(config: ActionConfig): void {
-  const toneDisplay = getToneValue(config.tone) ?? "";
   core.info("🔧 Action Configuration:");
-  core.info(`  Dialect: ${config.dialect}`);
-  core.info(`  Tone: ${toneDisplay}`);
-  core.info(`  Style Guide: ${config.styleGuide}`);
+  core.info(`  Target: ${config.target || "(org default)"}`);
   core.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
   core.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
+  core.info(`  Paths Filter: ${config.paths.length > 0 ? config.paths.join(", ") : "(none)"}`);
+  core.info(`  Commit Status: ${config.addCommitStatus ? "enabled" : "disabled"}`);
   core.info(`  Review Comments: ${config.addReviewComments ? "enabled" : "disabled"}`);
+  core.info(`  Strict Mode: ${config.strictMode ? "on" : "off"}`);
 }

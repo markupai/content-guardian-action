@@ -1,1314 +1,180 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import * as core from "../mocks/core.js";
 
-// Mock @actions/core
-vi.mock("@actions/core", () => core);
-
-vi.mock("@markupai/toolkit", async () => {
-  const originalModule = await vi.importActual("@markupai/toolkit");
+const { MarkupApiErrorRef, mocks } = vi.hoisted(() => {
+  class MarkupApiErrorRef extends Error {
+    public status: number;
+    constructor(msg: string, status: number) {
+      super(msg);
+      this.name = "MarkupApiError";
+      this.status = status;
+    }
+  }
   return {
-    ...(originalModule as object),
-    styleCheck: vi.fn(),
-    styleBatchCheckRequests: vi.fn(),
-    styleBatchOperation: vi.fn(),
-    styleSuggestions: vi.fn(),
-    Config: vi.fn(),
+    MarkupApiErrorRef,
+    mocks: {
+      runStyleAgent: vi.fn(),
+      pollUntilDone: vi.fn(),
+      isFatalApiError: vi.fn<(e: unknown) => boolean>(),
+    },
   };
 });
 
-// Import the module after mocking
-const { analyzeFile, analyzeFiles, analyzeFilesBatch } =
-  await import("../../src/services/api-service.js");
-import type { AnalysisOptions, AnalysisResult } from "../../src/types/index.js";
-import {
-  PlatformType,
-  Config,
-  Status,
-  ErrorType,
-  ApiError,
-  IssueCategory,
-  IssueSeverity,
-} from "@markupai/toolkit";
-import { buildScores } from "../test-helpers/scores.js";
+vi.mock("@actions/core", () => ({
+  info: vi.fn(),
+  warning: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn(),
+}));
 
-describe("Markup AI Service Batch Functionality", () => {
-  let mockConfig: Config;
-  let mockOptions: AnalysisOptions;
-  let mockReadFileContent: (filePath: string) => Promise<string | null>;
+vi.mock("../../src/services/markup-api-client.js", () => ({
+  runStyleAgent: mocks.runStyleAgent,
+  pollUntilDone: mocks.pollUntilDone,
+  isFatalApiError: mocks.isFatalApiError,
+  MarkupApiError: MarkupApiErrorRef,
+}));
 
+import { analyzeFile, analyzeFiles } from "../../src/services/api-service.js";
+import { buildAnalysisOptions } from "../test-helpers/scores.js";
+
+const options = buildAnalysisOptions();
+
+function completedResponse(issues: unknown[] = []) {
+  return {
+    workflow_id: "agw_1",
+    status: "completed",
+    started_at: "2026-01-01T00:00:00Z",
+    result: { issues },
+  };
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.runStyleAgent.mockResolvedValue({
+    workflow_id: "agw_1",
+    status: "running",
+    started_at: "2026-01-01T00:00:00Z",
+  });
+  mocks.isFatalApiError.mockImplementation(
+    (e: unknown) => e instanceof MarkupApiErrorRef && e.status >= 500,
+  );
+});
+
+describe("analyzeFile", () => {
+  it("returns AnalysisResult on a completed workflow", async () => {
+    mocks.pollUntilDone.mockResolvedValue(
+      completedResponse([
+        {
+          severity: "high",
+          explanation: "x",
+          category: "grammar",
+          position: { start: 0, end: 4, text: "Test" },
+        },
+      ]),
+    );
+
+    const result = await analyzeFile("key", "README.md", "Test content", options);
+    expect(result).not.toBeNull();
+    expect(result?.filePath).toBe("README.md");
+    expect(result?.workflowId).toBe("agw_1");
+    expect(result?.status).toBe("completed");
+    expect(result?.issueCounts).toEqual({ total: 1, high: 1, medium: 0, low: 0 });
+    expect(mocks.runStyleAgent).toHaveBeenCalledWith("key", {
+      text: "Test content",
+      document_name: "README.md",
+      document_ref: "README.md",
+      target_id: options.targetId,
+    });
+  });
+
+  it("returns null when the workflow ends in a non-completed terminal state", async () => {
+    mocks.pollUntilDone.mockResolvedValue({
+      workflow_id: "agw_1",
+      status: "failed",
+      started_at: "2026-01-01T00:00:00Z",
+    });
+    const result = await analyzeFile("key", "README.md", "x", options);
+    expect(result).toBeNull();
+  });
+
+  it("returns null on non-fatal errors", async () => {
+    mocks.runStyleAgent.mockRejectedValueOnce(new Error("transient"));
+    const result = await analyzeFile("key", "README.md", "x", options);
+    expect(result).toBeNull();
+  });
+
+  it("rethrows fatal API errors so the run can abort", async () => {
+    mocks.runStyleAgent.mockRejectedValueOnce(new MarkupApiErrorRef("auth", 401));
+    mocks.isFatalApiError.mockReturnValueOnce(true);
+    await expect(analyzeFile("key", "README.md", "x", options)).rejects.toThrow("auth");
+  });
+});
+
+describe("analyzeFiles", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-
-    mockConfig = {
-      apiKey: "test-api-key",
-      platform: { type: PlatformType.Url, value: "https://test.markup.ai" },
-    };
-
-    mockOptions = {
-      dialect: "en-US",
-      styleGuide: "microsoft",
-      reviewComments: false,
-    };
-
-    mockReadFileContent = vi.fn().mockImplementation((filePath: unknown) => {
-      return Promise.resolve(`Test content for ${filePath as string}`);
-    }) as ReturnType<typeof vi.fn<(filePath: string) => Promise<string | null>>>;
+    mocks.pollUntilDone.mockResolvedValue(completedResponse());
   });
 
-  describe("analyzeFilesBatch", () => {
-    it("should return empty array for empty files list", async () => {
-      const result: AnalysisResult[] = await analyzeFilesBatch(
-        [],
-        mockOptions,
-        mockConfig,
-        mockReadFileContent,
-      );
-
-      expect(result).toEqual([]);
-    });
-
-    describe("analyzeFiles with suggestions", () => {
-      it("should use suggestions API when review comments are enabled", async () => {
-        const { styleSuggestions } = await import("@markupai/toolkit");
-        vi.mocked(styleSuggestions).mockResolvedValue({
-          workflow: {
-            id: "test-workflow-1",
-            type: "suggestions",
-            api_version: "1.0.0",
-            generated_at: "2025-01-15T14:22:33Z",
-            status: Status.Completed,
-            webhook_response: {
-              url: "https://api.example.com/webhook",
-              status_code: 200,
-            },
-          },
-          config: {
-            dialect: "en-US",
-            style_guide: {
-              style_guide_type: "microsoft",
-              style_guide_id: "test-style-guide-1",
-            },
-            tone: "formal",
-          },
-          original: {
-            issues: [
-              {
-                original: "Teh",
-                position: { start_index: 0 },
-                subcategory: "spelling",
-                category: IssueCategory.Grammar,
-                severity: IssueSeverity.Medium,
-                suggestion: "The",
-              },
-            ],
-            scores: buildScores(85, 90, 88),
-          },
-        });
-
-        const result = await analyzeFile(
-          "file1.txt",
-          "Teh content",
-          { ...mockOptions, reviewComments: true },
-          mockConfig,
-        );
-
-        expect(styleSuggestions).toHaveBeenCalled();
-        expect(result?.issues[0].issue).toHaveProperty("suggestion", "The");
-      });
-    });
-
-    it("should handle files with no valid content", async () => {
-      const mockReadFileContentEmpty = vi
-        .fn()
-        .mockImplementation(() => Promise.resolve(null)) as ReturnType<
-        typeof vi.fn<(filePath: string) => Promise<string | null>>
-      >;
-
-      const result: AnalysisResult[] = await analyzeFilesBatch(
-        ["file1.txt", "file2.txt"],
-        mockOptions,
-        mockConfig,
-        mockReadFileContentEmpty,
-      );
-
-      expect(result).toEqual([]);
-    });
-
-    it("should process multiple files using batch API", async () => {
-      const { styleBatchCheckRequests } = await import("@markupai/toolkit");
-      const mockBatchResponse = {
-        progress: {
-          total: 2,
-          completed: 2,
-          failed: 0,
-          inProgress: 0,
-          pending: 0,
-          results: [
-            {
-              index: 0,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file1.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file1.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-1",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-1",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: buildScores(85, 90, 88),
-                },
-              },
-            },
-            {
-              index: 1,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file2.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file2.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-2",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-2",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: buildScores(92, 87, 91),
-                },
-              },
-            },
-          ],
-          startTime: Date.now(),
-        },
-        promise: Promise.resolve({
-          total: 2,
-          completed: 2,
-          failed: 0,
-          inProgress: 0,
-          pending: 0,
-          results: [
-            {
-              index: 0,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file1.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file1.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-1",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-1",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: buildScores(85, 90, 88),
-                },
-              },
-            },
-            {
-              index: 1,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file2.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file2.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-2",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-2",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: buildScores(92, 87, 91),
-                },
-              },
-            },
-          ],
-          startTime: Date.now(),
-        }),
-        cancel: vi.fn(),
-      };
-
-      vi.mocked(styleBatchCheckRequests).mockReturnValue(mockBatchResponse);
-
-      const result: AnalysisResult[] = await analyzeFilesBatch(
-        ["file1.txt", "file2.txt"],
-        mockOptions,
-        mockConfig,
-        mockReadFileContent,
-      );
-
-      expect(styleBatchCheckRequests).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({
-            content: "Test content for file1.txt",
-            dialect: "en-US",
-            style_guide: "microsoft",
-            documentNameWithExtension: "file1.txt",
-          }),
-          expect.objectContaining({
-            content: "Test content for file2.txt",
-            dialect: "en-US",
-            style_guide: "microsoft",
-            documentNameWithExtension: "file2.txt",
-          }),
-        ]),
-        mockConfig,
-        expect.objectContaining({
-          maxConcurrent: 100,
-          retryAttempts: 2,
-          retryDelay: 1_000,
-          timeout: 300_000,
-        }),
-      );
-
-      expect(result).toHaveLength(2);
-      expect(result[0]).toEqual(
-        expect.objectContaining({
-          filePath: "file1.txt",
-          result: expect.objectContaining({
-            quality: expect.objectContaining({ score: 85 }) as unknown,
-            analysis: expect.objectContaining({
-              clarity: expect.objectContaining({ score: 90 }) as unknown,
-              tone: expect.objectContaining({ score: 88 }) as unknown,
-            }) as unknown,
-          }) as unknown,
-          timestamp: expect.any(String) as unknown,
-        }),
-      );
-      expect(result[1]).toEqual(
-        expect.objectContaining({
-          filePath: "file2.txt",
-          result: expect.objectContaining({
-            quality: expect.objectContaining({ score: 92 }) as unknown,
-            analysis: expect.objectContaining({
-              clarity: expect.objectContaining({ score: 87 }) as unknown,
-              tone: expect.objectContaining({ score: 91 }) as unknown,
-            }) as unknown,
-          }) as unknown,
-          timestamp: expect.any(String) as unknown,
-        }),
-      );
-    });
-
-    it("should handle failed batch requests", async () => {
-      const { styleBatchCheckRequests } = await import("@markupai/toolkit");
-      const mockBatchResponse = {
-        progress: {
-          total: 2,
-          completed: 1,
-          failed: 1,
-          inProgress: 0,
-          pending: 0,
-          results: [
-            {
-              index: 0,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file1.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file1.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-1",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-1",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 85,
-                      grammar: { score: 85, issues: 10 },
-                      consistency: { score: 85, issues: 10 },
-                      terminology: { score: 85, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 90,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 88,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 1,
-              status: "failed" as const,
-              request: {
-                content: "Test content for file2.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file2.txt",
-              },
-              error: new Error("API Error"),
-            },
-          ],
-          startTime: Date.now(),
-        },
-        promise: Promise.resolve({
-          total: 2,
-          completed: 1,
-          failed: 1,
-          inProgress: 0,
-          pending: 0,
-          results: [
-            {
-              index: 0,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file1.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file1.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-1",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-1",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 85,
-                      grammar: { score: 85, issues: 10 },
-                      consistency: { score: 85, issues: 10 },
-                      terminology: { score: 85, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 90,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 88,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 1,
-              status: "failed" as const,
-              request: {
-                content: "Test content for file2.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file2.txt",
-              },
-              error: new Error("API Error"),
-            },
-          ],
-          startTime: Date.now(),
-        }),
-        cancel: vi.fn(),
-      };
-
-      vi.mocked(styleBatchCheckRequests).mockReturnValue(mockBatchResponse);
-
-      const result: AnalysisResult[] = await analyzeFilesBatch(
-        ["file1.txt", "file2.txt"],
-        mockOptions,
-        mockConfig,
-        mockReadFileContent,
-      );
-
-      expect(result).toHaveLength(1);
-      expect(result[0].filePath).toBe("file1.txt");
-    });
-
-    it("should handle batch processing errors", async () => {
-      const { styleBatchCheckRequests } = await import("@markupai/toolkit");
-      vi.mocked(styleBatchCheckRequests).mockImplementation(() => {
-        throw new Error("Batch processing failed");
-      });
-
-      const result: AnalysisResult[] = await analyzeFilesBatch(
-        ["file1.txt", "file2.txt"],
-        mockOptions,
-        mockConfig,
-        mockReadFileContent,
-      );
-
-      expect(result).toEqual([]);
-    });
+  it("returns one AnalysisResult per readable file", async () => {
+    const readFileContent = vi.fn((p: string) => Promise.resolve<string | null>(`content of ${p}`));
+    const files = ["a.md", "b.md", "c.md"];
+    const results = await analyzeFiles("k", files, options, readFileContent);
+    expect(results.map((r) => r.filePath).sort((a, b) => a.localeCompare(b))).toEqual(files);
+    expect(mocks.runStyleAgent).toHaveBeenCalledTimes(3);
   });
 
-  describe("analyzeFiles with batch processing", () => {
-    it("should use sequential processing for small batches (≤3 files)", async () => {
-      const { styleCheck } = await import("@markupai/toolkit");
-      vi.mocked(styleCheck).mockResolvedValue({
-        workflow: {
-          id: "test-workflow-1",
-          type: "checks",
-          api_version: "1.0.0",
-          generated_at: "2025-01-15T14:22:33Z",
-          status: Status.Completed,
-          webhook_response: {
-            url: "https://api.example.com/webhook",
-            status_code: 200,
-          },
-        },
-        config: {
-          dialect: "en-US",
-          style_guide: {
-            style_guide_type: "microsoft",
-            style_guide_id: "test-style-guide-1",
-          },
-          tone: "formal",
-        },
-        original: {
-          issues: [],
-          scores: {
-            quality: {
-              score: 85,
-              grammar: { score: 85, issues: 10 },
-              consistency: { score: 85, issues: 10 },
-              terminology: { score: 85, issues: 10 },
-            },
-            analysis: {
-              clarity: {
-                score: 90,
-                word_count: 100,
-                sentence_count: 10,
-                average_sentence_length: 10,
-                flesch_reading_ease: 10,
-                vocabulary_complexity: 10,
-                sentence_complexity: 10,
-              },
-              tone: {
-                score: 88,
-                informality: 10,
-                liveliness: 10,
-                informality_alignment: 10,
-                liveliness_alignment: 10,
-              },
-            },
-          },
-        },
-      });
-
-      const result: AnalysisResult[] = await analyzeFiles(
-        ["file1.txt", "file2.txt"],
-        mockOptions,
-        mockConfig,
-        mockReadFileContent,
-      );
-
-      expect(styleCheck).toHaveBeenCalledTimes(2);
-      expect(result).toHaveLength(2);
-    });
-
-    it("should use batch processing for larger batches (>3 files)", async () => {
-      const { styleBatchCheckRequests } = await import("@markupai/toolkit");
-      const mockBatchResponse = {
-        progress: {
-          total: 4,
-          completed: 4,
-          failed: 0,
-          inProgress: 0,
-          pending: 0,
-          results: [
-            {
-              index: 0,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file1.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file1.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-1",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-1",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 85,
-                      grammar: { score: 85, issues: 10 },
-                      consistency: { score: 85, issues: 10 },
-                      terminology: { score: 85, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 90,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 88,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 1,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file2.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file2.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-2",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-2",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 92,
-                      grammar: { score: 92, issues: 10 },
-                      consistency: { score: 92, issues: 10 },
-                      terminology: { score: 92, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 87,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 91,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 2,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file3.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file3.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-3",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-3",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 89,
-                      grammar: { score: 89, issues: 10 },
-                      consistency: { score: 89, issues: 10 },
-                      terminology: { score: 89, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 93,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 86,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 3,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file4.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file4.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-4",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-4",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 94,
-                      grammar: { score: 94, issues: 10 },
-                      consistency: { score: 94, issues: 10 },
-                      terminology: { score: 94, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 88,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 92,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          ],
-          startTime: Date.now(),
-        },
-        promise: Promise.resolve({
-          total: 4,
-          completed: 4,
-          failed: 0,
-          inProgress: 0,
-          pending: 0,
-          results: [
-            {
-              index: 0,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file1.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file1.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-1",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-1",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 85,
-                      grammar: { score: 85, issues: 10 },
-                      consistency: { score: 85, issues: 10 },
-                      terminology: { score: 85, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 90,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 88,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 1,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file2.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file2.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-2",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-2",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 92,
-                      grammar: { score: 92, issues: 10 },
-                      consistency: { score: 92, issues: 10 },
-                      terminology: { score: 92, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 87,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 91,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 2,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file3.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file3.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-3",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-3",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 89,
-                      grammar: { score: 89, issues: 10 },
-                      consistency: { score: 89, issues: 10 },
-                      terminology: { score: 89, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 93,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 86,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              index: 3,
-              status: "completed" as const,
-              request: {
-                content: "Test content for file4.txt",
-                dialect: "en-US",
-                tone: "formal",
-                style_guide: "microsoft",
-                documentName: "file4.txt",
-              },
-              result: {
-                workflow: {
-                  id: "test-workflow-4",
-                  type: "checks",
-                  api_version: "1.0.0",
-                  generated_at: "2025-01-15T14:22:33Z",
-                  status: Status.Completed,
-                  webhook_response: {
-                    url: "https://api.example.com/webhook",
-                    status_code: 200,
-                  },
-                },
-                config: {
-                  dialect: "en-US",
-                  style_guide: {
-                    style_guide_type: "microsoft",
-                    style_guide_id: "test-style-guide-4",
-                  },
-                  tone: "formal",
-                },
-                original: {
-                  issues: [],
-                  scores: {
-                    quality: {
-                      score: 94,
-                      grammar: { score: 94, issues: 10 },
-                      consistency: { score: 94, issues: 10 },
-                      terminology: { score: 94, issues: 10 },
-                    },
-                    analysis: {
-                      clarity: {
-                        score: 88,
-                        word_count: 100,
-                        sentence_count: 10,
-                        average_sentence_length: 10,
-                        flesch_reading_ease: 10,
-                        vocabulary_complexity: 10,
-                        sentence_complexity: 10,
-                      },
-                      tone: {
-                        score: 92,
-                        informality: 10,
-                        liveliness: 10,
-                        informality_alignment: 10,
-                        liveliness_alignment: 10,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          ],
-          startTime: Date.now(),
-        }),
-        cancel: vi.fn(),
-      };
-
-      vi.mocked(styleBatchCheckRequests).mockReturnValue(mockBatchResponse);
-
-      const result: AnalysisResult[] = await analyzeFiles(
-        ["file1.txt", "file2.txt", "file3.txt", "file4.txt"],
-        mockOptions,
-        mockConfig,
-        mockReadFileContent,
-      );
-
-      expect(styleBatchCheckRequests).toHaveBeenCalledTimes(1);
-      expect(result).toHaveLength(4);
-    });
+  it("skips files whose content cannot be read", async () => {
+    const readFileContent = vi.fn((p: string) =>
+      Promise.resolve<string | null>(p === "b.md" ? null : "ok"),
+    );
+    const results = await analyzeFiles("k", ["a.md", "b.md"], options, readFileContent);
+    expect(results.map((r) => r.filePath)).toEqual(["a.md"]);
   });
 
-  describe("Error handling for API errors", () => {
-    describe("analyzeFile error handling", () => {
-      it("should throw error for 401 unauthorized error from styleCheck", async () => {
-        const { styleCheck } = await import("@markupai/toolkit");
-        const unauthorizedError = new ApiError("Unauthorized", ErrorType.UNAUTHORIZED_ERROR, 401);
+  it("returns [] on empty file list without calling the API", async () => {
+    const results = await analyzeFiles("k", [], options, vi.fn());
+    expect(results).toEqual([]);
+    expect(mocks.runStyleAgent).not.toHaveBeenCalled();
+  });
 
-        vi.mocked(styleCheck).mockRejectedValue(unauthorizedError);
+  it("propagates a fatal API error across the run instead of swallowing it", async () => {
+    // Reviewer-flagged bug: `Promise.allSettled` inside processWithConcurrency
+    // used to swallow throws from analyzeFile, leaving a fatal 401/403/5xx
+    // invisible to the caller. analyzeFiles must surface it.
+    mocks.runStyleAgent.mockRejectedValue(new MarkupApiErrorRef("auth", 401));
+    mocks.isFatalApiError.mockReturnValue(true);
 
-        await expect(
-          analyzeFile("test.txt", "test content", mockOptions, mockConfig),
-        ).rejects.toThrow("Unauthorized");
-      });
+    const readFileContent = vi.fn((p: string) => Promise.resolve<string | null>(`content of ${p}`));
+    await expect(
+      analyzeFiles("k", ["a.md", "b.md", "c.md"], options, readFileContent),
+    ).rejects.toThrow("auth");
+  });
 
-      it("should catch and return null for 400 bad request error from styleCheck", async () => {
-        const { styleCheck } = await import("@markupai/toolkit");
-        const badRequestError = new ApiError("Bad Request", ErrorType.VALIDATION_ERROR, 400);
+  it("once a fatal error fires, queued tasks skip without making more API calls", async () => {
+    let pending = 0;
+    let peakConcurrent = 0;
+    let totalApiCalls = 0;
 
-        vi.mocked(styleCheck).mockRejectedValue(badRequestError);
-
-        const result = await analyzeFile("test.txt", "test content", mockOptions, mockConfig);
-
-        expect(result).toBeNull();
-      });
+    mocks.runStyleAgent.mockImplementation(async () => {
+      totalApiCalls++;
+      pending++;
+      peakConcurrent = Math.max(peakConcurrent, pending);
+      try {
+        await new Promise((r) => setTimeout(r, 10));
+        throw new MarkupApiErrorRef("auth", 401);
+      } finally {
+        pending--;
+      }
     });
+    mocks.isFatalApiError.mockReturnValue(true);
 
-    describe("analyzeFilesBatch error handling", () => {
-      it("should throw error for 401 unauthorized error from styleBatchCheckRequests", async () => {
-        const { styleBatchCheckRequests } = await import("@markupai/toolkit");
-        const unauthorizedError = new ApiError("Unauthorized", ErrorType.UNAUTHORIZED_ERROR, 401);
+    const readFileContent = vi.fn((p: string) => Promise.resolve<string | null>(`content of ${p}`));
+    const files = Array.from({ length: 12 }, (_, i) => `f${i.toString()}.md`);
+    await expect(analyzeFiles("k", files, options, readFileContent)).rejects.toThrow("auth");
 
-        const mockBatchResponse = {
-          progress: {
-            total: 1,
-            completed: 0,
-            failed: 1,
-            inProgress: 0,
-            pending: 0,
-            results: [
-              {
-                index: 0,
-                status: "failed" as const,
-                request: {
-                  content: "Test content for file1.txt",
-                  dialect: "en-US",
-                  tone: "formal",
-                  style_guide: "microsoft",
-                  documentName: "file1.txt",
-                },
-                error: unauthorizedError,
-              },
-            ],
-            startTime: Date.now(),
-          },
-          promise: Promise.resolve({
-            total: 1,
-            completed: 0,
-            failed: 1,
-            inProgress: 0,
-            pending: 0,
-            results: [
-              {
-                index: 0,
-                status: "failed" as const,
-                request: {
-                  content: "Test content for file1.txt",
-                  dialect: "en-US",
-                  tone: "formal",
-                  style_guide: "microsoft",
-                  documentName: "file1.txt",
-                },
-                error: unauthorizedError,
-              },
-            ],
-            startTime: Date.now(),
-          }),
-          cancel: vi.fn(),
-        };
-
-        vi.mocked(styleBatchCheckRequests).mockReturnValue(mockBatchResponse);
-
-        await expect(
-          analyzeFilesBatch(["file1.txt"], mockOptions, mockConfig, mockReadFileContent),
-        ).rejects.toThrow("Unauthorized");
-      });
-
-      it("should catch and return empty array for 400 bad request error from styleBatchCheckRequests", async () => {
-        const { styleBatchCheckRequests } = await import("@markupai/toolkit");
-        const badRequestError = new ApiError("Bad Request", ErrorType.VALIDATION_ERROR, 400);
-
-        const mockBatchResponse = {
-          progress: {
-            total: 1,
-            completed: 0,
-            failed: 1,
-            inProgress: 0,
-            pending: 0,
-            results: [
-              {
-                index: 0,
-                status: "failed" as const,
-                request: {
-                  content: "Test content for file1.txt",
-                  dialect: "en-US",
-                  tone: "formal",
-                  style_guide: "microsoft",
-                  documentName: "file1.txt",
-                },
-                error: badRequestError,
-              },
-            ],
-            startTime: Date.now(),
-          },
-          promise: Promise.resolve({
-            total: 1,
-            completed: 0,
-            failed: 1,
-            inProgress: 0,
-            pending: 0,
-            results: [
-              {
-                index: 0,
-                status: "failed" as const,
-                request: {
-                  content: "Test content for file1.txt",
-                  dialect: "en-US",
-                  tone: "formal",
-                  style_guide: "microsoft",
-                  documentName: "file1.txt",
-                },
-                error: badRequestError,
-              },
-            ],
-            startTime: Date.now(),
-          }),
-          cancel: vi.fn(),
-        };
-
-        vi.mocked(styleBatchCheckRequests).mockReturnValue(mockBatchResponse);
-
-        const result: AnalysisResult[] = await analyzeFilesBatch(
-          ["file1.txt"],
-          mockOptions,
-          mockConfig,
-          mockReadFileContent,
-        );
-
-        expect(result).toEqual([]);
-      });
-    });
+    // With MAX_CONCURRENT_FILES=3, only the in-flight batch should hit the
+    // API once the first fatal throws; the rest must bail. Strict upper bound
+    // = peak concurrency + 1 grace slot.
+    expect(totalApiCalls).toBeLessThanOrEqual(peakConcurrent + 1);
+    expect(totalApiCalls).toBeLessThan(files.length);
   });
 });
