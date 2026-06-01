@@ -9,9 +9,12 @@ import { INPUT_NAMES, ENV_VARS } from "../constants/index.js";
 export function getActionConfig(): ActionConfig {
   const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
   const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
-  // `target` is optional: when omitted, the action falls back to the org's
-  // default target (the one flagged `is_default: true` in /style-agent/targets).
-  const target = getOptionalInput(INPUT_NAMES.TARGET, "TARGET");
+  // `style_guide` is the public input name (matches our marketing terminology).
+  // Internally it maps to the style agent's `target` — the API expects a
+  // `target_id`, so we carry the value on `config.target` from here on.
+  // Optional: when omitted, the action falls back to the org's default target
+  // (the one flagged `is_default: true` in /style-agent/targets).
+  const target = getOptionalInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
   const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
   const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);

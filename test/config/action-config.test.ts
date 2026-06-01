@@ -11,13 +11,13 @@ beforeEach(() => {
   vi.clearAllMocks();
   delete process.env.MARKUP_AI_API_KEY;
   delete process.env.GITHUB_TOKEN;
-  delete process.env.TARGET;
+  delete process.env.STYLE_GUIDE;
 });
 
 afterEach(() => {
   delete process.env.MARKUP_AI_API_KEY;
   delete process.env.GITHUB_TOKEN;
-  delete process.env.TARGET;
+  delete process.env.STYLE_GUIDE;
 });
 
 function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
@@ -79,7 +79,7 @@ describe("getActionConfig", () => {
     inputs({
       markup_ai_api_key: "tok",
       github_token: "gh",
-      target: "Marketing Voice",
+      style_guide: "Marketing Voice",
     });
     expect(getActionConfig()).toEqual({
       apiToken: "tok",
@@ -120,7 +120,7 @@ describe("getActionConfig", () => {
     core.getInput.mockReturnValue("");
     process.env.MARKUP_AI_API_KEY = "env-tok";
     process.env.GITHUB_TOKEN = "env-gh";
-    process.env.TARGET = "Brand Voice";
+    process.env.STYLE_GUIDE = "Brand Voice";
     expect(getActionConfig().apiToken).toBe("env-tok");
     expect(getActionConfig().target).toBe("Brand Voice");
   });
@@ -129,7 +129,7 @@ describe("getActionConfig", () => {
     inputs({
       markup_ai_api_key: "input-tok",
       github_token: "input-gh",
-      target: "Input Target",
+      style_guide: "Input Target",
     });
     process.env.MARKUP_AI_API_KEY = "env-tok";
     expect(getActionConfig().apiToken).toBe("input-tok");
@@ -149,7 +149,7 @@ describe("getActionConfig", () => {
     inputs({
       markup_ai_api_key: "tok",
       github_token: "gh",
-      target: "Brand Voice",
+      style_guide: "Brand Voice",
       strict_mode: "true",
       add_commit_status: "false",
       add_review_comments: "false",

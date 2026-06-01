@@ -99,7 +99,7 @@ function defaultInputMock(overrides: Record<string, string> = {}) {
         return "key";
       case "github_token":
         return "tok";
-      case "target":
+      case "style_guide":
         return "Marketing Voice";
       case "strict_mode":
         return "true";

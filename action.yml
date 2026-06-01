@@ -12,11 +12,12 @@ inputs:
     description: Markup AI API key (can also be provided via the MARKUP_AI_API_KEY
       environment variable).
     required: true
-  target:
-    description: "Style guide to analyze against. Accepts either a target ID
-      or the display name of an enabled target (case-insensitive). When
-      omitted, the action uses the organization's default target (the one
-      flagged `is_default: true` in /style-agent/targets)."
+  style_guide:
+    description: "Style guide to analyze against. Accepts either a style guide
+      (target) ID or the display name of an enabled style guide
+      (case-insensitive). When omitted, the action uses the organization's
+      default style guide (the one flagged `is_default: true` in
+      /style-agent/targets)."
     required: false
   paths:
     description: "Optional whitelist of repo-relative paths to analyze. When
