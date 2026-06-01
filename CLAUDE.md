@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A GitHub Action (`markupai/content-guardian-action`) that analyzes content files (DITA, HTML, Markdown, plain text, XML) on commits/PRs against Markup AI's style agent. The Action's behavior is event-driven — it adapts what it reads, what it reports, and how it surfaces results based on the GitHub event type (`push`, `pull_request`, `workflow_dispatch`, `schedule`).
 
-**v2 is a direct-API rewrite.** The action no longer depends on `@markupai/toolkit`; it calls `https://api.markup.ai/` directly via `fetch`, runs the style agent's `/run` endpoint per file, and polls workflow status until terminal. Inputs were collapsed: v1's `dialect` + `tone` + `style-guide` became a single required `target` input that accepts a target ID or display name.
+**v2 is a direct-API rewrite.** The action no longer depends on `@markupai/toolkit`; it calls `https://api.markup.ai/` directly via `fetch`, runs the style agent's `/run` endpoint per file, and polls workflow status until terminal. Inputs were collapsed: v1's `dialect` + `tone` + `style-guide` became a single `style_guide` input that accepts a style guide (target) ID or display name. `style_guide` is the public input name (marketing terminology); internally it maps to the style agent's `target`/`target_id`.
 
 Runtime: Node 24 (see `.node-version`, `engines.node`). The published action runs `dist/index.js` (see `action.yml`).
 
@@ -45,8 +45,8 @@ Entry chain: `dist/index.js` (rollup output) ← `src/index.ts` (calls `run()`) 
 
 The runner is a linear pipeline:
 
-1. **Config** (`src/config/action-config.ts`) reads inputs/env via `@actions/core`, validates, and produces an `ActionConfig` with one required style input: `target`. Inputs fall back to env vars (e.g. `markup_ai_api_key` → `MARKUP_AI_API_KEY`).
-2. **Bootstrap** — call `GET /style-agent/config` to read `style_agent_numeric_scoring` and assert style agent is enabled, then call `GET /style-agent/targets` and resolve the user's `target` input (by id or case-insensitive display_name) via `services/target-resolver.ts`. The resulting `AnalysisOptions` carries `{ targetId, targetDisplayName, numericScoringEnabled }`.
+1. **Config** (`src/config/action-config.ts`) reads inputs/env via `@actions/core`, validates, and produces an `ActionConfig` with one optional style input: `style_guide` (carried internally on `config.target`). Inputs fall back to env vars (e.g. `markup_ai_api_key` → `MARKUP_AI_API_KEY`).
+2. **Bootstrap** — call `GET /style-agent/config` to read `style_agent_numeric_scoring` and assert style agent is enabled, then call `GET /style-agent/targets` and resolve the user's `style_guide` input (carried on `config.target`, by id or case-insensitive display_name) via `services/target-resolver.ts`. The resulting `AnalysisOptions` carries `{ targetId, targetDisplayName, numericScoringEnabled }`.
 3. **File discovery** (`src/strategies/file-discovery-strategies.ts`) — strategy pattern keyed on `github.context.eventName`:
    - `push` → files touched in that commit (excluding deletions)
    - `pull_request` → files changed in the PR
@@ -87,7 +87,7 @@ Thin fetch-based wrapper. Single `request<T>()` helper sets `Authorization: Bear
 
 ## Local development
 
-`npm run local-action` uses `@github/local-action` to run `src/main.ts` against `.env` (see `.env.example`). Env vars follow the GitHub Actions `INPUT_<NAME>` convention — and the runner is strict about it, so `INPUT_TARGET` keeps the underscore (the input name is `target`, not `style-guide` anymore). `.github/event.json` is a sample event payload for local PR runs.
+`npm run local-action` uses `@github/local-action` to run `src/main.ts` against `.env` (see `.env.example`). Env vars follow the GitHub Actions `INPUT_<NAME>` convention — and the runner is strict about it, so `INPUT_STYLE_GUIDE` keeps the underscore (the public input name is `style_guide`, mapped internally to the agent's `target`). `.github/event.json` is a sample event payload for local PR runs.
 
 ## Tests
 

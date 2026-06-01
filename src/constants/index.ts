@@ -35,7 +35,9 @@ export const MAX_INLINE_REVIEW_COMMENTS = 50;
 
 export const INPUT_NAMES = {
   MARKUP_AI_API_KEY: "markup_ai_api_key",
-  TARGET: "target",
+  // Public input name. Internally mapped to the style agent's `target` (see
+  // action-config.ts and target-resolver.ts) — the API still expects a target.
+  STYLE_GUIDE: "style_guide",
   GITHUB_TOKEN: "github_token",
   ADD_COMMIT_STATUS: "add_commit_status",
   ADD_REVIEW_COMMENTS: "add_review_comments",

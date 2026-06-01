@@ -88,7 +88,7 @@ beforeEach(() => {
         return "test-key";
       case "github_token":
         return "gh-tok";
-      case "target":
+      case "style_guide":
         return "Marketing Voice";
       case "add_review_comments":
         return "false";
@@ -115,7 +115,7 @@ describe("main.ts", () => {
   it("fails when API token is missing", async () => {
     const inputs: Record<string, string> = {
       markup_ai_api_key: "",
-      target: "Marketing Voice",
+      style_guide: "Marketing Voice",
       github_token: "gh-tok",
     };
     core.getInput.mockImplementation((name: string) => inputs[name] ?? "");

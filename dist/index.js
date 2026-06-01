@@ -87657,7 +87657,9 @@ const MAX_CONCURRENT_FILES = 3;
 const MAX_INLINE_REVIEW_COMMENTS = 50;
 const INPUT_NAMES = {
     MARKUP_AI_API_KEY: "markup_ai_api_key",
-    TARGET: "target",
+    // Public input name. Internally mapped to the style agent's `target` (see
+    // action-config.ts and target-resolver.ts) — the API still expects a target.
+    STYLE_GUIDE: "style_guide",
     GITHUB_TOKEN: "github_token",
     ADD_COMMIT_STATUS: "add_commit_status",
     ADD_REVIEW_COMMENTS: "add_review_comments",
@@ -87694,9 +87696,12 @@ const ERROR_MESSAGES = {
 function getActionConfig() {
     const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
     const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
-    // `target` is optional: when omitted, the action falls back to the org's
-    // default target (the one flagged `is_default: true` in /style-agent/targets).
-    const target = getOptionalInput(INPUT_NAMES.TARGET, "TARGET");
+    // `style_guide` is the public input name (matches our marketing terminology).
+    // Internally it maps to the style agent's `target` — the API expects a
+    // `target_id`, so we carry the value on `config.target` from here on.
+    // Optional: when omitted, the action falls back to the org's default target
+    // (the one flagged `is_default: true` in /style-agent/targets).
+    const target = getOptionalInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
     const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);

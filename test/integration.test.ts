@@ -118,7 +118,7 @@ function applyDefaultInputs() {
         return "test-key";
       case "github_token":
         return "gh-tok";
-      case "target":
+      case "style_guide":
         return "Marketing Voice";
       default:
         return "";
@@ -154,7 +154,7 @@ describe("Integration", () => {
 
   it("fails when the API key input is missing", async () => {
     core.getInput.mockImplementation(
-      mockInput({ markup_ai_api_key: "", target: "Marketing Voice", github_token: "gh-tok" }),
+      mockInput({ markup_ai_api_key: "", style_guide: "Marketing Voice", github_token: "gh-tok" }),
     );
     await run();
     expect(core.setFailed).toHaveBeenCalledWith(
@@ -162,9 +162,9 @@ describe("Integration", () => {
     );
   });
 
-  it("falls back to the org's default target when target input is omitted", async () => {
+  it("falls back to the org's default target when style_guide input is omitted", async () => {
     core.getInput.mockImplementation(
-      mockInput({ markup_ai_api_key: "k", target: "", github_token: "gh-tok" }),
+      mockInput({ markup_ai_api_key: "k", style_guide: "", github_token: "gh-tok" }),
     );
     await run();
     // Default target in the test fixture (`listStyleAgentTargets` mock) is

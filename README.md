@@ -11,9 +11,9 @@ manual, and scheduled events.
 
 - **Direct agentic API** — no longer uses `@markupai/toolkit`; talks to
   `https://api.markup.ai` directly.
-- **Single optional `target` input** — replaces v1's `dialect` / `tone` /
-  `style-guide` combo. Omit it to use the organization's default target
-  (the one flagged `is_default: true`); pass a target ID or display name
+- **Single optional `style_guide` input** — replaces v1's `dialect` / `tone` /
+  `style-guide` combo. Omit it to use the organization's default style guide
+  (the one flagged `is_default: true`); pass a style guide ID or display name
   to pin a specific one. Look them up at
   [console.markup.ai](https://console.markup.ai).
 - **Risk-based scoring is the primary view, always.** Every PR comment, commit
@@ -27,9 +27,9 @@ manual, and scheduled events.
   on the next run (see [Comment lifecycle](#pull-request-on-pull_request)).
 
 Migrating from v1: drop `dialect`, `tone`, and `style-guide`. The new
-`target` input is optional — set your org's default target in
+`style_guide` input is optional — set your org's default style guide in
 [console.markup.ai](https://console.markup.ai) and you don't need to pass
-anything; otherwise pass `target: <id or display name>`.
+anything; otherwise pass `style_guide: <id or display name>`.
 
 ## Features
 
@@ -85,7 +85,7 @@ jobs:
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # `target` omitted → uses the organization's default target.
+          # `style_guide` omitted → uses the organization's default style guide.
 ```
 
 ### Advanced configuration
@@ -108,7 +108,7 @@ jobs:
         with:
           markup_ai_api_key: ${{ secrets.MARKUP_AI_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          target: ${{ secrets.MARKUP_AI_TARGET_ID }} # optional — accepts ID or display name; omit to use the org's default
+          style_guide: ${{ secrets.MARKUP_AI_STYLE_GUIDE_ID }} # optional — accepts ID or display name; omit to use the org's default
           add_commit_status: "true"
           add_review_comments: "true"
           strict_mode: "false"
@@ -137,7 +137,7 @@ Either inputs or env vars work; inputs take precedence when both are set.
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ----------- |
 | `markup_ai_api_key`   | Markup AI API key (or `MARKUP_AI_API_KEY` env var)                                                                                                                 | Yes      | -           |
 | `github_token`        | GitHub token (or `GITHUB_TOKEN` env var)                                                                                                                           | Yes      | -           |
-| `target`              | Style guide / target — target ID or display_name (case-insensitive). Omit to use the org's default target.                                                         | No       | org default |
+| `style_guide`         | Style guide — style guide (target) ID or display_name (case-insensitive). Omit to use the org's default style guide.                                               | No       | org default |
 | `paths`               | Comma- or newline-separated repo-relative paths. When set, intersects with the discovered files; only matches are analyzed. Empty = analyze everything discovered. | No       | (none)      |
 | `add_commit_status`   | Add commit status updates for push events                                                                                                                          | No       | `true`      |
 | `add_review_comments` | Add PR review comments for issues                                                                                                                                  | No       | `true`      |
@@ -229,16 +229,16 @@ The full per-file structure (issues, scores when available, workflow IDs) is
 always available in the `outputs.results` JSON for downstream consumers,
 regardless of which view is rendered.
 
-## Finding your `target` value
+## Finding your `style_guide` value
 
-The `target` input is **optional**. When omitted, the action uses the
-organization's default target — the one flagged `is_default: true` in
+The `style_guide` input is **optional**. When omitted, the action uses the
+organization's default style guide — the one flagged `is_default: true` in
 `/style-agent/targets`. Configure that default in
 [console.markup.ai](https://console.markup.ai); most teams only need to set
-it once and never pass `target` in the workflow.
+it once and never pass `style_guide` in the workflow.
 
-To pin a specific non-default target, look up the available targets and pass
-either the `id` or the `display_name`:
+To pin a specific non-default style guide, look up the available style guides
+and pass either the `id` or the `display_name`:
 
 ```bash
 curl -H "Authorization: Bearer $MARKUP_AI_API_KEY" \
@@ -333,7 +333,7 @@ npm install
 
 ```bash
 cp .env.example .env
-# edit .env: set INPUT_MARKUP_AI_API_KEY, INPUT_GITHUB_TOKEN, INPUT_TARGET
+# edit .env: set INPUT_MARKUP_AI_API_KEY, INPUT_GITHUB_TOKEN, INPUT_STYLE_GUIDE
 npm run local-action
 ```
 
