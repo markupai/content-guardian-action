@@ -1,6 +1,5 @@
 name: Markup AI Content Guardian
-description: GitHub Action that automates content quality checks via the Markup AI
-  style agent, with risk-based or numeric scoring on every push, PR, and scheduled run.
+description: Analyze content quality with the Markup AI agents.
 author: Markup AI
 
 branding:
