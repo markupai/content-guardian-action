@@ -125,7 +125,7 @@ function riskToState(level: ReturnType<typeof aggregateRisk>): "success" | "fail
 }
 
 function formatCountsShort(counts: IssueCounts): string {
-  return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
+  return `High: ${counts.high.toString()}, Medium: ${counts.medium.toString()}, Low: ${counts.low.toString()}`;
 }
 
 /**

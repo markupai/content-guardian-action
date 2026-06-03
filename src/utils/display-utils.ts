@@ -36,7 +36,7 @@ function logNumericScores(result: AnalysisResult): void {
 function logIssueCounts(result: AnalysisResult): void {
   const { total, high, medium, low } = result.issueCounts;
   core.info(
-    `⚠️  Issues: ${total.toString()} (H:${high.toString()} M:${medium.toString()} L:${low.toString()})`,
+    `⚠️  Issues: ${total.toString()} (High: ${high.toString()}, Medium: ${medium.toString()}, Low: ${low.toString()})`,
   );
 }
 

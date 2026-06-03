@@ -44,7 +44,7 @@ function generateFileDisplayLink(filePath: string, context: RepositoryContext): 
 }
 
 function formatCounts(counts: IssueCounts): string {
-  return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
+  return `High: ${counts.high.toString()}, Medium: ${counts.medium.toString()}, Low: ${counts.low.toString()}`;
 }
 
 export function generateResultsTable(

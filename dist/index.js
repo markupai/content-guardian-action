@@ -88385,7 +88385,7 @@ function generateFileDisplayLink(filePath, context) {
         : `[${filePath}](${context.baseUrl.origin}/${context.owner}/${context.repo}/blob/${context.ref}/${filePath})`;
 }
 function formatCounts(counts) {
-    return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
+    return `High: ${counts.high.toString()}, Medium: ${counts.medium.toString()}, Low: ${counts.low.toString()}`;
 }
 function generateResultsTable(results, options, context) {
     if (results.length === 0) {
@@ -89104,7 +89104,7 @@ function riskToState(level) {
     return "success";
 }
 function formatCountsShort(counts) {
-    return `H:${counts.high.toString()} M:${counts.medium.toString()} L:${counts.low.toString()}`;
+    return `High: ${counts.high.toString()}, Medium: ${counts.medium.toString()}, Low: ${counts.low.toString()}`;
 }
 /**
  * Update the commit status. In numeric mode the description leads with the
@@ -89211,7 +89211,7 @@ function logNumericScores(result) {
 }
 function logIssueCounts(result) {
     const { total, high, medium, low } = result.issueCounts;
-    info(`⚠️  Issues: ${total.toString()} (H:${high.toString()} M:${medium.toString()} L:${low.toString()})`);
+    info(`⚠️  Issues: ${total.toString()} (High: ${high.toString()}, Medium: ${medium.toString()}, Low: ${low.toString()})`);
 }
 function displaySingleResult(result, options) {
     info(`\n📄 File: ${result.filePath}`);
