@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A GitHub Action (`markupai/content-guardian-action`) that analyzes content files (DITA, HTML, Markdown, plain text, XML) on commits/PRs against Markup AI's style agent. The Action's behavior is event-driven — it adapts what it reads, what it reports, and how it surfaces results based on the GitHub event type (`push`, `pull_request`, `workflow_dispatch`, `schedule`).
 
-**v2 is a direct-API rewrite.** The action no longer depends on `@markupai/toolkit`; it calls `https://api.markup.ai/` directly via `fetch`, runs the style agent's `/run` endpoint per file, and polls workflow status until terminal. Inputs were collapsed: v1's `dialect` + `tone` + `style-guide` became a single `style_guide` input that accepts a style guide (target) ID or display name. `style_guide` is the public input name (marketing terminology); internally it maps to the style agent's `target`/`target_id`.
+**v2 is a direct-API rewrite.** The action no longer depends on `@markupai/toolkit`; it calls `https://api.markup.ai/` directly via `fetch`, runs the style agent's `/run` endpoint per file, and polls workflow status until terminal. Inputs were collapsed: v1's `dialect` + `tone` + `style-guide` became a single `style_guide` input that accepts a style guide ID or display name. `style_guide` is the public input name; it resolves to the style agent's `style_guide_id`.
 
 Runtime: Node 24 (see `.node-version`, `engines.node`). The published action runs `dist/index.js` (see `action.yml`).
 
@@ -45,15 +45,15 @@ Entry chain: `dist/index.js` (rollup output) ← `src/index.ts` (calls `run()`) 
 
 The runner is a linear pipeline:
 
-1. **Config** (`src/config/action-config.ts`) reads inputs/env via `@actions/core`, validates, and produces an `ActionConfig` with one optional style input: `style_guide` (carried internally on `config.target`). Inputs fall back to env vars (e.g. `markup_ai_api_key` → `MARKUP_AI_API_KEY`).
-2. **Bootstrap** — call `GET /style-agent/config` to read `style_agent_numeric_scoring` and assert style agent is enabled, then call `GET /style-agent/targets` and resolve the user's `style_guide` input (carried on `config.target`, by id or case-insensitive display_name) via `services/target-resolver.ts`. The resulting `AnalysisOptions` carries `{ targetId, targetDisplayName, numericScoringEnabled }`.
+1. **Config** (`src/config/action-config.ts`) reads inputs/env via `@actions/core`, validates, and produces an `ActionConfig` with one optional style input: `style_guide` (carried internally on `config.styleGuide`). Inputs fall back to env vars (e.g. `markup_ai_api_key` → `MARKUP_AI_API_KEY`).
+2. **Bootstrap** — call `GET /style-agent/config` to read `style_agent_numeric_scoring` and assert style agent is enabled, then call `GET /style-agent/style-guides` (with a defensive 404-fallback to the deprecated `/style-agent/targets`) and resolve the user's `style_guide` input (carried on `config.styleGuide`, by id or case-insensitive display_name) via `services/style-guide-resolver.ts`. The resulting `AnalysisOptions` carries `{ styleGuideId, styleGuideDisplayName, numericScoringEnabled }`.
 3. **File discovery** (`src/strategies/file-discovery-strategies.ts`) — strategy pattern keyed on `github.context.eventName`:
    - `push` → files touched in that commit (excluding deletions)
    - `pull_request` → files changed in the PR
    - `workflow_dispatch` / `schedule` → all repo files at `ref`
    - Unknown event types fall back to the push strategy with a warning.
 4. **Filter** to supported extensions (`SUPPORTED_EXTENSIONS` in `src/constants/index.ts`): `.dita .htm .html .markdown .md .mdown .mkd .text .txt .xml`.
-5. **Analysis** (`src/services/api-service.ts`) — per file: read content, `POST /agents/ag_vYCPHsSQnnJj/run?wait=false` with `{ text, document_name, document_ref, target_id }`, then poll `GET /agents/workflows/{id}` every 2s (5-minute timeout). Files are processed with a concurrency cap of 5 (`MAX_CONCURRENT_FILES`). The style agent ID is hardcoded — it's a stable platform identifier, not customer-scoped.
+5. **Analysis** (`src/services/api-service.ts`) — per file: read content, `POST /agents/ag_vYCPHsSQnnJj/run?wait=false` with `{ text, document_name, document_ref, style_guide_id }`, then poll `GET /agents/workflows/{id}` every 2s (5-minute timeout). Files are processed with a concurrency cap of 5 (`MAX_CONCURRENT_FILES`). The style agent ID is hardcoded — it's a stable platform identifier, not customer-scoped.
 6. **Post-analysis** (`src/services/post-analysis-service.ts`) — dispatch on event type:
    - `push` → `updateCommitStatus` (gated by `addCommitStatus`).
    - `pull_request` → `createOrUpdatePRComment` always; `createPRReviewComments` only if `addReviewComments`.
@@ -79,15 +79,15 @@ Thin fetch-based wrapper. Single `request<T>()` helper sets `Authorization: Bear
 - `src/services/github-service.ts` — thin octokit wrapper (commit fetch, PR files, repo file walk, commit status with risk/numeric formatting).
 - `src/services/pr-comment-service.ts` — summary PR comment + per-issue inline review comments. Branches on `numericScoringEnabled` for table headers; uses `issue.position.text` / `issue.guideline_name` / `issue.suggestion(s)` from the agent response.
 - `src/services/job-summary-service.ts` — `$GITHUB_STEP_SUMMARY` markdown for manual/scheduled runs.
-- `src/services/target-resolver.ts` — maps user input (id or display_name) to an enabled `StyleTarget`.
+- `src/services/style-guide-resolver.ts` — maps user input (id or display_name) to an enabled `StyleGuide`.
 - `src/utils/issue-utils.ts` — `computeIssueCounts`, `classifyRisk`, `aggregateCounts`, `aggregateRisk` and the `RISK_EMOJI` / `RISK_LABEL` maps.
 - `src/utils/score-utils.ts` — numeric-mode helpers only (`getQualityStatus`, `calculateScoreSummary`).
 - `src/constants/index.ts` is the single source for input names, env var names, event types, extensions, API URL, integration ID, and the hardcoded `STYLE_AGENT_ID`.
-- `src/types/index.ts` defines our own types — `AgentRunRequest/Response`, `WorkflowStatus`, `OrganizationConfigResponse`, `StyleTarget`, `StyleScores`, `StyleAnalysis`, `AnalysisIssue`, `IssueCounts`, `RiskLevel`, `AnalysisResult`, `ActionConfig`, `AnalysisOptions`.
+- `src/types/index.ts` defines our own types — `AgentRunRequest/Response`, `WorkflowStatus`, `OrganizationConfigResponse`, `StyleGuide`, `StyleScores`, `StyleAnalysis`, `AnalysisIssue`, `IssueCounts`, `RiskLevel`, `AnalysisResult`, `ActionConfig`, `AnalysisOptions`.
 
 ## Local development
 
-`npm run local-action` uses `@github/local-action` to run `src/main.ts` against `.env` (see `.env.example`). Env vars follow the GitHub Actions `INPUT_<NAME>` convention — and the runner is strict about it, so `INPUT_STYLE_GUIDE` keeps the underscore (the public input name is `style_guide`, mapped internally to the agent's `target`). `.github/event.json` is a sample event payload for local PR runs.
+`npm run local-action` uses `@github/local-action` to run `src/main.ts` against `.env` (see `.env.example`). Env vars follow the GitHub Actions `INPUT_<NAME>` convention — and the runner is strict about it, so `INPUT_STYLE_GUIDE` keeps the underscore (the public input name is `style_guide`, resolved to the agent's `style_guide_id`). `.github/event.json` is a sample event payload for local PR runs.
 
 ## Tests
 

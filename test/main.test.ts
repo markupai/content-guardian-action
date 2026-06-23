@@ -54,9 +54,9 @@ vi.mock("../src/services/markup-api-client.js", () => ({
       style_agent_numeric_scoring: false,
     }),
   ),
-  listStyleAgentTargets: vi.fn(() =>
+  listStyleGuides: vi.fn(() =>
     Promise.resolve([
-      { id: "tgt_1", display_name: "Marketing Voice", is_default: true, enabled: true },
+      { id: "sg_1", display_name: "Marketing Voice", is_default: true, enabled: true },
     ]),
   ),
   assertStyleAgentEnabled: vi.fn(),

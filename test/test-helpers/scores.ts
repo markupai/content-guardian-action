@@ -76,8 +76,8 @@ export function buildScores(overrides: Partial<StyleScores> = {}): StyleScores {
 
 export function buildAnalysis(overrides: Partial<StyleAnalysis> = {}): StyleAnalysis {
   return {
-    targetId: "tgt_test",
-    targetDisplayName: "Test Target",
+    styleGuideId: "sg_test",
+    styleGuideDisplayName: "Test Style Guide",
     words: 100,
     sentences: 10,
     ...overrides,
@@ -86,8 +86,8 @@ export function buildAnalysis(overrides: Partial<StyleAnalysis> = {}): StyleAnal
 
 export function buildAnalysisOptions(overrides: Partial<AnalysisOptions> = {}): AnalysisOptions {
   return {
-    targetId: "tgt_test",
-    targetDisplayName: "Test Target",
+    styleGuideId: "sg_test",
+    styleGuideDisplayName: "Test Style Guide",
     numericScoringEnabled: false,
     ...overrides,
   };

@@ -184,7 +184,7 @@ export function generateFooter(
   return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName}*${agentLine}
+*Style Guide: ${options.styleGuideDisplayName}*${agentLine}
 *Event: ${eventType}*`;
 }
 

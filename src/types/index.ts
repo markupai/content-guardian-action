@@ -30,7 +30,7 @@ export interface AgentRunRequest {
   text: string;
   document_name?: string;
   document_ref?: string;
-  target_id?: string;
+  style_guide_id?: string;
 }
 
 export interface AgentRunResponse {
@@ -80,7 +80,13 @@ export interface ScoreByGoal {
 }
 
 export interface StyleAnalysis {
+  styleGuideId?: string;
+  styleGuideDisplayName?: string;
+  /** @deprecated The style agent API now returns `styleGuideId`. Retained as a
+   * read fallback for older/cached responses; prefer `styleGuideId`. */
   targetId?: string;
+  /** @deprecated The style agent API now returns `styleGuideDisplayName`.
+   * Retained as a read fallback; prefer `styleGuideDisplayName`. */
   targetDisplayName?: string;
   contentProfileId?: string;
   contentProfileDisplayName?: string;
@@ -98,7 +104,7 @@ export interface OrganizationConfigResponse {
   style_agent_numeric_scoring: boolean;
 }
 
-export interface StyleTarget {
+export interface StyleGuide {
   id: string;
   display_name: string;
   is_default: boolean;
@@ -148,7 +154,7 @@ export interface FileDiscoveryStrategy {
 export interface ActionConfig {
   apiToken: string;
   githubToken: string;
-  target: string;
+  styleGuide: string;
   /** Optional whitelist of repo-relative paths. When non-empty, the
    * discovered file set is intersected with this list before analysis.
    * Empty array means "no filtering — analyze everything discovered". */
@@ -157,7 +163,7 @@ export interface ActionConfig {
   addReviewComments: boolean;
   strictMode: boolean;
   /** When true, the action performs the full analysis (config fetch,
-   * target resolution, /run, polling) and produces the same outputs JSON,
+   * style guide resolution, /run, polling) and produces the same outputs JSON,
    * but skips every write to GitHub: no PR comments, no inline reviews,
    * no commit status, no job summary. The rendered markdown is still
    * emitted to the run log so the result is observable. Useful for
@@ -166,7 +172,7 @@ export interface ActionConfig {
 }
 
 export interface AnalysisOptions {
-  targetId: string;
-  targetDisplayName: string;
+  styleGuideId: string;
+  styleGuideDisplayName: string;
   numericScoringEnabled: boolean;
 }

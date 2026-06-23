@@ -155,9 +155,9 @@ describe("generateFooter", () => {
     expect(risk).not.toMatch(/Risk-based scoring/);
   });
 
-  it("includes the target display name", () => {
+  it("includes the style guide display name", () => {
     expect(
-      generateFooter([], buildAnalysisOptions({ targetDisplayName: "Brand Voice" }), "push"),
+      generateFooter([], buildAnalysisOptions({ styleGuideDisplayName: "Brand Voice" }), "push"),
     ).toMatch(/Brand Voice/);
   });
 

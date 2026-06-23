@@ -19,7 +19,7 @@ import type {
   AgentRunRequest,
   AgentRunResponse,
   OrganizationConfigResponse,
-  StyleTarget,
+  StyleGuide,
   WorkflowStatus,
 } from "../types/index.js";
 
@@ -221,15 +221,30 @@ export function assertStyleAgentEnabled(config: OrganizationConfigResponse): voi
   }
 }
 
-export async function listStyleAgentTargets(apiKey: string): Promise<StyleTarget[]> {
-  const targets = await requestWithRetry<StyleTarget[] | null>(apiKey, {
-    method: "GET",
-    path: "style-agent/targets",
-  });
-  if (!Array.isArray(targets)) {
+export async function listStyleGuides(apiKey: string): Promise<StyleGuide[]> {
+  let styleGuides: StyleGuide[] | null;
+  try {
+    styleGuides = await requestWithRetry<StyleGuide[] | null>(apiKey, {
+      method: "GET",
+      path: "style-agent/style-guides",
+    });
+  } catch (error) {
+    // Defensive fallback for any environment still on the deprecated route.
+    // Prod has migrated to /style-guides; this only fires on a 404 from an
+    // older deployment and is otherwise a no-op.
+    if (error instanceof MarkupApiError && error.status === 404) {
+      styleGuides = await requestWithRetry<StyleGuide[] | null>(apiKey, {
+        method: "GET",
+        path: "style-agent/targets",
+      });
+    } else {
+      throw error;
+    }
+  }
+  if (!Array.isArray(styleGuides)) {
     return [];
   }
-  return targets.filter((t) => t.enabled);
+  return styleGuides.filter((sg) => sg.enabled);
 }
 
 export async function runStyleAgent(

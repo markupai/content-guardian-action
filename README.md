@@ -137,7 +137,7 @@ Either inputs or env vars work; inputs take precedence when both are set.
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ----------- |
 | `markup_ai_api_key`   | Markup AI API key (or `MARKUP_AI_API_KEY` env var)                                                                                                                 | Yes      | -           |
 | `github_token`        | GitHub token (or `GITHUB_TOKEN` env var)                                                                                                                           | Yes      | -           |
-| `style_guide`         | Style guide — style guide (target) ID or display_name (case-insensitive). Omit to use the org's default style guide.                                               | No       | org default |
+| `style_guide`         | Style guide — style guide ID or display_name (case-insensitive). Omit to use the org's default style guide.                                                        | No       | org default |
 | `paths`               | Comma- or newline-separated repo-relative paths. When set, intersects with the discovered files; only matches are analyzed. Empty = analyze everything discovered. | No       | (none)      |
 | `add_commit_status`   | Add commit status updates for push events                                                                                                                          | No       | `true`      |
 | `add_review_comments` | Add PR review comments for issues                                                                                                                                  | No       | `true`      |
@@ -233,7 +233,7 @@ regardless of which view is rendered.
 
 The `style_guide` input is **optional**. When omitted, the action uses the
 organization's default style guide — the one flagged `is_default: true` in
-`/style-agent/targets`. Configure that default in
+`/style-agent/style-guides`. Configure that default in
 [console.markup.ai](https://console.markup.ai); most teams only need to set
 it once and never pass `style_guide` in the workflow.
 
@@ -242,7 +242,7 @@ and pass either the `id` or the `display_name`:
 
 ```bash
 curl -H "Authorization: Bearer $MARKUP_AI_API_KEY" \
-  https://api.markup.ai/style-agent/targets | jq '.[] | {id, display_name, is_default}'
+  https://api.markup.ai/style-agent/style-guides | jq '.[] | {id, display_name, is_default}'
 ```
 
 ## Narrowing analysis with `paths`
@@ -284,7 +284,7 @@ spamming a 20-file analysis result.
 
 ## Dry-run mode
 
-`dry_run: true` runs the full analysis pipeline (config fetch, target
+`dry_run: true` runs the full analysis pipeline (config fetch, style guide
 resolution, `/run`, polling, response parsing) and still populates
 `outputs.results` with the full per-file JSON, but **skips every write to
 GitHub**: no PR comment, no inline review comments, no commit status, no

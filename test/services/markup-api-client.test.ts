@@ -13,12 +13,12 @@ import {
   getStyleAgentConfig,
   getWorkflowStatus,
   isFatalApiError,
-  listStyleAgentTargets,
+  listStyleGuides,
   pollUntilDone,
   runStyleAgent,
 } from "../../src/services/markup-api-client.js";
 import { STYLE_AGENT_ID } from "../../src/constants/index.js";
-import type { OrganizationConfigResponse, StyleTarget } from "../../src/types/index.js";
+import type { OrganizationConfigResponse, StyleGuide } from "../../src/types/index.js";
 
 type FetchResp = {
   ok: boolean;
@@ -191,20 +191,44 @@ describe("markup-api-client request", () => {
   });
 });
 
-describe("listStyleAgentTargets", () => {
-  it("filters to enabled targets", async () => {
-    const targets: StyleTarget[] = [
+describe("listStyleGuides", () => {
+  it("calls the style-guides endpoint and filters to enabled style guides", async () => {
+    const styleGuides: StyleGuide[] = [
       { id: "a", display_name: "A", is_default: false, enabled: true },
       { id: "b", display_name: "B", is_default: false, enabled: false },
     ];
-    fetchMock.mockResolvedValueOnce(makeResp(targets));
-    const result = await listStyleAgentTargets("k");
-    expect(result.map((t) => t.id)).toEqual(["a"]);
+    fetchMock.mockResolvedValueOnce(makeResp(styleGuides));
+    const result = await listStyleGuides("k");
+    expect(result.map((sg) => sg.id)).toEqual(["a"]);
+    const [url] = fetchMock.mock.calls[0] as [string];
+    expect(url).toBe("https://api.markup.ai/style-agent/style-guides");
   });
 
   it("returns [] when API returns null", async () => {
     fetchMock.mockResolvedValueOnce(makeResp(null));
-    expect(await listStyleAgentTargets("k")).toEqual([]);
+    expect(await listStyleGuides("k")).toEqual([]);
+  });
+
+  it("falls back to the deprecated /targets endpoint on a 404", async () => {
+    const styleGuides: StyleGuide[] = [
+      { id: "a", display_name: "A", is_default: false, enabled: true },
+    ];
+    fetchMock
+      .mockResolvedValueOnce(makeResp({ detail: "Not found" }, { ok: false, status: 404 }))
+      .mockResolvedValueOnce(makeResp(styleGuides));
+    const result = await listStyleGuides("k");
+    expect(result.map((sg) => sg.id)).toEqual(["a"]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const [styleGuidesUrl] = fetchMock.mock.calls[0] as [string];
+    const [targetsUrl] = fetchMock.mock.calls[1] as [string];
+    expect(styleGuidesUrl).toBe("https://api.markup.ai/style-agent/style-guides");
+    expect(targetsUrl).toBe("https://api.markup.ai/style-agent/targets");
+  });
+
+  it("does not fall back on non-404 errors", async () => {
+    fetchMock.mockResolvedValueOnce(makeResp({ detail: "bad" }, { ok: false, status: 422 }));
+    await expect(listStyleGuides("k")).rejects.toBeInstanceOf(MarkupApiError);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -243,12 +267,12 @@ describe("runStyleAgent", () => {
         started_at: "2026-01-01T00:00:00Z",
       }),
     );
-    const resp = await runStyleAgent("k", { text: "hi", target_id: "tgt_x" });
+    const resp = await runStyleAgent("k", { text: "hi", style_guide_id: "sg_x" });
     expect(resp.workflow_id).toBe("agw_1");
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe(`https://api.markup.ai/agents/${STYLE_AGENT_ID}/run?wait=false`);
     expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body as string)).toEqual({ text: "hi", target_id: "tgt_x" });
+    expect(JSON.parse(init.body as string)).toEqual({ text: "hi", style_guide_id: "sg_x" });
   });
 });
 
