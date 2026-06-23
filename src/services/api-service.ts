@@ -79,7 +79,7 @@ export async function analyzeFile(
       text: content,
       document_name: getFileBasename(filePath),
       document_ref: filePath,
-      target_id: options.targetId,
+      style_guide_id: options.styleGuideId,
     });
 
     core.info(`⏳ Polling workflow ${submission.workflow_id} for ${filePath}`);

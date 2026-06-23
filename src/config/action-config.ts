@@ -10,11 +10,11 @@ export function getActionConfig(): ActionConfig {
   const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
   const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
   // `style_guide` is the public input name (matches our marketing terminology).
-  // Internally it maps to the style agent's `target` — the API expects a
-  // `target_id`, so we carry the value on `config.target` from here on.
-  // Optional: when omitted, the action falls back to the org's default target
-  // (the one flagged `is_default: true` in /style-agent/targets).
-  const target = getOptionalInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
+  // The API expects a `style_guide_id`, so we carry the value on
+  // `config.styleGuide` from here on.
+  // Optional: when omitted, the action falls back to the org's default style
+  // guide (the one flagged `is_default: true` in /style-agent/style-guides).
+  const styleGuide = getOptionalInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
   const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
   const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
   const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
@@ -24,7 +24,7 @@ export function getActionConfig(): ActionConfig {
   return {
     apiToken,
     githubToken,
-    target,
+    styleGuide,
     paths,
     addCommitStatus,
     addReviewComments,
@@ -78,8 +78,9 @@ function getBooleanInput(inputName: string, defaultValue: boolean): boolean {
 /**
  * No-op kept for API symmetry with `getActionConfig` / `logConfiguration`.
  * All validation happens at input-read time inside `getActionConfig`
- * (`getRequiredInput` throws for missing api token / github token); `target`
- * is optional. The runner still calls this so future invariants have a
+ * (`getRequiredInput` throws for missing api token / github token);
+ * `styleGuide` is optional. The runner still calls this so future invariants
+ * have a
  * natural home.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -89,7 +90,7 @@ export function validateConfig(config: ActionConfig): void {
 
 export function logConfiguration(config: ActionConfig): void {
   core.info("🔧 Action Configuration:");
-  core.info(`  Target: ${config.target || "(org default)"}`);
+  core.info(`  Style Guide: ${config.styleGuide || "(org default)"}`);
   core.info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
   core.info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
   core.info(`  Paths Filter: ${config.paths.length > 0 ? config.paths.join(", ") : "(none)"}`);

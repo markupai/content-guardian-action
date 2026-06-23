@@ -87657,8 +87657,8 @@ const MAX_CONCURRENT_FILES = 3;
 const MAX_INLINE_REVIEW_COMMENTS = 50;
 const INPUT_NAMES = {
     MARKUP_AI_API_KEY: "markup_ai_api_key",
-    // Public input name. Internally mapped to the style agent's `target` (see
-    // action-config.ts and target-resolver.ts) — the API still expects a target.
+    // Public input name. Resolved to the style agent's `style_guide_id` (see
+    // action-config.ts and style-guide-resolver.ts).
     STYLE_GUIDE: "style_guide",
     GITHUB_TOKEN: "github_token",
     ADD_COMMIT_STATUS: "add_commit_status",
@@ -87697,11 +87697,11 @@ function getActionConfig() {
     const apiToken = getRequiredInput(INPUT_NAMES.MARKUP_AI_API_KEY, ENV_VARS.MARKUP_AI_API_KEY);
     const githubToken = getRequiredInput(INPUT_NAMES.GITHUB_TOKEN, ENV_VARS.GITHUB_TOKEN);
     // `style_guide` is the public input name (matches our marketing terminology).
-    // Internally it maps to the style agent's `target` — the API expects a
-    // `target_id`, so we carry the value on `config.target` from here on.
-    // Optional: when omitted, the action falls back to the org's default target
-    // (the one flagged `is_default: true` in /style-agent/targets).
-    const target = getOptionalInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
+    // The API expects a `style_guide_id`, so we carry the value on
+    // `config.styleGuide` from here on.
+    // Optional: when omitted, the action falls back to the org's default style
+    // guide (the one flagged `is_default: true` in /style-agent/style-guides).
+    const styleGuide = getOptionalInput(INPUT_NAMES.STYLE_GUIDE, "STYLE_GUIDE");
     const paths = parsePaths(getOptionalInput(INPUT_NAMES.PATHS, "PATHS"));
     const strictMode = getBooleanInput(INPUT_NAMES.STRICT_MODE, false);
     const addCommitStatus = getBooleanInput(INPUT_NAMES.ADD_COMMIT_STATUS, true);
@@ -87710,7 +87710,7 @@ function getActionConfig() {
     return {
         apiToken,
         githubToken,
-        target,
+        styleGuide,
         paths,
         addCommitStatus,
         addReviewComments,
@@ -87758,8 +87758,9 @@ function getBooleanInput(inputName, defaultValue) {
 /**
  * No-op kept for API symmetry with `getActionConfig` / `logConfiguration`.
  * All validation happens at input-read time inside `getActionConfig`
- * (`getRequiredInput` throws for missing api token / github token); `target`
- * is optional. The runner still calls this so future invariants have a
+ * (`getRequiredInput` throws for missing api token / github token);
+ * `styleGuide` is optional. The runner still calls this so future invariants
+ * have a
  * natural home.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -87768,7 +87769,7 @@ function validateConfig(config) {
 }
 function logConfiguration(config) {
     info("🔧 Action Configuration:");
-    info(`  Target: ${config.target || "(org default)"}`);
+    info(`  Style Guide: ${config.styleGuide || "(org default)"}`);
     info(`  API Token: ${config.apiToken ? "[PROVIDED]" : "[MISSING]"}`);
     info(`  GitHub Token: ${config.githubToken ? "[PROVIDED]" : "[MISSING]"}`);
     info(`  Paths Filter: ${config.paths.length > 0 ? config.paths.join(", ") : "(none)"}`);
@@ -87949,15 +87950,32 @@ function assertStyleAgentEnabled(config) {
         throw new Error(ERROR_MESSAGES.STYLE_AGENT_DISABLED);
     }
 }
-async function listStyleAgentTargets(apiKey) {
-    const targets = await requestWithRetry(apiKey, {
-        method: "GET",
-        path: "style-agent/targets",
-    });
-    if (!Array.isArray(targets)) {
+async function listStyleGuides(apiKey) {
+    let styleGuides;
+    try {
+        styleGuides = await requestWithRetry(apiKey, {
+            method: "GET",
+            path: "style-agent/style-guides",
+        });
+    }
+    catch (error) {
+        // Defensive fallback for any environment still on the deprecated route.
+        // Prod has migrated to /style-guides; this only fires on a 404 from an
+        // older deployment and is otherwise a no-op.
+        if (error instanceof MarkupApiError && error.status === 404) {
+            styleGuides = await requestWithRetry(apiKey, {
+                method: "GET",
+                path: "style-agent/targets",
+            });
+        }
+        else {
+            throw error;
+        }
+    }
+    if (!Array.isArray(styleGuides)) {
         return [];
     }
-    return targets.filter((t) => t.enabled);
+    return styleGuides.filter((sg) => sg.enabled);
 }
 async function runStyleAgent(apiKey, body) {
     return requestWithRetry(apiKey, {
@@ -88229,7 +88247,7 @@ async function analyzeFile(apiKey, filePath, content, options) {
             text: content,
             document_name: getFileBasename(filePath),
             document_ref: filePath,
-            target_id: options.targetId,
+            style_guide_id: options.styleGuideId,
         });
         info(`⏳ Polling workflow ${submission.workflow_id} for ${filePath}`);
         const finalState = await pollUntilDone(apiKey, submission.workflow_id);
@@ -88503,7 +88521,7 @@ function generateFooter(results, options, eventType) {
     return `
 ---
 *Analysis performed on ${new Date().toLocaleString()}*
-*Target: ${options.targetDisplayName}*${agentLine}
+*Style Guide: ${options.styleGuideDisplayName}*${agentLine}
 *Event: ${eventType}*`;
 }
 function generateAnalysisContent(results, options, header, eventType, context) {
@@ -89465,31 +89483,31 @@ function createFileDiscoveryStrategy(context, githubToken) {
 }
 
 /**
- * Resolve the user-supplied target input against the org's enabled
- * style-agent targets.
+ * Resolve the user-supplied style guide input against the org's enabled
+ * style-agent style guides.
  *
- * Empty input → fall back to the target flagged `is_default: true` for the
+ * Empty input → fall back to the style guide flagged `is_default: true` for the
  * org. Non-empty input → match either the exact id or the case-insensitive
  * display_name.
  */
-function resolveTarget(input, targets) {
+function resolveStyleGuide(input, styleGuides) {
     const trimmed = input.trim();
     if (!trimmed) {
-        const defaultTarget = targets.find((t) => t.is_default);
-        if (defaultTarget)
-            return defaultTarget;
-        const available = targets.map((t) => `  - ${t.display_name} (id: ${t.id})`).join("\n");
-        throw new Error(`No target was specified and the organization has no default target. Available targets:\n${available || "  (none enabled)"}`);
+        const defaultStyleGuide = styleGuides.find((sg) => sg.is_default);
+        if (defaultStyleGuide)
+            return defaultStyleGuide;
+        const available = styleGuides.map((sg) => `  - ${sg.display_name} (id: ${sg.id})`).join("\n");
+        throw new Error(`No style guide was specified and the organization has no default style guide. Available style guides:\n${available || "  (none enabled)"}`);
     }
-    const byId = targets.find((t) => t.id === trimmed);
+    const byId = styleGuides.find((sg) => sg.id === trimmed);
     if (byId)
         return byId;
     const lower = trimmed.toLowerCase();
-    const byName = targets.find((t) => t.display_name.toLowerCase() === lower);
+    const byName = styleGuides.find((sg) => sg.display_name.toLowerCase() === lower);
     if (byName)
         return byName;
-    const available = targets.map((t) => `  - ${t.display_name} (id: ${t.id})`).join("\n");
-    throw new Error(`No enabled target matches "${trimmed}". Available targets:\n${available || "  (none enabled)"}`);
+    const available = styleGuides.map((sg) => `  - ${sg.display_name} (id: ${sg.id})`).join("\n");
+    throw new Error(`No enabled style guide matches "${trimmed}". Available style guides:\n${available || "  (none enabled)"}`);
 }
 
 /**
@@ -89514,17 +89532,17 @@ async function runAction() {
         const config = getActionConfig();
         validateConfig(config);
         logConfiguration(config);
-        // Fetch org config + targets, resolve user input.
+        // Fetch org config + style guides, resolve user input.
         displaySectionHeader("🔌 Connecting to Markup AI");
         const orgConfig = await getStyleAgentConfig(config.apiToken);
         assertStyleAgentEnabled(orgConfig);
         info(`  Style Agent: ${orgConfig.style_agent} | Numeric Scoring: ${orgConfig.style_agent_numeric_scoring ? "on" : "off"}`);
-        const targets = await listStyleAgentTargets(config.apiToken);
-        const target = resolveTarget(config.target, targets);
-        info(`  Target: ${target.display_name} (id: ${target.id})`);
+        const styleGuides = await listStyleGuides(config.apiToken);
+        const styleGuide = resolveStyleGuide(config.styleGuide, styleGuides);
+        info(`  Style Guide: ${styleGuide.display_name} (id: ${styleGuide.id})`);
         const analysisOptions = {
-            targetId: target.id,
-            targetDisplayName: target.display_name,
+            styleGuideId: styleGuide.id,
+            styleGuideDisplayName: styleGuide.display_name,
             numericScoringEnabled: orgConfig.style_agent_numeric_scoring,
         };
         // File discovery

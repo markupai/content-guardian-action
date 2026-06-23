@@ -13,9 +13,9 @@ import * as path from "node:path";
 import {
   assertStyleAgentEnabled,
   getStyleAgentConfig,
-  listStyleAgentTargets,
+  listStyleGuides,
 } from "../src/services/markup-api-client.js";
-import { resolveTarget } from "../src/services/target-resolver.js";
+import { resolveStyleGuide } from "../src/services/style-guide-resolver.js";
 import { analyzeFile } from "../src/services/api-service.js";
 
 const apiKey = process.env.MARKUP_AI_LIVE_KEY;
@@ -28,11 +28,11 @@ liveTest("live API smoke (gated by MARKUP_AI_LIVE_KEY)", () => {
     expect(config.style_agent).toMatch(/enabled/);
     assertStyleAgentEnabled(config);
 
-    const targets = await listStyleAgentTargets(key);
-    expect(targets.length).toBeGreaterThan(0);
-    const target = targets.find((t) => t.is_default) ?? targets[0];
-    const resolved = resolveTarget(target.display_name, targets);
-    expect(resolved.id).toBe(target.id);
+    const styleGuides = await listStyleGuides(key);
+    expect(styleGuides.length).toBeGreaterThan(0);
+    const styleGuide = styleGuides.find((sg) => sg.is_default) ?? styleGuides[0];
+    const resolved = resolveStyleGuide(styleGuide.display_name, styleGuides);
+    expect(resolved.id).toBe(styleGuide.id);
 
     const sample = await fs.readFile(
       path.join(import.meta.dirname, "..", "testdata", "markdown", "sample-data-1.md"),
@@ -40,8 +40,8 @@ liveTest("live API smoke (gated by MARKUP_AI_LIVE_KEY)", () => {
     );
 
     const result = await analyzeFile(key, "sample-data-1.md", sample, {
-      targetId: resolved.id,
-      targetDisplayName: resolved.display_name,
+      styleGuideId: resolved.id,
+      styleGuideDisplayName: resolved.display_name,
       numericScoringEnabled: config.style_agent_numeric_scoring,
     });
 

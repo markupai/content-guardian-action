@@ -24,7 +24,7 @@ function baseConfig(overrides: Partial<ActionConfig> = {}): ActionConfig {
   return {
     apiToken: "token",
     githubToken: "ghtok",
-    target: "",
+    styleGuide: "",
     paths: [],
     addCommitStatus: true,
     addReviewComments: true,
@@ -44,7 +44,7 @@ describe("validateConfig", () => {
       validateConfig(baseConfig());
     }).not.toThrow();
     expect(() => {
-      validateConfig(baseConfig({ target: "Main" }));
+      validateConfig(baseConfig({ styleGuide: "Main" }));
     }).not.toThrow();
     expect(() => {
       validateConfig(baseConfig({ apiToken: "" }));
@@ -56,15 +56,15 @@ describe("validateConfig", () => {
 });
 
 describe("logConfiguration", () => {
-  it("logs an explicit target value when provided", () => {
-    logConfiguration(baseConfig({ target: "Brand Voice" }));
+  it("logs an explicit style guide value when provided", () => {
+    logConfiguration(baseConfig({ styleGuide: "Brand Voice" }));
     const messages = core.info.mock.calls.map(([m]) => m);
     expect(messages.some((m) => m.includes("Brand Voice"))).toBe(true);
     expect(messages.some((m) => m.includes("[PROVIDED]"))).toBe(true);
   });
 
-  it("shows '(org default)' when target is empty", () => {
-    logConfiguration(baseConfig({ target: "" }));
+  it("shows '(org default)' when style guide is empty", () => {
+    logConfiguration(baseConfig({ styleGuide: "" }));
     const messages = core.info.mock.calls.map(([m]) => m);
     expect(messages.some((m) => m.includes("(org default)"))).toBe(true);
   });
@@ -84,7 +84,7 @@ describe("getActionConfig", () => {
     expect(getActionConfig()).toEqual({
       apiToken: "tok",
       githubToken: "gh",
-      target: "Marketing Voice",
+      styleGuide: "Marketing Voice",
       paths: [],
       addCommitStatus: true,
       addReviewComments: true,
@@ -122,14 +122,14 @@ describe("getActionConfig", () => {
     process.env.GITHUB_TOKEN = "env-gh";
     process.env.STYLE_GUIDE = "Brand Voice";
     expect(getActionConfig().apiToken).toBe("env-tok");
-    expect(getActionConfig().target).toBe("Brand Voice");
+    expect(getActionConfig().styleGuide).toBe("Brand Voice");
   });
 
   it("inputs take precedence over env vars", () => {
     inputs({
       markup_ai_api_key: "input-tok",
       github_token: "input-gh",
-      style_guide: "Input Target",
+      style_guide: "Input Style Guide",
     });
     process.env.MARKUP_AI_API_KEY = "env-tok";
     expect(getActionConfig().apiToken).toBe("input-tok");
@@ -140,9 +140,9 @@ describe("getActionConfig", () => {
     expect(() => getActionConfig()).toThrow(/Required input 'markup_ai_api_key'/);
   });
 
-  it("returns empty target when no target is provided (action will use org default)", () => {
+  it("returns empty style guide when no style guide is provided (action will use org default)", () => {
     inputs({ markup_ai_api_key: "tok", github_token: "gh" });
-    expect(getActionConfig().target).toBe("");
+    expect(getActionConfig().styleGuide).toBe("");
   });
 
   it("parses strict_mode and add_* as booleans", () => {

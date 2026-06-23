@@ -82,7 +82,7 @@ describe("analyzeFile", () => {
       text: "Test content",
       document_name: "README.md",
       document_ref: "README.md",
-      target_id: options.targetId,
+      style_guide_id: options.styleGuideId,
     });
   });
 

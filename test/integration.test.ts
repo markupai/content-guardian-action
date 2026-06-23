@@ -67,9 +67,9 @@ const getStyleAgentConfig = vi.fn(() =>
     style_agent_numeric_scoring: true,
   }),
 );
-const listStyleAgentTargets = vi.fn(() =>
+const listStyleGuides = vi.fn(() =>
   Promise.resolve([
-    { id: "tgt_1", display_name: "Marketing Voice", is_default: true, enabled: true },
+    { id: "sg_1", display_name: "Marketing Voice", is_default: true, enabled: true },
   ]),
 );
 const runStyleAgent = vi.fn(() =>
@@ -97,7 +97,7 @@ const assertStyleAgentEnabled = vi.fn();
 
 vi.mock("../src/services/markup-api-client.js", () => ({
   getStyleAgentConfig,
-  listStyleAgentTargets,
+  listStyleGuides,
   runStyleAgent,
   pollUntilDone,
   assertStyleAgentEnabled,
@@ -136,7 +136,7 @@ describe("Integration", () => {
   afterEach(() => {
     delete process.env.GITHUB_TOKEN;
     delete process.env.MARKUP_AI_API_KEY;
-    delete process.env.TARGET;
+    delete process.env.STYLE_GUIDE;
   });
 
   it("runs the full happy-path push flow", async () => {
@@ -162,24 +162,24 @@ describe("Integration", () => {
     );
   });
 
-  it("falls back to the org's default target when style_guide input is omitted", async () => {
+  it("falls back to the org's default style guide when style_guide input is omitted", async () => {
     core.getInput.mockImplementation(
       mockInput({ markup_ai_api_key: "k", style_guide: "", github_token: "gh-tok" }),
     );
     await run();
-    // Default target in the test fixture (`listStyleAgentTargets` mock) is
-    // tgt_1 (is_default: true). The action should resolve to it and run.
+    // Default style guide in the test fixture (`listStyleGuides` mock) is
+    // sg_1 (is_default: true). The action should resolve to it and run.
     expect(runStyleAgent).toHaveBeenCalledWith(
       "k",
-      expect.objectContaining({ target_id: "tgt_1" }),
+      expect.objectContaining({ style_guide_id: "sg_1" }),
     );
   });
 
-  it("resolves the target by display name", async () => {
+  it("resolves the style guide by display name", async () => {
     await run();
     expect(runStyleAgent).toHaveBeenCalledWith(
       "test-key",
-      expect.objectContaining({ target_id: "tgt_1" }),
+      expect.objectContaining({ style_guide_id: "sg_1" }),
     );
   });
 
@@ -187,7 +187,7 @@ describe("Integration", () => {
     core.getInput.mockReturnValue("");
     process.env.MARKUP_AI_API_KEY = "env-key";
     process.env.GITHUB_TOKEN = "env-gh";
-    process.env.TARGET = "Marketing Voice";
+    process.env.STYLE_GUIDE = "Marketing Voice";
     await run();
     expect(core.setOutput).toHaveBeenCalledWith("event-type", "push");
   });

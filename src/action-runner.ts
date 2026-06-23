@@ -10,11 +10,11 @@ import { analyzeFiles } from "./services/api-service.js";
 import {
   assertStyleAgentEnabled,
   getStyleAgentConfig,
-  listStyleAgentTargets,
+  listStyleGuides,
 } from "./services/markup-api-client.js";
 import { handlePostAnalysisActions } from "./services/post-analysis-service.js";
 import { createFileDiscoveryStrategy } from "./strategies/index.js";
-import { resolveTarget } from "./services/target-resolver.js";
+import { resolveStyleGuide } from "./services/style-guide-resolver.js";
 import { AnalysisOptions, AnalysisResult, EventInfo } from "./types/index.js";
 import { logError } from "./utils/error-utils.js";
 import {
@@ -47,7 +47,7 @@ export async function runAction(): Promise<void> {
     validateConfig(config);
     logConfiguration(config);
 
-    // Fetch org config + targets, resolve user input.
+    // Fetch org config + style guides, resolve user input.
     displaySectionHeader("🔌 Connecting to Markup AI");
     const orgConfig = await getStyleAgentConfig(config.apiToken);
     assertStyleAgentEnabled(orgConfig);
@@ -55,13 +55,13 @@ export async function runAction(): Promise<void> {
       `  Style Agent: ${orgConfig.style_agent} | Numeric Scoring: ${orgConfig.style_agent_numeric_scoring ? "on" : "off"}`,
     );
 
-    const targets = await listStyleAgentTargets(config.apiToken);
-    const target = resolveTarget(config.target, targets);
-    core.info(`  Target: ${target.display_name} (id: ${target.id})`);
+    const styleGuides = await listStyleGuides(config.apiToken);
+    const styleGuide = resolveStyleGuide(config.styleGuide, styleGuides);
+    core.info(`  Style Guide: ${styleGuide.display_name} (id: ${styleGuide.id})`);
 
     const analysisOptions: AnalysisOptions = {
-      targetId: target.id,
-      targetDisplayName: target.display_name,
+      styleGuideId: styleGuide.id,
+      styleGuideDisplayName: styleGuide.display_name,
       numericScoringEnabled: orgConfig.style_agent_numeric_scoring,
     };
 
