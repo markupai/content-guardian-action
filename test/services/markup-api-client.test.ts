@@ -49,7 +49,7 @@ function makeResp(
 }
 
 const fetchMock = vi.fn();
-globalThis.fetch = fetchMock as unknown as typeof globalThis.fetch;
+globalThis.fetch = fetchMock;
 
 beforeEach(() => {
   fetchMock.mockReset();
