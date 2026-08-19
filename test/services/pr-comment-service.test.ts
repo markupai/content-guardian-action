@@ -392,8 +392,7 @@ describe("createPRReviewComments — integration", () => {
     );
     const captured = (
       octokit.rest.pulls.createReview.mock.calls[0]?.[0] as
-        | { comments?: { path: string; line: number; body: string }[] }
-        | undefined
+        { comments?: { path: string; line: number; body: string }[] } | undefined
     )?.comments?.[0];
     if (!captured) throw new Error("expected at least one captured comment");
 
@@ -453,8 +452,7 @@ describe("createPRReviewComments — integration", () => {
     );
     const body = (
       octokit.rest.pulls.createReview.mock.calls[0]?.[0] as
-        | { comments?: { body: string }[] }
-        | undefined
+        { comments?: { body: string }[] } | undefined
     )?.comments?.[0].body;
     expect(body).toMatch(/\*\*Markup AI \/ Style Agent \+ Terminology\*\* detected issues:/);
     expect(body).toMatch(/\[Style Agent\]/);

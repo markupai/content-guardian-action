@@ -179,8 +179,7 @@ describe("updateCommitStatus", () => {
       buildAnalysisOptions({ numericScoringEnabled: true }),
     );
     const call = octokit.rest.repos.createCommitStatus.mock.calls[0]?.[0] as
-      | { sha?: string; state?: string; description?: string }
-      | undefined;
+      { sha?: string; state?: string; description?: string } | undefined;
     expect(call?.sha).toBe("abc123def456");
     // Risk is primary — drives the state — and leads the description.
     expect(call?.state).toBe("error"); // high severity present
@@ -200,8 +199,7 @@ describe("updateCommitStatus", () => {
       buildAnalysisOptions({ numericScoringEnabled: false }),
     );
     const call = octokit.rest.repos.createCommitStatus.mock.calls[0]?.[0] as
-      | { state?: string; description?: string }
-      | undefined;
+      { state?: string; description?: string } | undefined;
     expect(call?.state).toBe("failure");
     expect(call?.description).toMatch(/Risk\s+Medium/);
     expect(call?.description).not.toMatch(/Quality/);
