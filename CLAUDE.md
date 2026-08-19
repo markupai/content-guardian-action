@@ -52,7 +52,7 @@ The runner is a linear pipeline:
    - `pull_request` → files changed in the PR
    - `workflow_dispatch` / `schedule` → all repo files at `ref`
    - Unknown event types fall back to the push strategy with a warning.
-4. **Filter** to supported extensions (`SUPPORTED_EXTENSIONS` in `src/constants/index.ts`): `.dita .htm .html .markdown .md .mdown .mkd .text .txt .xml`.
+4. **Filter** to supported extensions (`SUPPORTED_EXTENSIONS` in `src/constants/index.ts`): `.dita .htm .html .markdown .md .mdown .mdx .mkd .text .txt .xml`.
 5. **Analysis** (`src/services/api-service.ts`) — per file: read content, `POST /agents/ag_vYCPHsSQnnJj/run?wait=false` with `{ text, document_name, document_ref, style_guide_id }`, then poll `GET /agents/workflows/{id}` every 2s (5-minute timeout). Files are processed with a concurrency cap of 5 (`MAX_CONCURRENT_FILES`). The style agent ID is hardcoded — it's a stable platform identifier, not customer-scoped.
 6. **Post-analysis** (`src/services/post-analysis-service.ts`) — dispatch on event type:
    - `push` → `updateCommitStatus` (gated by `addCommitStatus`).

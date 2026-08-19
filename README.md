@@ -50,7 +50,7 @@ anything; otherwise pass `style_guide: <id or display name>`.
 
 - **DITA**: `.dita`, `.xml`
 - **HTML**: `.htm`, `.html`
-- **Markdown**: `.md`, `.markdown`, `.mdown`, `.mkd`
+- **Markdown**: `.md`, `.markdown`, `.mdown`, `.mkd`, `.mdx`
 - **Text**: `.text`, `.txt`
 
 ## Usage

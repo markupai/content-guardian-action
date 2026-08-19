@@ -87637,6 +87637,7 @@ const SUPPORTED_EXTENSIONS = [
     ".markdown",
     ".md",
     ".mdown",
+    ".mdx",
     ".mkd",
     ".text",
     ".txt",
