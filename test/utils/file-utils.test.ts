@@ -26,6 +26,7 @@ describe("File Utils", () => {
       expect(isSupportedFile("test.md")).toBe(true);
       expect(isSupportedFile("test.txt")).toBe(true);
       expect(isSupportedFile("test.markdown")).toBe(true);
+      expect(isSupportedFile("test.mdx")).toBe(true);
       expect(isSupportedFile("test.dita")).toBe(true);
       expect(isSupportedFile("test.xml")).toBe(true);
     });
@@ -40,6 +41,7 @@ describe("File Utils", () => {
     it("should handle case insensitive extensions", () => {
       expect(isSupportedFile("test.MD")).toBe(true);
       expect(isSupportedFile("test.MARKDOWN")).toBe(true);
+      expect(isSupportedFile("test.MDX")).toBe(true);
       expect(isSupportedFile("test.TXT")).toBe(true);
       expect(isSupportedFile("test.DITA")).toBe(true);
       expect(isSupportedFile("test.XML")).toBe(true);
@@ -74,6 +76,7 @@ describe("File Utils", () => {
         "readme.txt",
         "config.json",
         "docs.markdown",
+        "page.mdx",
         "guide.dita",
         "content.xml",
       ];
@@ -84,6 +87,7 @@ describe("File Utils", () => {
         "test.md",
         "readme.txt",
         "docs.markdown",
+        "page.mdx",
         "guide.dita",
         "content.xml",
       ]);
