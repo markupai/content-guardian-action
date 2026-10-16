@@ -52,7 +52,7 @@
     "prettier-plugin-packagejson": "3.0.2",
     "rollup": "4.64.5",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.71.1",
+    "typescript-eslint": "8.71.2",
     "vitest": "5.0.4"
   },
   "optionalDependencies": {
